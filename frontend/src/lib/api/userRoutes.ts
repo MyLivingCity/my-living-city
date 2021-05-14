@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig } from "axios";
 import { API_BASE_URL } from "../constants";
 import { IUser } from "../types/data/user.type";
-import { RegisterInput } from "../types/input/register.input";
+import { IRegisterInput } from "../types/input/register.input";
 import { getAxiosJwtRequestOption } from "./axiosRequestOptions";
 
 export interface LoginData {
@@ -44,7 +44,7 @@ export const getUserWithJWTVerbose = async ({ jwtAuthToken }: GetUserWithJWTInpu
   return res.data;
 }
 
-export const postRegisterUser = async (registerData: RegisterInput): Promise<LoginResponse> => {
+export const postRegisterUser = async (registerData: IRegisterInput): Promise<LoginResponse> => {
   const { email, password, confirmPassword } = registerData;
   // Verify Payload
   if (!email || !password) {

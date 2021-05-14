@@ -1,4 +1,4 @@
-export interface Rating {
+export interface IRating {
 	id: number;
 	ideaId: number;
 	authorId: string;
@@ -8,7 +8,7 @@ export interface Rating {
 	updatedAt: string;
 }
 
-export interface RatingValueBreakdown {
+export interface IRatingValueBreakdown {
 	strongDisagree: number;
 	slightDisagree: number;
 	neutral: number;
@@ -20,14 +20,14 @@ export interface RatingValueBreakdown {
 // 	[ratingValue: string]: number;
 // }
 
-export interface RatingAggregateSummary {
+export interface IRatingAggregateSummary {
 	ratingAvg: number;
 	ratingCount: number;
 	posRatings: number;
 	negRatings: number;
-	ratingValueBreakdown: RatingValueBreakdown;
+	ratingValueBreakdown: IRatingValueBreakdown;
 }
-export interface RatingAggregateResponse {
-	ratings: Rating[];
-	summary: RatingAggregateSummary;
+export interface IRatingAggregateResponse {
+	ratings: IRating[];
+	summary: IRatingAggregateSummary;
 }

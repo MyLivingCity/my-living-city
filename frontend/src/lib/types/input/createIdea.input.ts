@@ -1,7 +1,7 @@
-import { AddressInput } from "./address.input";
-import { GeoInput } from "./geo.input";
+import { IAddressInput } from "./address.input";
+import { IGeoInput } from "./geo.input";
 
-export interface CreateIdeaInput {
+export interface ICreateIdeaInput {
 	categoryId: number;
 	title: string;
 	description: string;
@@ -10,6 +10,6 @@ export interface CreateIdeaInput {
 	artsImpact?: string;
 	energyImpact?: string;
 	manufacturingImpact?: string;
-  address?: AddressInput;
-  geo?: GeoInput;
+  address?: IAddressInput;
+  geo?: IGeoInput;
 }

@@ -12,14 +12,24 @@
  */
 const compareCommentsBasedOnLikesAndDislikes = (a, b) => {
   // TODO: Will have to change if naming convention changes as well
-  const { _count: aCount } = a;
-  const { _count: bCount} = b;
+  const { _count: aCount, updatedAt: aUpdatedAt } = a;
+  const { _count: bCount, updatedAt: bUpdatedAt } = b;
   const aTotal = aCount.likes + aCount.dislikes;
   const bTotal = bCount.likes + bCount.dislikes;
+
+  // sort comment by number of likes and dislikes
   if (aTotal < bTotal) {
     return 1;
   }
   if (aTotal > bTotal) {
+    return -1;
+  }
+
+  // if number of likes and dislikes are the same sort by updated at
+  if (aUpdatedAt < bUpdatedAt) {
+    return 1;
+  }
+  if (aUpdatedAt > bUpdatedAt) {
     return -1;
   }
 

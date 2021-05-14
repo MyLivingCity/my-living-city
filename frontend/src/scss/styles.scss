@@ -1,10 +1,10 @@
 // Resets
 @import "resets";
 
-@import "bootstrap/config";
-
 // Variables and constants
 @import "./constants";
+
+@import "bootstrap/config";
 
 // UI Partial components styles
 @import "./ui/master-ui.scss";

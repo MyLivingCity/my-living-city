@@ -3,6 +3,7 @@ const passport = require('passport');
 const express = require('express');
 const ideaRouter = express.Router();
 const prisma = require('../lib/prismaClient');
+const { checkIdeaThresholds } = require('../lib/prismaFunctions');
 
 ideaRouter.get(
   '/',
@@ -173,15 +174,29 @@ ideaRouter.get(
         });
       }
 
+      const {
+        isChampionable
+      } = await checkIdeaThresholds(parsedIdeaId);
+
       const foundIdea = await prisma.idea.findUnique({
         where: { id: parsedIdeaId },
         include: {
-          // TODO: Is this necessary? SQL query will join 8 times.
+          // TODO: Is this necessary? SQL query will join 9-10 times.
           geo: true,
           address: true,
           category: true,
           projectInfo: true,
           proposalInfo: true,
+          champion: {
+            include: {
+              address: {
+                select: {
+                  postalCode: true,
+                  streetAddress: true,
+                }
+              }
+            }
+          },
           author: {
             include: {
               address: {
@@ -196,14 +211,17 @@ ideaRouter.get(
       });
       if (!foundIdea) {
         return res.status(400).json({
-          message: `The idea with that listed ID (${ideaId}) does not exist.`,
+          message: `The idea with that listed ID (${parsedIdeaId}) does not exist.`,
         });
       }
 
-      const result = { ...foundIdea };
+      const result = { ...foundIdea, isChampionable };
       delete result.author.password;
+      if (!!result.champion) {
+        delete result.champion.password;
+      }
 
-      res.status(200).json(foundIdea);
+      res.status(200).json(result);
     } catch (error) {
       console.error(error);
       res.status(400).json({

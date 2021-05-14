@@ -1,10 +1,9 @@
-import React from 'react'
 import { Container, Row, Col } from 'react-bootstrap';
-import { IdeaBreakdown } from '../../../lib/types/data/idea.type';
+import { IIdeaWithAggregations } from '../../../lib/types/data/idea.type';
 import IdeaTile from '../../tiles/IdeaTile';
 
 interface NewAndTrendingProps {
-  topIdeas: IdeaBreakdown[],
+  topIdeas: IIdeaWithAggregations[],
 }
 
 const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({ topIdeas }) => {

@@ -1,17 +1,17 @@
 import React from 'react'
 import { Container, Row, Spinner } from 'react-bootstrap';
-import { IdeaBreakdown } from '../../lib/types/data/idea.type';
-import { FetchError } from '../../lib/types/types';
+import { IIdeaWithAggregations } from '../../lib/types/data/idea.type';
+import { IFetchError } from '../../lib/types/types';
 import CategoriesSection from '../partials/LandingContent/CategoriesSection';
 import DescriptionSection from '../partials/LandingContent/DescriptionSection';
 import HeroBannerSection from '../partials/LandingContent/HeroBannerSection';
 import NewAndTrendingSection from '../partials/LandingContent/NewAndTrendingSection';
 
 interface LandingPageContentProps {
-  topIdeas: IdeaBreakdown[] | undefined;
+  topIdeas: IIdeaWithAggregations[] | undefined;
   ideasLoading: boolean,
   ideasIsError: boolean,
-  ideasError: FetchError | null,
+  ideasError: IFetchError | null,
 }
 
 const LandingPageContent: React.FC<LandingPageContentProps> = ({

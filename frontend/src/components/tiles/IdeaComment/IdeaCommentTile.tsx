@@ -1,13 +1,13 @@
 import { useContext } from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
 import { UserProfileContext } from 'src/contexts/UserProfile.Context';
-import { Comment } from '../../../lib/types/data/comment.type';
+import { IComment } from '../../../lib/types/data/comment.type';
 import { timeDifference } from '../../../lib/utilityFunctions';
 import IdeaCommentDislike from './IdeaCommentDislike';
 import IdeaCommentLike from './IdeaCommentLike';
 
 interface IdeaCommentTileProps {
-  commentData: Comment;
+  commentData: IComment;
 }
 
 const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
@@ -51,7 +51,7 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
           )}
         </Col>
       </Row>
-      <hr className="bg-info" />
+      <hr className="bg-primary" />
     </Container>
   );
 }

@@ -1,6 +1,6 @@
 import ConversationsPageContent from '../components/content/ConversationsPageContent';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
-import { useIdeasWithBreakdown, useIdeasWithSort } from '../hooks/ideaHooks';
+import { useIdeasWithBreakdown } from '../hooks/ideaHooks';
 
 
 export default function ConversationsPage() {

@@ -1,6 +1,6 @@
 
 // Extension to Idea state
-export interface Project {
+export interface IProject {
   id: number;
   ideaId: number;
 

@@ -1,6 +1,6 @@
 
 // WARNING: If schema changes and names are changed this will have to be changed as well
-export interface IdeaOrderByAggregate {
+export interface IIdeaOrderByAggregate {
   id?: SortOrder
   authorId?: SortOrder
   categoryId?: SortOrder
@@ -19,17 +19,17 @@ export interface IdeaOrderByAggregate {
 
 type SortOrder = 'asc' | 'desc'
 
-export const defaultOrderByAggregate: IdeaOrderByAggregate = {
+export const defaultOrderByAggregate: IIdeaOrderByAggregate = {
   updatedAt: 'desc'
 }
 
 
-export interface GetAllIdeasWithSort {
-  orderBy?: IdeaOrderByAggregate,
+export interface IGetAllIdeasWithSort {
+  orderBy?: IIdeaOrderByAggregate,
   take?: number,
 }
 
-export const getAllIdeasWithSortDefault: GetAllIdeasWithSort = {
+export const getAllIdeasWithSortDefault: IGetAllIdeasWithSort = {
   orderBy: {
     updatedAt: 'desc'
   }

@@ -1,19 +1,19 @@
 import axios from "axios";
 import { API_BASE_URL } from "../constants";
-import { defaultOrderByAggregate, GetAllIdeasWithSort, getAllIdeasWithSortDefault, IdeaOrderByAggregate } from "../types/args/getAllIdeas.args";
-import { IdeaBreakdown, IIdea, IIdeaWithBasicUser } from "../types/data/idea.type";
-import { CreateIdeaInput } from "../types/input/createIdea.input";
+import { IGetAllIdeasWithSort, getAllIdeasWithSortDefault, IIdeaOrderByAggregate } from "../types/args/getAllIdeas.args";
+import { IIdeaWithAggregations, IIdeaWithRelationship } from "../types/data/idea.type";
+import { ICreateIdeaInput } from "../types/input/createIdea.input";
 import { getAxiosJwtRequestOption } from "./axiosRequestOptions";
 
 export const getAllIdeas = async () => {
-  const res = await axios.get<IIdea[]>(`${API_BASE_URL}/idea/getall`);
+  const res = await axios.get<IIdeaWithRelationship[]>(`${API_BASE_URL}/idea/getall`);
   return res.data;
 }
 
 export const postAllIdeasWithSort = async (
-  sortOptions: GetAllIdeasWithSort = getAllIdeasWithSortDefault
+  sortOptions: IGetAllIdeasWithSort = getAllIdeasWithSortDefault
 ) => {
-  const res = await axios.post<IIdea[]>(
+  const res = await axios.post<IIdeaWithRelationship[]>(
     `${API_BASE_URL}/idea/getall/with-sort`,
     sortOptions,
   );
@@ -29,7 +29,7 @@ export const postAllIdeasWithBreakdown = async (
       take
     }
   }
-  const res = await axios.post<IdeaBreakdown[]>(
+  const res = await axios.post<IIdeaWithAggregations[]>(
     `${API_BASE_URL}/idea/getall/aggregations`,
     reqBody,
   );
@@ -38,11 +38,11 @@ export const postAllIdeasWithBreakdown = async (
 
 
 export const getSingleIdea = async (ideaId: string) => {
-  const res = await axios.get<IIdeaWithBasicUser>(`${API_BASE_URL}/idea/get/${ideaId}`);
+  const res = await axios.get<IIdeaWithRelationship>(`${API_BASE_URL}/idea/get/${ideaId}`);
   return res.data;
 }
 
-export const postCreateIdea = async (ideaData: CreateIdeaInput, token: string | null) => {
+export const postCreateIdea = async (ideaData: ICreateIdeaInput, token: string | null) => {
   // Parse data and data checking
   const { categoryId, title, description} = ideaData;
   const parsedCatId = Number(categoryId);
@@ -60,7 +60,7 @@ export const postCreateIdea = async (ideaData: CreateIdeaInput, token: string | 
     categoryId: parsedCatId,
   }
 
-  const res = await axios.post<IIdea>(
+  const res = await axios.post<IIdeaWithRelationship>(
     `${API_BASE_URL}/idea/create`, 
     parsedPayload, 
     getAxiosJwtRequestOption(token)

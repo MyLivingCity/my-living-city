@@ -1,13 +1,13 @@
-export interface CommentLikeAndDislikeAggregation {
+export interface ICommentLikeAndDislikeAggregation {
   likes: number;
   dislikes: number;
 }
 
-export interface CommentAggregateCount {
+export interface ICommentAggregateCount {
   count: number;
 }
 
-export interface ParsedCommentAuthor {
+export interface IParsedCommentAuthor {
   id: string;
   email: string;
   fname: string;
@@ -18,13 +18,13 @@ export interface ParsedCommentAuthor {
   }
 }
 
-export interface CommentLikeDislike {
+export interface ICommentLikeDislike {
   id: number;
   ideaCommentId: number;
   authorId: string;
 }
 
-export interface Comment {
+export interface IComment {
   id:        number;
   ideaId:    number;
   authorId:  string;
@@ -32,8 +32,8 @@ export interface Comment {
   active:    boolean;
   createdAt: string;
   updatedAt: string;
-  author: ParsedCommentAuthor;
-  likes: CommentLikeDislike[];
-  dislikes: CommentLikeDislike[];
-  _count: CommentLikeAndDislikeAggregation;
+  author: IParsedCommentAuthor;
+  likes: ICommentLikeDislike[];
+  dislikes: ICommentLikeDislike[];
+  _count: ICommentLikeAndDislikeAggregation;
 }

@@ -1,13 +1,13 @@
-import React, { useContext } from 'react'
+import { useContext } from 'react'
 import { FaRegThumbsUp } from 'react-icons/fa'
 import { IconContext } from 'react-icons/lib';
 import { UserProfileContext } from 'src/contexts/UserProfile.Context';
 import { useCommentLikeMutation } from 'src/hooks/commentInteractionHooks';
-import { Comment } from '../../../lib/types/data/comment.type';
+import { IComment } from '../../../lib/types/data/comment.type';
 import { MLC_COLOUR_THEME } from '../../../lib/constants'
 
 interface IdeaCommentLikeProps {
-  commentData: Comment
+  commentData: IComment
 }
 
 const IdeaCommentLike = ({ commentData }: IdeaCommentLikeProps) => {

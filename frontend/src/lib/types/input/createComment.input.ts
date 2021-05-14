@@ -1,3 +1,3 @@
-export interface CreateCommentInput {
+export interface ICreateCommentInput {
   content: string
 }

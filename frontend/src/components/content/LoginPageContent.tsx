@@ -1,9 +1,9 @@
 import { useContext, useState } from 'react'
 import { Image, Form, Button, Alert, Card } from 'react-bootstrap'
 import { useFormik } from 'formik'
-import { LoginWithEmailAndPass } from '../../lib/types/input/loginWithEmailAndPass.input';
+import { ILoginWithEmailAndPass } from '../../lib/types/input/loginWithEmailAndPass.input';
 import { UserProfileContext } from '../../contexts/UserProfile.Context';
-import { FetchError } from '../../lib/types/types';
+import { IFetchError } from '../../lib/types/types';
 import { handlePotentialAxiosError, storeTokenExpiryInLocalStorage, storeUserAndTokenInLocalStorage, wipeLocalStorage } from '../../lib/utilityFunctions';
 import { getUserWithEmailAndPass } from '../../lib/api/userRoutes';
 import { ROUTES } from '../../lib/constants';
@@ -14,10 +14,10 @@ export default function LoginPageContent() {
     setUser,
   } = useContext(UserProfileContext);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<FetchError | null>(null);
+  const [error, setError] = useState<IFetchError | null>(null);
   const [showError, setShowError] = useState(true);
 
-  const submitHandler = async (values: LoginWithEmailAndPass) => {
+  const submitHandler = async (values: ILoginWithEmailAndPass) => {
     try {
       // Set loading 
       setIsLoading(true);
@@ -42,7 +42,7 @@ export default function LoginPageContent() {
     }
   }
 
-  const formik = useFormik<LoginWithEmailAndPass>({
+  const formik = useFormik<ILoginWithEmailAndPass>({
     initialValues: {
       email: '',
       password: '',
@@ -64,6 +64,7 @@ export default function LoginPageContent() {
               show={showError} 
               onClose={() => setShowError(false)} 
               dismissible
+              // variant='danger' 
               variant='danger' 
               className="error-alert" 
             >

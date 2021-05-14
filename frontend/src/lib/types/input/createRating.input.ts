@@ -1,4 +1,4 @@
-export interface CreateRatingInput {
+export interface ICreateRatingInput {
   rating: number;
   ratingExplanation?: string;
 }

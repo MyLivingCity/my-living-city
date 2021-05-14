@@ -1,13 +1,12 @@
-import React, { useContext, useState } from 'react'
-import { Button, Container, Row } from 'react-bootstrap';
-import { UseQueryResult } from 'react-query/types/react';
+import React, { useContext, useEffect, useState } from 'react'
+import { Alert, Button, Container, Row } from 'react-bootstrap';
 import { useParams } from 'react-router';
-import { FetchError } from 'src/lib/types/types';
+import { IFetchError } from 'src/lib/types/types';
+import { handlePotentialAxiosError } from 'src/lib/utilityFunctions';
 import { UserProfileContext } from '../../../contexts/UserProfile.Context';
 import { useAllCommentsUnderIdea, useCreateCommentMutation } from '../../../hooks/commentHooks';
 import IdeaCommentTile from '../../tiles/IdeaComment/IdeaCommentTile';
 import LoadingSpinner from '../../ui/LoadingSpinner';
-import CommentInput from './CommentInput';
 import CommentSubmitModal from './CommentSubmitModal';
 
 interface CommentsSection {
@@ -18,14 +17,15 @@ const CommentsSection: React.FC<CommentsSection> = () => {
   const { ideaId } = useParams<{ ideaId: string }>();
   const [showModal, setShowModal] = useState<boolean>(false);
 
-  const { 
+  // =================== FETCHING COMMENTS HOOK ==========================
+  const {
     data: ideaComments,
     isLoading,
     isError,
-    error 
+    error
   } = useAllCommentsUnderIdea(ideaId, token);
 
-
+  // =================== SUBMITTING COMMENT MUTATION ==========================
   const {
     submitComment,
     isLoading: commentIsLoading,
@@ -33,6 +33,14 @@ const CommentsSection: React.FC<CommentsSection> = () => {
     error: commentError,
   } = useCreateCommentMutation(parseInt(ideaId), token, user);
 
+  const [ showCommentSubmitError, setShowCommentSubmitError ] = useState(false);
+
+  useEffect(() => {
+    setShowCommentSubmitError(commentIsError);
+  }, [ commentIsError ]);
+
+
+  // =================== UTILITY FUNCTIONS FOR UI ==========================
   const shouldButtonBeDisabled = (): boolean => {
     // Unauthenticated
     let flag = true;
@@ -62,36 +70,48 @@ const CommentsSection: React.FC<CommentsSection> = () => {
   }
 
   return (
-    <Container className='mt-5'>
+    <Container className='my-5'>
       <h2>Feedback</h2>
-      <CommentSubmitModal 
-        comments={ideaComments?.slice(0, 10)} 
-        show={showModal} 
-        setShow={setShowModal} 
+      <CommentSubmitModal
+        comments={ideaComments?.slice(0, 10)}
+        show={showModal}
+        setShow={setShowModal}
         buttonTextOutput={buttonTextOutput}
         shouldButtonBeDisabled={shouldButtonBeDisabled}
         submitComment={submitComment}
       />
-      {ideaComments && ideaComments.length === 0 ? (
-        <Row className='justify-content-center'>
-          <p>No Comments yet!</p>
-        </Row>
-      ) : ideaComments && ideaComments.map(comment => (
-        <Row key={comment.id}>
-          <IdeaCommentTile commentData={comment} />
-        </Row>
-      ))
-      }
-      <Row>
-        {/* <CommentInput /> */}
-        <Button 
-          onClick={() => setShowModal(true)}
-          block
-          disabled={shouldButtonBeDisabled()}
+      <div className="comments-wrapper my-3">
+        {ideaComments && ideaComments.length === 0 ? (
+          <Row className='justify-content-center'>
+            <p>No Comments yet!</p>
+          </Row>
+        ) : ideaComments && ideaComments.map(comment => (
+          <Row key={comment.id}>
+            <IdeaCommentTile commentData={comment} />
+          </Row>
+        ))
+        }
+      </div>
+      {/* <CommentInput /> */}
+      {showCommentSubmitError && (
+        <Alert
+          className=''
+          show={showCommentSubmitError}
+          onClose={() => setShowCommentSubmitError(false)}
+          dismissible
+          variant='danger'
         >
-          {buttonTextOutput()}
-        </Button>
-      </Row>
+          {commentError?.message ?? "An Error occured while trying to create your comment."}
+        </Alert>
+      )}
+      <Button
+        onClick={() => setShowModal(true)}
+        block
+        size='lg'
+        disabled={shouldButtonBeDisabled()}
+      >
+        {buttonTextOutput()}
+      </Button>
     </Container>
   );
 }

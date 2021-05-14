@@ -1,15 +1,15 @@
-export interface FetchMeta {
+export interface IFetchMeta {
 	message?: string;
 	loading: boolean;
-	errors: null | FetchError[];
+	errors: null | IFetchError[];
 }
 
-export interface FetchError {
+export interface IFetchError {
 	message: string;
-	details?: FetchErrorDetails;
+	details?: IFetchErrorDetails;
 }
 
-export interface FetchErrorDetails {
+export interface IFetchErrorDetails {
 	errorMessage: string;
 	errorStack: string;
 }

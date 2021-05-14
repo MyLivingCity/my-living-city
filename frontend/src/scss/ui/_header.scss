@@ -1,12 +1,8 @@
 .outer-header {
-  background-color: $outer-header-colour;
+  background-color: $mlc-shade-light-grey;
 
   .inner-header {
     max-width: $wrapper-max-width;
     margin: 0 auto;
-
-    // .nav-link {
-    //   text-align: right;
-    // }
   }
 }

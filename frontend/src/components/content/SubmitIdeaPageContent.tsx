@@ -3,13 +3,13 @@ import React, { useContext, useState } from 'react'
 import { Col, Container, Row, Form, Button, Alert } from 'react-bootstrap'
 import { UserProfileContext } from '../../contexts/UserProfile.Context';
 import { postCreateIdea } from '../../lib/api/ideaRoutes';
-import { Category } from '../../lib/types/data/category.type';
-import { CreateIdeaInput } from '../../lib/types/input/createIdea.input';
-import { FetchError } from '../../lib/types/types';
+import { ICategory } from '../../lib/types/data/category.type';
+import { ICreateIdeaInput } from '../../lib/types/input/createIdea.input';
+import { IFetchError } from '../../lib/types/types';
 import { capitalizeString, handlePotentialAxiosError } from '../../lib/utilityFunctions';
 
 interface SubmitIdeaPageContentProps {
-  categories: Category[] | undefined
+  categories: ICategory[] | undefined
 }
 
 /**
@@ -20,12 +20,11 @@ const DEFAULT_CAT_ID = 1;
 
 const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({ categories }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<FetchError | null>(null);
-
+  const [error, setError] = useState<IFetchError | null>(null);
   const { token } = useContext(UserProfileContext);
 
 
-  const submitHandler = async (values: CreateIdeaInput) => {
+  const submitHandler = async (values: ICreateIdeaInput) => {
     try {
       // Set loading and error state
       setError(null);
@@ -47,7 +46,7 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({ categorie
     }
   }
 
-  const formik = useFormik<CreateIdeaInput>({
+  const formik = useFormik<ICreateIdeaInput>({
     initialValues: {
       // TODO: CatId when chosen is a string
       categoryId: categories ? categories[0].id : DEFAULT_CAT_ID,

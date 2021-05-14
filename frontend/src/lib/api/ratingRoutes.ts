@@ -1,22 +1,22 @@
 import axios from "axios"
 import { API_BASE_URL } from "../constants"
-import { Rating, RatingAggregateResponse } from "../types/data/rating.type"
+import { IRating, IRatingAggregateResponse } from "../types/data/rating.type"
 
-export const getAllRatingsUnderIdea = async (ideaId: string): Promise<Rating[]> => {
+export const getAllRatingsUnderIdea = async (ideaId: string): Promise<IRating[]> => {
   if (!ideaId) {
     throw new Error("An ideaId must be specified to fetch all ratings under idea.")
   }
 
-  const res = await axios.get<Rating[]>(`${API_BASE_URL}/rating/getall/${ideaId}`);
+  const res = await axios.get<IRating[]>(`${API_BASE_URL}/rating/getall/${ideaId}`);
   return res.data;
 }
 
-export const getAllRatingsUnderIdeaWithAggregations = async (ideaId: string): Promise<RatingAggregateResponse> => {
+export const getAllRatingsUnderIdeaWithAggregations = async (ideaId: string): Promise<IRatingAggregateResponse> => {
   if (!ideaId) {
     throw new Error("An ideaId must be specified to fetch all ratings under idea.")
   }
 
-  const res = await axios.get<RatingAggregateResponse>(
+  const res = await axios.get<IRatingAggregateResponse>(
     `${API_BASE_URL}/rating/getall/${ideaId}/aggregations`
   );
   return res.data;

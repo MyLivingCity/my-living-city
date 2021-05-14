@@ -60,6 +60,10 @@ model UserGeo {
   // Columns
   lat       Decimal?
   lon       Decimal?
+  work_lat  Decimal?
+  work_lon  Decimal?
+  school_lat Decimal?
+  school_lon Decimal?
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @default(now()) @updatedAt @map(name: "updated_at")
 
@@ -107,7 +111,9 @@ model User {
   address             UserAddress?
   geo                 UserGeo?
   userRole            UserRole?             @relation(fields: [userRoleId], references: [id])
-  ideas               Idea[]
+  ideas               Idea[]                @relation("author")
+  championedIdeas     Idea[]                @relation("champion")
+  // championedIdeas     Idea[]                @relation("championedIdeas")
   ideaRatings         IdeaRating[]
   ideaComments        IdeaComment[]
   ideaCommentLikes    UserCommentLikes[]
@@ -184,9 +190,10 @@ model IdeaAddress {
 
 model Idea {
   // Keys
-  id         Int    @id @default(autoincrement())
-  authorId   String @map("author_id")
-  categoryId Int    @map("category_id")
+  id         Int     @id @default(autoincrement())
+  authorId   String  @map("author_id")
+  championId String? @map("champion_id")
+  categoryId Int     @map("category_id")
 
   // Values
   title               String
@@ -209,8 +216,10 @@ model Idea {
   address      IdeaAddress?
   geo          IdeaGeo?
 
-
-  author   User     @relation(fields: [authorId], references: [id])
+  // Multiple relationships pointing to same User Model
+  // https://github.com/prisma/prisma/discussions/2073
+  author   User     @relation("author", fields: [authorId], references: [id])
+  champion User?    @relation("champion", fields: [championId], references: [id])
   category Category @relation(fields: [categoryId], references: [id])
 
   @@map(name: "idea")

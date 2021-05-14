@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import { useContext, useState } from 'react'
 import { Nav, Navbar, Form, FormControl, Button } from 'react-bootstrap'
 import { UserProfileContext } from '../../contexts/UserProfile.Context';
 

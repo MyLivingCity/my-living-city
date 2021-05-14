@@ -1,24 +1,25 @@
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { getAxiosJwtRequestOption } from '../lib/api/axiosRequestOptions'
 import { API_BASE_URL } from '../lib/constants'
-import { CreateCommentInput } from '../lib/types/input/createComment.input'
+import { ICreateCommentInput } from '../lib/types/input/createComment.input'
 import { getAllComments, getCommentAggregateUnderIdea, getCommentsUnderIdea } from '../lib/api/commentRoutes'
-import { Comment, CommentAggregateCount } from '../lib/types/data/comment.type'
-import { FetchError } from '../lib/types/types'
+import { IComment, ICommentAggregateCount } from '../lib/types/data/comment.type'
+import { IFetchError } from '../lib/types/types'
 import { v4 as uuidv4 } from 'uuid';
 import { IUser } from '../lib/types/data/user.type'
 import { useEffect, useState } from 'react'
+import { handlePotentialAxiosError } from 'src/lib/utilityFunctions'
 
 export const useAllComments = () => {
-  return useQuery<Comment[], FetchError>(
+  return useQuery<IComment[], IFetchError>(
     'comments',
     getAllComments,
   )
 }
 
 export const useAllCommentsUnderIdea = (ideaId: string, token: string | null) => {
-  return useQuery<Comment[], FetchError>(
+  return useQuery<IComment[], IFetchError>(
     ['comments', ideaId],
     () => getCommentsUnderIdea(ideaId, token),
     {
@@ -28,7 +29,7 @@ export const useAllCommentsUnderIdea = (ideaId: string, token: string | null) =>
 }
 
 export const useCommentAggregateUnderIdea = (ideaId: string) => {
-  return useQuery<CommentAggregateCount, FetchError>(
+  return useQuery<ICommentAggregateCount, IFetchError>(
     ['comment-aggregate', ideaId],
     () => getCommentAggregateUnderIdea(ideaId),
     {
@@ -49,7 +50,7 @@ export const useCreateCommentMutation = (
   const previousCommentAggregateKey = ['comment-aggregate', String(ideaId)];
   const queryClient = useQueryClient();
 
-  const createCommentMutation = useMutation<Comment, FetchError, CreateCommentInput>(
+  const createCommentMutation = useMutation<IComment, AxiosError, ICreateCommentInput>(
     newComment => axios.post(
       `${API_BASE_URL}/comment/create/${ideaId}`,
       { content: newComment.content },
@@ -61,8 +62,8 @@ export const useCreateCommentMutation = (
 
         // snapshot previous value
         const previousCommentAggregate = 
-          queryClient.getQueryData<CommentAggregateCount>(previousCommentAggregateKey);
-        const previousComments = queryClient.getQueryData<Comment[]>(previousCommentsKey);
+          queryClient.getQueryData<ICommentAggregateCount>(previousCommentAggregateKey);
+        const previousComments = queryClient.getQueryData<IComment[]>(previousCommentsKey);
 
         // Cancel outgoing refetches
         await queryClient.cancelQueries(previousCommentAggregateKey);
@@ -70,7 +71,7 @@ export const useCreateCommentMutation = (
 
         // Optimistically update aggregate value
         if (previousCommentAggregate) {
-          queryClient.setQueryData<CommentAggregateCount>(previousCommentAggregateKey,
+          queryClient.setQueryData<ICommentAggregateCount>(previousCommentAggregateKey,
             {
               count: previousCommentAggregate.count + 1
             }
@@ -79,7 +80,7 @@ export const useCreateCommentMutation = (
 
         // Optimistically update to new value
         if (previousComments) {
-          queryClient.setQueryData<Comment[]>(previousCommentsKey,
+          queryClient.setQueryData<IComment[]>(previousCommentsKey,
             [
               ...previousComments,
               {
@@ -115,7 +116,7 @@ export const useCreateCommentMutation = (
       },
       onError: (err, variables, context: any) => {
         if (context) {
-          queryClient.setQueryData<Comment[]>(previousCommentsKey, context);
+          queryClient.setQueryData<IComment[]>(previousCommentsKey, context);
         }
       },
       onSettled: () => {
@@ -124,14 +125,30 @@ export const useCreateCommentMutation = (
     }
   )
 
-  const submitComment = (newComment: CreateCommentInput) => {
+  
+  // Handle potential Errors
+  const { error } = createCommentMutation;
+  const [ parsedErrorObj, setParsedErrorObj ] = useState<IFetchError | null>(null);
+
+  useEffect(() => {
+    if (error) {
+      const potentialAxiosError = handlePotentialAxiosError(
+        "An Error occured while trying to submit a comment.",
+        error,
+      );
+      setParsedErrorObj(potentialAxiosError);
+    }
+  }, [ error ]);
+
+  const submitComment = (newComment: ICreateCommentInput) => {
     // console.log("submit");
     // console.log(newComment);
     createCommentMutation.mutate(newComment);
   }
 
   return {
-    submitComment,
     ...createCommentMutation,
+    submitComment,
+    error: parsedErrorObj,
   };
 }

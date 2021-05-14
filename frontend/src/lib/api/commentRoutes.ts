@@ -1,23 +1,23 @@
 import axios from "axios"
 import { API_BASE_URL } from "../constants"
-import { Comment, CommentAggregateCount } from "../types/data/comment.type"
-import { CreateCommentInput } from "../types/input/createComment.input";
+import { IComment, ICommentAggregateCount } from "../types/data/comment.type"
+import { ICreateCommentInput } from "../types/input/createComment.input";
 import { getAxiosJwtRequestOption } from "./axiosRequestOptions";
 
-export const getAllComments = async (): Promise<Comment[]> => {
-  const res = await axios.get<Comment[]>(`${API_BASE_URL}/comments/getall`);
+export const getAllComments = async (): Promise<IComment[]> => {
+  const res = await axios.get<IComment[]>(`${API_BASE_URL}/comments/getall`);
   return res.data;
 }
 
 export const getCommentsUnderIdea = async (
   ideaId: string,
   token: string | null | undefined,
-): Promise<Comment[]> => {
+): Promise<IComment[]> => {
   if (!ideaId) {
     throw new Error("An ideaId must be specified to fetch all comments under idea.")
   }
 
-  const res = await axios.get<Comment[]>(
+  const res = await axios.get<IComment[]>(
     `${API_BASE_URL}/comment/getall/${ideaId}`,
     getAxiosJwtRequestOption(token!)
   );
@@ -29,7 +29,7 @@ export const getCommentAggregateUnderIdea = async (ideaId: string) => {
     throw new Error("An ideaId must be specified to fetch all comments under idea.")
   }
 
-  const res = await axios.get<CommentAggregateCount>(
+  const res = await axios.get<ICommentAggregateCount>(
     `${API_BASE_URL}/comment/aggregate/${ideaId}`
   );
   return res.data;
@@ -38,13 +38,13 @@ export const getCommentAggregateUnderIdea = async (ideaId: string) => {
 export const createCommentUnderIdea = async (
   ideaId: number, 
   token: string, 
-  commentPayload: CreateCommentInput
-): Promise<Comment> => {
+  commentPayload: ICreateCommentInput
+): Promise<IComment> => {
   if (!ideaId || !token) {
     throw new Error("An ideaId and valid JWT must be specified to create a comment.")
   }
 
-  const res = await axios.post<Comment>(
+  const res = await axios.post<IComment>(
     `${API_BASE_URL}/comment/create/2`,
     commentPayload,
     getAxiosJwtRequestOption(token),

@@ -1,6 +1,5 @@
-import React from 'react'
 import { Col, Container, Row } from 'react-bootstrap';
-import { FaComment, FaComments, FaClipboard, FaRegUserCircle } from 'react-icons/fa';
+import { FaComments, FaClipboard, FaRegUserCircle } from 'react-icons/fa';
 
 interface DescriptionSectionProps {
 

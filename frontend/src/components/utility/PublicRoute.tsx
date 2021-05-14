@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import { useContext } from 'react'
 import { RouteProps, Route, Redirect } from 'react-router-dom'
 import { UserProfileContext } from '../../contexts/UserProfile.Context';
 import { ROUTES } from '../../lib/constants';

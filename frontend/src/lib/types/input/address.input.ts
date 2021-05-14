@@ -1,4 +1,4 @@
-export interface AddressInput {
+export interface IAddressInput {
   streetAddress?: string;
   streetAddress2?: string;
   city?: string;

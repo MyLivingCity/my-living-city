@@ -1,10 +1,10 @@
 import React from 'react'
 import { Col, Container, Row } from 'react-bootstrap';
-import { IdeaBreakdown } from '../../lib/types/data/idea.type';
+import { IIdeaWithAggregations } from '../../lib/types/data/idea.type';
 import IdeaTile from '../tiles/IdeaTile';
 
 interface ConversationsPageContentProps {
-  ideas: IdeaBreakdown[] | undefined;
+  ideas: IIdeaWithAggregations[] | undefined;
 }
 
 // sorting and parsing ideas here

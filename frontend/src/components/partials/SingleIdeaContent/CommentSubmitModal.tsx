@@ -1,17 +1,16 @@
-import { useFormik } from 'formik';
 import React, { useState } from 'react'
 import { Button, Container, Form, Modal, Row } from 'react-bootstrap';
 import IdeaCommentTile from 'src/components/tiles/IdeaComment/IdeaCommentTile';
-import { CreateCommentInput } from 'src/lib/types/input/createComment.input';
-import { Comment } from '../../../lib/types/data/comment.type';
+import { ICreateCommentInput } from 'src/lib/types/input/createComment.input';
+import { IComment } from '../../../lib/types/data/comment.type';
 
 interface CommentSubmitModalProps {
   setShow: React.Dispatch<React.SetStateAction<boolean>>;
   shouldButtonBeDisabled: () => boolean;
   buttonTextOutput: () => string;
-  submitComment: (newComment: CreateCommentInput) => void;
+  submitComment: (newComment: ICreateCommentInput) => void;
   show: boolean;
-  comments?: Comment[]
+  comments?: IComment[]
 }
 
 const CommentSubmitModal = ({
@@ -25,7 +24,7 @@ const CommentSubmitModal = ({
   const handleClose = () => setShow(false);
   const [commentText, setCommentText] = useState('');
 
-  const submitHandler = (values: CreateCommentInput) => {
+  const submitHandler = (values: ICreateCommentInput) => {
     submitComment(values);
     setCommentText('');
     handleClose();

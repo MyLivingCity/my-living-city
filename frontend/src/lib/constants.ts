@@ -28,5 +28,7 @@ export const ROUTES = {
   USER_PROFILE: '/profile',
   TEST_PAGE: '/test',
   TEAM404: '/*',
-  SUBMIT_ADVERTISEMENT: '/advertisement/submit'
+  SUBMIT_ADVERTISEMENT: '/advertisement/submit',
+  SEND_EMAIL: '/sendEmail',
+  RESET_PASSWORD:'/user/reset-password'
 }

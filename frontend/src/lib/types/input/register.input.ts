@@ -10,5 +10,4 @@ export interface IRegisterInput {
   lname?: string;
   address?: IAddressInput;
   geo?: IGeoInput;
-  profImage?: File;
 }

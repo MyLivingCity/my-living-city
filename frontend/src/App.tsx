@@ -16,7 +16,7 @@ import LoginPage from './pages/LoginPage';
 import PrivateRoute from './components/utility/PrivateRoute';
 import PublicRoute from './components/utility/PublicRoute';
 import SubmitAdvertisementPage from './pages/SubmitAdvertisementPage';
-
+import ResetPasswordContent from './pages/ResetPasswordPage'
 function App() {
   return (
     <div className="App">
@@ -29,6 +29,7 @@ function App() {
           <Route path={ROUTES.SINGLE_IDEA} component={SingleIdeaPage} />
           <PublicRoute path={ROUTES.LOGIN} component={LoginPage} />
           <PublicRoute path={ROUTES.REGISTER} component={RegisterPage} />
+          <PublicRoute path={ROUTES.RESET_PASSWORD} component={ResetPasswordContent} />
           <PrivateRoute path={ROUTES.SUBMIT_IDEA} component={SubmitIdeaPage} />
           <PrivateRoute path={ROUTES.USER_PROFILE} component={ProfilePage} />
           <PrivateRoute path={ROUTES.TEST_PAGE} redirectPath='/ideas/1' component={TestPage} />

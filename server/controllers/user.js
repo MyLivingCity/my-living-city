@@ -82,9 +82,9 @@ userRouter.get(
 	(req, res, next) => {
 		res.json({
 			message: "You made it to the secure route",
-		})
+		});
 	}
-)
+);
 
 
 /**
@@ -123,17 +123,49 @@ userRouter.get(
 			if (!foundUser) {
 				return res.status(400).json({
 					message: "User could not be found or does not exist in the database."
-				})
+				});
 			}
 
 			const parsedUser = {
 				...foundUser,
 				password: null,
-			}
+			};
 
 			res.status(200);
 			res.json({
         ...parsedUser
+			});
+		} catch (error) {
+			res.status(400);
+			res.json({
+				message: error.message,
+        details: {
+          errorMessage: error.message,
+          errorStack: error.stack,
+        }
+			})
+		} finally {
+			await prisma.$disconnect();
+		}
+	}
+)
+userRouter.get(
+	'/email',
+	async (req, res, next) => {
+		try {
+			const { email } = req.email;
+			const foundUser = await prisma.user.findUnique({
+				where: { email }
+			});
+
+			if (!foundUser) {
+				return res.status(400).json({
+					message: "User could not be found or does not exist in the database."
+				})
+			}
+			res.status(200);
+			res.json({
+				foundUser
 			})
 		} catch (error) {
 			res.status(400);
@@ -149,7 +181,6 @@ userRouter.get(
 		}
 	}
 )
-
 userRouter.get(
 	'/me-verbose',
 	passport.authenticate('jwt', { session: false }),
@@ -361,6 +392,56 @@ userRouter.post(
 	}
 )
 
+userRouter.post(
+	'/reset-password',
+	async (req, res, next) => {
+		try {
+			console.log(req.query);
+			const paramPassCode = req.query.passCode;
+			const { email, password, confirmPassword} = req.body;
+			const foundUser = await prisma.user.findUnique({
+				where: { email }
+			});
+			
+			console.log(foundUser.passCode);
+			console.log(paramPassCode);
+			
+			//const validPassword = await argon2ConfirmHash(originalPassword, foundUser.password);
+			if (foundUser.passCode != paramPassCode) {
+				throw new Error(`The confirmation code is incorrect `);
+			}
+			if (confirmPassword != password) {
+				throw new Error('Passwords must match');
+			}
+			var id = foundUser.id;
+			const updatedUser = await prisma.user.update({
+				where: { id },
+				data: {
+					password: await argon2Hash(confirmPassword)
+				}
+			});
+
+			const parsedUser = { ...updatedUser, password: null, passCode: null };
+
+			res.status(200).json({
+				message: "User succesfully updated",
+				user: parsedUser//,
+				//validPassword
+			});
+		} catch (error) {
+			res.status(400).json({
+        message: `An Error occured while trying to change the password for the email.`,
+        details: {
+          errorMessage: error.message,
+          errorStack: error.stack,
+        }
+      });
+		} finally {
+			await prisma.$disconnect();
+		}
+	}
+)
+
 /**
  * @swagger
  * /user/getall:
@@ -494,6 +575,8 @@ userRouter.put(
 		}
 	}
 )
+
+
 
 
 userRouter.put(

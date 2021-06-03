@@ -84,3 +84,17 @@ export const updateSubSegment = async (segData: any, token:any) =>{
   }
   return res.data;
 }
+
+export const findSegmentByName = async (segName:string,province:string,country:string) => {
+  if(!location){
+    throw new Error("location is needed");
+  }
+
+  const result = await axios({
+    method: "get",
+    url: `${API_BASE_URL}/segment/getByName`,
+    data: {country,province,segName}
+  });
+
+  return result.data;
+}

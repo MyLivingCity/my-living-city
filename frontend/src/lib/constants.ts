@@ -1,5 +1,6 @@
 export const __prod__ = process.env.NODE_ENV === 'production';
 export const API_BASE_URL = process.env.REACT_APP_BASE_API_URL || 'http://localhost:3001'
+export const GOOGLE_MAP_API_KEY = process.env.GOOGLE_MAP_API_KEY
 
 // UTILITY defaults
 export const UTIL_FUNCTIONS = {

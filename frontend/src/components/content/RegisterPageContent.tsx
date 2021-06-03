@@ -10,10 +10,15 @@ import { postRegisterUser } from '../../lib/api/userRoutes';
 import SimpleMap from '../map/SimpleMap';
 import { postAvatarImage } from '../../lib/api/avatarRoutes';
 import React from 'react'
+import { FromTo } from 'moment';
+import {searchForLoaction} from '../../lib/api/googleMapQuery';
+import {findSegmentByName} from '../../lib/api/segmentRoutes';
 
 interface RegisterPageContentProps {
   userRoles: IUserRole[] | undefined;
 }
+
+
 const RegisterPageContent: React.FC<RegisterPageContentProps> = ({ userRoles }) => {
   const {
     setToken,
@@ -31,14 +36,42 @@ const RegisterPageContent: React.FC<RegisterPageContentProps> = ({ userRoles }) 
     work: {lat: null, lon: null},
     school: {lat: null, lon: null}
   });
+  
+  const [homeSubsegments,setHomeSubsegments] = useState([]);
+  const [workSubsegments,setWorkSubsegments] = useState([]);
+  const [schoolSubsegments,setSchooSubsegments] = useState([]);
+
+  const getSubsegments = async (name:string,lat:number,lon:number) => {
+    try{
+      const queryResult = await searchForLoaction(lat,lon);
+      const address = queryResult?.results[0]?.formatted_address;
+      if(address){
+        let addressComponents = address.split(',');
+        let city = addressComponents[1].trim();
+
+
+      }else{
+        console.log("address not found!");
+        return null;
+      }
+    }catch(error){
+      console.log(error);
+    }
+  }
+
   interface NextMapProps {
     name: string;
-}
+  }
   const NextMap: React.FC<NextMapProps> = ({name}) => {
     let title: any;
     if(name==="home") title = <Card.Title>Where is your {name} community?</Card.Title>
     if(name==="work") title = <Card.Title>Do you {name} in a different municipality?</Card.Title>
     if(name==="school") title = <Card.Title>Do you study in a different municipality?</Card.Title>
+
+    let searchButton: any;
+    if(name==='home') searchButton = <Button type='button' disabled={(markers.home.lat && markers.home.lon) ? false : true} onClick={}>search segment</Button>;
+    if(name==='work') searchButton = <Button type='button' disabled={(markers.work.lat && markers.work.lon) ? false : true} onClick={}>search segment</Button>;
+    if(name==='school') searchButton = <Button type='button' disabled={(markers.school.lat && markers.school.lon) ? false : true} onClick={}>search segment</Button>;
 
     return(
       <main className='register-page-content'>
@@ -52,6 +85,7 @@ const RegisterPageContent: React.FC<RegisterPageContentProps> = ({ userRoles }) 
       <SimpleMap iconName={name} sendData={(markers:any)=>sendData(markers) } />
         <Form.Group controlId="registerUserType">
                   <Form.Label>Select your neighbourhood</Form.Label>
+                  {searchButton}
                   <Form.Control
                     as="select"
                     name="sub-segment"
@@ -275,7 +309,7 @@ const RegisterPageContent: React.FC<RegisterPageContentProps> = ({ userRoles }) 
   
                     //onChange={(picture) => {formik.setFieldValue('image',picture)}}
                   />
-                  </Form.Group>
+                </Form.Group>
                 <Button
                   block
                   //onClick={()=>{customFormikSet()}}
@@ -311,6 +345,8 @@ const RegisterPageContent: React.FC<RegisterPageContentProps> = ({ userRoles }) 
       <NextMap name="school"/>
     )
   }
+
+  
   
   return(<></>);
   

@@ -3,7 +3,7 @@ const express = require('express');
 const segmentRouter = express.Router();
 const prisma = require('../lib/prismaClient');
 
-const { isEmpty } = require('lodash');
+const { isEmpty, isString } = require('lodash');
 const { UserType } = require('@prisma/client');
 
 segmentRouter.post(
@@ -271,6 +271,102 @@ segmentRouter.post(
             console.log(error);
             res.status(400).json({
                 message: "An error occured while trying to update a segment.",
+                details: {
+                    errorMessage: error.message,
+                    errorStack: error.stack,
+                }
+            });
+        }finally{
+            await prisma.$disconnect();
+        }
+    }
+);
+
+//get segment by name endpoint
+segmentRouter.get(
+    '/getByName',
+    async(req,res) => {
+        let error = '';
+        let errorMessage = '';
+        let errorStack = '';
+        try{
+            //if there's no object in the request body
+            if(isEmpty(req.body)){
+                return res.status(400).json({
+                    message: 'The objects in the request body are missing',
+                    details: {
+                        errorMessage: 'Finding a segment must supply necessary fields explicitly.',
+                        errorStack: 'necessary fields must be provided in the body with valid values',
+                    }
+                })
+            }
+
+            const {country,province,segName} = req.body;
+
+            if(!country){
+                error+='Query must has a country field. ';
+                errorMessage+='Query must explicitly be supplied with a country field. ';
+                errorStack+='cuntry must be provided in the body with a valid value. ';
+            }
+
+            if(!isString(country)||country.length<2||country.length>40){
+                error+='Country value must be valid ';
+                errorMessage+='Country must be string with 2-40 characters ';
+                errorStack+='Country must be string with 2-40 characters ';
+            }
+
+            if(!province){
+                error+='Query must has a province field. ';
+                errorMessage+='Query must explicitly be supplied with a province field. ';
+                errorStack+='Province must be provided in the body with a valid value. ';
+            }
+
+            if(!isString(province)||province.length<2||province.length>40){
+                error+='Province value must be valid ';
+                errorMessage+='Province must be string with 2-40 characters ';
+                errorStack+='Province must be string with 2-40 characters ';
+            }
+
+            if(!segName){
+                error+='Query must has a segName field. ';
+                errorMessage+='Query must explicitly be supplied with a segName field. ';
+                errorStack+='segName must be provided in the body with a valid value. ';
+            }
+
+            if(!isString(segName)||segName.length<2||segName.length>40){
+                error+='segName value must be valid ';
+                errorMessage+='segName must be string with 2-40 characters ';
+                errorStack+='segName must be string with 2-40 characters ';
+            }
+
+            //If there's error in error holder
+            if(error||errorMessage||errorStack){
+                return res.status(400).json({
+                    message: error,
+                    details: {
+                      errorMessage: errorMessage,
+                      errorStack: errorStack
+                    }
+                });
+            }
+
+            const result = await prisma.segments.findFirst({
+                where:{
+                    country:country,
+                    province:province,
+                    name:{contains:segName}
+                }
+            });
+
+            if(!result){
+                res.status(404).json("Segment not found!");
+            }
+
+            res.status(200).json(result);
+        }catch(error){
+            console.log(error);
+            res.status(400).json({
+                message: "An error occured while trying to find a segment.",
                 details: {
                     errorMessage: error.message,
                     errorStack: error.stack,

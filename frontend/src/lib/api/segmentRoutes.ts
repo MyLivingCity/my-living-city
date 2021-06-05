@@ -86,8 +86,8 @@ export const updateSubSegment = async (segData: any, token:any) =>{
 }
 
 export const findSegmentByName = async (segName:string,province:string,country:string) => {
-  if(!location){
-    throw new Error("location is needed");
+  if(!segName||!province||!country){
+    throw new Error("location parameters are needed");
   }
 
   const result = await axios({
@@ -95,6 +95,19 @@ export const findSegmentByName = async (segName:string,province:string,country:s
     url: `${API_BASE_URL}/segment/getByName`,
     data: {country,province,segName}
   });
+
+  return result.data;
+}
+
+export const findSubsegmentsBySegmentId = async (segId:number) => {
+  if(segId<0){
+    throw new Error("SegId is invalid!");
+  }
+
+  const result = await axios({
+    method: "get",
+    url: `${API_BASE_URL}/subSegment/getBySegmentId/${segId}`
+  })
 
   return result.data;
 }

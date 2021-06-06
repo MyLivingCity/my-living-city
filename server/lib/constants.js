@@ -4,6 +4,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRY = process.env.JWT_EXPIRY;
 const CORS_ORIGIN = process.env.CORS_ORIGIN;
 const PORT = parseInt(process.env.EXPRESS_PORT ?? 3001);
+const GOOGLE_MAP_API_KEY = 'AIzaSyBL0eyMR3xMdqjesBSprUv2yQDq-4j3tCM';
 
 // Rating Thresholds to advance
 // Retrieve from environment and set defaults if not set
@@ -25,6 +26,7 @@ module.exports = {
   JWT_EXPIRY,
   CORS_ORIGIN,
   PORT,
+  GOOGLE_MAP_API_KEY,
   // application configuration
   PROPOSAL_RATING_AVG,
   PROPOSAL_RATING_COUNT,

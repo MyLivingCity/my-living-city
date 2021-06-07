@@ -8,6 +8,7 @@ import HeroBannerSection from '../partials/LandingContent/HeroBannerSection';
 import NewAndTrendingSection from '../partials/LandingContent/NewAndTrendingSection';
 
 import AdsSection from '../partials/LandingContent/AdsSection' //
+import { AdsSectionPage } from 'src/pages/AdsSectionPage';
 
 interface LandingPageContentProps {
   topIdeas: IIdeaWithAggregations[] | undefined;
@@ -45,7 +46,7 @@ const LandingPageContent: React.FC<LandingPageContentProps> = ({
 
       {/* Desktop View >= 768px */}
       <Row className='d-none d-md-block'>
-        <AdsSection />
+        <AdsSectionPage />
       </Row>
 
       <Row as='article' className='description'>

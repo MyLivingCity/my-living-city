@@ -6,15 +6,17 @@ import { IFetchError } from '../../lib/types/types';
 import { capitalizeString } from '../../lib/utilityFunctions';
 import {createSegment, createSubSegment, updateSegment, updateSubSegment} from '../../lib/api/segmentRoutes';
 import {useAllSubSegmentsWithId} from '../../hooks/segmentHooks';
+import { ShowSubSegmentsPage } from 'src/pages/ShowSubSegmentsPage';
+//import {Image} from 'react-native';
 
-
-interface ShowSubSegmentsProps {
+export interface ShowSubSegmentsProps {
   segId: number;
   token: any;
   segName: string | null | undefined;
+  data?: ISubSegment[] | undefined;
 }
-const ShowSubSegments:React.FC<ShowSubSegmentsProps> = ({segId, segName, token}) => {
-  const {data} = useAllSubSegmentsWithId(String(segId!));
+export const ShowSubSegments:React.FC<ShowSubSegmentsProps> = ({data, segId, segName, token}) => {
+  // const {data} = useAllSubSegmentsWithId(String(segId!));
   const [showNewSubSeg, setShowNewSubSeg] = useState(false);
   const [error, setError] = useState<IFetchError | null>(null);
   let createData = {} as ISubSegment;
@@ -39,11 +41,14 @@ const ShowSubSegments:React.FC<ShowSubSegmentsProps> = ({segId, segName, token})
           setError(Error("Please enter a lat and long when creating a segment"));
           throw error;
         }
-        const found = data!.find(element => element.name === createData.name)
-        if(found){
-          setError(Error("A Sub-segment with this name already exists"));
-          throw error;
+        if(data){
+          const found = data!.find(element => element.name === createData.name)
+          if(found){
+            setError(Error("A Sub-segment with this name already exists"));
+            throw error;
+          }
         }
+
           createData.segId = segId;
           await createSubSegment(createData,token);
 
@@ -57,6 +62,7 @@ const ShowSubSegments:React.FC<ShowSubSegmentsProps> = ({segId, segName, token})
   }
     return(
       <Card>
+      {/* <img alt=""src={"http://localhost:3001/static/uploads/1621449457193-SampleAds1.png"} /> */}
       <Card.Header>{capitalizeString(segName!)} Sub-Segments <Button className="float-right" size="sm" onClick={(e)=>{setShowNewSubSeg(true)}}>Add New Sub-Segments</Button></Card.Header>
       <Card.Body>
           <Table bordered hover>
@@ -70,7 +76,7 @@ const ShowSubSegments:React.FC<ShowSubSegmentsProps> = ({segId, segName, token})
             </thead>
             <tbody>
               {data?.map((segment: ISubSegment) => (
-              <tr key={String(segment.id)}>
+              <tr key={segment.id}>
                 {/* <td><Form.Control type="text" value={String(segment.segId)} readOnly/></td> */}
                 <td><Form.Control 
                   type="text" 
@@ -91,14 +97,14 @@ const ShowSubSegments:React.FC<ShowSubSegmentsProps> = ({segId, segName, token})
                   <Button onClick={()=>handleSubSegSubmit({name:segment.name, lat: segment.lat, lon: segment.lon, id:segment.id})}size="sm">Update</Button>{' '}
                 </td>
               </tr>))}
-              {showNewSubSeg ? 
+              {showNewSubSeg && 
               <tr>
               <td><Form.Control type="text" onChange={(e)=>createData.name = e.target.value}></Form.Control></td>
               <td><Form.Control type="text" onChange={(e)=>createData.lat = parseFloat(e.target.value)}></Form.Control></td>
               <td><Form.Control type="text" onChange={(e)=>createData.lon = parseFloat(e.target.value)}></Form.Control></td>
               <td><Button type="submit" size="sm" onClick={()=>{handleSubSegSubmit()}}>Add Sub-Segment</Button> </td>
               </tr>
-              : <div/>}
+              }
             </tbody>
           </Table>
           {error && (
@@ -129,7 +135,7 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({segments, token}) => 
   const [showSub, setShowSub] = useState(false);
   const[provName, setProvName] = useState(provinces[0].toLowerCase());
   const[countryName, setCountryName] = useState(countries[0].toLowerCase());
-
+  const filteredSegments = segments!.filter(segment => segment.province === provName && segment.country === countryName)
   let createData = {} as ISegment;
   const handleSegSubmit = async(updateData?: any) => {
   try{
@@ -211,8 +217,8 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({segments, token}) => 
               </tr>
             </thead>
             <tbody>
-              {segments?.map(segment => {if (segment.province === provName && segment.country === countryName) {return(
-              <tr key={String(segment.segId)}>
+              {filteredSegments?.map(segment => (
+                <tr key={segment.segId}>
                 <td><Form.Control
                   type="text" 
                   defaultValue={capitalizeString(segment.name)}
@@ -235,14 +241,16 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({segments, token}) => 
                     setShowSub(true);
                     }} size="sm">View Sub-Segs</Button>
                 </td>
-              </tr>)}})}
-              {showNewSeg ? 
+              </tr>)
+              )
+            }
+              {showNewSeg && 
               <tr>
               <td><Form.Control type="text" onChange={(e)=>createData.name = e.target.value.toLowerCase()}></Form.Control></td>
               <td><Form.Control type="text" onChange={(e)=>createData.superSegName = e.target.value.toLowerCase()}></Form.Control></td>
               <td><Button type="submit" size="sm" onClick={()=>{handleSegSubmit()}}>Add Segment</Button> </td>
               </tr>
-              : <div/>}
+              }
             </tbody>
           </Table>
           {error && (
@@ -253,9 +261,8 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({segments, token}) => 
         </Card.Body>
       </Card>
       <br/>
-      {showSub && segId?
-        <ShowSubSegments segId={segId} segName={segName}token={token}/>
-      :<div/>
+      {(showSub && segId) &&
+        <ShowSubSegmentsPage segId={segId} segName={segName}token={token}/>
     }
 
       </Col>

@@ -4,7 +4,7 @@ import React, { useContext, useState } from 'react'
 import { Col, Container, Row, Form, Button, Alert } from 'react-bootstrap'
 import { CreateAdvertisementInput } from 'src/lib/types/input/advertisement.input';
 import { UserProfileContext } from '../../contexts/UserProfile.Context';
-import { postCreateAdvertisement } from 'src/lib/api/advertisementRoutes';
+import { updateAdvertisement } from 'src/lib/api/advertisementRoutes';
 import { IAdvertisement } from '../../lib/types/data/advertisement.type';
 import { IFetchError } from '../../lib/types/types';
 import { capitalizeString, handlePotentialAxiosError } from '../../lib/utilityFunctions';
@@ -36,7 +36,13 @@ const EditAdsPageContent: React.FC<EditAdsPageContentProps> = () => {
     const [success,setSuccess] = useState<String>('');
   
     const { token } = useContext(UserProfileContext);
-  
+
+    const currentUrl = window.location.search;
+    const search = new URLSearchParams(currentUrl);
+    //console.log(currentUrl);
+    const id = search.get('id');
+    // console.log(id);
+
     //submit handler which calls api posting component to post form data of user input
     const submitHandler = async (values: CreateAdvertisementInput) => {
       try {
@@ -47,8 +53,8 @@ const EditAdsPageContent: React.FC<EditAdsPageContentProps> = () => {
         //timeout period
         setTimeout(() => console.log("timeout"), 5000);
         //api component call
-        const res = await postCreateAdvertisement(values, token);
-        //console.log(res);
+        const res = await updateAdvertisement(values, token, id);
+        console.log(res);
         setSuccess('You submitted your advertisement successfully');
         setTimeout(()=> setSuccess(''),5000);
         //if successfully posted, set error to null

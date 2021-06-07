@@ -1,6 +1,5 @@
-import { Container, Row } from 'react-bootstrap'
-import AdsSection from '../partials/LandingContent/AdsSection';
-import React from 'react';
+import { Row } from 'react-bootstrap'
+import { AdsSectionPage } from 'src/pages/AdsSectionPage';
 
 export default function Footer() {
   return (
@@ -9,7 +8,7 @@ export default function Footer() {
 
       {/* Mobile View <= 768px */}
       <Row className='d-md-none'>
-        <AdsSection />
+        <AdsSectionPage />
       </Row>
     </div>
   )

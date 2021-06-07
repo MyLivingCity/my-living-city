@@ -70,3 +70,38 @@ export const getAllAdvertisement = async (token: string | null) => {
 }
 
 // PUT Update/Replace specific advertisement info
+export const updateAdvertisement = async (adsData: any, token:any, id: any) =>{
+    console.log(adsData);
+    // const{id}=adsData;
+    const parsedPayload = {...adsData};
+    console.log(token);
+    const res = await axios({
+        method: "put",
+        url: `${API_BASE_URL}/advertisement/update/${id}`,
+        data: parsedPayload,
+        headers: { "x-auth-token": token, "Access-Control-Allow-Origin": "*",},
+        withCredentials: true
+    })
+    //if not success, throw error which will stop form reset
+    if(!(res.status===201 || res.status===200)){
+        throw new Error(res.data);    
+    }
+    return res.data;
+}
+
+// DELETE specific advertisement info
+export const deleteAdvertisement = async (token: any, id: any) =>{
+    // console.log(adsData);
+    // const{id}=adsData;
+    // const parsedPayload = {...adsData};
+    console.log(token);
+    console.log(id);
+    const res = await axios({
+        method: "delete",
+        url: `${API_BASE_URL}/advertisement/delete/${id}`,
+        // data: parsedPayload,
+        headers: { "x-auth-token": token, "Access-Control-Allow-Origin": "*",},
+        withCredentials: true
+    })
+    return res.data;
+}

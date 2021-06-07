@@ -11,7 +11,7 @@ interface EditAdsPageProps extends RouteComponentProps<{}> {
   // Add custom added props here 
 }
 
-const AllAdsPage: React.FC<EditAdsPageProps> = ({}) => {
+const EditAdsPage: React.FC<EditAdsPageProps> = ({}) => {
   const { token } = useContext(UserProfileContext);
 
   const { data, isLoading, error, isError } = useAdvertisements(token!);
@@ -33,4 +33,4 @@ const AllAdsPage: React.FC<EditAdsPageProps> = ({}) => {
   );
 }
 
-export default AllAdsPage
+export default EditAdsPage

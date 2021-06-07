@@ -6,7 +6,7 @@ import { IComment } from './comment.type';
 export interface IUser {
 	id: string;
 	userRoleId?: number;
-	userType: 'ADMIN' | 'BUSINESS' | 'PERSONAL' | 'MUNICIAPL';
+	userType: 'ADMIN' | 'BUSINESS' | 'PERSONAL' | 'MUNICIPAL';
 	email: string;
 	password?: string;
 	fname?: string;

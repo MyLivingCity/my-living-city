@@ -30,7 +30,7 @@ export const ROUTES = {
   TEAM404: '/*',
   SUBMIT_ADVERTISEMENT: '/advertisement/submit',
   ALL_ADVERTISEMENT: '/advertisement/all', // 
-  UPDATE_ADVERTISEMENT: '/advertisement/update',
+  EDIT_ADVERTISEMENT: '/advertisement/edit',
   SEND_EMAIL: '/sendEmail',
   RESET_PASSWORD:'/user/reset-password',
   SEGMENT_MANAGEMENT:'/segment/management'

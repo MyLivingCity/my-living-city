@@ -71,7 +71,7 @@ const main = async () => {
 	apiRouter.use('/reset-password', userRouter);
 	apiRouter.use('/segment', segmentRouter);
 	apiRouter.use('/subSegment',subSegmentRouter);
-	apiRouter.use('location/', locationRouter);
+	apiRouter.use('/location', locationRouter);
 
 	app.use(express.static('uploads'));
 

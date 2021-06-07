@@ -1,21 +1,23 @@
 const express = require('express');
+const axios = require('axios').default;
 const { result } = require('lodash');
 const locationRouter = express.Router();
+const {GOOGLE_MAP_API_KEY} = require('../lib/constants');
 
 const GoogleLocationSearchURLPrefix='https://maps.googleapis.com/maps/api/place/textsearch/json?query=';
 const GoogleLocationDetialSearchURLPrefix = 'https://maps.googleapis.com/maps/api/place/details/json?placeid=';
 
 locationRouter.get(
-    '/seachLocation',
+    '/searchLocation/:coordinate',
     async(req,res) => {
         try{
-            const {lat,lon} = req.body;
+            const {coordinate} = req.params;
 
             if(!lat || !lon){
                 res.status(400).json("lat or lon is missing!");
             }
 
-            const result = await axios.get(GoogleLocationSearchURLPrefix+lat+','+lon+'&key='+GOOGLE_MAP_API_KEY);
+            const result = await axios.get(GoogleLocationSearchURLPrefix+coordinate+'&key='+GOOGLE_MAP_API_KEY);
 
             console.log(result.data);
 
@@ -31,6 +33,7 @@ locationRouter.get(
             }
         }catch(error){
             console.log(error);
+            res.status(400).json("something unexpected happened when querying location information")
         }
     }
 )
@@ -50,10 +53,12 @@ locationRouter.get(
                 res.status(400).json("placeId is missing!");
             }
 
-            const feedback = await axios.get(GoogleLocationDetialSearchURLPrefix+placeId+'$key='+GOOGLE_MAP_API_KEY);
+            const feedback = await axios.get(GoogleLocationDetialSearchURLPrefix+placeId+'&key='+GOOGLE_MAP_API_KEY);
 
-            if(feedback.data.result.address_components){
-                const addressComponents = feedback.result.address_components;
+            const data = feedback.data;
+
+            if(data.result.address_components){
+                const addressComponents = data.result.address_components;
                 addressComponents.forEach((component) => {
                     if(component.types[0]=="locality"){
                         city = component.long_name;
@@ -69,6 +74,7 @@ locationRouter.get(
             }
         }catch(error){
             console.log(error);
+            res.status(400).json("something unexpected happened when querying location details")
         }
     }
 )

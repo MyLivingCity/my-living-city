@@ -61,7 +61,7 @@ const RegisterPageContent: React.FC<RegisterPageContentProps> = ({ userRoles }) 
       console.log(error);
     }
   }
-
+  //search button function for setting sub-segment state variables
   const searchButtonFunction = (name:string) => {
     if(name=='home'){
       getSubsegments(markers.home.lat,markers.home.lon).then(value => {
@@ -84,19 +84,20 @@ const RegisterPageContent: React.FC<RegisterPageContentProps> = ({ userRoles }) 
     name: string;
   }
   const NextMap: React.FC<NextMapProps> = ({name}) => {
+    //Onclick function for search button, which will call searchButton function
     const handleMouseEvent = (e: React.MouseEvent) => {
       e.preventDefault();
       searchButtonFunction(name);
     };
-    
+    //option tags
     let options: any;
-    if(name==='home') options = segmentFormik.values.homeSubsegments?.map((subSegment:object) => {
+    if(name==='home') options = segmentFormik.values.homeSubsegments?.map((subSegment: any) => {
       <option value={subSegment.id}>{subSegment.name}</option>
     });
-    if(name==='work') options = segmentFormik.values.workSubsegments?.map((subSegment:object) => {
+    if(name==='work') options = segmentFormik.values.workSubsegments?.map((subSegment: any) => {
       <option value={subSegment.id}>{subSegment.name}</option>
     })
-    if(name === 'school') options = segmentFormik.values.schoolSubsegments.map((subsegment:object) => {
+    if(name === 'school') options = segmentFormik.values.schoolSubsegments.map((subSegment: any) => {
       <option value={subSegment.id}>{subSegment.name}</option>
     })
 
@@ -106,9 +107,9 @@ const RegisterPageContent: React.FC<RegisterPageContentProps> = ({ userRoles }) 
     if(name==="school") title = <Card.Title>Do you study in a different municipality?</Card.Title>
     //Location information search button for each page
     let searchButton: any;
-    if(name==='home') searchButton = <Button type='button' disabled={(markers.home.lat && markers.home.lon) ? false : true} onClick={handleMouseEvent}>search segment</Button>;
-    if(name==='work') searchButton = <Button type='button' disabled={(markers.work.lat && markers.work.lon) ? false : true} onClick={handleMouseEvent}>search segment</Button>;
-    if(name==='school') searchButton = <Button type='button' disabled={(markers.school.lat && markers.school.lon) ? false : true} onClick={handleMouseEvent}>search segment</Button>;
+    if(name==='home') searchButton = <Button type='button' disabled={(markers.home.lat && markers.home.lon) ? false : true} onClick={handleMouseEvent}>search sub-segments</Button>;
+    if(name==='work') searchButton = <Button type='button' disabled={(markers.work.lat && markers.work.lon) ? false : true} onClick={handleMouseEvent}>search sub-segments</Button>;
+    if(name==='school') searchButton = <Button type='button' disabled={(markers.school.lat && markers.school.lon) ? false : true} onClick={handleMouseEvent}>search sub-segments</Button>;
 
     let select: any;
     if(name==='home') select = <Form.Control as="select" name='homeSubsegmentId' onChange={formik.handleChange} disabled={segmentFormik.values.homeSubsegments ? false : true}>{options}</Form.Control>

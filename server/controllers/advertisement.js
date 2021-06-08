@@ -134,7 +134,7 @@ advertisementRouter.post(
                 if(!adDuration || adDuration <= 0){
                     error+='adDuration must be provided. ';
                     errorMessage+='adDuration must be provided in the body with a valid length. ';
-                    errorStack+='adDuration must be provided in the body with a valid lenght. ';
+                    errorStack+='adDuration must be provided in the body with a valid length. ';
                 }
 
                 //if there's no adPosition field in the 
@@ -203,7 +203,7 @@ advertisementRouter.post(
         }catch(error){
             console.log(error);
             res.status(400).json({
-                message: "An error occured while trying to create an Advertisement.",
+                message: "An error occurred while trying to create an Advertisement.",
                 details: {
                     errorMessage: error.message,
                     errorStack: error.stack,
@@ -293,7 +293,7 @@ advertisementRouter.put(
 
                 if(!advertisementId || !parsedAdvertisementId){
                     return res.status(400).json({
-                        message: `A valid advertisementId must be specified in the route paramater.`
+                        message: `A valid advertisementId must be specified in the route parameter.`
                     });
                 };
 
@@ -319,7 +319,7 @@ advertisementRouter.put(
                 if(adType&&!(adType=="BASIC"||adType=="EXTRA")){
                     error+='adType is invalid. ';
                     errorMessage+='adType must be predefined value. ';
-                    errorStack+='adType must be assigned with predfined value. ';
+                    errorStack+='adType must be assigned with predefined value. ';
                 };
 
                 //if the length of adTitle is not valid
@@ -428,7 +428,7 @@ advertisementRouter.put(
         }catch(error){
             console.log(error);
             res.status(400).json({
-                message: "An error occured while trying to update an Advertisement.",
+                message: "An error occurred while trying to update an Advertisement.",
                 details: {
                     errorMessage: error.message,
                     errorStack: error.stack,
@@ -451,7 +451,7 @@ advertisementRouter.delete(
             // check if id is valid
             if (!parsedAdvertisementId) {
                 return res.status(400).json({
-                message: `A valid advertisementId must be specified in the route paramater.`,
+                message: `A valid advertisementId must be specified in the route parameter.`,
                 });
             }
 
@@ -499,7 +499,7 @@ advertisementRouter.delete(
         }catch(error){
             console.log(error);
             res.status(400).json({
-                message: "An error occured while trying to delete advertisement.",
+                message: "An error occurred while trying to delete advertisement.",
                 details: {
                     errorMessage: error.message,
                     errorStack: error.stack,

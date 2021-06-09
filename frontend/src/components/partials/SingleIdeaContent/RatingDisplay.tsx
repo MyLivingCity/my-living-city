@@ -103,7 +103,7 @@ const RatingDisplay = ({
           </Col>
         ))}
       </Row>
-      <Row className=''>
+      <Row className='mx-5'>
         <CanvasJSChart
           options={options}
         />

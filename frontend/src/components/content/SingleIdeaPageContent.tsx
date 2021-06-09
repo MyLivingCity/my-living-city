@@ -82,23 +82,25 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({ ideaData 
     <div className='single-idea-content pt-1 py-5'>
       <Row className='bg-mlc-shade-grey py-5'>
         <Col sm={12}>
-          <div className="d-flex justify-content-between">
-            <h1 className='h1'>{capitalizeString(title)}</h1>
-            <h4 className='text-center my-auto text-muted'>Status: <span>{state}</span></h4>
+          <div className='mx-5'>
+            <div className="d-flex justify-content-between">
+              <h1 className='h1'>{capitalizeString(title)}</h1>
+              <h4 className='text-center my-auto text-muted'>Status: <span>{state}</span></h4>
+            </div>
+            <h4 className='h5'>Category: {capitalizeString(catTitle)}</h4>
+            <h4 className='h5'>Posted by: {author?.fname}@{author?.address?.streetAddress}</h4>
+            {!!ideaData.champion && (
+              <h4 className='h5'>Championed By: {ideaData?.champion?.fname}@{ideaData?.champion?.address?.streetAddress}</h4>
+            )}
+            <h5 className='h5'>Created: {parsedDate.toLocaleDateString()}</h5>
+            <br />
+            <p>{description}</p>
+            <p><strong>Community and place:</strong> {communityImpact}</p>
+            <p><strong>Nature and Food Security:</strong> {natureImpact}</p>
+            <p><strong>Arts, Culture, and Education:</strong> {artsImpact}</p>
+            <p><strong>Water and Energy:</strong> {energyImpact}</p>
+            <p><strong>Manufacturing and Waste:</strong> {manufacturingImpact ? capitalizeString(manufacturingImpact) : ""}</p>
           </div>
-          <h4 className='h5'>Category: {capitalizeString(catTitle)}</h4>
-          <h4 className='h5'>Posted by: {author?.fname}@{author?.address?.streetAddress}</h4>
-          {!!ideaData.champion && (
-            <h4 className='h5'>Championed By: {ideaData?.champion?.fname}@{ideaData?.champion?.address?.streetAddress}</h4>
-          )}
-          <h5 className='h5'>Created: {parsedDate.toLocaleDateString()}</h5>
-          <br />
-          <p>{description}</p>
-          <p><strong>Community and place:</strong> {communityImpact}</p>
-          <p><strong>Nature and Food Security:</strong> {natureImpact}</p>
-          <p><strong>Arts, Culture, and Education:</strong> {artsImpact}</p>
-          <p><strong>Water and Energy:</strong> {energyImpact}</p>
-          <p><strong>Manufacturing and Waste:</strong> {manufacturingImpact ? capitalizeString(manufacturingImpact) : ""}</p>
         </Col>
 
         {/* Proposal State and Conditional Rendering */}

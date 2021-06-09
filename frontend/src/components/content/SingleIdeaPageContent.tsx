@@ -79,7 +79,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({ ideaData 
   }
 
   return (
-    <div className='single-idea-content pt-1'>
+    <div className='single-idea-content pt-1 py-5'>
       <Row className='bg-mlc-shade-grey py-5'>
         <Col sm={12}>
           <div className="d-flex justify-content-between">

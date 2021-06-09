@@ -41,7 +41,7 @@ const RatingsSection: React.FC<RatingsSectionProps> = ({ }) => {
 
   if ((error && isError) || (aggregateIsError && aggregateError)) {
     return (
-      <p>An error occured while fetching comments</p>
+      <p>An error occurred while fetching comments</p>
     )
   }
 
@@ -53,9 +53,9 @@ const RatingsSection: React.FC<RatingsSectionProps> = ({ }) => {
 
   const { ratingValueBreakdown } = ratingSummary
   return (
-    <Container className=''>
+    <Container className='py-3'>
       <Row className='py-5'>
-        <h2 className='mx-auto'>Ratings Breakdown</h2>
+        <h2 className='mx-auto pb-2'>Ratings Breakdown</h2>
         {ratingValueBreakdown && commentAggregate && (
           <RatingDisplay
             ratingValueBreakdown={ratingValueBreakdown}

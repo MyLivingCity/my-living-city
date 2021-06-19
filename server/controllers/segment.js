@@ -283,7 +283,6 @@ segmentRouter.post(
 );
 
 //get segment by name endpoint
-
 segmentRouter.post(
     '/getByName',
     async(req,res) => {
@@ -360,16 +359,14 @@ segmentRouter.post(
             });
 
             if(!result){
-
-                res.status(404).json("Segment not found!");
+                res.status(404).json(`Municipality "${segName}" not found in our system!`);
+            }else{
+                res.status(200).json(result);
             }
-
-            res.status(200).json(result);
         }catch(error){
             console.log(error);
             res.status(400).json({
-                message: "An error occured while trying to find a segment.",
-
+                message: "An error occured while trying to find a Municipality.",
                 details: {
                     errorMessage: error.message,
                     errorStack: error.stack,

@@ -63,15 +63,15 @@ subSegmentRouter.post(
                     errorStack+='name must be provided in the body with a valid value. ';
                 }
 
-                //if lat is provided and lat is not valid
-                if(lat && !isNumber(lat)){
+                //if lat is not provided or lat is not valid
+                if(!lat || !isNumber(lat)){
                     error+='A subsegment must has a lat field with a valid value. ';
                     errorMessage+='Creating a subsegment must explicitly be supplied with a lat field. ';
                     errorStack+='lat must be provided in the body with a valid value. ';
                 }
 
-                //if lon is provided and lon is not valid
-                if(lon && !isNumber(lon)){
+                //if lon is not provided or lon is not valid
+                if(!lon || !isNumber(lon)){
                     error+='A subsegment must has a lon field with a valid value. ';
                     errorMessage+='Creating a subsegment must explicitly be supplied with a lon field. ';
                     errorStack+='lon must be provided in the body with a valid value. ';

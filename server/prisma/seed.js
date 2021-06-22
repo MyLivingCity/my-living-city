@@ -2,6 +2,20 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 async function main() {
+	const defaultSegments = [
+		{country: 'canada', province: 'british columbia', name: 'victoria', superSegName: 'crd'},
+		{country: 'canada', province: 'british columbia', name: 'saanich', superSegName: 'crd'},
+		{country: 'canada', province: 'british columbia', name: 'esquimalt', superSegName: 'crd'},
+	];
+	const subSegments = [
+		//victoria
+		{segId: '', name:'fairfield', lat: 0, lon: 0},
+		//saanich
+		{segId: '', name:'rutledge park', lat: 0, lon: 0},
+		//esquimalt
+		{segId: '', name:'saxe point', lat: 0, lon: 0},
+		
+	];
 	const defaultIdeaCategories = [
 		{ title: 'policy', description: '' },
 		{ title: 'event', description: '' },

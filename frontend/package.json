@@ -21,7 +21,7 @@
     "formik": "^2.2.6",
     "google-map-react": "^2.1.9",
     "image-type": "^4.1.0",
-    "moment": "^2.29.1",
+    "moment": "^2.29.4",
     "node-sass": "^5.0.0",
     "rc-banner-anim": "^2.4.5",
     "rc-queue-anim": "^1.8.5",

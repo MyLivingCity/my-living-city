@@ -196,12 +196,14 @@ model User {
   donors              Donor[]               @relation("ideaDonor")
 
   // Model overwrites
-  Advertisements           Advertisements[]
+  Advertisements                    Advertisements[]
   //Not sure if this one stays
-  segmentRequest           segmentRequest[]
-  userSegments             UserSegments?
-  Quarantine_Notifications Quarantine_Notifications[]
-  Ban_History              Ban_History[]
+  segmentRequest                    segmentRequest[]
+  userSegments                      UserSegments?
+  Quarantine_Notifications          Quarantine_Notifications[]
+  Ban_History                       Ban_History[]
+  Public_Community_Business_Profile Public_Community_Business_Profile[]
+  Public_Municipal_Profile          Public_Municipal_Profile[]
 
   @@map(name: "user")
 }
@@ -750,4 +752,59 @@ model Ban_History {
   user User @relation(fields: [userId], references: [id])
 
   @@map(name: "ban_history")
+}
+
+enum LinkType {
+  WEBSITE
+  TWITTER
+  FACEBOOK
+  INSTAGRAM
+  LINKEDIN
+  YOUTUBE
+  TIKTOK
+  OTHER
+}
+
+model Link {
+  id                                  Int                                @id @default(autoincrement())
+  link                                String
+  linkType                            LinkType
+  createdAt                           DateTime                           @default(now()) @map("created_at")
+  Public_Community_Business_Profile   Public_Community_Business_Profile? @relation(fields: [public_Community_Business_ProfileId], references: [id])
+  public_Community_Business_ProfileId Int?
+  Public_Municipal_Profile            Public_Municipal_Profile?          @relation(fields: [public_Municipal_ProfileId], references: [id])
+  public_Municipal_ProfileId          Int?
+
+  @@map(name: "link")
+}
+
+// Split the public profiles so it is easier to scale them individually
+model Public_Community_Business_Profile {
+  id                 Int      @id @default(autoincrement())
+  userId             String
+  statement          String
+  description        String
+  links              Link[]
+  address            String
+  contactInformation String
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @default(now()) @map("updated_at")
+  user               User     @relation(fields: [userId], references: [id])
+
+  @@map(name: "public_community_business_profile")
+}
+
+model Public_Municipal_Profile {
+  id                 Int      @id @default(autoincrement())
+  userId             String
+  statement          String
+  responsibility     String
+  links              Link[]
+  address            String
+  contactInformation String
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @default(now()) @map("updated_at")
+  user               User     @relation(fields: [userId], references: [id])
+
+  @@map(name: "public_municipal_profile")
 }

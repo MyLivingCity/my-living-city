@@ -82,6 +82,20 @@ const SubmitDirectProposalPageContent: React.FC<
   const [feedbackList, setFeedbackList] = useState<string[]>(emptyFeedbackList);
   const emptyFeedbackTypeList:string[] = ["YESNO", "YESNO", "YESNO", "YESNO", "YESNO"];
   const [feedbackTypeList, setFeedbackTypeList] = useState<string[]>(emptyFeedbackTypeList);
+  const feedbackYesList = [0, 0, 0, 0, 0];
+  const [feedbackYes, setFeedbackYes] = useState<number[]>(feedbackYesList);
+  const feedbackNoList = [0, 0, 0, 0, 0];
+  const [feedbackNo, setFeedbackNo] = useState<number[]>(feedbackNoList);
+  const feedbackOnesList = [0, 0, 0, 0, 0];
+  const [feedbackOnes, setFeedbackOnes] = useState<number[]>(feedbackOnesList);
+  const feedbackTwosList = [0, 0, 0, 0, 0];
+  const [feedbackTwos, setFeedbackTwos] = useState<number[]>(feedbackTwosList);
+  const feedbackThreesList = [0, 0, 0, 0, 0];
+  const [feedbackThrees, setFeedbackThrees] = useState<number[]>(feedbackThreesList);
+  const feedbackFoursList = [0, 0, 0, 0, 0];
+  const [feedbackFours, setFeedbackFours] = useState<number[]>(feedbackFoursList);
+  const feedbackRatingList = [0, 0, 0, 0, 0];
+  const [feedbackRating, setFeedbackRating] = useState<number[]>(feedbackRatingList);
 
   // const toggleNumberOfFeedback = (num: number) => {
   //   //let numberOfFeedback = 0;
@@ -142,6 +156,61 @@ const SubmitDirectProposalPageContent: React.FC<
     formik.values.feedbackRatingType![formik.values.feedbackRatingType!.length - 1] = "YESNO";
     setFeedbackTypeList(newFeedbackTypeList);
 
+    const newFeedbackRating = [...feedbackRating];
+    newFeedbackRating.splice(index, 1);
+    for (let i = index; i < formik.values.feedbackRating!.length - 1; i++) {    
+      formik.values.feedbackRating![i] = formik.values.feedbackRating![i + 1];
+    }
+    formik.values.feedbackRating![formik.values.feedbackRating!.length - 1] = 0;
+    setFeedbackRating(newFeedbackRating);
+
+    const newFeedbackYes = [...feedbackYes];
+    newFeedbackYes.splice(index, 1);
+    for (let i = index; i < formik.values.feedbackYes!.length - 1; i++) {    
+      formik.values.feedbackYes![i] = formik.values.feedbackYes![i + 1];
+    }
+    formik.values.feedbackYes![formik.values.feedbackYes!.length - 1] = 0;
+    setFeedbackRating(newFeedbackYes);
+
+    const newFeedbackNo = [...feedbackNo];
+    newFeedbackNo.splice(index, 1);
+    for (let i = index; i < formik.values.feedbackNo!.length - 1; i++) {    
+      formik.values.feedbackNo![i] = formik.values.feedbackNo![i + 1];
+    }
+    formik.values.feedbackNo![formik.values.feedbackNo!.length - 1] = 0;
+    setFeedbackRating(newFeedbackNo);
+
+    const newFeedbackOnes = [...feedbackOnes];
+    newFeedbackOnes.splice(index, 1);
+    for (let i = index; i < formik.values.feedbackOnes!.length - 1; i++) {    
+      formik.values.feedbackOnes![i] = formik.values.feedbackOnes![i + 1];
+    }
+    formik.values.feedbackOnes![formik.values.feedbackOnes!.length - 1] = 0;
+    setFeedbackRating(newFeedbackOnes);
+
+    const newFeedbackTwos = [...feedbackTwos];
+    newFeedbackTwos.splice(index, 1);
+    for (let i = index; i < formik.values.feedbackTwos!.length - 1; i++) {    
+      formik.values.feedbackTwos![i] = formik.values.feedbackTwos![i + 1];
+    }
+    formik.values.feedbackTwos![formik.values.feedbackTwos!.length - 1] = 0;
+    setFeedbackRating(newFeedbackTwos);
+
+    const newFeedbackThrees = [...feedbackThrees];
+    newFeedbackThrees.splice(index, 1);
+    for (let i = index; i < formik.values.feedbackThrees!.length - 1; i++) {    
+      formik.values.feedbackThrees![i] = formik.values.feedbackThrees![i + 1];
+    }
+    formik.values.feedbackThrees![formik.values.feedbackThrees!.length - 1] = 0;
+    setFeedbackRating(newFeedbackThrees);
+
+    const newFeedbackFours = [...feedbackFours];
+    newFeedbackFours.splice(index, 1);
+    for (let i = index; i < formik.values.feedbackFours!.length - 1; i++) {    
+      formik.values.feedbackFours![i] = formik.values.feedbackFours![i + 1];
+    }
+    formik.values.feedbackFours![formik.values.feedbackFours!.length - 1] = 0;
+    setFeedbackRating(newFeedbackFours);
   }
 
   const updateFeedbackType = (feedbackType:string, index:number) => {
@@ -149,7 +218,34 @@ const SubmitDirectProposalPageContent: React.FC<
     newFeedbackTypeList[index] = feedbackType;
     formik.values.feedbackRatingType![index] = feedbackType;
     setFeedbackTypeList(newFeedbackTypeList);
-
+    const newFeedbackRatingList = [...feedbackRatingList];
+    newFeedbackRatingList[index] = 0;
+    formik.values.feedbackRating![index] = 0;
+    setFeedbackRating(newFeedbackRatingList);
+    const newFeedbackYesList = [...feedbackYesList];
+    newFeedbackYesList[index] = 0;
+    formik.values.feedbackYes![index] = 0;
+    setFeedbackYes(newFeedbackYesList);
+    const newFeedbackNoList = [...feedbackNoList];
+    newFeedbackNoList[index] = 0;
+    formik.values.feedbackNo![index] = 0;
+    setFeedbackNo(newFeedbackNoList);
+    const newFeedbackOnesList = [...feedbackOnesList];
+    newFeedbackOnesList[index] = 0;
+    formik.values.feedbackOnes![index] = 0;
+    setFeedbackOnes(newFeedbackOnesList);
+    const newFeedbackTwosList = [...feedbackTwosList];
+    newFeedbackTwosList[index] = 0;
+    formik.values.feedbackTwos![index] = 0;
+    setFeedbackTwos(newFeedbackTwosList);
+    const newFeedbackThreesList = [...feedbackThreesList];
+    newFeedbackThreesList[index] = 0;
+    formik.values.feedbackThrees![index] = 0;
+    setFeedbackThrees(newFeedbackThreesList);
+    const newFeedbackFoursList = [...feedbackFoursList];
+    newFeedbackFoursList[index] = 0;
+    formik.values.feedbackFours![index] = 0;
+    setFeedbackFours(newFeedbackFoursList);
   }
 
   const handleCommunityChange = (index: number) => {
@@ -224,7 +320,8 @@ const SubmitDirectProposalPageContent: React.FC<
         needSuggestions: values.needSuggestions,
         location: values.location,
         feedback: values.feedback,
-        feedbackRatingType: values.feedbackRatingType
+        feedbackRatingType: values.feedbackRatingType,
+        feedbackRating: values.feedbackRating
       };
 
       const proposal = await postCreateProposal(
@@ -294,7 +391,14 @@ const SubmitDirectProposalPageContent: React.FC<
       needSuggestions: false,
       location: "",
       feedback: ["", "", "", "", ""],
-      feedbackRatingType: ["YESNO", "YESNO", "YESNO", "YESNO", "YESNO"]
+      feedbackRatingType: ["YESNO", "YESNO", "YESNO", "YESNO", "YESNO"],
+      feedbackYes: [0, 0, 0, 0, 0],
+      feedbackNo: [0, 0, 0, 0, 0],
+      feedbackOnes: [0, 0, 0, 0, 0],
+      feedbackTwos: [0, 0, 0, 0, 0],
+      feedbackThrees: [0, 0, 0, 0, 0],
+      feedbackFours: [0, 0, 0, 0, 0],
+      feedbackRating: [0, 0, 0, 0, 0]
     },
     onSubmit: submitHandler,
   });

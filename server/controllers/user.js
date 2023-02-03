@@ -1012,4 +1012,25 @@ userRouter.patch(
 	}
 );
 
+userRouter.get(
+	'/getBannedUserHistory',
+	async (req, res, next) => {
+		try {
+			const banHistory = await prisma.ban_History.findMany({
+				where: { userId: req.query.userId },
+				orderBy: { id: "asc" },
+			});
+			res.status(200).json(banHistory);
+		} catch (error) {
+			res.status(400).json({
+				message: `An Error occured while trying to retrieve ban history.`,
+				details: {
+					errorMessage: error.message,
+					errorStack: error.stack,
+				}
+			});
+		}
+	}
+)
+
 module.exports = userRouter;

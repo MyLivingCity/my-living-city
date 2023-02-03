@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Card, Table, Dropdown, Container, Button, Form, NavDropdown } from 'react-bootstrap';
-import { updateUser } from 'src/lib/api/userRoutes';
+import { updateUser, getUserBanHistory } from 'src/lib/api/userRoutes';
 import { USER_TYPES } from 'src/lib/constants';
 import { IComment } from 'src/lib/types/data/comment.type';
 import { ICommentFlag, IFlag } from 'src/lib/types/data/flag.type';
@@ -13,6 +13,7 @@ import { UserManagementBanModal } from '../modal/UserManagementBanModal';
 import { UserManagementUnbanModal } from '../modal/UserManagementUnbanModal';
 import { UserManagementModifyWarningModal } from '../modal/UserManagementModifyWarningModal';
 import { IBanUser } from 'src/lib/types/data/banUser.type';
+import { format } from 'path';
 
 
 interface UserManagementContentProps {
@@ -46,6 +47,46 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
     // function userModalInfo(users: IUser[], user: IUser, flags: IFlag[], commentFlags: ICommentFlag[] ){
     //     setShowUserFlagsModal(true);
     // }
+
+    function formatBanHistory(banhistory: any){
+
+        // iterate through ban history and format it
+        let banHistory = banhistory.map((ban: any) => {
+            if (ban.type === 'USER') {
+                return (
+                    <tr>
+                        <td>Ban Type: {ban.userBanType}</td>
+                        <td>Ban Reason: {ban.reason}</td>
+                        <td>Moderator Message: {ban.message}</td>
+                        <td>Moderator ID: {ban.modId}</td>
+                        <td>Banned At: {ban.createdAt}</td>
+                        <td>Banned Until: {ban.userBannedUntil}</td>
+                    </tr>
+                )
+            } else if (ban.type === 'COMMENT'){
+                return (
+                    <tr>
+                        <td>Ban Reason: {ban.reason}</td>
+                        <td>Moderator Message: {ban.message}</td>
+                        <td>Moderator ID: {ban.modId}</td>
+                        <td>Banned At: {ban.createdAt}</td>
+                    </tr>
+                )
+            } else if (ban.type === 'IDEA'){
+                return (
+                    <tr>
+                        <td>Ban Reason: {ban.reason}</td>
+                        <td>Moderator Message: {ban.message}</td>
+                        <td>Moderator ID: {ban.modId}</td>
+                        <td>Banned At: {ban.createdAt}</td>
+                    </tr>
+                )
+            } else {
+                return<tr><td>Invalid</td></tr>;
+            }
+        });
+        return banHistory;
+    }
 
     let userFalseFlags: number[] = []
     let userFlags: number[] = []
@@ -172,7 +213,9 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                                     setShowUserBanModal(true);
                                 }}>Ban User</Dropdown.Item>
                             }
-                            <Dropdown.Item onClick={() => console.log("Ban History here")} >Ban History</Dropdown.Item>
+                            <Dropdown.Item onClick={() => getUserBanHistory(req.id).then(data => {
+                                console.log(formatBanHistory(data));
+                            })} >Ban History</Dropdown.Item>
                         </NavDropdown>
                         : <>
                         <Button size="sm" variant="outline-danger" className="mr-2 mb-2" onClick={()=>setHideControls('')}>Cancel</Button>

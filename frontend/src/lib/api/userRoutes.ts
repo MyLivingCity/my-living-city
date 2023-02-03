@@ -197,3 +197,16 @@ storeTokenExpiryInLocalStorage();
 await delay(2000);
 return request.data;
 }
+
+export const getUserBanHistory = async (userId: string | undefined) => {
+  const res = await axios.get(
+    `${API_BASE_URL}/user/getBannedUserHistory`,
+    {
+      params:
+      {
+        userId: userId
+      }
+    }
+  );
+  return res.data;
+}

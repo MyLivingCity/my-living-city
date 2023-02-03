@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Card, Table, Dropdown, Container, Button, Form, NavDropdown } from 'react-bootstrap';
-import { updateUser } from 'src/lib/api/userRoutes';
+import { updateUser, getUserBanHistory } from 'src/lib/api/userRoutes';
 import { USER_TYPES } from 'src/lib/constants';
 import { IComment } from 'src/lib/types/data/comment.type';
 import { ICommentFlag, IFlag } from 'src/lib/types/data/flag.type';
@@ -172,7 +172,9 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                                     setShowUserBanModal(true);
                                 }}>Ban User</Dropdown.Item>
                             }
-                            <Dropdown.Item onClick={() => console.log("Ban History here")} >Ban History</Dropdown.Item>
+                            <Dropdown.Item onClick={() => getUserBanHistory(req.id).then(data => {
+                                console.log(data);
+                            })} >Ban History</Dropdown.Item>
                         </NavDropdown>
                         : <>
                         <Button size="sm" variant="outline-danger" className="mr-2 mb-2" onClick={()=>setHideControls('')}>Cancel</Button>

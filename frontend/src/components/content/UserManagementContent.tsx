@@ -214,7 +214,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                                 }}>Ban User</Dropdown.Item>
                             }
                             <Dropdown.Item onClick={() => getUserBanHistory(req.id).then(data => {
-                                console.log(formatBanHistory(data));
+                                setModalUser(req);
                             })} >Ban History</Dropdown.Item>
                         </NavDropdown>
                         : <>

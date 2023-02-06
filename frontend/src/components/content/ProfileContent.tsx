@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { Col, Container, Row, Card, Image, ListGroup, ListGroupItem, Button} from 'react-bootstrap';
+import { Col, Container, Row, Card, Image, ListGroup, ListGroupItem, Button, Form, Table, NavDropdown, Dropdown} from 'react-bootstrap';
 import { postUserSegmentRequest } from 'src/lib/api/userSegmentRequestRoutes';
-import { API_BASE_URL } from 'src/lib/constants';
+import { API_BASE_URL, USER_TYPES } from 'src/lib/constants';
 import { IUser } from '../../lib/types/data/user.type';
 import { capitalizeString } from '../../lib/utilityFunctions';
 import { RequestSegmentModal } from '../partials/RequestSegmentModal';
@@ -15,6 +15,7 @@ interface ProfileContentProps {
 const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
   const {
     email,
+    userType,
     fname,
     lname,
     address,
@@ -94,8 +95,152 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
           </Row>
         </Card>
       </Row>
-      
-      
+      {(user.userType == USER_TYPES.BUSINESS || user.userType == USER_TYPES.COMMUNITY) ? (
+      <Row className='mb-4 mt-4 justify-content-center'>
+        <h2 className="pb-2 pt-2 display-6">Public Profile</h2>
+      </Row>
+      ) : null}
+      {(user.userType == USER_TYPES.BUSINESS || user.userType == USER_TYPES.COMMUNITY) ? (
+      <Row>
+        <Card style={{ width: '80rem'}}>
+          <Card.Body className="my-5">
+          <Form>
+              <Form.Group className="mb-3" controlId="formVisionStatement">
+                <Form.Label>Mission/Vision Statement</Form.Label>
+                <Form.Control type="text" placeholder="Say a few words about your mission/vision" />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="formServiceDescription">
+                <Form.Label>Product/Service Description</Form.Label>
+                <Form.Control type="text" placeholder="Tell us about the product/service you provide" />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="formPublicAddress">
+                <Form.Label>Public Address</Form.Label>
+                <Form.Control type="text" placeholder="Public Address" />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="formLinks">
+                <Form.Label>Links</Form.Label>
+                <Button
+                  className="float-right"
+                  size="sm"
+                  // onClick={(e) => {
+                  //   setShowNewSubSeg(true);
+                  // }}
+                >
+                  Add New Link
+                </Button>
+                <Table bordered hover size="sm">
+                  <thead>
+                    <tr>
+                      <th style={{ width: "10rem"}}>Type</th>
+                      <th>Link</th>
+                      <th style={{ width: "10rem"}}>Controls</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {/* 
+                    TODO - Create Table entry format for Links
+                    See SegmentManagementContent.tsx 
+                    */}
+                    <tr>
+                      <td>
+                        Sample
+                      </td>
+                      <td>
+                        www.thisisnotarealurl.com
+                      </td>
+                      <td>
+                        <NavDropdown title="Controls" id="nav-dropdown">
+                          <Dropdown.Item
+                            // onClick={() => setHideControls(String(segment.id))}
+                          >
+                            Edit
+                          </Dropdown.Item>
+                        </NavDropdown>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        Sample 2
+                      </td>
+                      <td>
+                        www.thisisnotarealurl.com
+                      </td>
+                      <td>
+                        <NavDropdown title="Controls" id="nav-dropdown">
+                          <Dropdown.Item
+                            // onClick={() => setHideControls(String(segment.id))}
+                          >
+                            Edit
+                          </Dropdown.Item>
+                        </NavDropdown>
+                      </td>
+                    </tr>
+                  </tbody>
+                </Table>
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="formContactInformation">
+                <Form.Label>Contact Information</Form.Label>
+                <Button
+                  className="float-right"
+                  size="sm"
+                  // onClick={(e) => {
+                  //   setShowNewSubSeg(true);
+                  // }}
+                >
+                  Add New Contact
+                </Button>
+                <Table bordered hover size="sm">
+                  <thead>
+                    <tr>
+                      <th>First Name</th>
+                      <th>Last Name</th>
+                      <th>Email</th>
+                      <th>Phone Number</th>
+                      <th style={{ width: "10rem"}}>Controls</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Fake</td>
+                      <td>User</td>
+                      <td>thisisnotanemail@email.com</td>
+                      <td>123-456-7890</td>
+                      <td>
+                        <NavDropdown title="Controls" id="nav-dropdown">
+                          <Dropdown.Item
+                            // onClick={() => setHideControls(String(segment.id))}
+                          >
+                            Edit
+                          </Dropdown.Item>
+                        </NavDropdown>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Not</td>
+                      <td>Real</td>
+                      <td>stillnotanemail@email.com</td>
+                      <td>123-456-7890</td>
+                      <td>
+                        <NavDropdown title="Controls" id="nav-dropdown">
+                          <Dropdown.Item
+                            // onClick={() => setHideControls(String(segment.id))}
+                          >
+                            Edit
+                          </Dropdown.Item>
+                        </NavDropdown>
+                      </td>
+                    </tr>
+                  </tbody>
+                </Table>
+              </Form.Group>
+              <Button variant="primary" type="submit">
+                Update
+              </Button>
+            </Form>
+          </Card.Body>
+        </Card>
+      </Row>
+      ) : null}
     </Container>
   );
 }

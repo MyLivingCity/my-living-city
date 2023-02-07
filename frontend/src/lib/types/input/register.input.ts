@@ -6,6 +6,7 @@ export interface IRegisterInput {
   email: string;
   password: string;
   confirmPassword: string;
+  organizationName?: string;
   fname?: string;
   lname?: string;
   address?: IAddressInput;

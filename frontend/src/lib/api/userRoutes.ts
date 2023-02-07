@@ -103,6 +103,7 @@ export const postRegisterUser = async(registerData: IRegisterInput, requestData:
     email, 
     password, 
     confirmPassword,
+    organizationName,
     fname,
     lname,
     address,
@@ -127,7 +128,7 @@ export const postRegisterUser = async(registerData: IRegisterInput, requestData:
   if (password !== confirmPassword) {
     throw new Error("Both your passwords must match. Please ensure both passwords match to register.")
   }
-  const request = await axios.post<LoginResponse>(`${API_BASE_URL}/user/signup`, {email,password,confirmPassword,fname,lname,address,geo, userType});
+  const request = await axios.post<LoginResponse>(`${API_BASE_URL}/user/signup`, {email,password,confirmPassword,organizationName,fname,lname,address,geo, userType});
   const request2 = await axios({
     method: "post",
     url: `${API_BASE_URL}/userSegment/create`,

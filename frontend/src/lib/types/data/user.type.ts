@@ -11,6 +11,7 @@ export interface IUser {
 	userType: USER_TYPES;
 	email: string;
 	password?: string;
+	organizationName?: string;
 	fname?: string;
 	lname?: string;
 	banned: boolean;

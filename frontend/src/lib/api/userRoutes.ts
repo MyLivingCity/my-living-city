@@ -210,3 +210,10 @@ export const getUserBanHistory = async (userId: string | undefined) => {
   );
   return res.data;
 }
+
+export const getAllBannedUsers = async () => {
+  const res = await axios.get(
+    `${API_BASE_URL}/user/getBannedUsers`
+  );
+  return res.data;
+}

@@ -25,7 +25,7 @@ export const UserManagementBanHistoryModal = ({
             onHide={handleClose}
             backdrop="static"
             centered
-            size='lg'
+            size='xl'
             keyboard={false}>
             <Modal.Header closeButton>
                 <Container>
@@ -35,7 +35,7 @@ export const UserManagementBanHistoryModal = ({
                 </Container>
             </Modal.Header>
             <Modal.Body>
-                <Table>
+                <Table className='justify-content-center'>
                     {data}
                 </Table>
             </Modal.Body>

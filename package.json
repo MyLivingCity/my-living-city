@@ -1,6 +1,8 @@
 {
   "dependencies": {
+    "install": "^0.13.0",
     "react-popup-alert": "^2.0.0",
-    "reactjs-popup": "^2.0.5"
+    "reactjs-popup": "^2.0.5",
+    "stripe": "^11.8.0"
   }
 }

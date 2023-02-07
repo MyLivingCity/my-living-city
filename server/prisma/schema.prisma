@@ -161,16 +161,17 @@ model User {
   userType UserType @default(RESIDENTIAL) @map("user_type")
 
   // Fields
-  email        String   @unique
-  password     String
-  fname        String?  @map("f_name")
-  lname        String?  @map("l_name")
-  createdAt    DateTime @default(now()) @map(name: "created_at")
-  updatedAt    DateTime @default(now()) @updatedAt @map(name: "updated_at")
-  imagePath    String?
-  passCode     String?  @default(cuid())
-  banned       Boolean  @default(false)
-  reviewed     Boolean  @default(false)
+  email     String   @unique
+  password  String
+  organizationName String? @map("organization_name")
+  fname     String?  @map("f_name")
+  lname     String?  @map("l_name")
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map(name: "updated_at")
+  imagePath String?
+  passCode  String?  @default(cuid())
+  banned    Boolean  @default(false)
+  reviewed  Boolean  @default(false)
   totalFlagged Int      @default(0) @map("total_flagged")
   hasFlagged   Int      @default(0) @map("has_flagged")
 

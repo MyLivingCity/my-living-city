@@ -1,22 +1,54 @@
-import { useContext } from 'react'
-import { Button, Container, Form, Modal, Row } from 'react-bootstrap';
+import { Button, Container, Form, Modal, Row, Table } from 'react-bootstrap';
 import { IUser } from 'src/lib/types/data/user.type';
-import { UserProfileContext } from 'src/contexts/UserProfile.Context';
-import { FindBanDetailsWithStaleTime } from 'src/hooks/banHooks';
 
 interface BanHistoryModalProps {
     setShow: React.Dispatch<React.SetStateAction<boolean>>;
     show: boolean;
     modalUser: IUser;
     currentUser: IUser;
-    token: string | null
+    token: string | null,
+    data: JSX.Element[]
 };
 
-export const BanMessageModal = ({
+export const UserManagementBanHistoryModal = ({
     setShow,
     show,
     modalUser,
     currentUser,
-    token
+    token,
+    data,
 }: BanHistoryModalProps) => {
-    const { data, error, isLoading, isError } = FindBanDetailsWithStaleTime(modalUser.id);
+    const handleClose = () => setShow(false);
+    return (
+        <Modal
+            show={show}
+            onHide={handleClose}
+            backdrop="static"
+            centered
+            size='lg'
+            keyboard={false}>
+            <Modal.Header closeButton>
+                <Container>
+                    <Row className='justify-content-center'>
+                        <Modal.Title>{modalUser.id}'s Ban History</Modal.Title>
+                    </Row>
+                </Container>
+            </Modal.Header>
+            <Modal.Body>
+                <Table>
+                    {data}
+                </Table>
+            </Modal.Body>
+            <Modal.Footer>
+                <div className="w-100 d-flex justify-content-center">
+                    <Button 
+                    className = "mr-3"
+                    variant="secondary" 
+                    onClick={handleClose}>
+                        Close
+                    </Button>
+                </div>
+            </Modal.Footer>
+        </Modal>
+    )
+}

@@ -30,7 +30,7 @@ export const UserManagementBanHistoryModal = ({
             <Modal.Header closeButton>
                 <Container>
                     <Row className='justify-content-center'>
-                        <Modal.Title>{modalUser.fname}'s Ban History</Modal.Title>
+                        <Modal.Title>{modalUser.fname} {modalUser.lname}'s Ban History</Modal.Title>
                     </Row>
                 </Container>
             </Modal.Header>

@@ -99,6 +99,7 @@ return (
                     email: '',
                     password: '',
                     confirmPassword: '',
+                    organizationName: '',
                     fname: '',
                     lname: '',
                     address: {
@@ -211,7 +212,15 @@ return (
                     </BForm.Group>
                     <BForm.Group>
                         <BForm.Label>Organization Name</BForm.Label>
+                        <Field required name="organizationName" type="text" as={BForm.Control}/>
+                    </BForm.Group>
+                    <BForm.Group>
+                        <BForm.Label>Contact First Name</BForm.Label>
                         <Field required name="fname" type="text" as={BForm.Control}/>
+                    </BForm.Group>
+                    <BForm.Group>
+                        <BForm.Label>Contact Last Name</BForm.Label>
+                        <Field required name="lname" type="text" as={BForm.Control}/>
                     </BForm.Group>
                     <BForm.Group>
                         <Field name="imagePath" type="file" fileContainerStyle={{backgroundColor: "#F8F9FA"}}
@@ -425,7 +434,7 @@ return (
 
                 <FormikStep>
                     <BForm.Group>
-                        
+
                     </BForm.Group>
                 </FormikStep>
 

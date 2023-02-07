@@ -7,6 +7,8 @@ import { capitalizeString } from '../../lib/utilityFunctions';
 import { RequestSegmentModal } from '../partials/RequestSegmentModal';
 import StripeCheckoutButton from "src/components/partials/StripeCheckoutButton"
 import {getUserSubscriptionStatus} from 'src/lib/api/userRoutes'
+import { LinkType } from 'src/lib/types/data/link.type'; 
+import { getCommunityBusinessProfile, updateCommunityBusinessProfile } from 'src/lib/api/publicProfileRoutes';
 interface ProfileContentProps {
   user: IUser;
   token: string;
@@ -34,6 +36,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
   const [show, setShow] = useState(false);
   const [stripeStatus, setStripeStatus] = useState("");
   const [segmentRequests, setSegmentRequests] = useState<any[]>([]);
+  const [communityBusinessProfile, setCommunityBusinessProfile] = useState<any>({});
 
   useEffect(()=>{
     getUserSubscriptionStatus(user.id).then(e => setStripeStatus(e.status)).catch(e => console.log(e))
@@ -41,6 +44,12 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
       postUserSegmentRequest(segmentRequests, token);
     }
   },[segmentRequests])
+
+  useEffect(()=>{
+    getCommunityBusinessProfile(user.id).then(e => setCommunityBusinessProfile(e)).catch(e => console.log(e))
+  },[])
+
+
   return (
     <Container className='user-profile-content w-100'>
       <Row className='mb-4 mt-4 justify-content-center'>
@@ -107,15 +116,27 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
           <Form>
               <Form.Group className="mb-3" controlId="formVisionStatement">
                 <Form.Label>Mission/Vision Statement</Form.Label>
-                <Form.Control type="text" placeholder="Say a few words about your mission/vision" />
+                <Form.Control 
+                type="text" 
+                placeholder="Say a few words about your mission/vision" 
+                value={communityBusinessProfile.missionStatement}
+                />
               </Form.Group>
               <Form.Group className="mb-3" controlId="formServiceDescription">
                 <Form.Label>Product/Service Description</Form.Label>
-                <Form.Control type="text" placeholder="Tell us about the product/service you provide" />
+                <Form.Control 
+                type="text" 
+                placeholder="Tell us about the product/service you provide" 
+                value={communityBusinessProfile.serviceDescription}
+                />
               </Form.Group>
               <Form.Group className="mb-3" controlId="formPublicAddress">
                 <Form.Label>Public Address</Form.Label>
-                <Form.Control type="text" placeholder="Public Address" />
+                <Form.Control 
+                type="text" 
+                placeholder="Public Address" 
+                value={communityBusinessProfile.address}
+                />
               </Form.Group>
               <Form.Group className="mb-3" controlId="formLinks">
                 <Form.Label>Links</Form.Label>
@@ -137,11 +158,25 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                     </tr>
                   </thead>
                   <tbody>
-                    {/* 
-                    TODO - Create Table entry format for Links
-                    See SegmentManagementContent.tsx 
-                    */}
-                    <tr>
+{/*                     
+                    { communityBusinessProfile ? communityBusinessProfile.links.map((element: Link) => {
+                      <tr>
+                        <td>
+                          {// }
+                        </td>
+                        <td>
+                          <Form.Control
+                            type="email"
+                            placeholder="Enter email"
+                            // value={element.link}
+                          />
+                        </td>
+                        <td>
+                          <Button>Remove</Button>
+                        </td>
+                      </tr>
+                    }) : null } */}
+                    {/* <tr>
                       <td>
                         Sample
                       </td>
@@ -157,38 +192,12 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                           </Dropdown.Item>
                         </NavDropdown>
                       </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        Sample 2
-                      </td>
-                      <td>
-                        www.thisisnotarealurl.com
-                      </td>
-                      <td>
-                        <NavDropdown title="Controls" id="nav-dropdown">
-                          <Dropdown.Item
-                            // onClick={() => setHideControls(String(segment.id))}
-                          >
-                            Edit
-                          </Dropdown.Item>
-                        </NavDropdown>
-                      </td>
-                    </tr>
+                    </tr> */}
                   </tbody>
                 </Table>
               </Form.Group>
               <Form.Group className="mb-3" controlId="formContactInformation">
                 <Form.Label>Contact Information</Form.Label>
-                <Button
-                  className="float-right"
-                  size="sm"
-                  // onClick={(e) => {
-                  //   setShowNewSubSeg(true);
-                  // }}
-                >
-                  Add New Contact
-                </Button>
                 <Table bordered hover size="sm">
                   <thead>
                     <tr>
@@ -196,41 +205,34 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                       <th>Last Name</th>
                       <th>Email</th>
                       <th>Phone Number</th>
-                      <th style={{ width: "10rem"}}>Controls</th>
                     </tr>
                   </thead>
+                  {communityBusinessProfile ? (
                   <tbody>
                     <tr>
-                      <td>Fake</td>
-                      <td>User</td>
-                      <td>thisisnotanemail@email.com</td>
-                      <td>123-456-7890</td>
                       <td>
-                        <NavDropdown title="Controls" id="nav-dropdown">
-                          <Dropdown.Item
-                            // onClick={() => setHideControls(String(segment.id))}
-                          >
-                            Edit
-                          </Dropdown.Item>
-                        </NavDropdown>
+                        {fname}
                       </td>
-                    </tr>
-                    <tr>
-                      <td>Not</td>
-                      <td>Real</td>
-                      <td>stillnotanemail@email.com</td>
-                      <td>123-456-7890</td>
                       <td>
-                        <NavDropdown title="Controls" id="nav-dropdown">
-                          <Dropdown.Item
-                            // onClick={() => setHideControls(String(segment.id))}
-                          >
-                            Edit
-                          </Dropdown.Item>
-                        </NavDropdown>
+                        {lname}
+                      </td>
+                      <td>
+                      <Form.Control 
+                        type="email" 
+                        placeholder="Email Address" 
+                        value={communityBusinessProfile.contactEmail}
+                      />
+                      </td>
+                      <td>
+                      <Form.Control 
+                        type="phone" 
+                        placeholder="Phone Number" 
+                        value={communityBusinessProfile.contactPhone}
+                      />
                       </td>
                     </tr>
                   </tbody>
+                  ) : null}
                 </Table>
               </Form.Group>
               <Button variant="primary" type="submit">

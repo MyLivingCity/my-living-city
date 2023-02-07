@@ -29,4 +29,22 @@ const StripeCheckoutButton: React.FC<any> = (params) => {
   );
 };
 
+// const StripeCheckoutButtonForRegistration: React.FC<any> = (params) => {
+//   const { user } = params;
+
+//   const activateAccountCall = async () => {
+//     const res = await axios.post(`${API_BASE_URL}/account/activate`, {
+//       userId: user.id,
+//     });
+//     window.location.href = res.data.url;
+//   };
+
+//   return (
+//     <>
+//       <Button onClick={activateAccountCall}>Click Here To Choose A Subscription Plan!</Button>
+//     </>
+//   );
+// };
+
 export default StripeCheckoutButton;
+// export { StripeCheckoutButtonForRegistration };

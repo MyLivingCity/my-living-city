@@ -164,6 +164,7 @@ model User {
   // Fields
   email     String   @unique
   password  String
+  organizationName String? @map("organization_name")
   fname     String?  @map("f_name")
   lname     String?  @map("l_name")
   createdAt DateTime @default(now()) @map(name: "created_at")

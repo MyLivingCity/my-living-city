@@ -168,7 +168,7 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
               ) : null} */}
               {!reviewed ? (
               <ButtonGroup className="mr-2 mt-3">
-                    {showFlagButton ? (<DropdownButton id="dropdown-basic-button" style={{ fontSize: "12px", font: "12px sans-serif"}} title="Flag" size="sm">
+                    {showFlagButton ? (<DropdownButton id="dropdown-basic-button d-flex" style={{ fontSize: "12px", font: "12px sans-serif"}} title="Flag" size="sm">
                     <Dropdown.Item eventKey= "Abusive or Inappropriate Language" onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Abusive or Inappropriate Language</Dropdown.Item>
                     <Dropdown.Item eventKey= "Submission in Wrong Community" onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Submission in Wrong Community</Dropdown.Item>
                     <Dropdown.Item eventKey= "Spam/Unsolicited Advertisement" onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Spam/Unsolicited Advertisement</Dropdown.Item>

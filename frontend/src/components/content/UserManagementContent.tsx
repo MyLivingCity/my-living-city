@@ -12,6 +12,7 @@ import { UserSegmentInfoCard } from '../partials/UserSegmentInfoCard';
 import { UserManagementBanModal } from '../modal/UserManagementBanModal';
 import { UserManagementUnbanModal } from '../modal/UserManagementUnbanModal';
 import { UserManagementModifyWarningModal } from '../modal/UserManagementModifyWarningModal';
+import { UserManagementBanHistoryModal } from '../modal/UserManagementBanHistoryModal';
 import { IBanUser } from 'src/lib/types/data/banUser.type';
 import { format } from 'path';
 
@@ -38,7 +39,9 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
     const [showUserFlagsModal, setShowUserFlagsModal] = useState<boolean>(false);
     const [showUserBanModal, setShowUserBanModal] = useState<boolean>(false);
     const [showUserUnbanModal, setShowUserUnbanModal] = useState<boolean>(false);
+    const [showUserBanHistoryModal, setShowUserBanHistoryModal] = useState<boolean>(false);
     const [modalUser, setModalUser] = useState<IUser>();
+    const [banHistory, setBanHistory] = useState<any>();
     const UserSegmentHandler = (email: string, id: string) => {
         setShowUserSegmentCard(true);
         setEmail(email);
@@ -137,6 +140,10 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
             <UserManagementUnbanModal show={showUserUnbanModal} setShow={setShowUserUnbanModal} modalUser={modalUser!} currentUser={user!} token={token} />
             : null
             }
+            {showUserBanHistoryModal ?
+            <UserManagementBanHistoryModal show={showUserBanHistoryModal} setShow={setShowUserBanHistoryModal} modalUser={modalUser!} currentUser={user!} token={token} data={banHistory!}/>
+            : null
+            }
 
             <Form>
             <h2 className="mb-4 mt-4">User Management</h2>
@@ -215,6 +222,8 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                             }
                             <Dropdown.Item onClick={() => getUserBanHistory(req.id).then(data => {
                                 setModalUser(req);
+                                setBanHistory(data);
+                                setShowUserBanHistoryModal(true);
                             })} >Ban History</Dropdown.Item>
                         </NavDropdown>
                         : <>

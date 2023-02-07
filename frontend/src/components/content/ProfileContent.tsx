@@ -16,8 +16,9 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
   const {
     email,
     userType,
+    organizationName,
     fname,
-    lname,
+    lname, 
     address,
     userSegments,
     imagePath,
@@ -56,7 +57,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
             : <Image fluid src='https://ih1.redbubble.net/image.785212781.7855/st,small,507x507-pad,600x600,f8f8f8.jpg' width='70%' roundedCircle/>}
             </Col>
           </Row>
-          <Card.Title className='mt-3'>{ fname ? capitalizeString(fname) : "Unknown" } { lname ? capitalizeString(lname) : "Unknown" }</Card.Title>
+          <Card.Title className='mt-3'>{ organizationName ? capitalizeString(organizationName) : "Unknown" }</Card.Title>
           <Card.Text className='mb-3'>{ email }</Card.Text>
           {
             stripeStatus !== "" &&
@@ -82,7 +83,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
             </ListGroup>
           
             <ListGroup variant='flush' className=''>
-              <ListGroup.Item>{ fname ? capitalizeString(fname) : "Unknown" } { lname ? capitalizeString(lname) : "" }</ListGroup.Item>
+              <ListGroup.Item>{ organizationName ? capitalizeString(organizationName) : "Unknown" } </ListGroup.Item>
               <ListGroup.Item>{ email }</ListGroup.Item>
               <ListGroup.Item>{ streetAddress ? capitalizeString(streetAddress) : "Unknown" }</ListGroup.Item>
               {streetAddress2 ? <ListGroup.Item>{ streetAddress2 ? capitalizeString(streetAddress2) : "Unknown" }</ListGroup.Item> : null}

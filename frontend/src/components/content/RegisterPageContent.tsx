@@ -245,59 +245,59 @@ return (
                     }
                 
                 {(userType != USER_TYPES.BUSINESS && userType != USER_TYPES.COMMUNITY) && 
-                <FormikStep validationSchema={Yup.object().shape({
-                    password: Yup.string().min(8, 'Password is too short, 8 characters minimum'),
-                    confirmPassword: Yup.string().oneOf([Yup.ref('password'), null], 'Passwords must match'),
-                    email: Yup.string().email('Invalid email')
-                    .test('Unique Email','Email already in use',
-                        function(value){return new Promise((resolve, reject) => {
-                            getUserWithEmail(value)
-                            .then(res => {res === 200 ? resolve(false) : resolve(true)})
-                        })})
-                    })}>
-                    <BForm.Group>
-                        <BForm.Label>Email address</BForm.Label> 
-                        <Field required name="email" type="email" as={BForm.Control}/>
-                        <ErrorMessage name="email">{msg => <p className="text-danger">{msg}<br></br></p>}</ErrorMessage>
-                    </BForm.Group>
-                    <BForm.Group>
-                        <BForm.Label>Password</BForm.Label>
-                        <Field required name="password" type="password" as={BForm.Control}/>
-                        <ErrorMessage name="password">{msg => <p className="text-danger">{msg}<br></br></p>}</ErrorMessage>
-                    </BForm.Group>
-                    <BForm.Group>
-                        <BForm.Label>Confirm Password</BForm.Label>
-                        <Field required name="confirmPassword" type="password" as={BForm.Control}/>
-                        <ErrorMessage name="confirmPassword">{msg => <p className="text-danger">{msg}<br></br></p>}</ErrorMessage>
-                    </BForm.Group>
-                    <BForm.Group>
-                        <BForm.Label>First Name</BForm.Label>
-                        <Field required name="fname" type="text" as={BForm.Control}/>
-                    </BForm.Group>
-                    <BForm.Group>
-                        <BForm.Label>Last Name</BForm.Label>
-                        <Field required name="lname" type="text" as={BForm.Control}/>
-                    </BForm.Group>
-                    <BForm.Group>
-                        <Field name="imagePath" type="file" fileContainerStyle={{backgroundColor: "#F8F9FA"}}
-                        withPreview={true} onChange={(pic:any)=>setAvatar(pic[0])} imgExtension={['.jpg','.jpeg','.png','.webp']} 
-                        buttonText="Select Profile Picture" maxFileSize={2097152} label={"Max file size 2mb, \n jpg, jpeg, png, webp"} 
-                        singleImage={true} as={ImageUploader}/>
-                        {/* <ImageUploader name="imagePath" fileContainerStyle={{backgroundColor: "#F8F9FA"}}withPreview={true} onChange={pic=>console.log(pic)} imgExtension={['.jpg','.jpeg','.png','.webp']} buttonText="Select Idea Image" maxFileSize={10485760} label={"Max file size 10mb, \n jpg, jpeg, png, webp"} singleImage={true}/> */}
-                    </BForm.Group>
-                    <BForm.Group>
-                        <BForm.Label>Street Name</BForm.Label>
-                        <Field required name="address.streetAddress" type="text" as={BForm.Control}/>
-                    </BForm.Group>
-                    {/* <BForm.Group>
-                        <BForm.Label>Profile Image Upload</BForm.Label>
-                        <BForm.Control type="file" name="image" onChange={(e:any)=> setSelectedFile(e.target.files[0])}/>
-                    </BForm.Group> */}
-                    <BForm.Group>
-                        <BForm.Label>ZIP / Postal Code</BForm.Label>
-                        <Field name="address.postalCode" type="text" as={BForm.Control}/>
-                    </BForm.Group> 
-                </FormikStep>
+                    <FormikStep validationSchema={Yup.object().shape({
+                        password: Yup.string().min(8, 'Password is too short, 8 characters minimum'),
+                        confirmPassword: Yup.string().oneOf([Yup.ref('password'), null], 'Passwords must match'),
+                        email: Yup.string().email('Invalid email')
+                        .test('Unique Email','Email already in use',
+                            function(value){return new Promise((resolve, reject) => {
+                                getUserWithEmail(value)
+                                .then(res => {res === 200 ? resolve(false) : resolve(true)})
+                            })})
+                        })}>
+                        <BForm.Group>
+                            <BForm.Label>Email address</BForm.Label> 
+                            <Field required name="email" type="email" as={BForm.Control}/>
+                            <ErrorMessage name="email">{msg => <p className="text-danger">{msg}<br></br></p>}</ErrorMessage>
+                        </BForm.Group>
+                        <BForm.Group>
+                            <BForm.Label>Password</BForm.Label>
+                            <Field required name="password" type="password" as={BForm.Control}/>
+                            <ErrorMessage name="password">{msg => <p className="text-danger">{msg}<br></br></p>}</ErrorMessage>
+                        </BForm.Group>
+                        <BForm.Group>
+                            <BForm.Label>Confirm Password</BForm.Label>
+                            <Field required name="confirmPassword" type="password" as={BForm.Control}/>
+                            <ErrorMessage name="confirmPassword">{msg => <p className="text-danger">{msg}<br></br></p>}</ErrorMessage>
+                        </BForm.Group>
+                        <BForm.Group>
+                            <BForm.Label>First Name</BForm.Label>
+                            <Field required name="fname" type="text" as={BForm.Control}/>
+                        </BForm.Group>
+                        <BForm.Group>
+                            <BForm.Label>Last Name</BForm.Label>
+                            <Field required name="lname" type="text" as={BForm.Control}/>
+                        </BForm.Group>
+                        <BForm.Group>
+                            <Field name="imagePath" type="file" fileContainerStyle={{backgroundColor: "#F8F9FA"}}
+                            withPreview={true} onChange={(pic:any)=>setAvatar(pic[0])} imgExtension={['.jpg','.jpeg','.png','.webp']} 
+                            buttonText="Select Profile Picture" maxFileSize={2097152} label={"Max file size 2mb, \n jpg, jpeg, png, webp"} 
+                            singleImage={true} as={ImageUploader}/>
+                            {/* <ImageUploader name="imagePath" fileContainerStyle={{backgroundColor: "#F8F9FA"}}withPreview={true} onChange={pic=>console.log(pic)} imgExtension={['.jpg','.jpeg','.png','.webp']} buttonText="Select Idea Image" maxFileSize={10485760} label={"Max file size 10mb, \n jpg, jpeg, png, webp"} singleImage={true}/> */}
+                        </BForm.Group>
+                        <BForm.Group>
+                            <BForm.Label>Street Name</BForm.Label>
+                            <Field required name="address.streetAddress" type="text" as={BForm.Control}/>
+                        </BForm.Group>
+                        {/* <BForm.Group>
+                            <BForm.Label>Profile Image Upload</BForm.Label>
+                            <BForm.Control type="file" name="image" onChange={(e:any)=> setSelectedFile(e.target.files[0])}/>
+                        </BForm.Group> */}
+                        <BForm.Group>
+                            <BForm.Label>ZIP / Postal Code</BForm.Label>
+                            <Field name="address.postalCode" type="text" as={BForm.Control}/>
+                        </BForm.Group> 
+                    </FormikStep>
                 }  
                 <FormikStep>
                     <Card.Title>Show us on the map where your home is</Card.Title>
@@ -429,13 +429,14 @@ return (
                 </FormikStep>
 
                 <FormikStep>
-                        <h3>To complete your account registration click submit</h3>
+                    <h3>To subscripe to a plan click here!</h3>
+                    {/* Stripe Payment Implementation Goes Here */}
+                    {/* <BForm.Group> */}
+                    {/* </BForm.Group> */}
                 </FormikStep>
 
                 <FormikStep>
-                    <BForm.Group>
-
-                    </BForm.Group>
+                    <h3>To complete your account registration click submit</h3>
                 </FormikStep>
 
                 {(userType === USER_TYPES.BUSINESS || userType === USER_TYPES.COMMUNITY) && 
@@ -492,29 +493,36 @@ export function FormikStepper({ children, markers, showMap, subIds, segIds, scho
     // const [segIds, setSegIds] = useState<number[]>([]);
     const [error, setError] = useState<IFetchError | null>(null);
     //Functions for handling button states.
-    const isLastStep = () => { return step === childrenArray.length - 1 };
+    const isLastStep = () => { 
+        if (userType === USER_TYPES.RESIDENTIAL) {
+            return step === childrenArray.length - 2;
+        } else {
+            return step === childrenArray.length - 1;
+        }
+    };
     const nextOrLoading = () => { return isLoading ? 'Loading...' : 'Next' };
     const submitOrSubmitting = () => { return isLoading ? 'Submitting...':'Submit' };
     const isHomeMarkerSet = () => { return (step===2 && markers.home.lat === null) };
     const getStepHeader = (step: number) => {
-        switch(step) {
-            case 0:
-                return "Create Account"
-            case 1:
-                return "Home Location"
-            case 2:
-                return userType === USER_TYPES.RESIDENTIAL ? "Work Location" : "Reach";
-            case 3:
-                return userType === USER_TYPES.RESIDENTIAL ? "School Location" : "Privacy Policy"
-            case 4:
-                return userType === USER_TYPES.RESIDENTIAL? "Privacy Policy" : "Submit"
-            case 5:
-                return userType !== USER_TYPES.RESIDENTIAL ? "Payment" : "Submit"
-            case 6:
-                return userType === USER_TYPES.RESIDENTIAL? "Submit" : "Create Ad" //Removed  "Complementary" due to sizing problems
-            default:
-                return ""
-        }
+                switch(step) {
+                    case 0:
+                        return "Create Account"
+                    case 1:
+                        return "Home Location"
+                    case 2:
+                        return userType === USER_TYPES.RESIDENTIAL ? "Work Location" : "Reach";
+                    case 3:
+                        return userType === USER_TYPES.RESIDENTIAL ? "School Location" : "Privacy Policy"
+                    case 4:
+                        return userType === USER_TYPES.RESIDENTIAL? "Privacy Policy" : "Payment"
+                    case 5:
+                        return userType === USER_TYPES.RESIDENTIAL ? "Submit" : "Submit"
+                    case 6:
+                        return userType === USER_TYPES.RESIDENTIAL? "Submit" : "Create Ad" //Removed  "Complementary" due to sizing problems
+                    default:
+                        return ""
+                // }
+            }
     }
 
     const isWorkSubIdSet = () => { 
@@ -530,7 +538,9 @@ export function FormikStepper({ children, markers, showMap, subIds, segIds, scho
             if(step % 2 === 0 && step !== 0){
                 setInferStep(s=>s-1);
             }
-            if(isLastStep()) setInferStep(s=>s-1);
+            if(isLastStep()) {
+                setInferStep(s=>s-1);
+            }
             if(step===8 && markers.school.lat === null){
                 setStep(s=>s-2);
             }else if(step === 6 && markers.work.lat === null){
@@ -759,7 +769,7 @@ export function FormikStepper({ children, markers, showMap, subIds, segIds, scho
             // values.userType = (userType === USER_TYPES.BUSINESS || userType === USER_TYPES.COMMUNITY) ?  USER_TYPES.IN_PROGRESS : USER_TYPES.RESIDENTIAL;
             values.userType = userType;
             setStep(s=>s+1);
-        } else if ((isLastStep() && userType === USER_TYPES.RESIDENTIAL) || ((userType === USER_TYPES.BUSINESS || userType === USER_TYPES.COMMUNITY) && step===6)) {
+        } else if ((isLastStep() && userType === USER_TYPES.RESIDENTIAL) || ((userType === USER_TYPES.BUSINESS || userType === USER_TYPES.COMMUNITY) && step===7)) {
             setIsLoading(true);
             await new Promise(r => setTimeout(r, 2000));
             await props.onSubmit(values, helpers);
@@ -868,7 +878,7 @@ export function FormikStepper({ children, markers, showMap, subIds, segIds, scho
         {isLastStep() && userType !== USER_TYPES.RESIDENTIAL ? null : 
             <Button className="float-right mt-3 d-flex align-items-center" size="lg" type="submit" disabled={isLoading||isHomeMarkerSet()}>
             {isLoading && <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>}
-            {(isLastStep() && userType === USER_TYPES.RESIDENTIAL) || (userType !== USER_TYPES.RESIDENTIAL && step===6) ? submitOrSubmitting() : nextOrLoading()}
+            {(isLastStep() && userType === USER_TYPES.RESIDENTIAL) || (userType !== USER_TYPES.RESIDENTIAL && step===7) ? submitOrSubmitting() : nextOrLoading()}
             </Button>
         }
         </div>

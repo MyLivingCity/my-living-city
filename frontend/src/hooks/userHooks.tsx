@@ -1,6 +1,6 @@
 import { useQuery } from 'react-query';
 import { IFetchError } from '../lib/types/types';
-import { getUserById, getAllUsers, getUserWithEmailAndPass, getUserWithJWT, getUserWithJWTVerbose, LoginData, LoginResponse, UseUserWithJwtInput } from '../lib/api/userRoutes';
+import { getUserById, getAllUsers, getUserWithEmailAndPass, getUserWithJWT, getUserWithJWTVerbose, LoginData, LoginResponse, UseUserWithJwtInput, getAllBannedUsers } from '../lib/api/userRoutes';
 import { AxiosError } from 'axios';
 import { IUser } from '../lib/types/data/user.type';
 
@@ -37,4 +37,8 @@ export const useUserWithJwtVerbose = ({ jwtAuthToken, shouldTrigger}: UseUserWit
       staleTime: 1000 * 60 * 60 // 1 hour
     }
   )
+}
+
+export const useBannedUsers = (token: string | null) => {
+  return useQuery<IUser[], IFetchError>(`banned-users`, () => getAllBannedUsers());
 }

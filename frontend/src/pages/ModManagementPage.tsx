@@ -3,7 +3,7 @@ import { RouteComponentProps } from 'react-router-dom';
 import { UserManagementContent } from 'src/components/content/UserManagementContent';
 import { IdeaManagementContent } from 'src/components/content/IdeaManagementContent';
 import { UserProfileContext } from '../contexts/UserProfile.Context';
-import { useAllUsers } from 'src/hooks/userHooks';
+import { useAllUsers, useBannedUsers } from 'src/hooks/userHooks';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import { useCategories } from '../hooks/categoryHooks';
 import { CacheProvider } from '@emotion/react';
@@ -29,6 +29,7 @@ import { ButtonGroup } from "react-bootstrap";
 import { now } from 'moment';
 import { useAllBanDetails, useRemoveAllExpiredBans } from 'src/hooks/banHooks';
 import { getAllBannedUsers } from 'src/lib/api/userRoutes';
+import { BannedUsersManagementContent } from 'src/components/content/BannedUsersManagementContent';
 
 // Extends Route component props with idea title route param
 interface ModManagementProps extends RouteComponentProps<{}> {
@@ -55,6 +56,7 @@ const ModManagementPage: React.FC<ModManagementProps> = ({ }) => {
   const [filteredIdeas, setfilteredIdeas] = useState<IIdeaWithAggregations[]>([])
   const [filteredProposals, setfilteredProposals] = useState<IIdeaWithAggregations[]>([])
   const [filteredComments, setfilteredComments] = useState<IComment[]>([])
+  const {data: bannedUsersData, isLoading: bannedUsersLoading} = useBannedUsers(token);
   let agedQuarantinedIdeas: IIdeaWithAggregations[] = [];
   let agedQuarantinedProposals: IIdeaWithAggregations[] = [];
   let ideasAndProposals: IIdeaWithAggregations[] = [];
@@ -407,7 +409,6 @@ const ModManagementPage: React.FC<ModManagementProps> = ({ }) => {
   }
 
   if (pageState === "banned_users") {
-    console.log("banned users", getAllBannedUsers())
     return (
       <div>
         <div style={{ width: 200, float: 'left', height: 240, marginLeft: '12%' }}>
@@ -426,7 +427,7 @@ const ModManagementPage: React.FC<ModManagementProps> = ({ }) => {
           <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black' }} onClick={() => loadState("comment")}>Comment View</Button>
         </div>
         <div style={{ width: '80%', marginLeft: '22%' }}>
-          <CommentManagementContent users={userData!} token={token} user={user} comments={commentData} ideas={ideaData!} commentFlags={commentFlagData} />
+          <BannedUsersManagementContent users={bannedUsersData!} token={token} user={user} comments={commentData} ideas={ideaData!} commentFlags={commentFlagData} />
         </div>
       </div>
     );

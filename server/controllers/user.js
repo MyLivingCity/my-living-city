@@ -1045,8 +1045,8 @@ userRouter.get(
 					where: { id: bannedUsers[i].userId },
 				});
 				bannedUsers[i].email = user.email;
-				bannedUsers[i].fname = user.fname;
-				bannedUsers[i].lname = user.lname;
+				bannedUsers[i].firstName = user.fname;
+				bannedUsers[i].lastName = user.lname;
 				bannedUsers[i].userType = user.userType;
 				bannedUsers[i].banUntil = bannedUsers[i].banUntil.toISOString();
 				bannedUsers[i].createdAt = bannedUsers[i].createdAt.toISOString();

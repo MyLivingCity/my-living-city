@@ -427,7 +427,7 @@ const ModManagementPage: React.FC<ModManagementProps> = ({ }) => {
           <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black' }} onClick={() => loadState("comment")}>Comment View</Button>
         </div>
         <div style={{ width: '80%', marginLeft: '22%' }}>
-          <BannedUsersManagementContent users={bannedUsersData!} token={token} user={user} comments={commentData} ideas={ideaData!} commentFlags={commentFlagData} />
+          <BannedUsersManagementContent users={bannedUsersData!} />
         </div>
       </div>
     );

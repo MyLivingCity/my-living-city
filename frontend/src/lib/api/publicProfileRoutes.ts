@@ -6,10 +6,12 @@ import { getAxiosJwtRequestOption } from "./axiosRequestOptions";
 
 export const getCommunityBusinessProfile = async (userId: string | undefined) => {
     const res = await axios({
-        method: "get",
-        url: `${API_BASE_URL}/communityBusinessProfile`,
-        data: { userId: userId}
-    })
+        method: "post",
+        url: `${API_BASE_URL}/publicProfile/communityBusinessProfile/${userId}`,
+    });
+
+    console.log("Made it here");
+    console.log(res.data);
     return res.data;
 }
 
@@ -23,7 +25,7 @@ export const updateCommunityBusinessProfile = async (
     contactPhone: string | undefined,
 ) => {
     const res = await axios({
-        method: "patch",
+        method: "put",
         url: `${API_BASE_URL}/communityBusinessProfile`,
         data: {
             statement: statement,

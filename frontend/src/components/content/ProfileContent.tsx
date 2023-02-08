@@ -14,6 +14,7 @@ interface ProfileContentProps {
   token: string;
 }
 
+
 const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
   const {
     email,
@@ -49,6 +50,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
     getCommunityBusinessProfile(user.id).then(e => setCommunityBusinessProfile(e)).catch(e => console.log(e))
   },[])
 
+  console.log(communityBusinessProfile)
 
   return (
     <Container className='user-profile-content w-100'>
@@ -158,24 +160,38 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                     </tr>
                   </thead>
                   <tbody>
-{/*                     
-                    { communityBusinessProfile ? communityBusinessProfile.links.map((element: Link) => {
-                      <tr>
-                        <td>
-                          {// }
-                        </td>
-                        <td>
-                          <Form.Control
-                            type="email"
-                            placeholder="Enter email"
-                            // value={element.link}
-                          />
-                        </td>
-                        <td>
-                          <Button>Remove</Button>
-                        </td>
-                      </tr>
-                    }) : null } */}
+                    { (communityBusinessProfile && communityBusinessProfile.links > 0) ? (communityBusinessProfile.links.forEach((link : String) => {
+                      let linkParts = link.split(" ");
+                      return (
+                        <tr>
+                          <td>
+                            <Form.Control as="select" defaultValue={linkParts[0]}>
+                              <option>Website</option>
+                              <option>Twitter</option>
+                              <option>Facebook</option>
+                              <option>Instagram</option>
+                              <option>LinkedIn</option>
+                              <option>Youtube</option>
+                              <option>Tiktok</option>
+                              <option>Other</option>
+                            </Form.Control>
+                          </td>
+                          <td>
+                            <Form.Control type="text" placeholder="Link" value={linkParts[1]}/>
+                          </td>
+                          <td>
+                            <NavDropdown title="Controls" id="nav-dropdown">
+                              <Dropdown.Item
+                                // onClick={() => setHideControls(String(segment.id))}
+                              >
+                                Edit
+                              </Dropdown.Item>
+                            </NavDropdown>
+                          </td>
+                        </tr>
+                      )
+                    })) : null
+                    }
                     {/* <tr>
                       <td>
                         Sample

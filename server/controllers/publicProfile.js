@@ -7,13 +7,12 @@ const prisma = require('../lib/prismaClient');
 const fs = require('fs');
 
 // get request to get a community business profile
-publicProfileRouter.get(
-    '/communityBusinessProfile',
-    passport.authenticate('jwt', { session: false }),
+publicProfileRouter.post(
+    '/communityBusinessProfile/:userId',
     async (req, res) => {
         try {
-            const userId = req.body;
-
+            const {userId} = req.params;
+            console.log(userId);
             if (!userId) {
                 return res.status(400).json({
                     message: `A valid userId must be specified in the route paramater.`,
@@ -28,20 +27,20 @@ publicProfileRouter.get(
                 });
             }
 
-            const foundCommunityBusiness = await prisma.publicCommunityBusinessProfile.findUnique({ 
-                where: { userId: userId } 
+            const foundCommunityBusiness = await prisma.publicCommunityBusinessProfile.findUnique({
+                where: { userId: userId },
             });
 
             if (!foundCommunityBusiness) {
                 const profileNew = await prisma.publicCommunityBusinessProfile.create({
                     data: {
                         userId: userId,
-                        statement: null,
-                        description: null,
+                        statement: "",
+                        description: "",
                         links: [],
-                        address: null,
-                        contactEmail: null,
-                        contactPhone: null,
+                        address: "",
+                        contactEmail: "",
+                        contactPhone: "",
                         createdAt: new Date(),
                         updatedAt: new Date(),
                         user: foundUser,
@@ -49,7 +48,22 @@ publicProfileRouter.get(
                 });
                 return res.status(201).json(profileNew);
             } else {
-                return res.status(200).json(foundCommunityBusiness);
+                let resLinks = [];
+                if (foundCommunityBusiness.links.length > 0){
+                    foundCommunityBusiness.links.forEach((link) => {
+                        resLinks.push((link.linkType + ' ' + link.link));
+                    });
+                }
+                return res.send({
+                    data: {
+                        statement: foundCommunityBusiness.statement,
+                        description: foundCommunityBusiness.description,
+                        links: resLinks,
+                        address: foundCommunityBusiness.address,
+                        contactEmail: foundCommunityBusiness.contactEmail,
+                        contactPhone: foundCommunityBusiness.contactPhone,
+                    }
+                });
             }
 
         } catch (error) {
@@ -62,12 +76,12 @@ publicProfileRouter.get(
 );
 
 // // post request to update a community business profile
-publicProfileRouter.patch(
+publicProfileRouter.put(
     '/communityBusinessProfile',
     passport.authenticate('jwt', { session: false }),
     async (req, res) => {
         try {
-            const userId = req.body.user;
+            const userId = req.body.userId;
             if (!userId) {
                 return res.status(400).json({
                     message: `A valid userId must be specified in the route paramater.`,
@@ -83,7 +97,7 @@ publicProfileRouter.patch(
             if (links) {
                 links.forEach(async (link) => {
                     const linkParts = link.url.split(' ');
-                    const linkNew = await prisma.link.create({
+                    const linkNew = await prisma.link.upsert({
                         data: {
                             link: linkParts[1],
                             linkType: linkParts[0],
@@ -96,7 +110,7 @@ publicProfileRouter.patch(
             }
 
 
-            const updatedProfile = await prisma.publicCommunityBusinessProfile.patch({
+            const updatedProfile = await prisma.publicCommunityBusinessProfile.upsert({
                 where: { userId: userId },
                 data: {
                     statement: req.body.statement,

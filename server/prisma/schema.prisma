@@ -121,6 +121,7 @@ model UserBan {
   createdAt             DateTime    @default(now()) @map(name: "created_at")
   banUntil              DateTime    @default(now()) @map(name: "banned_until")
   notificationDismissed Boolean     @default(false) @map(name: "notification_dismissed")
+  banDuration           Int         @default(0) @map(name: "ban_duration")
   user                  User        @relation(fields: [userId], references: [id])
 
   @@map(name: "ban_user")

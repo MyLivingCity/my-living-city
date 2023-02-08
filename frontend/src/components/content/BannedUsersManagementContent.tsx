@@ -19,6 +19,7 @@ export const BannedUsersManagementContent: React.FC<BannedUsersManagementContent
     let banMessage: String[] = [];
     let banDate: Date[] = [];
     let banEndDate: Date[] = [];
+    let banDuration: String[] = [];
 
     if(users){
         for(let i = 0; i < users!.length; i++){
@@ -31,6 +32,19 @@ export const BannedUsersManagementContent: React.FC<BannedUsersManagementContent
             banMessage.push(users[i].banMessage!);
             banDate.push(users[i].createdAt!);
             banEndDate.push(users[i].banUntil!);
+
+            // Format ban duration
+            if (users[i].banDuration === 99999){
+                banDuration.push("Permanent");
+            } else if (users[i].banDuration === 365){
+                banDuration.push("1 year");
+            } else if (users[i].banDuration === 180){
+                banDuration.push("6 months");
+            } else if (users[i].banDuration === 90){
+                banDuration.push("3 months");
+            } else {
+                banDuration.push(users[i].banDuration + " days");
+            }
         }
     }
 
@@ -50,6 +64,7 @@ export const BannedUsersManagementContent: React.FC<BannedUsersManagementContent
                 <th scope="col">Ban Message</th>
                 <th scope="col">Ban Date</th>
                 <th scope="col">Banned Until</th>
+                <th scope="col">Ban Duration</th>
                 </tr>
             </thead>
             <tbody>
@@ -66,6 +81,7 @@ export const BannedUsersManagementContent: React.FC<BannedUsersManagementContent
                     <td>{banMessage[index]}</td>
                     <td>{(new Date(banDate[index]).toLocaleDateString())}</td>
                     <td>{(new Date(banEndDate[index])).toLocaleDateString()}</td>
+                    <td>{banDuration[index]}</td>
                     </>
                 }
                 </tr>

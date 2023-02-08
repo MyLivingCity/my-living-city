@@ -33,6 +33,7 @@ banUserRouter.post(
                     banMessage: req.body.banMessage,
                     bannedBy: id,
                     banUntil: new Date(Date.now() + (parseInt(req.body.banDuration) * 24 * 60 * 60 * 1000)),
+                    banDuration: parseInt(req.body.banDuration),
                 }
             });
             const createBanHistory = await prisma.ban_History.create({

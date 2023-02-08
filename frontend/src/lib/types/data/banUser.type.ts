@@ -28,4 +28,5 @@ export interface IBanUserInfo {
     firstName: string,
     lastName: string,
     userType: string,
+    banDuration: number,
 }

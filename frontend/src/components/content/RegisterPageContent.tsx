@@ -429,15 +429,15 @@ return (
                 </FormikStep>
 
                 <FormikStep>
-                    <h3>To subscripe to a plan click here!</h3>
+                    <h3>To complete registration press submit!</h3>
                     {/* Stripe Payment Implementation Goes Here */}
                     {/* <BForm.Group> */}
                     {/* </BForm.Group> */}
                 </FormikStep>
 
-                <FormikStep>
+                {/* <FormikStep>
                     <h3>To complete your account registration click submit</h3>
-                </FormikStep>
+                </FormikStep> */}
 
                 {(userType === USER_TYPES.BUSINESS || userType === USER_TYPES.COMMUNITY) && 
                 <FormikStep>
@@ -494,11 +494,10 @@ export function FormikStepper({ children, markers, showMap, subIds, segIds, scho
     const [error, setError] = useState<IFetchError | null>(null);
     //Functions for handling button states.
     const isLastStep = () => { 
-        if (userType === USER_TYPES.RESIDENTIAL) {
-            return step === childrenArray.length - 2;
-        } else {
+        // if (userType === USER_TYPES.RESIDENTIAL) {
+        //     return step === childrenArray.length - 2;
+        // } else {
             return step === childrenArray.length - 1;
-        }
     };
     const nextOrLoading = () => { return isLoading ? 'Loading...' : 'Next' };
     const submitOrSubmitting = () => { return isLoading ? 'Submitting...':'Submit' };
@@ -514,10 +513,10 @@ export function FormikStepper({ children, markers, showMap, subIds, segIds, scho
                     case 3:
                         return userType === USER_TYPES.RESIDENTIAL ? "School Location" : "Privacy Policy"
                     case 4:
-                        return userType === USER_TYPES.RESIDENTIAL? "Privacy Policy" : "Payment"
+                        return userType === USER_TYPES.RESIDENTIAL? "Privacy Policy" : "Submit"
+                    // case 5:
+                    //     return userType === USER_TYPES.RESIDENTIAL ? "Submit" : "Submit"
                     case 5:
-                        return userType === USER_TYPES.RESIDENTIAL ? "Submit" : "Submit"
-                    case 6:
                         return userType === USER_TYPES.RESIDENTIAL? "Submit" : "Create Ad" //Removed  "Complementary" due to sizing problems
                     default:
                         return ""
@@ -769,7 +768,7 @@ export function FormikStepper({ children, markers, showMap, subIds, segIds, scho
             // values.userType = (userType === USER_TYPES.BUSINESS || userType === USER_TYPES.COMMUNITY) ?  USER_TYPES.IN_PROGRESS : USER_TYPES.RESIDENTIAL;
             values.userType = userType;
             setStep(s=>s+1);
-        } else if ((isLastStep() && userType === USER_TYPES.RESIDENTIAL) || ((userType === USER_TYPES.BUSINESS || userType === USER_TYPES.COMMUNITY) && step===7)) {
+        } else if ((isLastStep() && userType === USER_TYPES.RESIDENTIAL) || ((userType === USER_TYPES.BUSINESS || userType === USER_TYPES.COMMUNITY) && step===6)) {
             setIsLoading(true);
             await new Promise(r => setTimeout(r, 2000));
             await props.onSubmit(values, helpers);
@@ -852,8 +851,9 @@ export function FormikStepper({ children, markers, showMap, subIds, segIds, scho
         {title: `${getStepHeader(2)}`},
         {title: `${getStepHeader(3)}`},
         {title: `${getStepHeader(4)}`},
-        {title: `${getStepHeader(5)}`},
-        {title: `${getStepHeader(6)}`}] } 
+        {title: `${getStepHeader(5)}`}
+        // {title: `${getStepHeader(6)}`}
+    ] } 
         activeStep={ inferStep }
         circleTop={0}
         lineMarginOffset={8}
@@ -878,7 +878,7 @@ export function FormikStepper({ children, markers, showMap, subIds, segIds, scho
         {isLastStep() && userType !== USER_TYPES.RESIDENTIAL ? null : 
             <Button className="float-right mt-3 d-flex align-items-center" size="lg" type="submit" disabled={isLoading||isHomeMarkerSet()}>
             {isLoading && <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>}
-            {(isLastStep() && userType === USER_TYPES.RESIDENTIAL) || (userType !== USER_TYPES.RESIDENTIAL && step===7) ? submitOrSubmitting() : nextOrLoading()}
+            {(isLastStep() && userType === USER_TYPES.RESIDENTIAL) || (userType !== USER_TYPES.RESIDENTIAL && step===6) ? submitOrSubmitting() : nextOrLoading()}
             </Button>
         }
         </div>

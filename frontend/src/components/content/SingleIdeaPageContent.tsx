@@ -31,9 +31,13 @@ import React, { useContext, useEffect, useState } from "react";
 import { API_BASE_URL } from "src/lib/constants";
 import { UserProfileContext } from "src/contexts/UserProfile.Context";
 import { createFlagUnderIdea, updateFalseFlagIdea, compareIdeaFlagsWithThreshold } from "src/lib/api/flagRoutes";
+// Append to line below: 
+// endorseIdeaByUser, isIdeaEndorsedByUser, unendorseIdeaByUser,
 import { followIdeaByUser, isIdeaFollowedByUser, unfollowIdeaByUser, updateIdeaStatus } from "src/lib/api/ideaRoutes";
 import CSS from "csstype"
-import { useCheckIdeaFollowedByUser } from "src/hooks/ideaHooks";
+// Append to line below:
+// , useCheckIdeaEndorsedByUser 
+import { useCheckIdeaFollowedByUser} from "src/hooks/ideaHooks";
 
 import Modal from 'react-bootstrap/Modal';
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -113,9 +117,11 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
   };
 
   const [followingPost, setFollowingPost] = useState(false);
+  //const [endorsingPost, setEndorsingPost] = useState(false);
 
   const {user, token} = useContext(UserProfileContext);
   const {data: isFollowingPost, isLoading: isFollowingPostLoading} = useCheckIdeaFollowedByUser(token, (user ? user.id : user), ideaId);
+  //const {data: isEndorsingPost, isLoading: isEndorsingPostLoading} = useCheckIdeaEndorsedByUser(token, (user ? user.id : user), ideaId);
   const {data: proposal} = useSingleProposal("" + (supportedProposal ? supportedProposal!.id : ""));
   const {data: proposalIdea } = useSingleIdea("" + (supportedProposal ? supportedProposal!.ideaId : ""));
 
@@ -137,6 +143,26 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
   const handleCloseOther = () => setShowOther(false);
   const handleShowOther = () => setShowOther(true);
+
+  // const [showEndorseButton, setShowEndorseButton] = useState(true);
+  // const handleHideEndorseButton = () => setShowEndorseButton(false);
+  // useEffect(() => {
+  //   if (!isEndorsingPostLoading) {
+  //     setEndorsingPost(isEndorsingPost.isEndorsed);
+  //   }
+  // }, [isEndorsingPostLoading, isEndorsingPost])
+
+  // const handleEndorseUnendorse = async () => {
+  //   let res;
+  //   if (user && token) {
+  //     if (endorsingPost) {
+  //       res = await unendorseIdeaByUser(token, user.id, ideaId);
+  //     } else {
+  //       res = await endorseIdeaByUser(token, user.id, ideaId);
+  //     }
+  //     setEndorsingPost(!endorsingPost);
+  //   }
+  // }
 
   useEffect(() => {
     if (!isFollowingPostLoading) {
@@ -230,6 +256,12 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                       {followingPost ? "Unfollow" : "Follow"}
                     </Button> : null}
                   </ButtonGroup>
+                  {/* replace true with showEndorseButton */}
+                  { true ? (<ButtonGroup className="mr-2">
+                    <Button>
+                      Endorse
+                    </Button>
+                  </ButtonGroup>) : null}
                 </div>
               </div>
             </Card.Header>

@@ -2,6 +2,7 @@ const passport = require('passport');
 const express = require('express');
 const banUserRouter = express.Router();
 const prisma = require('../lib/prismaClient');
+const { UserType, BanType } = require('@prisma/client');
 
 banUserRouter.post(
     '/create',
@@ -32,8 +33,21 @@ banUserRouter.post(
                     banMessage: req.body.banMessage,
                     bannedBy: id,
                     banUntil: new Date(Date.now() + (parseInt(req.body.banDuration) * 24 * 60 * 60 * 1000)),
+                    banDuration: parseInt(req.body.banDuration),
                 }
             });
+            const createBanHistory = await prisma.ban_History.create({
+                data: {
+                    userId: req.body.userId,
+                    type: BanType.USER,
+                    reason: req.body.banReason,
+                    userBanType: req.body.banType,
+                    userBannedUntil: new Date(Date.now() + (parseInt(req.body.banDuration) * 24 * 60 * 60 * 1000)),
+                    modId: id,
+                    message: req.body.banMessage,
+                }
+            });
+            console.log("Created ban history: ", createBanHistory);
             res.status(200).json({
                 message: `Successfully banned user ${req.body.userId}`,
                 createdBan

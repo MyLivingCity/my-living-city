@@ -103,6 +103,7 @@ export const postRegisterUser = async(registerData: IRegisterInput, requestData:
     email, 
     password, 
     confirmPassword,
+    organizationName,
     fname,
     lname,
     address,
@@ -127,7 +128,7 @@ export const postRegisterUser = async(registerData: IRegisterInput, requestData:
   if (password !== confirmPassword) {
     throw new Error("Both your passwords must match. Please ensure both passwords match to register.")
   }
-  const request = await axios.post<LoginResponse>(`${API_BASE_URL}/user/signup`, {email,password,confirmPassword,fname,lname,address,geo, userType});
+  const request = await axios.post<LoginResponse>(`${API_BASE_URL}/user/signup`, {email,password,confirmPassword,organizationName,fname,lname,address,geo, userType});
   const request2 = await axios({
     method: "post",
     url: `${API_BASE_URL}/userSegment/create`,
@@ -196,4 +197,24 @@ storeUserAndTokenInLocalStorage(token, user);
 storeTokenExpiryInLocalStorage();
 await delay(2000);
 return request.data;
+}
+
+export const getUserBanHistory = async (userId: string | undefined) => {
+  const res = await axios.get(
+    `${API_BASE_URL}/user/getBannedUserHistory`,
+    {
+      params:
+      {
+        userId: userId
+      }
+    }
+  );
+  return res.data;
+}
+
+export const getAllBannedUsers = async () => {
+  const res = await axios.get(
+    `${API_BASE_URL}/user/getBannedUsers`
+  );
+  return res.data;
 }

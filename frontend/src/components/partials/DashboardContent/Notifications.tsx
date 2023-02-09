@@ -14,6 +14,8 @@ import {
 } from "src/lib/api/banRoutes";
 import { ICommentAggregations } from "src/lib/types/data/comment.type";
 import { updateCommentNotificationStatus } from "src/lib/api/commentRoutes";
+import { IQuarantineNotification } from "src/lib/types/data/quarantinePostNotification.type";
+import { dismissQuarantineNotification } from "src/lib/api/quarantinePostNotificationRoutes";
 
 interface NotificationPageContentProps {
   userIdeas: IIdeaWithAggregations[] | undefined;
@@ -21,6 +23,7 @@ interface NotificationPageContentProps {
   userComments: ICommentAggregations[] | undefined;
   userPostBans: IBanPost[] | undefined;
   userCommentBans: IBanComment[] | undefined;
+  userQuarantineNotifications: IQuarantineNotification[] | undefined;
 }
 
 const Notifications: React.FC<NotificationPageContentProps> = ({
@@ -29,6 +32,7 @@ const Notifications: React.FC<NotificationPageContentProps> = ({
   userComments,
   userPostBans,
   userCommentBans,
+  userQuarantineNotifications,
 }) => {
   const [isDismissed, setIsDismissed] = useState(false);
   const { user, token } = useContext(UserProfileContext);
@@ -87,6 +91,16 @@ const Notifications: React.FC<NotificationPageContentProps> = ({
       });
       setIsDismissed(true);
     }
+
+    if (userQuarantineNotifications) {
+      userQuarantineNotifications?.map(async (quarantineNotification) => {
+        if (!quarantineNotification.seen) {
+          quarantineNotification!.seen = true;
+          await dismissQuarantineNotification(quarantineNotification!.id, token);
+        }
+      });
+      setIsDismissed(true);
+    }
   };
 
   // Check if there are any notifications
@@ -127,6 +141,20 @@ const Notifications: React.FC<NotificationPageContentProps> = ({
       );
   }
 
+  if (userQuarantineNotifications) {
+    console.log("userQuarantineNotifications", userQuarantineNotifications);
+    userQuarantineNotifications!
+      .filter(
+        (quarantineNotification) =>
+          quarantineNotification.seen == false
+      )
+      .map((quarantineNotification) =>
+        notifications.push(
+          <Notification userQuarantineNotification={quarantineNotification} />
+        )
+      );
+      console.log(notifications);
+  }
   return (
     <Container
       className="system"

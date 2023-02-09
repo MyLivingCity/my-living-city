@@ -1012,4 +1012,57 @@ userRouter.patch(
 	}
 );
 
+userRouter.get(
+	'/getBannedUserHistory',
+	async (req, res, next) => {
+		try {
+			const banHistory = await prisma.ban_History.findMany({
+				where: { userId: req.query.userId },
+				orderBy: { id: "asc" },
+			});
+			res.status(200).json(banHistory);
+		} catch (error) {
+			res.status(400).json({
+				message: `An Error occured while trying to retrieve ban history.`,
+				details: {
+					errorMessage: error.message,
+					errorStack: error.stack,
+				}
+			});
+		}
+	}
+)
+
+userRouter.get(
+	'/getBannedUsers',
+	async (req, res, next) => {
+		try {
+
+			const bannedUsers = await prisma.userBan.findMany();
+
+			for (let i = 0; i < bannedUsers.length; i++) {
+				const user = await prisma.user.findUnique({
+					where: { id: bannedUsers[i].userId },
+				});
+				bannedUsers[i].email = user.email;
+				bannedUsers[i].firstName = user.fname;
+				bannedUsers[i].lastName = user.lname;
+				bannedUsers[i].userType = user.userType;
+				bannedUsers[i].banUntil = bannedUsers[i].banUntil.toISOString();
+				bannedUsers[i].createdAt = bannedUsers[i].createdAt.toISOString();
+			}
+
+			res.status(200).json(bannedUsers);
+		} catch (error) {
+			res.status(400).json({
+				message: `An Error occured while trying to retrieve banned users.`,
+				details: {
+					errorMessage: error.message,
+					errorStack: error.stack,
+				}
+			});
+		}
+	}
+)
+
 module.exports = userRouter;

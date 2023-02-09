@@ -85,14 +85,32 @@ export default function Header() {
     }
   }, [user])
 
-  // Here Items are not coming Inline
-  //   if (segQueryLoading) {
-  //     return (
-  //       <div className="wrapper">
-  //         <LoadingSpinner />
-  //       </div>
-  //     );
-  // }
+  // TODO Redo how information is gathered for Community Dashboard, and remove reliance on params in url.
+    if (segQueryLoading) {
+      return (
+        <div className="outer-header">
+      {stripeStatus !== "" && stripeStatus !== "active" &&
+        (<Nav style={paymentNotificationStyling}>
+          You have not paid your account payment. To upgrade your account, please go to the <a href="/profile">profile</a> section.
+        </Nav>)
+      }
+      <Navbar className="inner-header" bg="light" expand="sm">
+        <Navbar.Brand href="/">
+          <img
+            src="/MyLivingCityIcon.png"
+            width="30"
+            height="30"
+            className="d-inline-block alight-top"
+            alt="My Living City Logo"
+          />
+        </Navbar.Brand>
+        <Nav.Link href="/profile" className="d-inline-block alight-top">
+          {data && `${data.fname}@${data!.address!.streetAddress}`}
+        </Nav.Link>
+        </Navbar>
+        </div>
+      );
+  }
 
   return (
     <div className="outer-header">

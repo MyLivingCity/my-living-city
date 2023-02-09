@@ -9,6 +9,8 @@ import { IComment } from "src/lib/types/data/comment.type";
 import { updateCommentNotificationStatus } from "src/lib/api/commentRoutes";
 import { IBanPost } from "src/lib/types/data/banPost.type";
 import { IBanComment } from "src/lib/types/data/banComment.type";
+import { IQuarantineNotification } from "src/lib/types/data/quarantinePostNotification.type";
+import { dismissQuarantineNotification } from "src/lib/api/quarantinePostNotificationRoutes";
 
 interface NotificationProps {
     userIdea?: IIdea | undefined;
@@ -16,15 +18,16 @@ interface NotificationProps {
     userComment?: IComment | undefined;
     userPostBan?: IBanPost | undefined;
     userCommentBan?: IBanComment | undefined;
+    userQuarantineNotification?: IQuarantineNotification | undefined;
 }
 
-const Notification: React.FC<NotificationProps> = ({ userIdea, userBanInfo, userComment, userPostBan, userCommentBan }) => {
+const Notification: React.FC<NotificationProps> = ({ userIdea, userBanInfo, userComment, userPostBan, userCommentBan, userQuarantineNotification }) => {
     const [isDismissed, setIsDismissed] = useState(false);
     const [notificationType, setNotificationType] = useState("");
     const { user, token } = useContext(UserProfileContext);
     
     // Set the notification type
-    const notiType = (userIdea: IIdea | undefined, userBanInfo: IBanUser | undefined, userComment: IComment | undefined, userPostBan: IBanPost | undefined, userCommentBan: IBanComment | undefined) => {
+    const notiType = (userIdea: IIdea | undefined, userBanInfo: IBanUser | undefined, userComment: IComment | undefined, userPostBan: IBanPost | undefined, userCommentBan: IBanComment | undefined, userQuarantineNotification: IQuarantineNotification | undefined) => {
         if (userIdea) {
             setNotificationType("userIdea");
         } if (userBanInfo) {
@@ -35,11 +38,13 @@ const Notification: React.FC<NotificationProps> = ({ userIdea, userBanInfo, user
             setNotificationType("userPostBan")
         } if (userCommentBan) {
             setNotificationType("userCommentBan")
+        } if (userQuarantineNotification) {
+            setNotificationType("userQuarantineNotification")
         }
     }
     // Render only once
     useEffect(() => {
-        notiType(userIdea, userBanInfo, userComment, userPostBan, userCommentBan);
+        notiType(userIdea, userBanInfo, userComment, userPostBan, userCommentBan, userQuarantineNotification);
     }, [])
 
     const banType = () => {
@@ -86,6 +91,13 @@ const Notification: React.FC<NotificationProps> = ({ userIdea, userBanInfo, user
         setNotificationType('userComment')
         userComment!.notification_dismissed = true;
         await updateCommentNotificationStatus(token, userId, commentId.toString(), notification_dismissed );
+        setIsDismissed(true);
+    }
+
+    const dismissPostQuarantineNotification = async () => {
+        setNotificationType('userQuarantineNotification')
+        userQuarantineNotification!.seen = true;
+        await dismissQuarantineNotification(userQuarantineNotification!.id, token);
         setIsDismissed(true);
     }
 
@@ -203,6 +215,27 @@ const Notification: React.FC<NotificationProps> = ({ userIdea, userBanInfo, user
                     }
                 </tr>
             )
+        case "userQuarantineNotification":
+            return (
+                <tr>
+                    {!isDismissed ? (
+                        <td className="col-md">
+                            <div className="d-flex align align-items-center justify-content-between">
+                                <span>
+                                    {"Your post "}<b>{userQuarantineNotification?.ideaTitle}</b> {" has been reviewed and released from quarantine by a moderator"}
+                                    <br />{"Day unquarantined: "}<b>{(userQuarantineNotification?.createdAt)?.toString().replace('Z','').replace('T','').substring(0, 10)}</b>
+                                </span>
+                                <div className="float-right">
+                                    <Button onClick={async () => await dismissPostQuarantineNotification()}>Dismiss</Button>
+                                </div>
+                            </div>
+                        </td>
+
+                    ) : null}
+                </tr>
+            )
+
+
         
         default:
             return (

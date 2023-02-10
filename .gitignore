@@ -17,4 +17,4 @@ frontend/package-lock.json
 server/package-lock.json
 selenium/main.py
 selenium/chromedriver.exe
-/node_modules
+node_modules

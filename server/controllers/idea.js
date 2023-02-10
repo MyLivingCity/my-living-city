@@ -1253,7 +1253,6 @@ ideaRouter.get(
   }
 )
 
-/*
 ideaRouter.post(
   '/endorse',
   passport.authenticate('jwt', { session: false }),
@@ -1492,5 +1491,4 @@ ideaRouter.get(
     }
   }
 )
-*/
 module.exports = ideaRouter;

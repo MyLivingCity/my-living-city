@@ -181,6 +181,7 @@ model User {
   geo                 UserGeo?
   userReach           UserReach[]
   userIdeaFollow      UserIdeaFollow[]
+  userIdeaEndorse     UserIdeaEndorse[]
   //userRole        UserRole?    @relation(fields: [userRoleId], references: [id])
   ideas               Idea[]                @relation("ideaAuthor")
   ideaFlags           IdeaFlag[]
@@ -415,6 +416,7 @@ model Idea {
   address        IdeaAddress?
   geo            IdeaGeo?
   userIdeaFollow UserIdeaFollow[]
+  userIdeaEndorse UserIdeaEndorse[]
 
   // Multiple relationships pointing to same User Model
   // https://github.com/prisma/prisma/discussions/2073
@@ -665,6 +667,22 @@ model UserIdeaFollow {
 
   @@unique([userId, ideaId], name: "user_idea_follow_unique")
   @@map(name: "user_idea_follow")
+}
+
+// UserIdeaEndorse
+model UserIdeaEndorse {
+  // Columns
+  id         Int      @id @default(autoincrement()) @map("id")
+  userId     String   @map("user_id")
+  ideaId     Int      @map("idea_id")
+  endorsedAt DateTime @default(now()) @map("endorsed_at")
+
+  // Relations
+  user User @relation(references: [id], fields: [userId])
+  idea Idea @relation(references: [id], fields: [ideaId])
+
+  @@unique([userId, ideaId], name: "user_idea_endorse_unique")
+  @@map(name: "user_idea_endorse")
 }
 
 model SubSegments {

@@ -112,48 +112,48 @@ model UserAddress {
 }
 
 model UserBan {
-  id                      Int         @id @default(autoincrement())
-  userId                  String      @map(name: "user_id")
-  banType                 BanUserType @default(WARNING) @map(name: "ban_type")
-  banReason               String      @map(name: "ban_reason")
-  banMessage              String?     @map(name: "ban_message")
-  bannedBy                String      @map(name: "banned_by")
-  createdAt               DateTime    @default(now()) @map(name: "created_at")
-  banUntil                DateTime    @default(now()) @map(name: "banned_until")
-  notificationDismissed   Boolean     @default(false) @map(name: "notification_dismissed")
-  user                    User        @relation(fields: [userId], references: [id])
+  id                    Int         @id @default(autoincrement())
+  userId                String      @map(name: "user_id")
+  banType               BanUserType @default(WARNING) @map(name: "ban_type")
+  banReason             String      @map(name: "ban_reason")
+  banMessage            String?     @map(name: "ban_message")
+  bannedBy              String      @map(name: "banned_by")
+  createdAt             DateTime    @default(now()) @map(name: "created_at")
+  banUntil              DateTime    @default(now()) @map(name: "banned_until")
+  notificationDismissed Boolean     @default(false) @map(name: "notification_dismissed")
+  banDuration           Int         @default(0) @map(name: "ban_duration")
+  user                  User        @relation(fields: [userId], references: [id])
 
   @@map(name: "ban_user")
 }
 
 model PostBan {
-  id                      Int         @id @default(autoincrement())
-  postId                  Int         @map(name: "post_id")
-  authorId                String      @map(name: "author_id")
-  banReason               String      @map(name: "ban_reason")
-  banMessage              String?     @map(name: "ban_message")
-  bannedBy                String      @map(name: "banned_by")
-  createdAt               DateTime    @default(now()) @map(name: "created_at")
-  notificationDismissed   Boolean     @default(false) @map(name: "notification_dismissed")
-  post                    Idea        @relation(fields: [postId], references: [id])
+  id                    Int      @id @default(autoincrement())
+  postId                Int      @map(name: "post_id")
+  authorId              String   @map(name: "author_id")
+  banReason             String   @map(name: "ban_reason")
+  banMessage            String?  @map(name: "ban_message")
+  bannedBy              String   @map(name: "banned_by")
+  createdAt             DateTime @default(now()) @map(name: "created_at")
+  notificationDismissed Boolean  @default(false) @map(name: "notification_dismissed")
+  post                  Idea     @relation(fields: [postId], references: [id])
 
   @@map(name: "ban_post")
 }
 
 model CommentBan {
-  id                      Int         @id @default(autoincrement())
-  commentId               Int         @map(name: "comment_id")
-  authorId                String      @map(name: "author_id")
-  banReason               String      @map(name: "ban_reason")
-  banMessage              String?     @map(name: "ban_message")
-  bannedBy                String      @map(name: "banned_by")
-  createdAt               DateTime    @default(now()) @map(name: "created_at")
-  notificationDismissed   Boolean     @default(false) @map(name: "notification_dismissed")
-  comment                 IdeaComment @relation(fields: [commentId], references: [id])
+  id                    Int         @id @default(autoincrement())
+  commentId             Int         @map(name: "comment_id")
+  authorId              String      @map(name: "author_id")
+  banReason             String      @map(name: "ban_reason")
+  banMessage            String?     @map(name: "ban_message")
+  bannedBy              String      @map(name: "banned_by")
+  createdAt             DateTime    @default(now()) @map(name: "created_at")
+  notificationDismissed Boolean     @default(false) @map(name: "notification_dismissed")
+  comment               IdeaComment @relation(fields: [commentId], references: [id])
 
   @@map(name: "ban_comment")
 }
-
 
 model User {
   // Keys
@@ -164,6 +164,7 @@ model User {
   // Fields
   email     String   @unique
   password  String
+  organizationName String? @map("organization_name")
   fname     String?  @map("f_name")
   lname     String?  @map("l_name")
   createdAt DateTime @default(now()) @map(name: "created_at")
@@ -176,16 +177,16 @@ model User {
   hasFlagged   Int      @default(0) @map("has_flagged")
 
   // Relationships
-  address         UserAddress?
-  geo             UserGeo?
-  userReach       UserReach[]
-  userIdeaFollow  UserIdeaFollow[]
+  address             UserAddress?
+  geo                 UserGeo?
+  userReach           UserReach[]
+  userIdeaFollow      UserIdeaFollow[]
   //userRole        UserRole?    @relation(fields: [userRoleId], references: [id])
-  ideas           Idea[]         @relation("ideaAuthor")
-  ideaFlags       IdeaFlag[]
-  commentFlags    CommentFlag[]
-  championedIdeas Idea[]         @relation("ideaChampion")
-  stripe          UserStripe?
+  ideas               Idea[]                @relation("ideaAuthor")
+  ideaFlags           IdeaFlag[]
+  commentFlags        CommentFlag[]
+  championedIdeas     Idea[]                @relation("ideaChampion")
+  stripe              UserStripe?
   userBans            UserBan[]
   //championedIdeas     Idea[]                @relation("championedIdeas")
   ideaRatings         IdeaRating[]
@@ -196,13 +197,16 @@ model User {
   volunteers          Volunteer[]           @relation("ideaVolunteer")
   donors              Donor[]               @relation("ideaDonor")
 
-
-
   // Model overwrites
-  Advertisements Advertisements[]
+  Advertisements                    Advertisements[]
   //Not sure if this one stays
-  segmentRequest segmentRequest[]
-  userSegments   UserSegments?
+  segmentRequest                    segmentRequest[]
+  userSegments                      UserSegments?
+  Quarantine_Notifications          Quarantine_Notifications[]
+  Ban_History                       Ban_History[]
+  Public_Community_Business_Profile Public_Community_Business_Profile[]
+  Public_Municipal_Profile          Public_Municipal_Profile[]
+
   @@map(name: "user")
 }
 
@@ -345,7 +349,6 @@ model Volunteer {
   proposal Proposal @relation("volunteer", fields: [proposalId], references: [id])
   author   User     @relation("ideaVolunteer", fields: [authorId], references: [id])
 
-
   @@unique([proposalId, authorId], name: "volunteer_unique")
   @@map(name: "volunteer")
 }
@@ -381,75 +384,80 @@ model Idea {
   subSegmentId         Int?    @map("sub_segment_id")
 
   // Values
-  title               String
-  description         String
-  proposal_role       String    @default("")
-  requirements        String    @default("")
-  proposal_benefits   String    @default("")
-  userType            String    @default("Resident")
-  communityImpact     String?   @map("community_impact")
-  natureImpact        String?   @map("nature_impact")
-  artsImpact          String?   @map("arts_impact")
-  energyImpact        String?   @map("energy_impact")
-  manufacturingImpact String?   @map("manufacturing_impact")
-  state               IdeaState @default(IDEA)
-  active              Boolean   @default(true)
-  banned              Boolean   @default(false)
-  reviewed            Boolean   @default(false)
-  imagePath           String?   @map("image_path")
-  createdAt           DateTime  @default(now()) @map(name: "created_at")
-  updatedAt           DateTime  @default(now()) @updatedAt @map(name: "updated_at")
-  notification_dismissed Boolean @map("notification_dismissed")
-  quarantined_at      DateTime  @default(now()) @map(name: "quarantined_at")
+  title                  String
+  description            String
+  proposal_role          String    @default("")
+  requirements           String    @default("")
+  proposal_benefits      String    @default("")
+  userType               String    @default("Resident")
+  communityImpact        String?   @map("community_impact")
+  natureImpact           String?   @map("nature_impact")
+  artsImpact             String?   @map("arts_impact")
+  energyImpact           String?   @map("energy_impact")
+  manufacturingImpact    String?   @map("manufacturing_impact")
+  state                  IdeaState @default(IDEA)
+  active                 Boolean   @default(true)
+  banned                 Boolean   @default(false)
+  reviewed               Boolean   @default(false)
+  imagePath              String?   @map("image_path")
+  createdAt              DateTime  @default(now()) @map(name: "created_at")
+  updatedAt              DateTime  @default(now()) @updatedAt @map(name: "updated_at")
+  notification_dismissed Boolean   @map("notification_dismissed")
+  quarantined_at         DateTime  @default(now()) @map(name: "quarantined_at")
 
   // relations
-  comments        IdeaComment[]
-  ratings         IdeaRating[]
-  flags           IdeaFlag[]
-  PostBan         PostBan[]
-  proposalInfo    Proposal?     @relation("proposal")
-  projectInfo     Project?
-  address         IdeaAddress?
-  geo             IdeaGeo?
-  userIdeaFollow  UserIdeaFollow[]
+  comments       IdeaComment[]
+  ratings        IdeaRating[]
+  flags          IdeaFlag[]
+  PostBan        PostBan[]
+  proposalInfo   Proposal?        @relation("proposal")
+  projectInfo    Project?
+  address        IdeaAddress?
+  geo            IdeaGeo?
+  userIdeaFollow UserIdeaFollow[]
 
   // Multiple relationships pointing to same User Model
   // https://github.com/prisma/prisma/discussions/2073
-  author            User         @relation("ideaAuthor", fields: [authorId], references: [id])
-  supportedProposal Proposal?    @relation("supportedProposal", fields: [supportingProposalId], references: [id])
-  champion          User?        @relation("ideaChampion", fields: [championId], references: [id])
-  category          Category     @relation(fields: [categoryId], references: [id])
-  superSegment      SuperSegment @relation(fields: [superSegmentId], references: [superSegId])
-  segment           Segments?    @relation(fields: [segmentId], references: [segId])
-  subSegment        SubSegments? @relation(fields: [subSegmentId], references: [id])
+  author                   User                       @relation("ideaAuthor", fields: [authorId], references: [id])
+  supportedProposal        Proposal?                  @relation("supportedProposal", fields: [supportingProposalId], references: [id])
+  champion                 User?                      @relation("ideaChampion", fields: [championId], references: [id])
+  category                 Category                   @relation(fields: [categoryId], references: [id])
+  superSegment             SuperSegment               @relation(fields: [superSegmentId], references: [superSegId])
+  segment                  Segments?                  @relation(fields: [segmentId], references: [segId])
+  subSegment               SubSegments?               @relation(fields: [subSegmentId], references: [id])
+  Quarantine_Notifications Quarantine_Notifications[]
 
+  @@unique([id, title])
   @@map(name: "idea")
 }
+
 model IdeaFlag {
-  id                Int      @id @default(autoincrement())
-  ideaId            Int      @map("idea_id")
-  flaggerId         String   @map("flagger_id")
-  falseFlag         Boolean  @default(false) @map("false_flag")
-  flagReason        String?  @map("flag_reason")
+  id         Int     @id @default(autoincrement())
+  ideaId     Int     @map("idea_id")
+  flaggerId  String  @map("flagger_id")
+  falseFlag  Boolean @default(false) @map("false_flag")
+  flagReason String? @map("flag_reason")
   //relations
-  idea              Idea     @relation(fields: [ideaId], references: [id])
-  flagger            User         @relation(fields: [flaggerId], references: [id])
+  idea       Idea    @relation(fields: [ideaId], references: [id])
+  flagger    User    @relation(fields: [flaggerId], references: [id])
 
   @@map(name: "idea_flag")
 }
+
 model CommentFlag {
-  id                 Int @id @default(autoincrement())
-  commentId          Int @map("comment_id")
-  flaggerId          String @map("flagger_id")
-  falseFlag          Boolean @default(false) @map("false_flag")
+  id          Int         @id @default(autoincrement())
+  commentId   Int         @map("comment_id")
+  flaggerId   String      @map("flagger_id")
+  falseFlag   Boolean     @default(false) @map("false_flag")
   //relations
-  ideaComment        IdeaComment  @relation(fields: [commentId], references: [id])
-  flagger            User         @relation(fields: [flaggerId], references: [id])
+  ideaComment IdeaComment @relation(fields: [commentId], references: [id])
+  flagger     User        @relation(fields: [flaggerId], references: [id])
+
+  flagReason String? @map("flag_reason")
 
   @@map(name: "comment_flag")
-
-  flagReason        String?  @map("flag_reason")
 }
+
 model Proposal {
   id     Int @id @default(autoincrement())
   ideaId Int @unique @map("idea_id")
@@ -520,33 +528,33 @@ model IdeaRating {
 
 model IdeaComment {
   // keys
-  id             Int                   @id @default(autoincrement())
-  ideaId         Int                   @map("idea_id")
+  id                     Int      @id @default(autoincrement())
+  ideaId                 Int      @map("idea_id")
   // Fields
-  authorId       String                @map("author_id")
-  userSegId      String                @map("user_segment_id")
-  superSegmentId Int?                  @map("super_segment_id")
-  segmentId      Int?                  @map("segment_id")
-  subSegmentId   Int?                  @map("sub_segment_id")
-  content        String
-  active         Boolean               @default(true)
-  reviewed       Boolean               @default(false)
-  createdAt      DateTime              @default(now()) @map(name: "created_at")
-  updatedAt      DateTime              @default(now()) @updatedAt @map(name: "updated_at")
-  notification_dismissed Boolean       @default(false)                          @map("notification_dismissed")
-  quarantined_at DateTime              @default(now()) @map(name: "quarantined_at")
+  authorId               String   @map("author_id")
+  userSegId              String   @map("user_segment_id")
+  superSegmentId         Int?     @map("super_segment_id")
+  segmentId              Int?     @map("segment_id")
+  subSegmentId           Int?     @map("sub_segment_id")
+  content                String
+  active                 Boolean  @default(true)
+  reviewed               Boolean  @default(false)
+  createdAt              DateTime @default(now()) @map(name: "created_at")
+  updatedAt              DateTime @default(now()) @updatedAt @map(name: "updated_at")
+  notification_dismissed Boolean  @default(false) @map("notification_dismissed")
+  quarantined_at         DateTime @default(now()) @map(name: "quarantined_at")
 
   // Moderator Fields
   commentFlagNumber Int                   @default(0) @map("comment_flag_num")
   bannedComment     Boolean               @default(false) @map("banned_comment")
   // relations
-  author         User                  @relation(fields: [authorId], references: [id])
-  idea           Idea                  @relation(fields: [ideaId], references: [id])
-  userSeg        UserSegments          @relation(fields: [userSegId], references: [id])
-  likes          UserCommentLikes[]
-  commentFlags   CommentFlag[]
-  commentBans    CommentBan[]
-  dislikes       UserCommentDislikes[]
+  author            User                  @relation(fields: [authorId], references: [id])
+  idea              Idea                  @relation(fields: [ideaId], references: [id])
+  userSeg           UserSegments          @relation(fields: [userSegId], references: [id])
+  likes             UserCommentLikes[]
+  commentFlags      CommentFlag[]
+  commentBans       CommentBan[]
+  dislikes          UserCommentDislikes[]
 
   @@map(name: "idea_comment")
 }
@@ -603,6 +611,7 @@ model SuperSegment {
   homeUserSegments   UserSegments[] @relation("homeSuperSeg")
   workUserSegments   UserSegments[] @relation("workSuperSeg")
   schoolUserSegments UserSegments[] @relation("schoolSuperSeg")
+
   @@map("super_segment")
 }
 
@@ -623,19 +632,20 @@ model Segments {
   schoolSegments UserSegments[] @relation("schoolSegment")
   Idea           Idea[]
   userReach      UserReach[]
+
   @@map(name: "segment")
 }
 
 // UserReach
 model UserReach {
   // Columns
-  id          String    @id @default(cuid())
-  userId      String    @map("user_id")
-  segId       Int
+  id     String @id @default(cuid())
+  userId String @map("user_id")
+  segId  Int
 
   // Relations
-  user User             @relation(references: [id], fields: [userId])
-  segment Segments      @relation(references: [segId], fields: [segId])
+  user    User     @relation(references: [id], fields: [userId])
+  segment Segments @relation(references: [segId], fields: [segId])
 
   @@unique([userId, segId], name: "user_reach_unique")
   @@map(name: "user_reach")
@@ -644,14 +654,14 @@ model UserReach {
 // UserIdeaFollow
 model UserIdeaFollow {
   // Columns
-  id            Int       @id @default(autoincrement()) @map("id")
-  userId        String    @map("user_id")
-  ideaId        Int       @map("idea_id")
-  followedAt    DateTime  @default(now()) @map("followed_at")
+  id         Int      @id @default(autoincrement()) @map("id")
+  userId     String   @map("user_id")
+  ideaId     Int      @map("idea_id")
+  followedAt DateTime @default(now()) @map("followed_at")
 
   // Relations
-  user          User      @relation(references: [id], fields: [userId])
-  idea          Idea      @relation(references: [id], fields: [ideaId])
+  user User @relation(references: [id], fields: [userId])
+  idea Idea @relation(references: [id], fields: [ideaId])
 
   @@unique([userId, ideaId], name: "user_idea_follow_unique")
   @@map(name: "user_idea_follow")
@@ -673,6 +683,7 @@ model SubSegments {
   schoolSubSegments UserSegments[] @relation("schoolSubSegment")
 
   Idea Idea[]
+
   @@map(name: "sub_segment")
 }
 
@@ -688,19 +699,114 @@ model segmentRequest {
 }
 
 model UserStripe {
-  user      User    @relation(fields: [userId], references: [id])
-  userId    String    @unique
-  stripeId  String
-  status    Status  @default(incomplete)
+  user     User   @relation(fields: [userId], references: [id])
+  userId   String @unique
+  stripeId String
+  status   Status @default(incomplete)
 
   @@id([userId, stripeId])
   @@map(name: "user_stripe")
 }
+
 model Threshhold {
-  id Int @id @default(autoincrement())
-  number  Int @default(3)
+  id     Int @id @default(autoincrement())
+  number Int @default(3)
 }
+
 enum Status {
   active
   incomplete
+}
+
+model Quarantine_Notifications {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  ideaId    Int
+  ideaTitle String
+  seen      Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+  user      User     @relation(fields: [userId], references: [id])
+  idea      Idea     @relation(fields: [ideaId, ideaTitle], references: [id, title])
+
+  @@unique([id, userId, ideaId], name: "user_idea_quarantine_unique")
+  @@map(name: "quarantine_notifications")
+}
+
+enum BanType {
+  IDEA
+  COMMENT
+  USER
+}
+
+model Ban_History {
+  id              Int       @id @default(autoincrement())
+  userId          String
+  type            BanType
+  reason          String
+  userBanType     String?
+  userBannedUntil DateTime?
+  ideaId          Int?
+  commentId       Int?
+  modId           String
+  message         String
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map(name: "ban_history")
+}
+
+enum LinkType {
+  WEBSITE
+  TWITTER
+  FACEBOOK
+  INSTAGRAM
+  LINKEDIN
+  YOUTUBE
+  TIKTOK
+  OTHER
+}
+
+model Link {
+  id                                  Int                                @id @default(autoincrement())
+  link                                String
+  linkType                            LinkType
+  createdAt                           DateTime                           @default(now()) @map("created_at")
+  Public_Community_Business_Profile   Public_Community_Business_Profile? @relation(fields: [public_Community_Business_ProfileId], references: [id])
+  public_Community_Business_ProfileId Int?
+  Public_Municipal_Profile            Public_Municipal_Profile?          @relation(fields: [public_Municipal_ProfileId], references: [id])
+  public_Municipal_ProfileId          Int?
+
+  @@map(name: "link")
+}
+
+// Split the public profiles so it is easier to scale them individually
+model Public_Community_Business_Profile {
+  id                 Int      @id @default(autoincrement())
+  userId             String
+  statement          String
+  description        String
+  links              Link[]
+  address            String
+  contactInformation String
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @default(now()) @map("updated_at")
+  user               User     @relation(fields: [userId], references: [id])
+
+  @@map(name: "public_community_business_profile")
+}
+
+model Public_Municipal_Profile {
+  id                 Int      @id @default(autoincrement())
+  userId             String
+  statement          String
+  responsibility     String
+  links              Link[]
+  address            String
+  contactInformation String
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @default(now()) @map("updated_at")
+  user               User     @relation(fields: [userId], references: [id])
+
+  @@map(name: "public_municipal_profile")
 }

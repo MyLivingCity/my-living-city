@@ -9,7 +9,10 @@ import {
   postAllIdeasWithBreakdown,
   getUserIdeas,
   getIdeasFollowedByUser,
-  isIdeaFollowedByUser
+  isIdeaFollowedByUser,
+  // Append:
+  // getIdeasEndorsedByUser,
+  // isIdeaEndorsedByUser,
 } from "../lib/api/ideaRoutes";
 
 // export const useIdeas = (
@@ -68,3 +71,13 @@ export const useCheckIdeaFollowedByUser = (token: string|null, userId: string|nu
   return useQuery<any, IFetchError>("is-idea-followed-by-user", () => 
     isIdeaFollowedByUser(token, userId, ideaId))
 }
+
+// export const useUserEndorsedIdeas = (userId: string) => {
+//   return useQuery<IIdeaWithAggregations[], IFetchError>("user-endorsed-ideas", () => 
+//   getIdeasEndorsedByUser(userId))
+// }
+
+// export const useCheckIdeaEndorsedByUser = (token: string|null, userId: string|null, ideaId: string|null) => {
+//   return useQuery<any, IFetchError>("is-idea-endorsed-by-user", () => 
+//     isIdeaEndorsedByUser(token, userId, ideaId))
+// }

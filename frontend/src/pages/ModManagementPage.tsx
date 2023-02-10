@@ -3,7 +3,7 @@ import { RouteComponentProps } from 'react-router-dom';
 import { UserManagementContent } from 'src/components/content/UserManagementContent';
 import { IdeaManagementContent } from 'src/components/content/IdeaManagementContent';
 import { UserProfileContext } from '../contexts/UserProfile.Context';
-import { useAllUsers } from 'src/hooks/userHooks';
+import { useAllUsers, useBannedUsers } from 'src/hooks/userHooks';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import { useCategories } from '../hooks/categoryHooks';
 import { CacheProvider } from '@emotion/react';
@@ -28,6 +28,8 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
 import { ButtonGroup } from "react-bootstrap";
 import { now } from 'moment';
 import { useAllBanDetails, useRemoveAllExpiredBans } from 'src/hooks/banHooks';
+import { getAllBannedUsers } from 'src/lib/api/userRoutes';
+import { BannedUsersManagementContent } from 'src/components/content/BannedUsersManagementContent';
 
 // Extends Route component props with idea title route param
 interface ModManagementProps extends RouteComponentProps<{}> {
@@ -54,6 +56,7 @@ const ModManagementPage: React.FC<ModManagementProps> = ({ }) => {
   const [filteredIdeas, setfilteredIdeas] = useState<IIdeaWithAggregations[]>([])
   const [filteredProposals, setfilteredProposals] = useState<IIdeaWithAggregations[]>([])
   const [filteredComments, setfilteredComments] = useState<IComment[]>([])
+  const {data: bannedUsersData, isLoading: bannedUsersLoading} = useBannedUsers(token);
   let agedQuarantinedIdeas: IIdeaWithAggregations[] = [];
   let agedQuarantinedProposals: IIdeaWithAggregations[] = [];
   let ideasAndProposals: IIdeaWithAggregations[] = [];
@@ -246,6 +249,8 @@ const ModManagementPage: React.FC<ModManagementProps> = ({ }) => {
           <br></br>
           <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("user")}>User View</Button>
           <br></br>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("banned_users")}>Banned Users View</Button>
+          <br></br>
           <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("idea")}>Idea View</Button>
           <br></br>
           <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("proposal")}>Proposal View</Button>
@@ -316,6 +321,8 @@ const ModManagementPage: React.FC<ModManagementProps> = ({ }) => {
           <br></br>
           <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("user")}>User View</Button>
           <br></br>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("banned_users")}>Banned Users View</Button>
+          <br></br>
           <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("idea")}>Idea View</Button>
           <br></br>
           <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("proposal")}>Proposal View</Button>
@@ -337,6 +344,8 @@ const ModManagementPage: React.FC<ModManagementProps> = ({ }) => {
           <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("quarantine")}>Quarantine List</Button>
           <br></br>
           <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("user")}>User View</Button>
+          <br></br>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("banned_users")}>Banned Users View</Button>
           <br></br>
           <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("idea")}>Idea View</Button>
           <br></br>
@@ -360,6 +369,8 @@ const ModManagementPage: React.FC<ModManagementProps> = ({ }) => {
           <br></br>
           <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("user")}>User View</Button>
           <br></br>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("banned_users")}>Banned Users View</Button>
+          <br></br>
           <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("idea")}>Idea View</Button>
           <br></br>
           <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("proposal")}>Proposal View</Button>
@@ -382,6 +393,8 @@ const ModManagementPage: React.FC<ModManagementProps> = ({ }) => {
           <br></br>
           <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("user")}>User View</Button>
           <br></br>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("banned_users")}>Banned Users View</Button>
+          <br></br>
           <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("idea")}>Idea View</Button>
           <br></br>
           <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("proposal")}>Proposal View</Button>
@@ -394,6 +407,33 @@ const ModManagementPage: React.FC<ModManagementProps> = ({ }) => {
       </div>
     );
   }
+
+  if (pageState === "banned_users") {
+    return (
+      <div>
+        <div style={{ width: 200, float: 'left', height: 240, marginLeft: '12%' }}>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40 }} onClick={() => { window.scrollTo({ top: 0, left: 0, behavior: 'smooth' }); }}>Dashboard</Button>
+          <br></br>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("quarantine")}>Quarantine List</Button>
+          <br></br>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("user")}>User View</Button>
+          <br></br>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("banned_users")}>Banned Users View</Button>
+          <br></br>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("idea")}>Idea View</Button>
+          <br></br>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("proposal")}>Proposal View</Button>
+          <br></br>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black' }} onClick={() => loadState("comment")}>Comment View</Button>
+        </div>
+        <div style={{ width: '80%', marginLeft: '22%' }}>
+          <BannedUsersManagementContent users={bannedUsersData!} />
+        </div>
+      </div>
+    );
+  }
+
+
   return (
     <div>
     <div style={{width: 200, float:'left', height:240, marginLeft:'12%'}}>
@@ -402,6 +442,8 @@ const ModManagementPage: React.FC<ModManagementProps> = ({ }) => {
       <Button style={{border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black'}} onClick={() => loadState("quarantine")}>Quarantine List</Button>
       <br></br>
       <Button style={{border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black'}} onClick={() => loadState("user")}>User View</Button>
+      <br></br>
+      <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("banned_users")}>Banned Users View</Button>
       <br></br>
       <Button style={{border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black'}} onClick={() => loadState("idea")}>Idea View</Button>
       <br></br>

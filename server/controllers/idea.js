@@ -141,7 +141,7 @@ ideaRouter.post(
             error += 'Sub segment id must be valid.';
             errorMessage += 'Creating an idea must explicitly be supplied with a valid "subSegmentId" field.';
             errorStack += '"subSegmentId" must be provided with a valid id found in the database.';
-          } else if (subSegmentId == homeSubSegmentId || subSegmentId == workSubSegmentId || subSegmentId == schoolSegmentId) {
+          } else if (subSegmentId == homeSubSegmentId || subSegmentId == workSubSegmentId || subSegmentId == schoolSubSegmentId) {
             segmentId = theSubSegment.segId;
 
             const theSegment = await prisma.segments.findUnique({ where: { segId: segmentId } });
@@ -739,6 +739,25 @@ ideaRouter.put(
         });
       }
 
+      console.log("reviewed: " + reviewed);
+      console.log("active: " + active);
+      console.log("parsedIdeaId: " + parsedIdeaId);
+      console.log("foundIdea.authorId: " + foundIdea.authorId);
+      console.log("foundIdea.title: " + foundIdea.title);
+      try {
+        if (reviewed == true && active == true) {
+          await prisma.quarantine_Notifications.create({
+            data: {
+              ideaId: parsedIdeaId * 1,
+              userId: foundIdea.authorId,
+              ideaTitle: foundIdea.title,
+            }
+          });
+        }
+      } catch (error) {
+        console.log("Error while creating quarantine notification: " + error);
+      }
+
       const updateIdea = await prisma.idea.update({
         where: {
           id: parsedIdeaId,
@@ -755,6 +774,8 @@ ideaRouter.put(
         message: "Idea succesfully updated",
         idea: updateIdea,
       });
+
+
 
     } catch (error) {
       res.status(400).json({
@@ -1232,4 +1253,244 @@ ideaRouter.get(
   }
 )
 
+/*
+ideaRouter.post(
+  '/endorse',
+  passport.authenticate('jwt', { session: false }),
+  async (req, res) => {
+    try {
+      if (isEmpty(req.body)) {
+        res.status(400).json({
+          message: "Request body is empty!"
+        })
+      }
+
+      let { userId, ideaId } = req.body;
+      ideaId = parseInt(ideaId);
+
+      if (!userId || !ideaId) {
+        res.status(400).json({
+          message: `"userId" and/or "ideaId" is missing from the request body!`
+        })
+      }
+
+      const theUser = await prisma.user.findUnique({ where: { id: userId } });
+      const theIdea = await prisma.idea.findUnique({ where: { id: ideaId } });
+
+      if (!theUser) {
+        res.status(400).json({
+          message: `User with id ${userId} cannot be found or does not exists!`
+        })
+      }
+
+      if (!theIdea) {
+        res.status(400).json({
+          message: `Idea with id ${ideaId} cannot be found or does not exists!`
+        })
+      }
+
+      const userIdeaEndorse = await prisma.userIdeaEndorse.upsert({
+        where: {
+          user_idea_endorse_unique: {
+            userId: userId,
+            ideaId: ideaId
+          }
+        },
+        create: {
+          userId: userId,
+          ideaId: ideaId
+        },
+        update: {}
+      })
+      res.status(200).json(userIdeaEndorse);
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({
+        message: "An error occured while to endorse an Idea",
+        details: {
+          errorMessage: error.message,
+          errorStack: error.stack,
+        }
+      });
+    } finally {
+      await prisma.$disconnect();
+    }
+  }
+)
+
+ideaRouter.post(
+  '/unendorse',
+  passport.authenticate('jwt', { session: false }),
+  async (req, res) => {
+    try {
+      if (isEmpty(req.body)) {
+        res.status(400).json({
+          message: "Request body is empty!"
+        })
+      }
+
+      let { userId, ideaId } = req.body;
+      ideaId = parseInt(ideaId);
+
+      if (!userId || !ideaId) {
+        res.status(400).json({
+          message: `"userId" and/or "ideaId" is missing from the request body!`
+        })
+      }
+
+      const theUser = await prisma.user.findUnique({ where: { id: userId } });
+      const theIdea = await prisma.idea.findUnique({ where: { id: ideaId } });
+
+      if (!theUser) {
+        res.status(400).json({
+          message: `User with id ${userId} cannot be found or does not exists!`
+        })
+      }
+
+      if (!theIdea) {
+        res.status(400).json({
+          message: `Idea with id ${ideaId} cannot be found or does not exists!`
+        })
+      }
+
+      const theUserIdeaEndorse = await prisma.userIdeaEndorse.findUnique({
+        where: {
+          user_idea_endorse_unique: {
+            userId: userId,
+            ideaId: ideaId
+          }
+        }
+      })
+
+      if (!theUserIdeaEndorse) {
+        res.status(400).json({
+          message: `The user ${userId} does not endorse the idea ${ideaId}`
+        })
+      }
+
+      const userIdeaEndorse = await prisma.userIdeaEndorse.delete({ where: { id: theUserIdeaEndorse.id } });
+      res.status(200).json(userIdeaEndorse);
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({
+        message: "An error occured while to unendorse an Idea",
+        details: {
+          errorMessage: error.message,
+          errorStack: error.stack,
+        }
+      });
+    } finally {
+      await prisma.$disconnect();
+    }
+  }
+)
+
+ideaRouter.post(
+  '/isEndorsed',
+  // passport.authenticate('jwt', { session: false }),
+  async (req, res) => {
+    try {
+      if (isEmpty(req.body)) {
+        res.status(400).json({
+          message: "Request body is empty!"
+        })
+      }
+
+      const { userId, ideaId } = req.body;
+
+      if (!userId || !ideaId) {
+        res.status(200).json({
+          isEndorsed: false
+        })
+      }
+
+      const theUser = await prisma.user.findUnique({ where: { id: userId } });
+      const theIdea = await prisma.idea.findUnique({ where: { id: parseInt(ideaId) } });
+
+      if (!theUser) {
+        res.status(400).json({
+          message: `User with id ${userId} cannot be found or does not exists!`
+        })
+      }
+
+      if (!theIdea) {
+        res.status(400).json({
+          message: `Idea with id ${ideaId} cannot be found or does not exists!`
+        })
+      }
+
+      const theUserIdeaEndorse = await prisma.userIdeaEndorse.findUnique({
+        where: {
+          user_idea_endorse_unique: {
+            userId: userId,
+            ideaId: parseInt(ideaId)
+          }
+        }
+      })
+      const isEndorsed = theUserIdeaEndorse ? true : false;
+
+      res.status(200).json({
+        isEndorsed: isEndorsed
+      })
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({
+        details: {
+          errorMessage: error.message,
+          errorStack: error.stack,
+        }
+      });
+    } finally {
+      await prisma.$disconnect();
+    }
+  }
+)
+
+ideaRouter.get(
+  '/getAllEndorsedByUser/:userId',
+  // passport.authenticate('jwt', { session: false }),
+  async (req, res) => {
+    try {
+      const { userId } = req.params;
+
+      if (!userId) {
+        res.status(400).json({
+          message: `"userId" is missing or empty from the request body!`
+        })
+      }
+
+      const theUser = await prisma.user.findUnique({ where: { id: userId } });
+
+      if (!theUser) {
+        res.status(400).json({
+          message: `User with id ${userId} cannot be found or does not exists!`
+        })
+      }
+
+      const userIdeaEndorses = await prisma.userIdeaEndorse.findMany({
+        where: {
+          userId: userId,
+        }
+      })
+
+      let ideas = [];
+      for await (const endorse of userIdeaEndorses) {
+        const idea = await prisma.idea.findUnique({ where: { id: endorse.ideaId } });
+        ideas.push(idea);
+      }
+      res.status(200).json(ideas);
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({
+        details: {
+          errorMessage: error.message,
+          errorStack: error.stack,
+        }
+      });
+    } finally {
+      await prisma.$disconnect();
+    }
+  }
+)
+*/
 module.exports = ideaRouter;

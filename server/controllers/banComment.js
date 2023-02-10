@@ -2,6 +2,7 @@ const passport = require('passport');
 const express = require('express');
 const banCommentRouter = express.Router();
 const prisma = require('../lib/prismaClient');
+const { BanType } = require('@prisma/client');
 
 banCommentRouter.post(
     '/create',
@@ -35,6 +36,19 @@ banCommentRouter.post(
                     bannedBy: id,
                 }
             });
+
+            const createBanHistory = await prisma.ban_History.create({
+                data: {
+                    userId: req.body.authorId,
+                    type: BanType.COMMENT,
+                    reason: req.body.banReason,
+                    ideaId: foundComment.ideaId,
+                    commentId: req.body.commentId,
+                    modId: id,
+                    message: req.body.banMessage,
+                }
+            });
+            console.log("Created ban history: ", createBanHistory)
             res.status(200).json({
                 message: `Successfully banned comment ${req.body.commentId}`,
                 createdBan

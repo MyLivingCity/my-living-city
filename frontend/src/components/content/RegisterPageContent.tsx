@@ -99,6 +99,7 @@ return (
                     email: '',
                     password: '',
                     confirmPassword: '',
+                    organizationName: '',
                     fname: '',
                     lname: '',
                     address: {
@@ -156,6 +157,7 @@ return (
                 }
             }
             >
+                 
                 <FormikStep>
                     <h3>Please select your account type:</h3>
                     <BForm.Group   className="m-4">
@@ -182,7 +184,8 @@ return (
                         </div> */}
                     </BForm.Group>
                 </FormikStep>
-                <FormikStep validationSchema={Yup.object().shape({
+                {(userType === USER_TYPES.BUSINESS || userType === USER_TYPES.COMMUNITY) && 
+                   <FormikStep validationSchema={Yup.object().shape({
                     password: Yup.string().min(8, 'Password is too short, 8 characters minimum'),
                     confirmPassword: Yup.string().oneOf([Yup.ref('password'), null], 'Passwords must match'),
                     email: Yup.string().email('Invalid email')
@@ -208,11 +211,15 @@ return (
                         <ErrorMessage name="confirmPassword">{msg => <p className="text-danger">{msg}<br></br></p>}</ErrorMessage>
                     </BForm.Group>
                     <BForm.Group>
-                        <BForm.Label>First Name</BForm.Label>
+                        <BForm.Label>Organization Name</BForm.Label>
+                        <Field required name="organizationName" type="text" as={BForm.Control}/>
+                    </BForm.Group>
+                    <BForm.Group>
+                        <BForm.Label>Contact First Name</BForm.Label>
                         <Field required name="fname" type="text" as={BForm.Control}/>
                     </BForm.Group>
                     <BForm.Group>
-                        <BForm.Label>Last Name</BForm.Label>
+                        <BForm.Label>Contact Last Name</BForm.Label>
                         <Field required name="lname" type="text" as={BForm.Control}/>
                     </BForm.Group>
                     <BForm.Group>
@@ -234,9 +241,64 @@ return (
                         <BForm.Label>ZIP / Postal Code</BForm.Label>
                         <Field name="address.postalCode" type="text" as={BForm.Control}/>
                     </BForm.Group>             
-                    
-                </FormikStep>
-
+                    </FormikStep>
+                    }
+                
+                {(userType != USER_TYPES.BUSINESS && userType != USER_TYPES.COMMUNITY) && 
+                    <FormikStep validationSchema={Yup.object().shape({
+                        password: Yup.string().min(8, 'Password is too short, 8 characters minimum'),
+                        confirmPassword: Yup.string().oneOf([Yup.ref('password'), null], 'Passwords must match'),
+                        email: Yup.string().email('Invalid email')
+                        .test('Unique Email','Email already in use',
+                            function(value){return new Promise((resolve, reject) => {
+                                getUserWithEmail(value)
+                                .then(res => {res === 200 ? resolve(false) : resolve(true)})
+                            })})
+                        })}>
+                        <BForm.Group>
+                            <BForm.Label>Email address</BForm.Label> 
+                            <Field required name="email" type="email" as={BForm.Control}/>
+                            <ErrorMessage name="email">{msg => <p className="text-danger">{msg}<br></br></p>}</ErrorMessage>
+                        </BForm.Group>
+                        <BForm.Group>
+                            <BForm.Label>Password</BForm.Label>
+                            <Field required name="password" type="password" as={BForm.Control}/>
+                            <ErrorMessage name="password">{msg => <p className="text-danger">{msg}<br></br></p>}</ErrorMessage>
+                        </BForm.Group>
+                        <BForm.Group>
+                            <BForm.Label>Confirm Password</BForm.Label>
+                            <Field required name="confirmPassword" type="password" as={BForm.Control}/>
+                            <ErrorMessage name="confirmPassword">{msg => <p className="text-danger">{msg}<br></br></p>}</ErrorMessage>
+                        </BForm.Group>
+                        <BForm.Group>
+                            <BForm.Label>First Name</BForm.Label>
+                            <Field required name="fname" type="text" as={BForm.Control}/>
+                        </BForm.Group>
+                        <BForm.Group>
+                            <BForm.Label>Last Name</BForm.Label>
+                            <Field required name="lname" type="text" as={BForm.Control}/>
+                        </BForm.Group>
+                        <BForm.Group>
+                            <Field name="imagePath" type="file" fileContainerStyle={{backgroundColor: "#F8F9FA"}}
+                            withPreview={true} onChange={(pic:any)=>setAvatar(pic[0])} imgExtension={['.jpg','.jpeg','.png','.webp']} 
+                            buttonText="Select Profile Picture" maxFileSize={2097152} label={"Max file size 2mb, \n jpg, jpeg, png, webp"} 
+                            singleImage={true} as={ImageUploader}/>
+                            {/* <ImageUploader name="imagePath" fileContainerStyle={{backgroundColor: "#F8F9FA"}}withPreview={true} onChange={pic=>console.log(pic)} imgExtension={['.jpg','.jpeg','.png','.webp']} buttonText="Select Idea Image" maxFileSize={10485760} label={"Max file size 10mb, \n jpg, jpeg, png, webp"} singleImage={true}/> */}
+                        </BForm.Group>
+                        <BForm.Group>
+                            <BForm.Label>Street Name</BForm.Label>
+                            <Field required name="address.streetAddress" type="text" as={BForm.Control}/>
+                        </BForm.Group>
+                        {/* <BForm.Group>
+                            <BForm.Label>Profile Image Upload</BForm.Label>
+                            <BForm.Control type="file" name="image" onChange={(e:any)=> setSelectedFile(e.target.files[0])}/>
+                        </BForm.Group> */}
+                        <BForm.Group>
+                            <BForm.Label>ZIP / Postal Code</BForm.Label>
+                            <Field name="address.postalCode" type="text" as={BForm.Control}/>
+                        </BForm.Group> 
+                    </FormikStep>
+                }  
                 <FormikStep>
                     <Card.Title>Show us on the map where your home is</Card.Title>
                     <Card.Subtitle className="text-muted mb-3">We use this information to find your community!</Card.Subtitle>
@@ -367,8 +429,15 @@ return (
                 </FormikStep>
 
                 <FormikStep>
-                        <h3>To complete your account registration click submit</h3>
+                    <h3>To complete registration press submit!</h3>
+                    {/* Stripe Payment Implementation Goes Here */}
+                    {/* <BForm.Group> */}
+                    {/* </BForm.Group> */}
                 </FormikStep>
+
+                {/* <FormikStep>
+                    <h3>To complete your account registration click submit</h3>
+                </FormikStep> */}
 
                 {(userType === USER_TYPES.BUSINESS || userType === USER_TYPES.COMMUNITY) && 
                 <FormikStep>
@@ -424,27 +493,35 @@ export function FormikStepper({ children, markers, showMap, subIds, segIds, scho
     // const [segIds, setSegIds] = useState<number[]>([]);
     const [error, setError] = useState<IFetchError | null>(null);
     //Functions for handling button states.
-    const isLastStep = () => { return step === childrenArray.length - 1 };
+    const isLastStep = () => { 
+        // if (userType === USER_TYPES.RESIDENTIAL) {
+        //     return step === childrenArray.length - 2;
+        // } else {
+            return step === childrenArray.length - 1;
+    };
     const nextOrLoading = () => { return isLoading ? 'Loading...' : 'Next' };
     const submitOrSubmitting = () => { return isLoading ? 'Submitting...':'Submit' };
     const isHomeMarkerSet = () => { return (step===2 && markers.home.lat === null) };
     const getStepHeader = (step: number) => {
-        switch(step) {
-            case 0:
-                return "Create Account"
-            case 1:
-                return "Home Location"
-            case 2:
-                return userType === USER_TYPES.RESIDENTIAL ? "Work Location" : "Reach";
-            case 3:
-                return userType === USER_TYPES.RESIDENTIAL ? "School Location" : "Privacy Policy"
-            case 4:
-                return userType === USER_TYPES.RESIDENTIAL? "Privacy Policy" : "Submit"
-            case 5:
-                return userType === USER_TYPES.RESIDENTIAL? "Submit" : "Create Ad" //Removed  "Complementary" due to sizing problems
-            default:
-                return ""
-        }
+                switch(step) {
+                    case 0:
+                        return "Create Account"
+                    case 1:
+                        return "Home Location"
+                    case 2:
+                        return userType === USER_TYPES.RESIDENTIAL ? "Work Location" : "Reach";
+                    case 3:
+                        return userType === USER_TYPES.RESIDENTIAL ? "School Location" : "Privacy Policy"
+                    case 4:
+                        return userType === USER_TYPES.RESIDENTIAL? "Privacy Policy" : "Submit"
+                    // case 5:
+                    //     return userType === USER_TYPES.RESIDENTIAL ? "Submit" : "Submit"
+                    case 5:
+                        return userType === USER_TYPES.RESIDENTIAL? "Submit" : "Create Ad" //Removed  "Complementary" due to sizing problems
+                    default:
+                        return ""
+                // }
+            }
     }
 
     const isWorkSubIdSet = () => { 
@@ -460,7 +537,9 @@ export function FormikStepper({ children, markers, showMap, subIds, segIds, scho
             if(step % 2 === 0 && step !== 0){
                 setInferStep(s=>s-1);
             }
-            if(isLastStep()) setInferStep(s=>s-1);
+            if(isLastStep()) {
+                setInferStep(s=>s-1);
+            }
             if(step===8 && markers.school.lat === null){
                 setStep(s=>s-2);
             }else if(step === 6 && markers.work.lat === null){
@@ -543,8 +622,8 @@ export function FormikStepper({ children, markers, showMap, subIds, segIds, scho
         }
         
     }
-
-return(
+    if (userType === USER_TYPES.RESIDENTIAL) {
+        return(
     <Formik
     {...props}
     validationSchema={currentChild?.props.validationSchema}
@@ -675,6 +754,142 @@ return(
     </Card>
     </div>
     </Formik>
-)
+)} else {
+    return (
+    <Formik
+    {...props}
+    validationSchema={currentChild?.props.validationSchema}
+    onSubmit={async(values, helpers)=>{
+        if (step===4 && (userType === USER_TYPES.BUSINESS || userType === USER_TYPES.COMMUNITY)) {
+            values.reachSegmentIds = reachSegmentIds;
+        }
+
+        if (step===0) {
+            // values.userType = (userType === USER_TYPES.BUSINESS || userType === USER_TYPES.COMMUNITY) ?  USER_TYPES.IN_PROGRESS : USER_TYPES.RESIDENTIAL;
+            values.userType = userType;
+            setStep(s=>s+1);
+        } else if ((isLastStep() && userType === USER_TYPES.RESIDENTIAL) || ((userType === USER_TYPES.BUSINESS || userType === USER_TYPES.COMMUNITY) && step===6)) {
+            setIsLoading(true);
+            await new Promise(r => setTimeout(r, 2000));
+            await props.onSubmit(values, helpers);
+            if (userType !== USER_TYPES.RESIDENTIAL) {
+                setStep(s=>s+1);
+                setInferStep(s=>s+1);
+            }
+        }else if(step=== 2){
+            const seg = await setSegData(0);
+            showMap(false);
+        }else if(step=== 4 && userType === USER_TYPES.RESIDENTIAL){
+            if(markers.work.lat === null){
+                setStep(s=>s+2);
+                setInferStep(s=>s+1);
+                if(workTransfer){
+                    refactorStateArray(segIds, 1, segIds[0], setSegIds);
+                    refactorStateArray(subIds, 1, subIds[0], setSubIds);
+                    //refactorSegIds(1, segIds[0]);
+                    //refactorSubIds(1, subIds[0]);
+                }
+            }else{
+                const seg = await setSegData(1);
+                //setStep(s=>s+1);
+            }
+            showMap(false);
+        }else if(step=== 6 && userType === USER_TYPES.RESIDENTIAL){
+            console.log(segIds);
+            if(markers.school.lat === null){
+                setStep(s=>s+2);
+                setInferStep(s=>s+1);
+                if(schoolTransfer){
+                    refactorStateArray(segIds, 2, segIds[1] || segIds[0], setSegIds);
+                    refactorStateArray(subIds, 2, subIds[1] || subIds[0], setSubIds);
+                    //refactorSegIds(2, segIds[1] || segIds[0]);
+                    //refactorSubIds(2, subIds[1] || subIds[0])
+                }
+            }else{
+                const seg = await setSegData(2);
+                //setStep(s=>s+1);
+            }
+            setIsLoading(false);
+        }else if((step===8 && userType === USER_TYPES.RESIDENTIAL) 
+            || (step===5 && userType === USER_TYPES.COMMUNITY)
+            || (step===5 && userType === USER_TYPES.BUSINESS)){
+            setIsLoading(true);
+            //Field setters for the external inputs. Formik can only handle native form elements.
+            //These fields must be added manually.
+            helpers.setFieldValue('geo.lat', markers.home.lat);
+            helpers.setFieldValue('geo.lon', markers.home.lon);
+            helpers.setFieldValue('geo.work_lat', markers.work.lat);
+            helpers.setFieldValue('geo.work_lon', markers.work.lon);
+            helpers.setFieldValue('geo.school_lat', markers.school.lat);
+            helpers.setFieldValue('geo.school_lon', markers.school.lon);
+
+            helpers.setFieldValue('homeSegmentId', segIds[0] || null);
+            helpers.setFieldValue('homeSubSegmentId', subIds[0] || null);
+
+            helpers.setFieldValue('workSubSegmentId', subIds[1] || null);
+            helpers.setFieldValue('workSegmentId', segIds[1] || null);
+            helpers.setFieldValue('schoolSubSegmentId', subIds[2] || null);
+            helpers.setFieldValue('schoolSegmentId', segIds[2] || null);
+            helpers.setFieldValue('imagePath', avatar);
+            setStep(s=>s+1);
+            setInferStep(s=>s+1);
+        }else{
+            setStep(s=>s+1);
+            setInferStep(s=>s+1);
+            //helpers.setTouched({});
+        }
+        //These fields added here due to update reasons. If these fields are in the above section the state is not updated. Due to setFieldValue being async.
+
+        setIsLoading(false);
+    }}
+    >
+    <div>
+    <div className="stepper mb-4">
+    <Stepper steps={ [
+        {title: `${getStepHeader(0)}`}, 
+        {title: `${getStepHeader(1)}`}, 
+        {title: `${getStepHeader(2)}`},
+        {title: `${getStepHeader(3)}`},
+        {title: `${getStepHeader(4)}`},
+        {title: `${getStepHeader(5)}`}
+        // {title: `${getStepHeader(6)}`}
+    ] } 
+        activeStep={ inferStep }
+        circleTop={0}
+        lineMarginOffset={8}
+        activeColor={'#98cc74'}
+        completeColor={"#98cc74"}
+        completeBarColor={"#98cc74"}
+        titleFontSize={19}
+        />
+    </div>
+    <Card>
+    <Card.Header>
+    <h3>{getStepHeader(inferStep)}</h3>
+    </Card.Header>
+    <Card.Body>   
+    <Form>
+        
+        {currentChild}
+        {error && (<Alert variant='danger' className="error-alert">{ error.message }</Alert>)}
+        <div className="text-center">
+        {(step > 0 && userType === USER_TYPES.RESIDENTIAL) || ((!isLastStep() && step > 0) && userType !== USER_TYPES.RESIDENTIAL) ? <Button className="float-left mt-3" size="lg" variant="outline-primary" onClick={()=>{handleBackButton()}}>Back</Button> : null}
+
+        {isLastStep() && userType !== USER_TYPES.RESIDENTIAL ? null : 
+            <Button className="float-right mt-3 d-flex align-items-center" size="lg" type="submit" disabled={isLoading||isHomeMarkerSet()}>
+            {isLoading && <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>}
+            {(isLastStep() && userType === USER_TYPES.RESIDENTIAL) || (userType !== USER_TYPES.RESIDENTIAL && step===6) ? submitOrSubmitting() : nextOrLoading()}
+            </Button>
+        }
+        </div>
+
+    </Form>
+    </Card.Body>
+    </Card>
+    </div>
+    </Formik>
+)}
+
+
 }
 export default RegisterPageContent

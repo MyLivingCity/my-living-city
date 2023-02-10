@@ -14,6 +14,7 @@ import { useIdeasHomepage, useUserFollowedIdeas, useUserIdeas } from "../../hook
 import { IUser } from "src/lib/types/data/user.type";
 import { FindBanDetails, FindUndismissedPostBans, FindUndismissedCommentBans } from "src/hooks/banHooks";
 import { useAllComments } from "src/hooks/commentHooks";
+import { useQuarantinePostNotifications } from "src/hooks/quarantinePostNotificationHooks";
 
 interface LandingPageContentProps {
   user: IUser
@@ -65,19 +66,24 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
       isLoading: userBannedDataLoading
     } = FindBanDetails(user.id);
     
+  const {
+    data: quarantinePostNotifications,
+    error: quarantinePostNotificationsError,
+    isLoading: quarantinePostNotificationsLoading
+  } = useQuarantinePostNotifications();
 
-  if (iLoading || uLoading || userFollowedLoading || userBannedDataLoading || commentLoading || undismissedPostBansLoading || undismissedCommentBansLoading) {
+  if (iLoading || uLoading || userFollowedLoading || userBannedDataLoading || commentLoading || undismissedPostBansLoading || undismissedCommentBansLoading || quarantinePostNotificationsLoading) {
     return <LoadingSpinner />;
   }
 
-  if (iError || iIsError || uError || userFollowedError || userBannedDataError || commentError || undismissedPostBansError || undismissedCommentBansError) {
+  if (iError || iIsError || uError || userFollowedError || userBannedDataError || commentError || undismissedPostBansError || undismissedCommentBansError || quarantinePostNotificationsError) {
     return <div>Error when fetching necessary data</div>;
   }
   return (
     <Container className="landing-page-content">
       <Row as="article" className="featured"></Row>
       <Row as="article" className="system-messages">
-        <Notifications userIdeas={userIdeaData} userBanInfo={userBannedData} userComments={commentData} userPostBans={undismissedPostBansData} userCommentBans={undismissedCommentBansData}/>
+        <Notifications userIdeas={userIdeaData} userBanInfo={userBannedData} userComments={commentData} userPostBans={undismissedPostBansData} userCommentBans={undismissedCommentBansData} userQuarantineNotifications={quarantinePostNotifications}/>
       </Row>
       <Row as="article" className="new-and-trending">
         <MyPosts userIdeas={userIdeaData!} numPosts={6} isDashboard={true} />

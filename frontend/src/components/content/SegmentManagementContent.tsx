@@ -30,6 +30,8 @@ import { COUNTRIES, PROVINCES } from "src/lib/constants";
 import { Dropdown } from "react-bootstrap";
 //import {Image} from 'react-native';
 import { capitalizeFirstLetterEachWord } from "./../../lib/utilityFunctions";
+// //import timeout timers/promises
+// import { setTimeout } from "timers/promises";
 
 export interface ShowSubSegmentsProps {
   segId: number;
@@ -315,6 +317,9 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
       console.log(error);
     }
   };
+  const sleep = (ms: number) => {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  };
   return (
     <div className="wrapper">
       <Row>
@@ -500,6 +505,8 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
                           size="sm"
                           onClick={() => {
                             handleSegSubmit();
+                            sleep(6000);
+                            window.location.reload();
                           }}
                         >
                           Add Segment

@@ -205,6 +205,21 @@ export const isIdeaFollowedByUser = async (token: string | null, userId: string 
   })
   return res.data;
 }
+
+// export const isIdeaEndorsedByUser = async (token: string | null, userId: string | null, ideaId: string | null) => {
+//   const res = await axios({
+//     method: "post",
+//     url: `${API_BASE_URL}/idea/isEndorsed`,
+//     headers: {
+//       "x-auth-token": token,
+//       "Access-Control-Allow-Origin": "*",
+//     },
+//     data: { userId: userId, ideaId: ideaId },
+//     withCredentials: true,
+//   })
+//   return res.data;
+// }
+
 export const updateIdeaStatus = async(token: String | null, ideaId: string|null, active: boolean|null, reviewed: boolean|null, banned: boolean|null, quarantined_at: Date) => {
   const res = await axios({
     method: "put",
@@ -270,3 +285,40 @@ export const getIdeasFollowedByUser = async (userId: string) => {
   })
   return res.data;
 }
+
+// export const endorseIdeaByUser = async (token: string, userId: string, ideaId: string) => {
+//   const res = await axios({
+//     method: "post",
+//     url: `${API_BASE_URL}/idea/endorse`,
+//     headers: {
+//       "x-auth-token": token,
+//       "Access-Control-Allow-Origin": "*",
+//     },
+//     data: { userId: userId, ideaId: ideaId },
+//     withCredentials: true,
+//   })
+//   return res.data;
+// }
+
+// export const unendorseIdeaByUser = async (token: string, userId: string, ideaId: string) => {
+//   const res = await axios({
+//     method: "post",
+//     url: `${API_BASE_URL}/idea/unendorse`,
+//     headers: {
+//       "x-auth-token": token,
+//       "Access-Control-Allow-Origin": "*",
+//     },
+//     data: { userId: userId, ideaId: ideaId },
+//     withCredentials: true,
+//   })
+//   return res.data;
+// }
+
+// export const getIdeasEndorsedByUser = async (userId: string) => {
+//   const res = await axios({
+//     method: "get",
+//     url: `${API_BASE_URL}/idea/getAllEndorsedByUser/${userId}`,
+//     withCredentials: true,
+//   })
+//   return res.data;
+// }

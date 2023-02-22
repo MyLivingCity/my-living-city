@@ -86,7 +86,7 @@ export default function Header() {
   }, [user])
 
   // TODO Redo how information is gathered for Community Dashboard, and remove reliance on params in url.
-    if (segQueryLoading) {
+    if (segQueryLoading && user) {
       return (
         <div className="outer-header">
       {stripeStatus !== "" && stripeStatus !== "active" &&

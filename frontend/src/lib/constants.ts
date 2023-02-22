@@ -82,3 +82,13 @@ export enum BAN_USER_TYPES {
   POST_BAN = "POST_BAN",
   SYS_BAN = "SYS_BAN",
 }
+
+export enum SOCIAL_MEDIA_TYPES {
+  FACEBOOK = "FACEBOOK",
+  TWITTER = "TWITTER",
+  WHATSAPP = "WHATSAPP",
+  LINE = "LINE",
+  REDDIT = "REDDIT",
+  EMAIL = "EMAIL",
+  OTHER = "OTHER",
+}

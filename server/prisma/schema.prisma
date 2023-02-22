@@ -121,6 +121,7 @@ model UserBan {
   createdAt             DateTime    @default(now()) @map(name: "created_at")
   banUntil              DateTime    @default(now()) @map(name: "banned_until")
   notificationDismissed Boolean     @default(false) @map(name: "notification_dismissed")
+  banDuration           Int         @default(0) @map(name: "ban_duration")
   user                  User        @relation(fields: [userId], references: [id])
 
   @@map(name: "ban_user")
@@ -161,16 +162,17 @@ model User {
   userType UserType @default(RESIDENTIAL) @map("user_type")
 
   // Fields
-  email        String   @unique
-  password     String
-  fname        String?  @map("f_name")
-  lname        String?  @map("l_name")
-  createdAt    DateTime @default(now()) @map(name: "created_at")
-  updatedAt    DateTime @default(now()) @updatedAt @map(name: "updated_at")
-  imagePath    String?
-  passCode     String?  @default(cuid())
-  banned       Boolean  @default(false)
-  reviewed     Boolean  @default(false)
+  email     String   @unique
+  password  String
+  organizationName String? @map("organization_name")
+  fname     String?  @map("f_name")
+  lname     String?  @map("l_name")
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map(name: "updated_at")
+  imagePath String?
+  passCode  String?  @default(cuid())
+  banned    Boolean  @default(false)
+  reviewed  Boolean  @default(false)
   totalFlagged Int      @default(0) @map("total_flagged")
   hasFlagged   Int      @default(0) @map("has_flagged")
 
@@ -179,6 +181,7 @@ model User {
   geo                 UserGeo?
   userReach           UserReach[]
   userIdeaFollow      UserIdeaFollow[]
+  userIdeaEndorse     UserIdeaEndorse[]
   //userRole        UserRole?    @relation(fields: [userRoleId], references: [id])
   ideas               Idea[]                @relation("ideaAuthor")
   ideaFlags           IdeaFlag[]
@@ -413,6 +416,7 @@ model Idea {
   address        IdeaAddress?
   geo            IdeaGeo?
   userIdeaFollow UserIdeaFollow[]
+  userIdeaEndorse UserIdeaEndorse[]
 
   // Multiple relationships pointing to same User Model
   // https://github.com/prisma/prisma/discussions/2073
@@ -663,6 +667,22 @@ model UserIdeaFollow {
 
   @@unique([userId, ideaId], name: "user_idea_follow_unique")
   @@map(name: "user_idea_follow")
+}
+
+// UserIdeaEndorse
+model UserIdeaEndorse {
+  // Columns
+  id         Int      @id @default(autoincrement()) @map("id")
+  userId     String   @map("user_id")
+  ideaId     Int      @map("idea_id")
+  endorsedAt DateTime @default(now()) @map("endorsed_at")
+
+  // Relations
+  user User @relation(references: [id], fields: [userId])
+  idea Idea @relation(references: [id], fields: [ideaId])
+
+  @@unique([userId, ideaId], name: "user_idea_endorse_unique")
+  @@map(name: "user_idea_endorse")
 }
 
 model SubSegments {

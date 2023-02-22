@@ -111,14 +111,17 @@ accountRouter.post(
                     id: req.body.userId
                 }
             })
+            console.log(STRIPE_PRODUCTS);
             const session = await stripe.checkout.sessions.create({
                 success_url: req.headers.origin,
                 cancel_url: req.headers.origin + "/profile",
                 line_items: [
-                  {price: STRIPE_PRODUCTS[user.userType], quantity: 1},
+                  {price: 
+                    STRIPE_PRODUCTS[user.userType], 
+                    quantity: 1},
                 ],
                 customer: result.stripeId,
-                mode: "subscription"
+                mode: 'subscription'
               });
 
             res.status(200).json(session);

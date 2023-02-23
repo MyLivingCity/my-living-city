@@ -1,3 +1,6 @@
 export interface ICreateFeedbackRatingYesNoInput {
-    rating : number;
+    rating : {
+        yes: Number,
+        no: Number
+    }
 }

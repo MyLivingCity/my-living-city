@@ -17,6 +17,7 @@ import {
   capitalizeFirstLetterEachWord,
   capitalizeString,
 } from "../../lib/utilityFunctions";
+import LoadingSpinner from '../ui/LoadingSpinner';
 import CommentsSection from "../partials/SingleIdeaContent/CommentsSection";
 import RatingsSection from "../partials/SingleIdeaContent/RatingsSection";
 import {
@@ -362,11 +363,12 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
   const canEndorse = user?.userType == USER_TYPES.BUSINESS || user?.userType == USER_TYPES.COMMUNITY 
   || user?.userType == USER_TYPES.MUNICIPAL || user?.userType == USER_TYPES.MUNICIPAL_SEG_ADMIN; 
-  const [showEndorseButton, setShowEndorseButton] = useState(true);
+  const [showEndorseButton, setShowEndorseButton] = useState(false);
   const handleHideEndorseButton = () => setShowEndorseButton(false);
   useEffect(() => {
     if (!isEndorsingPostLoading) {
       setEndorsingPost(isEndorsingPost.isEndorsed);
+      setShowEndorseButton(true);
     }
   }, [isEndorsingPostLoading, isEndorsingPost])
 
@@ -382,9 +384,11 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     }
   }
 
+  const [showFollowButton, setShowFollowButton] = useState(false);
   useEffect(() => {
     if (!isFollowingPostLoading) {
       setFollowingPost(isFollowingPost.isFollowed);
+      setShowFollowButton(true);
     }
 
   }, [isFollowingPostLoading, isFollowingPost])
@@ -399,17 +403,6 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
       }
       setFollowingPost(!followingPost);
     }
-  };
-
-  const addIdeaToUserFollowList = () => {
-    
-    setFollowingPost(!followingPost);
-  };
-
-  const addIdeaToUserEndorseList = () => {
-
-    setEndorsingPost(!endorsingPost);
-
   };
 
   let isPostAuthor = false;
@@ -456,6 +449,10 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     return (
       <div>Proposal Is Currently Inactive</div>
     )
+  }
+
+  if (isEndorsingPostLoading || isFollowingPostLoading) {
+    return <LoadingSpinner />;
   }
 
   return (
@@ -505,7 +502,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                   </ButtonGroup>
                   ) : null}
                   <ButtonGroup className="mr-2">
-                    {user && token ? <Button
+                    {user && token && showFollowButton ? <Button
                       // style={{ height: "3rem"}}
                       onClick={async () => await handleFollowUnfollow()}
                     >
@@ -513,7 +510,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                     </Button> : null}
                   </ButtonGroup>
                   <ButtonGroup className="mr-2">
-                    {user && token ? <Button
+                    {user && token && showEndorseButton && canEndorse ? <Button
                       // style={{ height: "3rem"}}
                       onClick={async () => await handleEndorseUnendorse()}
                     >

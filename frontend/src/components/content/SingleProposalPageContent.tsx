@@ -1280,10 +1280,12 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                             </Form.Label>
                             <br />
                             <Form.Check
+                              value = "Yes"
                               inline
                               label = "Yes"
                               type = "radio"/>
-                            <Form.Check
+                              <Form.Check
+                              value = "No"
                               inline
                               label = "No"
                               type = "radio"/>
@@ -1304,18 +1306,22 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                               </Form.Label>
                               <br />
                               <Form.Check
+                                value="1"
                                 inline
                                 label = "1"
                                 type = "radio"/>
                                 <Form.Check
+                                value="2"
                                 inline
                                 label = "2"
                                 type = "radio"/>
                                 <Form.Check
+                                value="3"
                                 inline
                                 label = "3"
                                 type = "radio"/>
                                 <Form.Check
+                                value="4"
                                 inline
                                 label = "4"
                                 type = "radio"/>
@@ -1347,10 +1353,12 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                             </Form.Label>
                             <br />
                             <Form.Check
+                              value = "Yes"
                               inline
                               label = "Yes"
                               type = "radio"/>
                               <Form.Check
+                              value = "No"
                               inline
                               label = "No"
                               type = "radio"/>
@@ -1371,18 +1379,22 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                               </Form.Label>
                               <br />
                               <Form.Check
+                                value="1"
                                 inline
                                 label = "1"
                                 type = "radio"/>
                                 <Form.Check
+                                value="2"
                                 inline
                                 label = "2"
                                 type = "radio"/>
                                 <Form.Check
+                                value="3"
                                 inline
                                 label = "3"
                                 type = "radio"/>
                                 <Form.Check
+                                value="4"
                                 inline
                                 label = "4"
                                 type = "radio"/>
@@ -1414,10 +1426,12 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                 </Form.Label>
                                 <br />
                                 <Form.Check
+                                  value = "Yes"
                                   inline
                                   label = "Yes"
                                   type = "radio"/>
                                   <Form.Check
+                                  value = "No"
                                   inline
                                   label = "No"
                                   type = "radio"/>
@@ -1438,18 +1452,22 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                   </Form.Label>
                                   <br />
                                   <Form.Check
+                                    value="1"
                                     inline
                                     label = "1"
                                     type = "radio"/>
                                     <Form.Check
+                                    value="2"
                                     inline
                                     label = "2"
                                     type = "radio"/>
                                     <Form.Check
+                                    value="3"
                                     inline
                                     label = "3"
                                     type = "radio"/>
                                     <Form.Check
+                                    value="4"
                                     inline
                                     label = "4"
                                     type = "radio"/>
@@ -1481,10 +1499,12 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                 </Form.Label>
                                 <br />
                                 <Form.Check
+                                  value = "Yes"
                                   inline
                                   label = "Yes"
                                   type = "radio"/>
                                   <Form.Check
+                                  value = "No"
                                   inline
                                   label = "No"
                                   type = "radio"/>
@@ -1505,18 +1525,22 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                   </Form.Label>
                                   <br />
                                   <Form.Check
+                                    value="1"
                                     inline
                                     label = "1"
                                     type = "radio"/>
                                     <Form.Check
+                                    value="2"
                                     inline
                                     label = "2"
                                     type = "radio"/>
                                     <Form.Check
+                                    value="3"
                                     inline
                                     label = "3"
                                     type = "radio"/>
                                     <Form.Check
+                                    value="4"
                                     inline
                                     label = "4"
                                     type = "radio"/>
@@ -1548,10 +1572,12 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                 </Form.Label>
                                 <br />
                                 <Form.Check
+                                  value = "Yes"
                                   inline
                                   label = "Yes"
                                   type = "radio"/>
                                   <Form.Check
+                                  value = "No"
                                   inline
                                   label = "No"
                                   type = "radio"/>
@@ -1572,18 +1598,22 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                   </Form.Label>
                                   <br />
                                   <Form.Check
+                                    value="1"
                                     inline
                                     label = "1"
                                     type = "radio"/>
                                     <Form.Check
+                                    value="2"
                                     inline
                                     label = "2"
                                     type = "radio"/>
                                     <Form.Check
+                                    value="3"
                                     inline
                                     label = "3"
                                     type = "radio"/>
                                     <Form.Check
+                                    value="4"
                                     inline
                                     label = "4"
                                     type = "radio"/>

@@ -1,5 +1,5 @@
 -- AlterEnum
-ALTER TYPE "user_type" ADD VALUE 'SUPER_ADMIN';
+-- ALTER TYPE "user_type" ADD VALUE 'SUPER_ADMIN';
 
 -- DropForeignKey
 ALTER TABLE "UserSegments" DROP CONSTRAINT "UserSegments_user_id_fkey";

@@ -94,7 +94,9 @@ const Notifications: React.FC<NotificationPageContentProps> = ({
 
     if (userQuarantineNotifications) {
       userQuarantineNotifications?.map(async (quarantineNotification) => {
-        if (!quarantineNotification.seen) {
+        console.log("IDS: ", quarantineNotification.userId, "\t", user!.id)
+        if (!quarantineNotification.seen &&
+          quarantineNotification.userId === user!.id) {
           quarantineNotification!.seen = true;
           await dismissQuarantineNotification(quarantineNotification!.id, token);
         }
@@ -146,9 +148,12 @@ const Notifications: React.FC<NotificationPageContentProps> = ({
     userQuarantineNotifications!
       .filter(
         (quarantineNotification) =>
-          quarantineNotification.seen == false
-      )
+          quarantineNotification.seen == false &&
+          quarantineNotification.userId == user!.id
+      ).filter((quarantineNotification) => quarantineNotification != null)
       .map((quarantineNotification) =>
+        // Check if there are no notifications
+
         notifications.push(
           <Notification userQuarantineNotification={quarantineNotification} />
         )

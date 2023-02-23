@@ -35,7 +35,7 @@ import {
 } from "react-share";
 import ChampionSubmit from "../partials/SingleIdeaContent/ChampionSubmit";
 import React, { useContext, useEffect, useState } from "react";
-import { API_BASE_URL } from "src/lib/constants";
+import { API_BASE_URL, USER_TYPES } from "src/lib/constants";
 import Popup from "../content/Popup";
 import { UserProfileContext } from "../../contexts/UserProfile.Context";
 import { IFetchError } from "../../lib/types/types";
@@ -43,7 +43,17 @@ import { useFormik } from "formik";
 import { useHistory } from "react-router-dom";
 import "react-image-crop/dist/ReactCrop.css";
 import { handlePotentialAxiosError } from "../../lib/utilityFunctions";
-import { postCreateIdea, updateIdeaStatus } from "../../lib/api/ideaRoutes";
+import { 
+  postCreateIdea, 
+  followIdeaByUser, 
+  isIdeaFollowedByUser, 
+  unfollowIdeaByUser, 
+  updateIdeaStatus, 
+  endorseIdeaByUser, 
+  isIdeaEndorsedByUser, 
+  unendorseIdeaByUser,
+} from "src/lib/api/ideaRoutes";
+import { useCheckIdeaFollowedByUser, useCheckIdeaEndorsedByUser } from "src/hooks/ideaHooks";
 import {
   postCreateCollabotator,
   postCreateVolunteer,
@@ -345,10 +355,61 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
   });
 
   const [followingPost, setFollowingPost] = useState(false);
+  const [endorsingPost, setEndorsingPost] = useState(false);
+
+  const {data: isFollowingPost, isLoading: isFollowingPostLoading} = useCheckIdeaFollowedByUser(token, (user ? user.id : user), ideaId);
+  const {data: isEndorsingPost, isLoading: isEndorsingPostLoading} = useCheckIdeaEndorsedByUser(token, (user ? user.id : user), ideaId);
+
+  const canEndorse = user?.userType == USER_TYPES.BUSINESS || user?.userType == USER_TYPES.COMMUNITY 
+  || user?.userType == USER_TYPES.MUNICIPAL || user?.userType == USER_TYPES.MUNICIPAL_SEG_ADMIN; 
+  const [showEndorseButton, setShowEndorseButton] = useState(true);
+  const handleHideEndorseButton = () => setShowEndorseButton(false);
+  useEffect(() => {
+    if (!isEndorsingPostLoading) {
+      setEndorsingPost(isEndorsingPost.isEndorsed);
+    }
+  }, [isEndorsingPostLoading, isEndorsingPost])
+
+  const handleEndorseUnendorse = async () => {
+    let res;
+    if (user && token) {
+      if (endorsingPost) {
+        res = await unendorseIdeaByUser(token, user.id, ideaId);
+      } else {
+        res = await endorseIdeaByUser(token, user.id, ideaId);
+      }
+      setEndorsingPost(!endorsingPost);
+    }
+  }
+
+  useEffect(() => {
+    if (!isFollowingPostLoading) {
+      setFollowingPost(isFollowingPost.isFollowed);
+    }
+
+  }, [isFollowingPostLoading, isFollowingPost])
+
+  const handleFollowUnfollow = async () => {
+    let res;
+    if (user && token) {
+      if (followingPost) {
+        res = await unfollowIdeaByUser(token, user.id, ideaId);
+      } else {
+        res = await followIdeaByUser(token, user.id, ideaId);
+      }
+      setFollowingPost(!followingPost);
+    }
+  };
 
   const addIdeaToUserFollowList = () => {
     
     setFollowingPost(!followingPost);
+  };
+
+  const addIdeaToUserEndorseList = () => {
+
+    setEndorsingPost(!endorsingPost);
+
   };
 
   let isPostAuthor = false;
@@ -446,9 +507,17 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                   <ButtonGroup className="mr-2">
                     {user && token ? <Button
                       // style={{ height: "3rem"}}
-                      onClick={async () => await addIdeaToUserFollowList()}
+                      onClick={async () => await handleFollowUnfollow()}
                     >
                       {followingPost ? "Unfollow" : "Follow"}
+                    </Button> : null}
+                  </ButtonGroup>
+                  <ButtonGroup className="mr-2">
+                    {user && token ? <Button
+                      // style={{ height: "3rem"}}
+                      onClick={async () => await handleEndorseUnendorse()}
+                    >
+                      {endorsingPost ? "Unendorse" : "Endorse"}
                     </Button> : null}
                   </ButtonGroup>
                 </div>

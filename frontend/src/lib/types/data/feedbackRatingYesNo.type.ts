@@ -2,7 +2,7 @@ export interface IFeedbackRatingYesNo {
     id: number;
     ideaId: number;
     authorId: string;
-    rating: number;
+    rating: string;
     createdAt: string;
     updatedAt: string;
 }

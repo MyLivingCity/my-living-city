@@ -104,9 +104,22 @@ export default function Header() {
             alt="My Living City Logo"
           />
         </Navbar.Brand>
-        <Nav.Link href="/profile" className="d-inline-block alight-top">
-          {data && `${data.fname}@${data!.address!.streetAddress}`}
-        </Nav.Link>
+        {(user) ? (
+          <>
+            {(user.userType === "BUSINESS" || user.userType === "MUNICIPAL" || user.userType === "COMMUNITY") && (
+              <Nav.Link href="/profile" className="d-inline-block alight-top">
+                {data && `${data.organizationName}`}
+              </Nav.Link>
+            )}
+            {(user.userType != "BUSINESS" && user.userType != "MUNICIPAL" && user.userType != "COMMUNITY") && (
+              <Nav.Link href="/profile" className="d-inline-block alight-top">
+                {data && `${data.fname}@${data!.address!.streetAddress}`}
+              </Nav.Link>
+            )}
+          </>
+        ) : (
+          <></>
+        )}
         </Navbar>
         </div>
       );
@@ -130,9 +143,22 @@ export default function Header() {
             alt="My Living City Logo"
           />
         </Navbar.Brand>
-        <Nav.Link href="/profile" className="d-inline-block alight-top">
-          {data && `${data.fname}@${data!.address!.streetAddress}`}
-        </Nav.Link>
+        {(user) ? (
+          <>
+            {(user.userType === "BUSINESS" || user.userType === "MUNICIPAL" || user.userType === "COMMUNITY") && (
+              <Nav.Link href="/profile" className="d-inline-block alight-top">
+                {data && `${data.organizationName}`}
+              </Nav.Link>
+            )}
+            {(user.userType != "BUSINESS" && user.userType != "MUNICIPAL" && user.userType != "COMMUNITY") && (
+              <Nav.Link href="/profile" className="d-inline-block alight-top">
+                {data && `${data.fname}@${data!.address!.streetAddress}`}
+              </Nav.Link>
+            )}
+          </>
+        ) : (
+          <Nav.Link href="/login">Login</Nav.Link>
+        )}
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ml-auto">

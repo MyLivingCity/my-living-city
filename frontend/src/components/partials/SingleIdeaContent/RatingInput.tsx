@@ -198,9 +198,6 @@ const RatingInput = ({
             {buttonTextOutput()}
           </Button>
           )}
-          {userHasRated && (
-            <div style={{ marginTop: "1rem" }}>You have already submitted.</div>
-          )}
         </Col>
       </Row>
     </Container>

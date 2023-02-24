@@ -39,12 +39,13 @@ export default function Header() {
   const { data: segData, isLoading: segQueryLoading } = useAllUserSegmentsRefined(token, user?.id || null);
   const { data: banData, isLoading: banQueryLoading} = FindBanDetailsWithToken(token)
  
+  console.log("Seg data: ", segData);
 
   // const segData = useSingleSegmentByName({
   //   segName:googleQuery.data.city, province:googleQuery.data.province, country:googleQuery.data.country
   // }, googleQuery.data != null)
 
-  const [userSegId, setUserSegId] = useState<any>(1);
+  const [userSegId, setUserSegId] = useState<any>(0);
   const [showWarningModal, setShowWarningModal] = useState<boolean>(!localStorage.getItem('warningModalState'));
 
   // Hook to set localStorage: warningModalState to !null
@@ -65,12 +66,17 @@ export default function Header() {
   //   querySegmentData();
   // }, [googleQuery, googleQueryLoading])
 
-  useEffect(() => {
-    if (segQueryLoading === false && segData != null && segData !== undefined) {
-  
-      setUserSegId(segData[0].id);
-    }
-  }, [segData, segQueryLoading])
+  // useEffect(() => {
+  //   if (segQueryLoading === false && segData != null && segData !== undefined) {
+
+  //     // Get user's home segment id
+  //     segData.forEach((seg: any) => {
+  //       if (seg.segType === "Segment" && seg.userType === "Resident") {
+  //         setUserSegId(seg.id);
+  //       }
+  //     });
+  //   }
+  // }, [segData, segQueryLoading])
 
   const paymentNotificationStyling: CSS.Properties = {
     backgroundColor: "#f7e4ab",
@@ -84,6 +90,8 @@ export default function Header() {
       getUserSubscriptionStatus(user.id).then(e => setStripeStatus(e.status)).catch(e => console.log(e))
     }
   }, [user])
+
+
 
   // TODO Redo how information is gathered for Community Dashboard, and remove reliance on params in url.
   //   if (segQueryLoading && user) {

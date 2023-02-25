@@ -35,7 +35,7 @@ import { capitalizeFirstLetterEachWord } from "./../../lib/utilityFunctions";
 
 export interface ShowSubSegmentsProps {
   segId: number;
-  token: any;
+  token: string;
   segName: string | null | undefined;
   data?: ISubSegment[] | undefined;
 }
@@ -59,6 +59,10 @@ export const ShowSubSegments: React.FC<ShowSubSegmentsProps> = ({
         }
         if (!updateData.lat || !updateData.lon) {
           setError(Error("Please enter lat and lon when updating sub-segment"));
+          throw error;
+        }
+        if (!updateData.radius) {
+          setError(Error("Please enter a radius when updating sub-segment"));
           throw error;
         }
         await updateSubSegment(updateData, token);
@@ -91,8 +95,11 @@ export const ShowSubSegments: React.FC<ShowSubSegmentsProps> = ({
       setError(null);
     } catch (error) {
       console.log(error);
-      setShowNewSubSeg(false);
+      // setShowNewSubSeg(false);
     }
+  };
+  const sleep = (ms: number) => {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   };
   return (
     <Card>
@@ -240,6 +247,8 @@ export const ShowSubSegments: React.FC<ShowSubSegmentsProps> = ({
                     size="sm"
                     onClick={() => {
                       handleSubSegSubmit();
+                      sleep(6000);
+                      window.location.reload();
                     }}
                   >
                     Add Sub-Segment
@@ -303,7 +312,7 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
           (element) => element.name === createData.name
         );
         if (found) {
-          setError(Error("A Sub-segment with this name already exists"));
+          setError(Error("A Segment with this name already exists"));
           throw error;
         }
         createData.country = countryName;

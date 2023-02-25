@@ -58,7 +58,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
   },[segmentRequests])
 
   useEffect(()=>{
-    getCommunityBusinessProfile(user.id).then(e => setCommunityBusinessProfile(e)).catch(e => console.log(e));
+    getCommunityBusinessProfile(user.id, token).then(e => setCommunityBusinessProfile(e)).catch(e => console.log(e));
   },[])
   
   // Removes the row based on the index provided
@@ -68,6 +68,45 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
     const rowToDelete = linkRows?.item(index);
     rowToDelete?.parentNode?.removeChild(rowToDelete);
   };
+
+  function handleUpdateProfile() {
+    const userId = user.id;
+    const statement = (document.getElementById("formVisionStatement") as HTMLInputElement).value;
+    const description = (document.getElementById("formServiceDescription") as HTMLInputElement).value;
+    const linksLocation = document.getElementById("formLinksBody");
+    const linksRows = linksLocation?.getElementsByTagName("tr");
+    let links: Object[] = [];
+    if (linksRows) {
+      for (let i = 0; i < linksRows.length; i++) {
+        const linkType = linksRows[i].getElementsByTagName("td")[0].getElementsByTagName("select")[0].value;
+        const linkUrl = linksRows[i].getElementsByTagName("td")[1].getElementsByTagName("input")[0].value;
+        const link = {
+          link: linkUrl,
+          linkType: linkType,
+        }
+        links.push(link);
+      }
+    }
+    const address = (document.getElementById("formPublicAddress") as HTMLInputElement).value;
+    const contactEmail = (document.getElementById("formContactEmail") as HTMLInputElement).value;
+    const contactPhone = (document.getElementById("formContactPhone") as HTMLInputElement).value;
+
+    const profileNew: PublicCommunityBusinessProfile = {
+      userId: userId,
+      statement: statement,
+      description: description,
+      links: links,
+      address: address,
+      contactEmail: contactEmail,
+      contactPhone: contactPhone,
+    }
+
+    updateCommunityBusinessProfile(profileNew, token).then(e => console.log(e)).catch(e => console.log(e));
+
+    console.log("Profile Updated");
+
+  }
+
 
   return (
     <Container className='user-profile-content w-100'>
@@ -132,7 +171,13 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
       <Row>
         <Card style={{ width: '80rem'}}>
           <Card.Body className="my-5">
-          <Form>
+          <Form
+          id="formPublicProfile"
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleUpdateProfile();
+          }}
+          >
               <Form.Group className="mb-3" controlId="formVisionStatement">
                 <Form.Label>Mission/Vision Statement</Form.Label>
                 <Form.Control 

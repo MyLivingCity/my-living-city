@@ -19,14 +19,11 @@ export interface Link {
 }
 
 export interface PublicCommunityBusinessProfile {
-    id: number;
-    userId: number;
+    userId: string;
     statement: string;
     description: string;
-    links: Link[];
+    links: Object[];
     address: string;
     contactEmail: string;
     contactPhone: string;
-    createdAt: Date;
-    updatedAt: Date;
 }

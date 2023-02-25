@@ -7,12 +7,16 @@ import { capitalizeString } from '../../lib/utilityFunctions';
 import { RequestSegmentModal } from '../partials/RequestSegmentModal';
 import StripeCheckoutButton from "src/components/partials/StripeCheckoutButton"
 import {getUserSubscriptionStatus} from 'src/lib/api/userRoutes'
-import { LinkType } from 'src/lib/types/data/link.type'; 
+import { LinkType, Link, PublicCommunityBusinessProfile } from 'src/lib/types/data/publicProfile.type'; 
 import { getCommunityBusinessProfile, updateCommunityBusinessProfile } from 'src/lib/api/publicProfileRoutes';
 interface ProfileContentProps {
   user: IUser;
   token: string;
 }
+
+const LinkTypes = Object.keys(LinkType).filter((item) => {
+  return isNaN(Number(item));
+});
 
 
 const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
@@ -38,6 +42,13 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
   const [stripeStatus, setStripeStatus] = useState("");
   const [segmentRequests, setSegmentRequests] = useState<any[]>([]);
   const [communityBusinessProfile, setCommunityBusinessProfile] = useState<any>({});
+  const [links, setLinks] = useState<any[]>([]);
+
+  function addNewRow() {
+    let table = document.getElementById("formLinksBody");
+    let rowCount = table?.childElementCount;
+    setLinks([...links, { type: LinkType.WEBSITE, url: "" , index: rowCount}]);
+  }
 
   useEffect(()=>{
     getUserSubscriptionStatus(user.id).then(e => setStripeStatus(e.status)).catch(e => console.log(e))
@@ -47,10 +58,16 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
   },[segmentRequests])
 
   useEffect(()=>{
-    getCommunityBusinessProfile(user.id).then(e => setCommunityBusinessProfile(e)).catch(e => console.log(e))
+    getCommunityBusinessProfile(user.id).then(e => setCommunityBusinessProfile(e)).catch(e => console.log(e));
   },[])
-
-  console.log(communityBusinessProfile)
+  
+  // Removes the row based on the index provided
+  const deleteRow = (index: number) => {
+    const linkTable = document.getElementById("formLinksBody");
+    const linkRows = linkTable?.getElementsByTagName("tr");
+    const rowToDelete = linkRows?.item(index);
+    rowToDelete?.parentNode?.removeChild(rowToDelete);
+  };
 
   return (
     <Container className='user-profile-content w-100'>
@@ -120,6 +137,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                 <Form.Label>Mission/Vision Statement</Form.Label>
                 <Form.Control 
                 type="text" 
+                id="formVisionStatement"
                 placeholder="Say a few words about your mission/vision" 
                 value={communityBusinessProfile.missionStatement}
                 />
@@ -127,7 +145,8 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
               <Form.Group className="mb-3" controlId="formServiceDescription">
                 <Form.Label>Product/Service Description</Form.Label>
                 <Form.Control 
-                type="text" 
+                type="text"
+                id="formServiceDescription"
                 placeholder="Tell us about the product/service you provide" 
                 value={communityBusinessProfile.serviceDescription}
                 />
@@ -136,18 +155,23 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                 <Form.Label>Public Address</Form.Label>
                 <Form.Control 
                 type="text" 
+                id="formPublicAddress"
                 placeholder="Public Address" 
                 value={communityBusinessProfile.address}
                 />
               </Form.Group>
-              <Form.Group className="mb-3" controlId="formLinks">
+              <Form.Group 
+              className="mb-3" 
+              controlId="formLinks"
+              id="formLinks"
+              >
                 <Form.Label>Links</Form.Label>
                 <Button
                   className="float-right"
                   size="sm"
-                  // onClick={(e) => {
-                  //   setShowNewSubSeg(true);
-                  // }}
+                  onClick={() => {
+                    addNewRow();
+                  }}
                 >
                   Add New Link
                 </Button>
@@ -159,56 +183,36 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                       <th style={{ width: "10rem"}}>Controls</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    { (communityBusinessProfile && communityBusinessProfile.links > 0) ? (communityBusinessProfile.links.forEach((link : String) => {
-                      let linkParts = link.split(" ");
-                      return (
-                        <tr>
-                          <td>
-                            <Form.Control as="select" defaultValue={linkParts[0]}>
-                              <option>Website</option>
-                              <option>Twitter</option>
-                              <option>Facebook</option>
-                              <option>Instagram</option>
-                              <option>LinkedIn</option>
-                              <option>Youtube</option>
-                              <option>Tiktok</option>
-                              <option>Other</option>
-                            </Form.Control>
-                          </td>
-                          <td>
-                            <Form.Control type="text" placeholder="Link" value={linkParts[1]}/>
-                          </td>
-                          <td>
-                            <NavDropdown title="Controls" id="nav-dropdown">
-                              <Dropdown.Item
-                                // onClick={() => setHideControls(String(segment.id))}
-                              >
-                                Edit
-                              </Dropdown.Item>
-                            </NavDropdown>
-                          </td>
-                        </tr>
-                      )
-                    })) : null
-                    }
-                    {/* <tr>
-                      <td>
-                        Sample
-                      </td>
-                      <td>
-                        www.thisisnotarealurl.com
-                      </td>
-                      <td>
-                        <NavDropdown title="Controls" id="nav-dropdown">
-                          <Dropdown.Item
-                            // onClick={() => setHideControls(String(segment.id))}
-                          >
-                            Edit
-                          </Dropdown.Item>
-                        </NavDropdown>
-                      </td>
-                    </tr> */}
+                  <tbody id="formLinksBody">
+                    {links && links.map((link) => (
+                      <tr
+                      key = {link.index}
+                      >
+                        <td>
+                          <Form.Control as="select" defaultValue={link.type}>
+                            {LinkTypes.map((linkType) => (
+                              <option>{linkType}</option>
+                            ))}
+                          </Form.Control>
+                        </td>
+                        <td>
+                          <Form.Control type="text" placeholder="Link" value={link.link}/>
+                        </td>
+                        <td>
+                          <NavDropdown title="Controls" id="nav-dropdown">
+                            <Dropdown.Item 
+                            class="deleteButton"
+                            onClick={() => {
+                              deleteRow(link.index);
+                            }}
+                            >
+                              Delete
+                            </Dropdown.Item>
+                          </NavDropdown>
+                        </td>
+                      </tr>
+                    )
+                    )}
                   </tbody>
                 </Table>
               </Form.Group>
@@ -234,7 +238,8 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                       </td>
                       <td>
                       <Form.Control 
-                        type="email" 
+                        type="email"
+                        id="formContactEmail"
                         placeholder="Email Address" 
                         value={communityBusinessProfile.contactEmail}
                       />
@@ -242,6 +247,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                       <td>
                       <Form.Control 
                         type="phone" 
+                        id="formContactPhone"
                         placeholder="Phone Number" 
                         value={communityBusinessProfile.contactPhone}
                       />

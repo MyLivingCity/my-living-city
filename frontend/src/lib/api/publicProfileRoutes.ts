@@ -6,12 +6,10 @@ import { getAxiosJwtRequestOption } from "./axiosRequestOptions";
 
 export const getCommunityBusinessProfile = async (userId: string | undefined) => {
     const res = await axios({
-        method: "post",
+        method: "get",
         url: `${API_BASE_URL}/publicProfile/communityBusinessProfile/${userId}`,
     });
-
-    console.log("Made it here");
-    console.log(res.data);
+    
     return res.data;
 }
 

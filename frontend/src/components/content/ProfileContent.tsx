@@ -60,6 +60,11 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
   useEffect(()=>{
     getCommunityBusinessProfile(user.id, token).then(e => setCommunityBusinessProfile(e)).catch(e => console.log(e));
   },[])
+
+  useEffect(()=>{
+    getCommunityBusinessProfile(user.id, token).then(e => setLinks(e.links)).catch(e => console.log(e));
+  },[communityBusinessProfile])
+
   
   // Removes the row based on the index provided
   const deleteRow = (index: number) => {
@@ -184,7 +189,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                 type="text" 
                 id="formVisionStatement"
                 placeholder="Say a few words about your mission/vision" 
-                value={communityBusinessProfile.missionStatement}
+                value={communityBusinessProfile.statement}
                 />
               </Form.Group>
               <Form.Group className="mb-3" controlId="formServiceDescription">
@@ -193,7 +198,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                 type="text"
                 id="formServiceDescription"
                 placeholder="Tell us about the product/service you provide" 
-                value={communityBusinessProfile.serviceDescription}
+                value={communityBusinessProfile.description}
                 />
               </Form.Group>
               <Form.Group className="mb-3" controlId="formPublicAddress">
@@ -229,7 +234,8 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                     </tr>
                   </thead>
                   <tbody id="formLinksBody">
-                    {links && links.map((link) => (
+                    {links && 
+                    links.map((link) => (
                       <tr
                       key = {link.index}
                       >

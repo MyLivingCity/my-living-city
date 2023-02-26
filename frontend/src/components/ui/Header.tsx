@@ -39,7 +39,6 @@ export default function Header() {
   const { data: segData, isLoading: segQueryLoading } = useAllUserSegmentsRefined(token, user?.id || null);
   const { data: banData, isLoading: banQueryLoading} = FindBanDetailsWithToken(token)
  
-  console.log("Seg data: ", segData);
 
   // const segData = useSingleSegmentByName({
   //   segName:googleQuery.data.city, province:googleQuery.data.province, country:googleQuery.data.country

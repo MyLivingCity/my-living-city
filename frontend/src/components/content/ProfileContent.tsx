@@ -8,7 +8,7 @@ import { RequestSegmentModal } from '../partials/RequestSegmentModal';
 import StripeCheckoutButton from "src/components/partials/StripeCheckoutButton"
 import {getUserSubscriptionStatus} from 'src/lib/api/userRoutes'
 import { LinkType, Link, PublicCommunityBusinessProfile } from 'src/lib/types/data/publicProfile.type'; 
-import { getCommunityBusinessProfile, updateCommunityBusinessProfile } from 'src/lib/api/publicProfileRoutes';
+import { getCommunityBusinessProfile, updateCommunityBusinessProfile, getCommunityBusinessLinks } from 'src/lib/api/publicProfileRoutes';
 interface ProfileContentProps {
   user: IUser;
   token: string;
@@ -62,7 +62,9 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
   },[])
 
   useEffect(()=>{
-    getCommunityBusinessProfile(user.id, token).then(e => setLinks(e.links)).catch(e => console.log(e));
+    if (communityBusinessProfile.id){
+      getCommunityBusinessLinks(communityBusinessProfile.id, token).then(e => setLinks(e)).catch(e => console.log(e));
+    }
   },[communityBusinessProfile])
 
   
@@ -240,7 +242,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                       key = {link.index}
                       >
                         <td>
-                          <Form.Control as="select" defaultValue={link.type}>
+                          <Form.Control as="select" defaultValue={link.linkType}>
                             {LinkTypes.map((linkType) => (
                               <option>{linkType}</option>
                             ))}

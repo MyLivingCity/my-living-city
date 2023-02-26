@@ -183,6 +183,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     feedback4,
     feedback5
   } = proposalData;
+
  
 
 
@@ -1079,7 +1080,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                       {volunteers.map((volunteer: any, index: number) => (
                         <tr>
                           <td>
-                            {volunteer.author.fname} {volunteer.author.lname}
+                            {volunteer.author.fname}@{volunteer.author.address.streetAddress}
                           </td>
                         </tr>
                       ))}
@@ -1209,7 +1210,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                       {donors.map((donor: any, index: number) => (
                         <tr>
                           <td>
-                            {donor.author.fname} {donor.author.lname}
+                            {donor.author.fname}@{donor.author.address.streetAddress}
                           </td>
                         </tr>
                       ))}

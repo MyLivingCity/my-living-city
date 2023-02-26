@@ -802,11 +802,12 @@ model Link {
 model Public_Community_Business_Profile {
   id                 Int      @id @default(autoincrement())
   userId             String
-  statement          String
-  description        String
+  statement          String?
+  description        String?
   links              Link[]
-  address            String
-  contactInformation String
+  address            String?
+  contactEmail       String?  @map("contact_email")
+  contactPhone       String?   @map("contact_phone")
   createdAt          DateTime @default(now()) @map("created_at")
   updatedAt          DateTime @default(now()) @map("updated_at")
   user               User     @relation(fields: [userId], references: [id])

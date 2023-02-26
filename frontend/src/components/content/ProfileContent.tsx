@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Col, Container, Row, Card, Image, ListGroup, ListGroupItem, Button, Form, Table, NavDropdown, Dropdown} from 'react-bootstrap';
+import { Col, Container, Row, Card, Image, ListGroup, ListGroupItem, Button, Form, Table, NavDropdown, Dropdown, Alert} from 'react-bootstrap';
 import { postUserSegmentRequest } from 'src/lib/api/userSegmentRequestRoutes';
 import { API_BASE_URL, USER_TYPES } from 'src/lib/constants';
 import { IUser } from '../../lib/types/data/user.type';
@@ -7,10 +7,17 @@ import { capitalizeString } from '../../lib/utilityFunctions';
 import { RequestSegmentModal } from '../partials/RequestSegmentModal';
 import StripeCheckoutButton from "src/components/partials/StripeCheckoutButton"
 import {getUserSubscriptionStatus} from 'src/lib/api/userRoutes'
+import { LinkType, Link, PublicCommunityBusinessProfile } from 'src/lib/types/data/publicProfile.type'; 
+import { getCommunityBusinessProfile, updateCommunityBusinessProfile, getCommunityBusinessLinks } from 'src/lib/api/publicProfileRoutes';
 interface ProfileContentProps {
   user: IUser;
   token: string;
 }
+
+const LinkTypes = Object.keys(LinkType).filter((item) => {
+  return isNaN(Number(item));
+});
+
 
 const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
   const {
@@ -35,6 +42,15 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
   const [show, setShow] = useState(false);
   const [stripeStatus, setStripeStatus] = useState("");
   const [segmentRequests, setSegmentRequests] = useState<any[]>([]);
+  const [communityBusinessProfile, setCommunityBusinessProfile] = useState<any>({});
+  const [links, setLinks] = useState<any[]>([]);
+  const [showAlert, setShowAlert] = useState(false);
+
+  function addNewRow() {
+    let table = document.getElementById("formLinksBody");
+    let rowCount = table?.childElementCount;
+    setLinks([...links, { linkType: LinkType.WEBSITE, link: "" , index: rowCount}]);
+  }
 
   useEffect(()=>{
     getUserSubscriptionStatus(user.id).then(e => setStripeStatus(e.status)).catch(e => console.log(e))
@@ -42,6 +58,83 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
       postUserSegmentRequest(segmentRequests, token);
     }
   },[segmentRequests])
+
+
+  useEffect(()=>{
+    getCommunityBusinessProfile(user.id, token).then(e => setCommunityBusinessProfile(e)).catch(e => console.log(e));
+  },[])
+
+  useEffect(()=>{
+    if (communityBusinessProfile.id){
+      getCommunityBusinessLinks(communityBusinessProfile.id, token).then(e => setLinks(e)).catch(e => console.log(e));
+    }
+  },[communityBusinessProfile])
+
+  const updateLink = (linkValue: string, link: any) => {
+    const linksCopy = [...links];
+    const index = linksCopy.indexOf(link);
+    linksCopy[index].link = linkValue;
+    setLinks(linksCopy);
+  };
+
+  const updateLinkType = (linkTypeValue: string, link: any) => {
+    const linksCopy = [...links];
+    const index = linksCopy.indexOf(link);
+    linksCopy[index].linkType = linkTypeValue;
+    setLinks(linksCopy);
+  };
+  
+  // Removes the row based on the index provided
+  const deleteRow = (link: any) => {
+    const linkLocation = document.getElementById("formLinksBody");
+    const linkRow = linkLocation?.getElementsByTagName("tr");
+    if (linkRow) {
+      for (let i = 0; i < linkRow.length; i++) {
+        if (linkRow[i].getElementsByTagName("td")[0].getElementsByTagName("select")[0].value === link.linkType && linkRow[i].getElementsByTagName("td")[1].getElementsByTagName("input")[0].value === link.link) {
+          linkRow[i].remove();
+        }
+      }
+    }
+  };
+
+  function handleUpdateProfile() {
+    const userId = user.id;
+    const statement = (document.getElementById("formVisionStatement") as HTMLInputElement).value;
+    const description = (document.getElementById("formServiceDescription") as HTMLInputElement).value;
+    const linksLocation = document.getElementById("formLinksBody");
+    const linksRows = linksLocation?.getElementsByTagName("tr");
+    let links: Object[] = [];
+    if (linksRows) {
+      for (let i = 0; i < linksRows.length; i++) {
+        const linkType = linksRows[i].getElementsByTagName("td")[0].getElementsByTagName("select")[0].value;
+        const linkUrl = linksRows[i].getElementsByTagName("td")[1].getElementsByTagName("input")[0].value;
+        const link = {
+          link: linkUrl,
+          linkType: linkType,
+        }
+        links.push(link);
+      }
+    }
+    const address = (document.getElementById("formPublicAddress") as HTMLInputElement).value;
+    const contactEmail = (document.getElementById("formContactEmail") as HTMLInputElement).value;
+    const contactPhone = (document.getElementById("formContactPhone") as HTMLInputElement).value;
+
+    const profileNew: PublicCommunityBusinessProfile = {
+      userId: userId,
+      statement: statement,
+      description: description,
+      links: links,
+      address: address,
+      contactEmail: contactEmail,
+      contactPhone: contactPhone,
+    }
+
+    const test = updateCommunityBusinessProfile(profileNew, token).then(e => console.log(e)).catch(e => console.log(e));
+    setShowAlert(true);
+
+  }
+
+
   if (userType === USER_TYPES.BUSINESS || userType === USER_TYPES.COMMUNITY) {
     return (<Container className='user-profile-content w-100'>
     <Row className='mb-4 mt-4 justify-content-center'>
@@ -103,27 +196,53 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
       <Row>
         <Card style={{ width: '80rem'}}>
           <Card.Body className="my-5">
-          <Form>
+          <Form
+          id="formPublicProfile"
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleUpdateProfile();
+          }}
+          >
+            {showAlert ? <Alert variant="primary" dismissible onClose={() => setShowAlert(false)}>Profile Updated</Alert> : null}
               <Form.Group className="mb-3" controlId="formVisionStatement">
                 <Form.Label>Mission/Vision Statement</Form.Label>
-                <Form.Control type="text" placeholder="Say a few words about your mission/vision" />
+                <Form.Control 
+                type="text" 
+                id="formVisionStatement"
+                placeholder="Say a few words about your mission/vision" 
+                defaultValue={communityBusinessProfile.statement}
+                />
               </Form.Group>
               <Form.Group className="mb-3" controlId="formServiceDescription">
                 <Form.Label>Product/Service Description</Form.Label>
-                <Form.Control type="text" placeholder="Tell us about the product/service you provide" />
+                <Form.Control 
+                type="text"
+                id="formServiceDescription"
+                placeholder="Tell us about the product/service you provide" 
+                defaultValue={communityBusinessProfile.description}
+                />
               </Form.Group>
               <Form.Group className="mb-3" controlId="formPublicAddress">
                 <Form.Label>Public Address</Form.Label>
-                <Form.Control type="text" placeholder="Public Address" />
+                <Form.Control 
+                type="text" 
+                id="formPublicAddress"
+                placeholder="Public Address" 
+                defaultValue={communityBusinessProfile.address}
+                />
               </Form.Group>
-              <Form.Group className="mb-3" controlId="formLinks">
+              <Form.Group 
+              className="mb-3" 
+              controlId="formLinks"
+              id="formLinks"
+              >
                 <Form.Label>Links</Form.Label>
                 <Button
                   className="float-right"
                   size="sm"
-                  // onClick={(e) => {
-                  //   setShowNewSubSeg(true);
-                  // }}
+                  onClick={() => {
+                    addNewRow();
+                  }}
                 >
                   Add New Link
                 </Button>
@@ -135,59 +254,60 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                       <th style={{ width: "10rem"}}>Controls</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    {/* 
-                    TODO - Create Table entry format for Links
-                    See SegmentManagementContent.tsx 
-                    */}
-                    <tr>
-                      <td>
-                        Sample
-                      </td>
-                      <td>
-                        www.thisisnotarealurl.com
-                      </td>
-                      <td>
-                        <NavDropdown title="Controls" id="nav-dropdown">
-                          <Dropdown.Item
-                            // onClick={() => setHideControls(String(segment.id))}
-                          >
-                            Edit
-                          </Dropdown.Item>
-                        </NavDropdown>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        Sample 2
-                      </td>
-                      <td>
-                        www.thisisnotarealurl.com
-                      </td>
-                      <td>
-                        <NavDropdown title="Controls" id="nav-dropdown">
-                          <Dropdown.Item
-                            // onClick={() => setHideControls(String(segment.id))}
-                          >
-                            Edit
-                          </Dropdown.Item>
-                        </NavDropdown>
-                      </td>
-                    </tr>
+                  <tbody id="formLinksBody">
+                    {links && 
+                    links.map((link) => (
+                      <tr
+                      // Matches the key to the current index of the link in links
+                      key={links.indexOf(link)}
+                      
+                      >
+                        <td>
+                          <Form.Control 
+                          as="select" 
+                          onChange={(e) => {
+                            // Updates the link type in the links array
+                            updateLinkType(e.target.value, link);
+                          }}
+                          defaultValue={link.linkType}>
+                            {LinkTypes.map((linkType) => (
+                              <option>{linkType}</option>
+                            ))}
+                          
+                          </Form.Control>
+                        </td>
+                        <td>
+                          <Form.Control 
+                          type="text" 
+                          placeholder="Link" 
+                          defaultValue={link.link}
+                          onChange={(e) => {
+                            // Updates the link in the links array
+                            updateLink(e.target.value, link);
+                          }}
+                          />
+                        </td>
+                        <td>
+                          <NavDropdown title="Controls" id="nav-dropdown">
+                            <Dropdown.Item 
+                            class="deleteButton"
+                            onClick={() => {
+                              // Deletes the row from the table
+                              deleteRow(link);
+                            }}
+                            >
+                              Delete
+                            </Dropdown.Item>
+                          </NavDropdown>
+                        </td>
+                      </tr>
+                    )
+                    )}
                   </tbody>
                 </Table>
               </Form.Group>
               <Form.Group className="mb-3" controlId="formContactInformation">
                 <Form.Label>Contact Information</Form.Label>
-                <Button
-                  className="float-right"
-                  size="sm"
-                  // onClick={(e) => {
-                  //   setShowNewSubSeg(true);
-                  // }}
-                >
-                  Add New Contact
-                </Button>
                 <Table bordered hover size="sm">
                   <thead>
                     <tr>
@@ -195,41 +315,36 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                       <th>Last Name</th>
                       <th>Email</th>
                       <th>Phone Number</th>
-                      <th style={{ width: "10rem"}}>Controls</th>
                     </tr>
                   </thead>
+                  {communityBusinessProfile ? (
                   <tbody>
                     <tr>
-                      <td>Fake</td>
-                      <td>User</td>
-                      <td>thisisnotanemail@email.com</td>
-                      <td>123-456-7890</td>
                       <td>
-                        <NavDropdown title="Controls" id="nav-dropdown">
-                          <Dropdown.Item
-                            // onClick={() => setHideControls(String(segment.id))}
-                          >
-                            Edit
-                          </Dropdown.Item>
-                        </NavDropdown>
+                        {fname}
                       </td>
-                    </tr>
-                    <tr>
-                      <td>Not</td>
-                      <td>Real</td>
-                      <td>stillnotanemail@email.com</td>
-                      <td>123-456-7890</td>
                       <td>
-                        <NavDropdown title="Controls" id="nav-dropdown">
-                          <Dropdown.Item
-                            // onClick={() => setHideControls(String(segment.id))}
-                          >
-                            Edit
-                          </Dropdown.Item>
-                        </NavDropdown>
+                        {lname}
+                      </td>
+                      <td>
+                      <Form.Control 
+                        type="email"
+                        id="formContactEmail"
+                        placeholder="Email Address" 
+                        defaultValue={communityBusinessProfile.contactEmail}
+                      />
+                      </td>
+                      <td>
+                      <Form.Control 
+                        type="phone" 
+                        id="formContactPhone"
+                        placeholder="Phone Number" 
+                        defaultValue={communityBusinessProfile.contactPhone}
+                      />
                       </td>
                     </tr>
                   </tbody>
+                  ) : null}
                 </Table>
               </Form.Group>
               <Button variant="primary" type="submit">

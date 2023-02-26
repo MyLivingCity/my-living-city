@@ -160,6 +160,35 @@ publicProfileRouter.put(
 );
 
 
+publicProfileRouter.get(
+    '/communityBusinessProfile/:profileId/links',
+    async (req, res) => {
+        try {
+            const profileId = parseInt(req.params.profileId);
+            if (!profileId) {
+                return res.status(400).json({
+                    message: `A valid profileId must be specified in the route paramater.`,
+                });
+            }
+
+            const result = await prisma.link.findMany({
+                where: { public_Community_Business_ProfileId: profileId },
+            });
+
+            if (!result) {
+                return res.status(404).json({
+                    message: `The profile with that listed ID (${profileId}) does not exist.`,
+                });
+            } else {
+                return res.status(200).json(result);
+            }
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ message: 'Internal server error' });
+        }
+    }
+);
+
 
 
 

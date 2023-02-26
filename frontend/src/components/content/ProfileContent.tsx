@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Col, Container, Row, Card, Image, ListGroup, ListGroupItem, Button, Form, Table, NavDropdown, Dropdown} from 'react-bootstrap';
+import { Col, Container, Row, Card, Image, ListGroup, ListGroupItem, Button, Form, Table, NavDropdown, Dropdown, Alert} from 'react-bootstrap';
 import { postUserSegmentRequest } from 'src/lib/api/userSegmentRequestRoutes';
 import { API_BASE_URL, USER_TYPES } from 'src/lib/constants';
 import { IUser } from '../../lib/types/data/user.type';
@@ -43,11 +43,12 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
   const [segmentRequests, setSegmentRequests] = useState<any[]>([]);
   const [communityBusinessProfile, setCommunityBusinessProfile] = useState<any>({});
   const [links, setLinks] = useState<any[]>([]);
+  const [showAlert, setShowAlert] = useState(false);
 
   function addNewRow() {
     let table = document.getElementById("formLinksBody");
     let rowCount = table?.childElementCount;
-    setLinks([...links, { type: LinkType.WEBSITE, url: "" , index: rowCount}]);
+    setLinks([...links, { linkType: LinkType.WEBSITE, link: "" , index: rowCount}]);
   }
 
   useEffect(()=>{
@@ -67,13 +68,31 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
     }
   },[communityBusinessProfile])
 
+  const updateLink = (linkValue: string, link: any) => {
+    const linksCopy = [...links];
+    const index = linksCopy.indexOf(link);
+    linksCopy[index].link = linkValue;
+    setLinks(linksCopy);
+  };
+
+  const updateLinkType = (linkTypeValue: string, link: any) => {
+    const linksCopy = [...links];
+    const index = linksCopy.indexOf(link);
+    linksCopy[index].linkType = linkTypeValue;
+    setLinks(linksCopy);
+  };
   
   // Removes the row based on the index provided
-  const deleteRow = (index: number) => {
-    const linkTable = document.getElementById("formLinksBody");
-    const linkRows = linkTable?.getElementsByTagName("tr");
-    const rowToDelete = linkRows?.item(index);
-    rowToDelete?.parentNode?.removeChild(rowToDelete);
+  const deleteRow = (link: any) => {
+    const linkLocation = document.getElementById("formLinksBody");
+    const linkRow = linkLocation?.getElementsByTagName("tr");
+    if (linkRow) {
+      for (let i = 0; i < linkRow.length; i++) {
+        if (linkRow[i].getElementsByTagName("td")[0].getElementsByTagName("select")[0].value === link.linkType && linkRow[i].getElementsByTagName("td")[1].getElementsByTagName("input")[0].value === link.link) {
+          linkRow[i].remove();
+        }
+      }
+    }
   };
 
   function handleUpdateProfile() {
@@ -108,9 +127,8 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
       contactPhone: contactPhone,
     }
 
-    updateCommunityBusinessProfile(profileNew, token).then(e => console.log(e)).catch(e => console.log(e));
-
-    console.log("Profile Updated");
+    const test = updateCommunityBusinessProfile(profileNew, token).then(e => console.log(e)).catch(e => console.log(e));
+    setShowAlert(true);
 
   }
 
@@ -185,13 +203,14 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
             handleUpdateProfile();
           }}
           >
+            {showAlert ? <Alert variant="primary" dismissible onClose={() => setShowAlert(false)}>Profile Updated</Alert> : null}
               <Form.Group className="mb-3" controlId="formVisionStatement">
                 <Form.Label>Mission/Vision Statement</Form.Label>
                 <Form.Control 
                 type="text" 
                 id="formVisionStatement"
                 placeholder="Say a few words about your mission/vision" 
-                value={communityBusinessProfile.statement}
+                defaultValue={communityBusinessProfile.statement}
                 />
               </Form.Group>
               <Form.Group className="mb-3" controlId="formServiceDescription">
@@ -200,7 +219,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                 type="text"
                 id="formServiceDescription"
                 placeholder="Tell us about the product/service you provide" 
-                value={communityBusinessProfile.description}
+                defaultValue={communityBusinessProfile.description}
                 />
               </Form.Group>
               <Form.Group className="mb-3" controlId="formPublicAddress">
@@ -209,7 +228,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                 type="text" 
                 id="formPublicAddress"
                 placeholder="Public Address" 
-                value={communityBusinessProfile.address}
+                defaultValue={communityBusinessProfile.address}
                 />
               </Form.Group>
               <Form.Group 
@@ -239,24 +258,42 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                     {links && 
                     links.map((link) => (
                       <tr
-                      key = {link.index}
+                      // Matches the key to the current index of the link in links
+                      key={links.indexOf(link)}
+                      
                       >
                         <td>
-                          <Form.Control as="select" defaultValue={link.linkType}>
+                          <Form.Control 
+                          as="select" 
+                          onChange={(e) => {
+                            // Updates the link type in the links array
+                            updateLinkType(e.target.value, link);
+                          }}
+                          defaultValue={link.linkType}>
                             {LinkTypes.map((linkType) => (
                               <option>{linkType}</option>
                             ))}
+                          
                           </Form.Control>
                         </td>
                         <td>
-                          <Form.Control type="text" placeholder="Link" value={link.link}/>
+                          <Form.Control 
+                          type="text" 
+                          placeholder="Link" 
+                          defaultValue={link.link}
+                          onChange={(e) => {
+                            // Updates the link in the links array
+                            updateLink(e.target.value, link);
+                          }}
+                          />
                         </td>
                         <td>
                           <NavDropdown title="Controls" id="nav-dropdown">
                             <Dropdown.Item 
                             class="deleteButton"
                             onClick={() => {
-                              deleteRow(link.index);
+                              // Deletes the row from the table
+                              deleteRow(link);
                             }}
                             >
                               Delete
@@ -294,7 +331,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                         type="email"
                         id="formContactEmail"
                         placeholder="Email Address" 
-                        value={communityBusinessProfile.contactEmail}
+                        defaultValue={communityBusinessProfile.contactEmail}
                       />
                       </td>
                       <td>
@@ -302,7 +339,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                         type="phone" 
                         id="formContactPhone"
                         placeholder="Phone Number" 
-                        value={communityBusinessProfile.contactPhone}
+                        defaultValue={communityBusinessProfile.contactPhone}
                       />
                       </td>
                     </tr>

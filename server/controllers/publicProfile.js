@@ -170,6 +170,165 @@ publicProfileRouter.get(
     }
 );
 
+publicProfileRouter.get(
+    '/municipalProfile/:userId',
+    async (req, res) => {
+        try {
+            const userId = req.params.userId;
+            if (!userId) {
+                return res.status(400).json({
+                    message: `A valid userId must be specified in the route paramater.`,
+                });
+            }
+
+            const result = await prisma.public_Municipal_Profile.findFirst({
+                where: { userId: userId },
+            });
+
+            if (!result) {
+                return res.status(404).json({
+                    message: `The user with that listed ID (${userId}) does not exist.`,
+                });
+            } else {
+                return res.status(200).json(result);
+            }
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ message: 'Internal server error' });
+        }
+    }
+
+)
+
+publicProfileRouter.put(
+    '/municipalProfile/:userId',
+    async (req, res) => {
+        try {
+            const userId = req.params.userId;
+            if (!userId) {
+                return res.status(400).json({
+                    message: `A valid userId must be specified in the route paramater.`,
+                });
+            }
+
+            const data = req.body;
+            const { statement, responsibility, links, address, contactEmail, contactPhone } = data;
+            const updatedAt = new Date();
+
+            const userProfile = await prisma.public_Municipal_Profile.findFirst({
+                where: { userId: userId },
+            });
+
+            if (!userProfile) {
+                const result = await prisma.public_Municipal_Profile.create({
+                    data: {
+                        userId: userId,
+                        statement: statement,
+                        responsibility: responsibility,
+                        address: address,
+                        contactEmail: contactEmail,
+                        contactPhone: contactPhone,
+                        updatedAt: updatedAt,
+                    },
+                });
+
+                let createdLinks = [];
+                for (let i = 0; i < links.length; i++) {
+                    const link = links[i];
+                    const createdLink = await prisma.link.create({
+                        data: {
+                            link: link.link,
+                            linkType: link.linkType,
+                            public_Municipal_ProfileId: result.id,
+                        },
+                    });
+                    createdLinks.push(createdLink.id);
+                }
+
+                const updatedResult = await prisma.public_Municipal_Profile.update({
+                    where: { id: result.id },
+                    data: {
+                        links: createdLinks,
+                    },
+                });
+
+                res.status(201).json(updatedResult);
+            } else {
+                const deletedLinks = await prisma.link.deleteMany({
+                    where: {
+                        public_Municipal_ProfileId: userProfile.id,
+                    },
+                });
+
+                let createdLinks = [];
+                for (let i = 0; i < links.length; i++) {
+                    const link = links[i];
+                    const createdLink = await prisma.link.create({
+                        data: {
+                            link: link.link,
+                            linkType: link.linkType,
+                            public_Municipal_ProfileId: userProfile.id,
+                        },
+                    });
+                    createdLinks.push({id: createdLink.id});
+                }
+
+                const result = await prisma.public_Municipal_Profile.update({
+                    where: { id: userProfile.id },
+                    data: {
+                        statement: statement,
+                        responsibility: responsibility,
+                        links: {
+                            connect: createdLinks,
+                        },
+                        address: address,
+                        contactEmail: contactEmail,
+                        contactPhone: contactPhone,
+                        updatedAt: updatedAt,
+                    },
+                });
+                res.status(200).json(result);
+            }
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ message: 'Internal server error' });
+        } finally {
+            await prisma.$disconnect();
+        }
+    }
+);
+
+publicProfileRouter.get(
+    '/municipalProfile/:profileId/links',
+    async (req, res) => {
+        try {
+            const profileId = parseInt(req.params.profileId);
+            if (!profileId) {
+                return res.status(400).json({
+                    message: `A valid profileId must be specified in the route paramater.`,
+                });
+            }
+
+            const result = await prisma.link.findMany({
+                where: { public_Municipal_ProfileId: profileId },
+            });
+
+            if (!result) {
+                return res.status(404).json({
+                    message: `The profile with that listed ID (${profileId}) does not exist.`,
+                });
+            } else {
+                return res.status(200).json(result);
+            }
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ message: 'Internal server error' });
+        }
+    }
+);
+
+
+
 
 
 

@@ -27,3 +27,13 @@ export interface PublicCommunityBusinessProfile {
     contactEmail: string;
     contactPhone: string;
 }
+
+export interface PublicMunicipalProfile {
+    userId: string;
+    statement: string;
+    responsibility: string;
+    links: Object[];
+    address: string;
+    contactEmail: string;
+    contactPhone: string;
+}

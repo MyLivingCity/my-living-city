@@ -397,8 +397,10 @@ proposalRouter.get(
                                     id: true,
                                     fname: true,
                                     lname: true,
+                                    address: true,
                                 }
-                            }
+                            },
+
                         },
                     },
                     donors: {
@@ -410,6 +412,7 @@ proposalRouter.get(
                                     id: true,
                                     fname: true,
                                     lname: true,
+                                    address: true,
                                 }
                             }
                         },
@@ -423,6 +426,7 @@ proposalRouter.get(
             }
 
             const result = { ...foundProposal };
+            console.log("VOLUNTEERS33", result.volunteers.map(volunteer => volunteer.author.address));
 
             res.status(200).json(result);
         } catch (error) {

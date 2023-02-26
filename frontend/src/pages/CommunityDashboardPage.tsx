@@ -7,14 +7,14 @@ import { IIdeaWithAggregations } from "src/lib/types/data/idea.type";
 import { useUserWithJwtVerbose } from "src/hooks/userHooks";
 import { useContext } from "react";
 import { UserProfileContext } from "src/contexts/UserProfile.Context";
-
+import { useAllUserSegments } from "src/hooks/userSegmentHooks";
 
 interface CommunityDashboardPageProps extends RouteComponentProps<{
     segId: string;
 }>{}
 
 const CommunityDashboardPage: React.FC<CommunityDashboardPageProps> = (props) => {
-    const {
+    let {
         match: {
             params: { segId },
         },
@@ -25,6 +25,22 @@ const CommunityDashboardPage: React.FC<CommunityDashboardPageProps> = (props) =>
       jwtAuthToken: token!,
       shouldTrigger: token != null,
     });
+
+    const {
+        data: userSegments,
+        isLoading: isUserSegmentsLoading,
+        isError: isUserSegmentsError
+    } = useAllUserSegments(token, user?.id || null);
+
+    // if segId == 0 then use userSegments to set segId to the home segment
+    if (parseInt(segId) === 0 && userSegments) {
+        let home_segment_id = userSegments.filter((seg: any) => seg.segType === "Segment" && seg.userType == "Resident")[0].id;
+        console.log("home_segment_id: ", home_segment_id);
+        props.history.push(`/community-dashboard/${home_segment_id}`);
+        // segId = home_segment_id.toString();
+        window.location.reload();
+    }
+
 
     const {data: segmentAggregatData,
             error, 
@@ -43,8 +59,17 @@ const CommunityDashboardPage: React.FC<CommunityDashboardPageProps> = (props) =>
         isLoading: iLoading,
         isError: iIsError,
         } = useIdeasHomepage();
-    
-    if (isAggregateError || isSegmentInfoError || iError) {
+
+    if (segId === "0") {
+        return (
+            <div className="wrapper">
+                <LoadingSpinner />
+            </div>
+        );
+    }
+
+
+    if (isAggregateError || isSegmentInfoError || iError || isUserSegmentsError) {
         return (
           <div className="wrapper">
             <p>
@@ -54,7 +79,7 @@ const CommunityDashboardPage: React.FC<CommunityDashboardPageProps> = (props) =>
         );
     }
 
-    if (isAggregateLoading || isSegmentInfoLoading || iLoading || userData === null || userData === undefined) {
+    if (isAggregateLoading || isSegmentInfoLoading || iLoading || userData === null || userData === undefined || isUserSegmentsLoading) {
         return (
           <div className="wrapper">
             <LoadingSpinner />
@@ -76,7 +101,7 @@ const CommunityDashboardPage: React.FC<CommunityDashboardPageProps> = (props) =>
     return (
         <>
             <div className="wrapper">
-                <CommunityDashboardContent userData ={userData!} topIdeas={filteredTopIdeas()} data={segmentAggregatData!} segmenData={segmentInfoData!} />
+                <CommunityDashboardContent userData ={userData!} topIdeas={filteredTopIdeas()} data={segmentAggregatData!} segmenData={segmentInfoData!} segmentIds={userSegments} />
             </div>
         </>
     );

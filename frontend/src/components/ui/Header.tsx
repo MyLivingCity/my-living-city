@@ -44,7 +44,7 @@ export default function Header() {
   //   segName:googleQuery.data.city, province:googleQuery.data.province, country:googleQuery.data.country
   // }, googleQuery.data != null)
 
-  const [userSegId, setUserSegId] = useState<any>(1);
+  const [userSegId, setUserSegId] = useState<any>(0);
   const [showWarningModal, setShowWarningModal] = useState<boolean>(!localStorage.getItem('warningModalState'));
 
   // Hook to set localStorage: warningModalState to !null
@@ -65,12 +65,17 @@ export default function Header() {
   //   querySegmentData();
   // }, [googleQuery, googleQueryLoading])
 
-  useEffect(() => {
-    if (segQueryLoading === false && segData != null && segData !== undefined) {
-  
-      setUserSegId(segData[0].id);
-    }
-  }, [segData, segQueryLoading])
+  // useEffect(() => {
+  //   if (segQueryLoading === false && segData != null && segData !== undefined) {
+
+  //     // Get user's home segment id
+  //     segData.forEach((seg: any) => {
+  //       if (seg.segType === "Segment" && seg.userType === "Resident") {
+  //         setUserSegId(seg.id);
+  //       }
+  //     });
+  //   }
+  // }, [segData, segQueryLoading])
 
   const paymentNotificationStyling: CSS.Properties = {
     backgroundColor: "#f7e4ab",
@@ -85,32 +90,47 @@ export default function Header() {
     }
   }, [user])
 
+
+
   // TODO Redo how information is gathered for Community Dashboard, and remove reliance on params in url.
-    if (segQueryLoading && user) {
-      return (
-        <div className="outer-header">
-      {stripeStatus !== "" && stripeStatus !== "active" &&
-        (<Nav style={paymentNotificationStyling}>
-          You have not paid your account payment. To upgrade your account, please go to the <a href="/profile">profile</a> section.
-        </Nav>)
-      }
-      <Navbar className="inner-header" bg="light" expand="sm">
-        <Navbar.Brand href="/">
-          <img
-            src="/MyLivingCityIcon.png"
-            width="30"
-            height="30"
-            className="d-inline-block alight-top"
-            alt="My Living City Logo"
-          />
-        </Navbar.Brand>
-        <Nav.Link href="/profile" className="d-inline-block alight-top">
-          {data && `${data.fname}@${data!.address!.streetAddress}`}
-        </Nav.Link>
-        </Navbar>
-        </div>
-      );
-  }
+  //   if (segQueryLoading && user) {
+  //     return (
+  //       <div className="outer-header">
+  //     {stripeStatus !== "" && stripeStatus !== "active" &&
+  //       (<Nav style={paymentNotificationStyling}>
+  //         You have not paid your account payment. To upgrade your account, please go to the <a href="/profile">profile</a> section.
+  //       </Nav>)
+  //     }
+  //     <Navbar className="inner-header" bg="light" expand="sm">
+  //       <Navbar.Brand href="/">
+  //         <img
+  //           src="/MyLivingCityIcon.png"
+  //           width="30"
+  //           height="30"
+  //           className="d-inline-block alight-top"
+  //           alt="My Living City Logo"
+  //         />
+  //       </Navbar.Brand>
+  //       {(user) ? (
+  //         <>
+  //           {(user.userType === "BUSINESS" || user.userType === "MUNICIPAL" || user.userType === "COMMUNITY") && (
+  //             <Nav.Link href="/profile" className="d-inline-block alight-top">
+  //               {data && `${data.organizationName}`}
+  //             </Nav.Link>
+  //           )}
+  //           {(user.userType != "BUSINESS" && user.userType != "MUNICIPAL" && user.userType != "COMMUNITY") && (
+  //             <Nav.Link href="/profile" className="d-inline-block alight-top">
+  //               {data && `${data.fname}@${data!.address!.streetAddress}`}
+  //             </Nav.Link>
+  //           )}
+  //         </>
+  //       ) : (
+  //         <></>
+  //       )}
+  //       </Navbar>
+  //       </div>
+  //     );
+  // }
 
   return (
     <div className="outer-header">
@@ -130,9 +150,22 @@ export default function Header() {
             alt="My Living City Logo"
           />
         </Navbar.Brand>
-        <Nav.Link href="/profile" className="d-inline-block alight-top">
-          {data && `${data.fname}@${data!.address!.streetAddress}`}
-        </Nav.Link>
+        {(user) ? (
+          <>
+            {(user.userType === "BUSINESS" || user.userType === "MUNICIPAL" || user.userType === "COMMUNITY") && (
+              <Nav.Link href="/profile" className="d-inline-block alight-top">
+                {data && `${data.organizationName}`}
+              </Nav.Link>
+            )}
+            {(user.userType != "BUSINESS" && user.userType != "MUNICIPAL" && user.userType != "COMMUNITY") && (
+              <Nav.Link href="/profile" className="d-inline-block alight-top">
+                {data && `${data.fname}@${data!.address!.streetAddress}`}
+              </Nav.Link>
+            )}
+          </>
+        ) : (
+          <></>
+        )}
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ml-auto">

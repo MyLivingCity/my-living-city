@@ -54,21 +54,6 @@ publicProfileRouter.put(
             const { statement, description, links, address, contactEmail, contactPhone } = data;
             const updatedAt = new Date();
 
-
-            // let createdLinks = [];
-            // for (let i = 0; i < links.length; i++) {
-            //     const link = links[i];
-            //     const createdLink = await prisma.link.create({
-            //         data: {
-            //             link: link.link,
-            //             linkType: link.linkType,
-            //         },
-            //     });
-            //     createdLinks.push(createdLink);
-            // }
-
-            // console.log(createdLinks);
-
             const userProfile = await prisma.public_Community_Business_Profile.findFirst({
                 where: { userId: userId },
             });
@@ -130,10 +115,6 @@ publicProfileRouter.put(
                     createdLinks.push({id: createdLink.id});
                 }
 
-            // const createdLinks = await prisma.link.createMany({
-            //     data: links,
-            //     skipDuplicates: true,
-            // });
             const result = await prisma.public_Community_Business_Profile.update({
                 where: { id: userProfile.id },
                 data: {

@@ -39,3 +39,20 @@ export const updateCommunityBusinessProfile = async (
     });
     return res.data;
 }
+
+export const getCommunityBusinessLinks = async (
+    profileId: number | undefined,
+    token: string | null
+    ) => {
+    const res = await axios({
+        method: "get",
+        url: `${API_BASE_URL}/publicProfile/communityBusinessProfile/${profileId}/links`,
+        headers: {
+            "Content-Type": "application/json",
+            "x-auth-token": token,
+            "Access-Control-Allow-Origin": "*",
+        },
+    });
+
+    return res.data;
+}

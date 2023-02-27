@@ -586,7 +586,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
             </div>
           </Card.Header>
           <Card.Body>
-            <Table style={{margin: "0rem"}} hover>
+            <Table style={{margin: "0rem"}}>
               <tbody>
                 {endorsedUsers.map((user) => (
                   <tr key={user.id}>

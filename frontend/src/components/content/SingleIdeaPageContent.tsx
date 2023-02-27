@@ -31,9 +31,18 @@ import React, { useContext, useEffect, useState } from "react";
 import { API_BASE_URL, USER_TYPES } from "src/lib/constants";
 import { UserProfileContext } from "src/contexts/UserProfile.Context";
 import { createFlagUnderIdea, updateFalseFlagIdea, compareIdeaFlagsWithThreshold } from "src/lib/api/flagRoutes";
-import { followIdeaByUser, isIdeaFollowedByUser, unfollowIdeaByUser, updateIdeaStatus, endorseIdeaByUser, isIdeaEndorsedByUser, unendorseIdeaByUser,} from "src/lib/api/ideaRoutes";
+import { 
+  followIdeaByUser, 
+  isIdeaFollowedByUser, 
+  unfollowIdeaByUser, 
+  updateIdeaStatus, 
+  endorseIdeaByUser, 
+  isIdeaEndorsedByUser, 
+  unendorseIdeaByUser,
+  getEndorsedUsersByIdea,
+} from "src/lib/api/ideaRoutes";
 import CSS from "csstype"
-import { useCheckIdeaFollowedByUser, useCheckIdeaEndorsedByUser } from "src/hooks/ideaHooks";
+import { useCheckIdeaFollowedByUser, useCheckIdeaEndorsedByUser, useGetEndorsedUsersByIdea } from "src/hooks/ideaHooks";
 
 import Modal from 'react-bootstrap/Modal';
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -115,9 +124,14 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
   const [followingPost, setFollowingPost] = useState(false);
   const [endorsingPost, setEndorsingPost] = useState(false);
 
+  const [endorsedUsers, setEndorsedUsers] = useState<any[]>([]);
+  const [endorsedUsersLoading, setEndorsedUsersLoading] = useState(true);
+
+
   const {user, token} = useContext(UserProfileContext);
   const {data: isFollowingPost, isLoading: isFollowingPostLoading} = useCheckIdeaFollowedByUser(token, (user ? user.id : user), ideaId);
   const {data: isEndorsingPost, isLoading: isEndorsingPostLoading} = useCheckIdeaEndorsedByUser(token, (user ? user.id : user), ideaId);
+  const {data: endorsedUsersData, isLoading: isEndorsedUsersDataLoading} = useGetEndorsedUsersByIdea(token, ideaId);
   const {data: proposal} = useSingleProposal("" + (supportedProposal ? supportedProposal!.id : ""));
   const {data: proposalIdea } = useSingleIdea("" + (supportedProposal ? supportedProposal!.ideaId : ""));
 
@@ -161,6 +175,13 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
       setEndorsingPost(!endorsingPost);
     }
   }
+
+  useEffect(() => {
+    if (!isEndorsedUsersDataLoading) {
+      setEndorsedUsers(endorsedUsersData);
+      setEndorsedUsersLoading(false);
+    }
+  }, [isEndorsedUsersDataLoading, endorsedUsersData])
 
   useEffect(() => {
     if (!isFollowingPostLoading) {
@@ -214,6 +235,10 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
     handleHideFlagButton();
     await flagFunc(ideaId, token, userId, ideaActive, otherFlagReason, quarantined_at);
    
+  }
+
+  if (isEndorsedUsersDataLoading || isEndorsingPostLoading || isFollowingPostLoading) {
+    return <LoadingSpinner></LoadingSpinner>;
   }
 
   return (
@@ -551,6 +576,35 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
         </Card>
       </div>
       }
+
+      {(endorsedUsersData && endorsedUsersData.length > 0) ? (
+        <div style={{ marginTop: "2rem" }}>
+        <Card>
+          <Card.Header>
+            <div className="d-flex">
+              <h4 className="h4 p-2 flex-grow-1">Endorse List</h4>
+            </div>
+          </Card.Header>
+          <Card.Body>
+            <Table style={{margin: "0rem"}} hover>
+              <tbody>
+                {endorsedUsers.map((user) => (
+                  <tr key={user.id}>
+                    <td>
+                      {user.organizationName}
+                    </td>
+                  </tr>
+                ))
+                }
+              </tbody>
+            </Table>
+           </Card.Body>
+        </Card>   
+      </div>
+      ) : null
+      }
+      
+
 
       <Row>
         <RatingsSection ideaId={ideaId} />

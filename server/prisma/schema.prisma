@@ -208,6 +208,7 @@ model User {
   Public_Community_Business_Profile Public_Community_Business_Profile[]
   Public_Municipal_Profile          Public_Municipal_Profile[]
   False_Flagging_Behavior           False_Flagging_Behavior[]
+  Bad_Posting_Behavior              Bad_Posting_Behavior[]
 
   @@map(name: "user")
 }

@@ -164,4 +164,31 @@ ideaFlagRouter.post(
       }
     }
   )
+
+  // Check if user has a flag ban
+  ideaFlagRouter.get(
+    '/checkFlagBan/:userID',
+    passport.authenticate('jwt', {session: false}),
+    async (req, res, next) => {
+      try {
+        const userFlagBan = await prisma.false_Flagging_Behavior.findFirst({
+          where: {
+            userId: req.params.userID
+          }
+        })
+        res.json(userFlagBan);
+      } catch (error) {
+        console.log(error.message);
+        res.status(400).json({
+          message: "An error occured while trying to fetch the count of ideaFlags.",
+          details: {
+            errorMessage: error.message,
+            errorStack: error.stack,
+          }
+        });
+      } finally {
+        await prisma.$disconnect();
+      }
+    }
+  )
   module.exports = ideaFlagRouter;

@@ -1065,4 +1065,53 @@ userRouter.get(
 	}
 )
 
+userRouter.patch(
+	'/removeFlagQuarantine',
+	async (req, res, next) => {
+		try {
+
+			// set flag_ban to false
+			// set flag_count to 0
+			// set bannedAt to null
+			// set banUntil to null
+
+			// this causes an error
+
+			await prisma.false_Flagging_Behavior.findFirst({
+				where: { userId: req.body.userId },
+				orderBy: { id: "desc" },
+			}).then(async (flag) => {
+				if (flag) {
+					console.log("Flag found", flag)
+					await prisma.false_Flagging_Behavior.update({
+						where: { id: flag.id },
+						data: {
+							flag_ban: false,
+							flag_count: 0,
+							bannedAt: null,
+							bannedUntil: null,
+						}
+					});
+				}
+			});
+
+
+
+			res.status(200).json({
+				message: "Flags successfully removed"
+			});
+		} catch (error) {
+			res.status(400).json({
+				message: `An Error occured while trying to remove flags.`,
+				details: {
+					errorMessage: error.message,
+					errorStack: error.stack,
+				}
+			});
+		} finally {
+			await prisma.$disconnect();
+		}
+	}
+)
+
 module.exports = userRouter;

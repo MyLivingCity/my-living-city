@@ -17,6 +17,20 @@ export const incrementBadPostCount = async (token: String | null, ideaId: string
     return res.data;
 }
 
+export const incrementPostFlagCount = async (token: String | null, ideaId: string|null) => {
+    const res = await axios({
+        method: "put",
+        url: `${API_BASE_URL}/badPostingBehavior/incrementPostFlagCount/${ideaId}`,
+        headers: {
+        "x-auth-token": token,
+        "Access-Control-Allow-Origin": "*",
+        },
+        data: {ideaId: ideaId},
+        withCredentials: true,
+    })
+    return res.data;
+}
+
 
 
     

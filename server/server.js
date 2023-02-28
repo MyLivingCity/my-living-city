@@ -44,6 +44,7 @@ const main = async () => {
 	const reportRouter = require('./controllers/report');
 	const commentRouter = require('./controllers/comment');
 	const blogRouter = require('./controllers/blog');
+	const badPostingBehaviorRouter = require('./controllers/badPostingBehavior');
 	const ideaRouter = require('./controllers/idea');
 	const imageRouter = require('./controllers/image');
 	const categoryRouter = require('./controllers/category');
@@ -79,6 +80,7 @@ const main = async () => {
 	apiRouter.use('/report', reportRouter);
 	apiRouter.use('/comment', commentRouter);
 	apiRouter.use('/blog', blogRouter);
+	apiRouter.use('/badPostingBehavior', badPostingBehaviorRouter);
 	apiRouter.use('/idea', ideaRouter);
 	apiRouter.use('/image', imageRouter);
 	apiRouter.use('/category', categoryRouter);

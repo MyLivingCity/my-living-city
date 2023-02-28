@@ -12,3 +12,12 @@ export interface ICommentFlag {
 	flaggerId: string;
 	falseFlag: boolean;
 }
+
+export interface IFalseFlagBehavior {
+	id: number;
+	flag_count: number;
+	flag_ban: boolean;
+	userId: string;
+	bannedAt: Date;
+	bannedUntil: Date;
+}

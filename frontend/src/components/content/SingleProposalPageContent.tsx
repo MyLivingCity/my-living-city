@@ -61,6 +61,8 @@ import {
   postCreateDonor,
 } from "src/lib/api/communityRoutes";
 import { createFlagUnderIdea, updateFalseFlagIdea, compareIdeaFlagsWithThreshold } from "src/lib/api/flagRoutes";
+import { useCheckFlagBan } from 'src/hooks/flagHooks';
+
 interface SingleIdeaPageContentProps {
   ideaData: IIdeaWithRelationship;
   proposalData: any;
@@ -361,6 +363,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
   const {data: isFollowingPost, isLoading: isFollowingPostLoading} = useCheckIdeaFollowedByUser(token, (user ? user.id : user), ideaId);
   const {data: isEndorsingPost, isLoading: isEndorsingPostLoading} = useCheckIdeaEndorsedByUser(token, (user ? user.id : user), ideaId);
+  const {data: flagBanData, isLoading: flagBanDataLoading} = useCheckFlagBan(token, (user ? user.id : ""));
 
   const canEndorse = user?.userType == USER_TYPES.BUSINESS || user?.userType == USER_TYPES.COMMUNITY 
   || user?.userType == USER_TYPES.MUNICIPAL || user?.userType == USER_TYPES.MUNICIPAL_SEG_ADMIN; 
@@ -393,6 +396,14 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     }
 
   }, [isFollowingPostLoading, isFollowingPost])
+
+  useEffect(() => {
+    if (!flagBanDataLoading) {
+      if (flagBanData?.flag_ban || showFlagButton == false) {
+        handleHideFlagButton();
+      }
+    }
+  }, [flagBanDataLoading, flagBanData])
 
   const handleFollowUnfollow = async () => {
     let res;
@@ -452,7 +463,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     )
   }
 
-  if (isEndorsingPostLoading || isFollowingPostLoading) {
+  if (isEndorsingPostLoading || isFollowingPostLoading || flagBanDataLoading) {
     return <LoadingSpinner />;
   }
 

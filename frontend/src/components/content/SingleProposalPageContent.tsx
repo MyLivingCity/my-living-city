@@ -54,6 +54,7 @@ import {
   isIdeaEndorsedByUser, 
   unendorseIdeaByUser,
 } from "src/lib/api/ideaRoutes";
+import { incrementPostFlagCount } from 'src/lib/api/badPostingBehaviorRoutes';
 import { useCheckIdeaFollowedByUser, useCheckIdeaEndorsedByUser } from "src/hooks/ideaHooks";
 import {
   postCreateCollabotator,
@@ -543,7 +544,8 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                   Cancel
                 </Button>
                 <Button style={{background: 'red'}} variant="primary"  onClick={
-                  () => submitFlagReasonHandler(parseInt(ideaId), token!, user!.id, ideaData.active, new Date())
+                  () => {submitFlagReasonHandler(parseInt(ideaId), token!, user!.id, ideaData.active, new Date())
+                  incrementPostFlagCount(token, ideaId);}
                 }>
                   Flag
                 </Button>

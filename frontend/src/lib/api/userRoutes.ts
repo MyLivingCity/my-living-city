@@ -218,3 +218,25 @@ export const getAllBannedUsers = async () => {
   );
   return res.data;
 }
+
+export const removeFlagQuarantine = async (userId: string | undefined) => {
+  const res = await axios.patch(
+    `${API_BASE_URL}/user/removeFlagQuarantine`,
+    {
+      userId: userId
+    }
+  );
+  console.log("removeFlagQuarantine", res.data);
+  return res.data;
+}
+
+export const removePostCommentQuarantine = async (userId: string | undefined) => {
+  const res = await axios.patch(
+    `${API_BASE_URL}/user/removePostCommentQuarantine`,
+    {
+      userId: userId
+    }
+  );
+  console.log("removePostCommentQuarantine", res.data);
+  return res.data;
+}

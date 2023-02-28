@@ -10,6 +10,7 @@ import IdeaCommentLike from './IdeaCommentLike';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import React, { useEffect, useState } from "react";
+import { useCheckFlagBan } from "src/hooks/flagHooks";
 
 
 
@@ -29,6 +30,7 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
 
   }
 
+
   const handleHideFlagButton = () => setShowFlagButton(false);
 
   const handleClose = () => setShow(false);
@@ -39,6 +41,7 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
 
 
   const { token, user, isUserAuthenticated } = useContext(UserProfileContext);
+  const {data: flagBanData, isLoading: flagBanDataLoading} = useCheckFlagBan(token, (user ? user.id : ""));
   
   const {
     id,
@@ -132,6 +135,19 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
     await createCommentFlagAndCheckThreshold(id, token!, user!.id, otherFlagReason, new Date())
   
   }
+
+  useEffect(() => {
+    if (!flagBanDataLoading) {
+      if (flagBanData?.flag_ban || showFlagButton == false) {
+        handleHideFlagButton();
+      }
+    }
+  }, [flagBanDataLoading, flagBanData])
+
+  if (flagBanDataLoading) {
+    return <div>Loading...</div>
+  }
+
 
   return (
     <Container fluid className='my-1'>

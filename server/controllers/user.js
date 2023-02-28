@@ -1073,9 +1073,8 @@ userRouter.patch(
 			// set flag_ban to false
 			// set flag_count to 0
 			// set bannedAt to null
-			// set banUntil to null
+			// set bannedUntil to null
 
-			// this causes an error
 
 			await prisma.false_Flagging_Behavior.findFirst({
 				where: { userId: req.body.userId },
@@ -1113,5 +1112,52 @@ userRouter.patch(
 		}
 	}
 )
+
+userRouter.patch(
+	'/removePostCommentQuarantine',
+	async (req, res, next) => {
+		try {
+			// set bad_post_count to 0
+			// set post_flag_count to 0
+			// set post_comment_ban to false
+			// set bannedAt to null
+			// set bannedUntil to null
+
+			await prisma.bad_Posting_Behavior.findFirst({
+				where: { userId: req.body.userId },
+				orderBy: { id: "desc" },
+			}).then(async (post) => {
+				if (post) {
+					console.log("Post found", post)
+					await prisma.bad_Posting_Behavior.update({
+						where: { id: post.id },
+						data: {
+							bad_post_count: 0,
+							post_flag_count: 0,
+							post_comment_ban: false,
+							bannedAt: null,
+							bannedUntil: null,
+						}
+					});
+				}
+			});
+
+			res.status(200).json({
+				message: "Post Comment Quarantine successfully removed"
+			});
+		} catch (error) {
+			res.status(400).json({
+				message: `An Error occured while trying to remove post comment quarantine.`,
+				details: {
+					errorMessage: error.message,
+					errorStack: error.stack,
+				}
+			});
+		} finally {
+			await prisma.$disconnect();
+		}
+	}
+)
+
 
 module.exports = userRouter;

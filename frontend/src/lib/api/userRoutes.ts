@@ -229,3 +229,14 @@ export const removeFlagQuarantine = async (userId: string | undefined) => {
   console.log("removeFlagQuarantine", res.data);
   return res.data;
 }
+
+export const removePostCommentQuarantine = async (userId: string | undefined) => {
+  const res = await axios.patch(
+    `${API_BASE_URL}/user/removePostCommentQuarantine`,
+    {
+      userId: userId
+    }
+  );
+  console.log("removePostCommentQuarantine", res.data);
+  return res.data;
+}

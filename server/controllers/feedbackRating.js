@@ -4,8 +4,6 @@ const express = require('express');
 const feedbackRatingRouter = express.Router();
 const prisma = require('../prismaClient');
 
-const fs = require('fs');
-
 feedbackRatingRouter.post(
     '/create/:feedbackId/:proposalId',
     passport.authenticate('jwt', { session: false }),

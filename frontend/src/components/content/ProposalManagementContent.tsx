@@ -12,6 +12,7 @@ import { deletePostBan } from "src/lib/api/banRoutes";
 import { updateFalseFlagIdea } from "src/lib/api/flagRoutes";
 import { updateIdeaStatus } from "src/lib/api/ideaRoutes";
 import { updateUser } from "src/lib/api/userRoutes";
+import { incrementBadPostCount } from "src/lib/api/badPostingBehaviorRoutes";
 import { USER_TYPES } from "src/lib/constants";
 import { IFlag } from "src/lib/types/data/flag.type";
 import { IIdeaWithAggregations } from "src/lib/types/data/idea.type";
@@ -197,6 +198,7 @@ export const ProposalManagementContent: React.FC<
                             onClick={() => {
                               setBanModalProposalData(req);
                               setShowProposalBanModal(true);
+                              incrementBadPostCount(token, req.id.toString());
                             }}
                           >
                             Ban Proposal

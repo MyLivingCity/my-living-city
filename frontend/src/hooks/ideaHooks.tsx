@@ -12,7 +12,6 @@ import {
   isIdeaFollowedByUser,
   getIdeasEndorsedByUser,
   isIdeaEndorsedByUser,
-  getEndorsedUsersByIdea
 } from "../lib/api/ideaRoutes";
 
 // export const useIdeas = (
@@ -80,9 +79,4 @@ export const useUserEndorsedIdeas = (userId: string) => {
 export const useCheckIdeaEndorsedByUser = (token: string|null, userId: string|null, ideaId: string|null) => {
   return useQuery<any, IFetchError>("is-idea-endorsed-by-user", () => 
     isIdeaEndorsedByUser(token, userId, ideaId))
-}
-
-export const useGetEndorsedUsersByIdea = (token: string|null, ideaId: string) => {
-  return useQuery<any, IFetchError>("idea-endorsed-users", () => 
-    getEndorsedUsersByIdea(token, ideaId))
 }

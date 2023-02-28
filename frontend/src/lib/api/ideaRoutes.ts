@@ -322,16 +322,3 @@ export const getIdeasEndorsedByUser = async (userId: string) => {
   })
   return res.data;
 }
-
-export const getEndorsedUsersByIdea = async (token: string | null, ideaId: string) => {
-  const res = await axios({
-    method: "get",
-    url: `${API_BASE_URL}/idea/getAllEndorsersByIdea/${ideaId}`,
-    headers: {
-      "x-auth-token": token,
-      "Access-Control-Allow-Origin": "*",
-    },
-    withCredentials: true,
-  })
-  return res.data;
-}

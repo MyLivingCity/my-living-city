@@ -10,6 +10,7 @@ import {
 } from "react-bootstrap";
 import { updateFalseFlagIdea } from "src/lib/api/flagRoutes";
 import { updateIdeaStatus } from "src/lib/api/ideaRoutes";
+import { incrementBadPostCount } from "src/lib/api/badPostingBehaviorRoutes"
 import { updateUser } from "src/lib/api/userRoutes";
 import { USER_TYPES } from "src/lib/constants";
 import { IFlag } from "src/lib/types/data/flag.type";
@@ -194,6 +195,7 @@ export const IdeaManagementContent: React.FC<IdeaManagementContentProps> = ({
                             onClick={() => {
                               setBanModalIdeaData(req);
                               setShowIdeaBanModal(true);
+                              incrementBadPostCount(token, req.id.toString());
                             }}
                           >
                             Ban Idea

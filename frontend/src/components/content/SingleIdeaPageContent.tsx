@@ -1,5 +1,6 @@
 import {Button, Card, Col, Row, Image, ButtonGroup, Table} from "react-bootstrap";
 import { IIdeaWithRelationship } from "../../lib/types/data/idea.type";
+import { incrementPostFlagCount } from "src/lib/api/badPostingBehaviorRoutes";
 import ProposalTile from "../tiles/ProposalTile";
 import { useSingleProposal } from "src/hooks/proposalHooks";
 import { useSingleIdea } from "src/hooks/ideaHooks";
@@ -309,7 +310,8 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
               <Modal.Body>Are you sure about flagging this post?</Modal.Body>
               <Modal.Footer>
                 <Button style={{background: 'red'}} variant="primary"  onClick={
-                    () => submitFlagReasonHandler(parseInt(ideaId), token!, user!.id, ideaData.active, new Date())
+                    () => {submitFlagReasonHandler(parseInt(ideaId), token!, user!.id, ideaData.active, new Date());
+                    incrementPostFlagCount(token, ideaId);}
                 }>Flag
                 </Button>
                 <Button variant="secondary" onClick={handleClose}>

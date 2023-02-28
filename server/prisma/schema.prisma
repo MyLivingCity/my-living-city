@@ -843,3 +843,16 @@ model False_Flagging_Behavior {
 
   @@map(name: "false_flagging_behavior")
 }
+
+model Bad_Posting_Behavior {
+  id         Int       @id @default(autoincrement())
+  bad_post_count Int    @default(0)
+  post_flag_count Int  @default(0)
+  post_comment_ban Boolean @default(false)
+  bannedAt   DateTime? @map("banned_at")
+  bannedUntil DateTime? @map("banned_until")
+  userId     String    @map("user_id")
+  user       User      @relation(fields: [userId], references: [id])
+
+  @@map(name: "bad_posting_behavior")
+}

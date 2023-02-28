@@ -64,4 +64,65 @@ badPostBehaviorRouter.put(
     }
 )
 
+badPostBehaviorRouter.put(
+    '/incrementPostFlagCount/:ideaId',
+    passport.authenticate('jwt', { session: false }),
+    async (req, res) => {
+        const { ideaId } = req.params;
+        try {
+            const foundIdea = await prisma.idea.findUnique({ where: { id: parseInt(ideaId) } });
+            if (!foundIdea) {
+                return res.status(400).json({
+                    message: 'Idea not found',
+                });
+            }
+
+            //check for user with authorId in bad posting behaviour table, if found then update their postFlagCount in bad posting behaviour table else create a new entry
+            const user = await prisma.bad_Posting_Behavior.findFirst({
+                where: {
+                    userId: foundIdea.authorId,
+                },
+            });
+
+            if (user) {
+                //update postFlagCount
+                console.log("Post flag count: " + user.post_flag_count);
+                await prisma.bad_Posting_Behavior.updateMany({
+                    where: {
+                        userId: foundIdea.authorId,
+                    },
+                    data: {
+                        post_flag_count: user.post_flag_count + 1,
+                    },
+                });
+                res.status(200).json({
+                    message: 'Post flag count updated',
+                });
+            } else {
+                //create new entry
+                await prisma.bad_Posting_Behavior.create({
+                    data: {
+                        userId: foundIdea.authorId,
+                        post_flag_count: 1,
+                    },
+                });
+
+                res.status(200).json({
+                    message: 'Post flag count created',
+                });
+            }
+        } catch (error) {
+            res.status(400).json({
+                message: 'Post flag count not updated',
+                details: {
+                    errorMessage: error.message,
+                    errorStack: error.stack,
+                }
+            });
+        } finally {
+            await prisma.$disconnect();
+        }
+    }
+)
+
 module.exports = badPostBehaviorRouter;

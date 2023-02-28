@@ -169,3 +169,17 @@ export const updateFalseFlagComment = async (
       const thresholdCount = await getThreshhold(token);
       return flagCount.data >= thresholdCount.number;
   }
+
+  // Check if user has a flag ban
+  export const checkFlagBan = async (token: string | null, user: string) => {
+    const res = await axios({
+      method: "get",
+      url: `${API_BASE_URL}/flag/checkFlagBan/${user}`,
+      headers: {
+        "x-auth-token": token,
+        "Access-Control-Allow-Origin": "*",
+      },
+      withCredentials: true,
+    })
+    return res.data;
+  }

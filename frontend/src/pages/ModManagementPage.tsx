@@ -30,6 +30,8 @@ import { now } from 'moment';
 import { useAllBanDetails, useRemoveAllExpiredBans } from 'src/hooks/banHooks';
 import { getAllBannedUsers } from 'src/lib/api/userRoutes';
 import { BannedUsersManagementContent } from 'src/components/content/BannedUsersManagementContent';
+import { FalseFlagManagementContent } from 'src/components/content/FalseFlagManagementContent';
+import { BadPostingManagementContent } from 'src/components/content/BadPostingManagementContent';
 
 // Extends Route component props with idea title route param
 interface ModManagementProps extends RouteComponentProps<{}> {
@@ -264,7 +266,10 @@ const ModManagementPage: React.FC<ModManagementProps> = ({ }) => {
             <Button onClick={changeThreshold}>Update</Button>
           </div>
           <br></br>
-          <UserManagementContent users={quarantineUser!} token={token} user={user} flags={flagData} commentFlags={commentFlagData} ideas={ideaData} proposals={proposalData} comments={commentData} bans={banData}/>
+          <FalseFlagManagementContent users={quarantineUser!} token={token} user={user} flags={flagData} commentFlags={commentFlagData} ideas={ideaData} proposals={proposalData} comments={commentData} bans={banData}/>
+          <br></br>
+          <br></br>
+          <BadPostingManagementContent users={quarantineUser!} token={token} user={user} flags={flagData} commentFlags={commentFlagData} ideas={ideaData} proposals={proposalData} comments={commentData} bans={banData}/>
           <br></br>
           <div className="d-flex" >
             {(filteredDay === '' || filteredDay === 'all') ? (<IdeaManagementContent users={userData!} token={token} user={user} ideas={quarantineIdea!} flags={flagData} />) : <IdeaManagementContent users={userData!} token={token} user={user} ideas={agedQuarantinedIdeas!} flags={flagData} />}

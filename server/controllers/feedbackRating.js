@@ -71,3 +71,33 @@ feedbackRatingRouter.post(
         }
     } 
 )
+
+feedbackRatingRouter.get(
+    '/getall/:proposalId',
+    async (req, res) => {
+        try {
+            const parsedProposalId = parseInt(req.params.proposalId);
+
+
+            if (!parsedProposalId) {
+                return res.status(400).json({
+                    message: `A valid proposalId must be specified in the route paramater.`,
+                });
+            }
+
+            const ratings = await prisma.feedbackRating.findMany({ where: { proposalId: parsedProposalId } });
+
+            res.status(200).json(ratings);
+        }  catch (error) {
+            res.status(400).json({
+                message: `An error occured while trying to get all ratings for proposal ${req.params.proposalId}.`,
+                details: {
+                  errorMessage: error.message,
+                  errorStack: error.stack,
+                }
+              });
+        } finally {
+            await prisma.$disconnect();
+        }
+    }
+)

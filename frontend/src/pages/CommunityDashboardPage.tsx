@@ -91,9 +91,10 @@ const CommunityDashboardPage: React.FC<CommunityDashboardPageProps> = (props) =>
         const segmentId = segmentInfoData?.segId;
         const filteredTopIdeas: IIdeaWithAggregations[] = [];
         iData && iData.forEach(idea => {
-            if (idea.segId && idea.segId === segmentId) {
+            if (idea.segId && idea.segId === segmentId || (idea.segId == null && idea.superSegId == segmentInfoData?.superSegId )) {
                 filteredTopIdeas.push(idea);
             }
+
         });
         return filteredTopIdeas;
     }

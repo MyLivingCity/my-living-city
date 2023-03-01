@@ -5,16 +5,15 @@ const feedbackRatingRouter = express.Router();
 const prisma = require('../prismaClient');
 
 feedbackRatingRouter.post(
-    '/create/:feedbackId/:proposalId',
+    '/create/:proposalId',
     passport.authenticate('jwt', { session: false }),
     async (req, res) => {
         try {
             const { id: userId } = req.user;
             const { ratingExplanation, rating } = req.body;
-            const parsedFeedbackId = parseInt(req.params.feedbackId);
             const parsedProposalId = parseInt(req.params.proposalId);
 
-            if(!parsedFeedbackId || !parsedProposalId) {
+            if(!parsedProposalId) {
                 return res.status(400).json({ 
                     message: `A valid ideaId must be specified in the route paramater.`, 
                 });
@@ -31,7 +30,6 @@ feedbackRatingRouter.post(
                 where: {
                     authorId: userId,
                     proposalId: parsedProposalId,
-                    feedbackId: parsedFeedbackId,
                 }
             });
 
@@ -50,7 +48,6 @@ feedbackRatingRouter.post(
                     ratingExplanation,
                     authorId: userId,
                     proposalId: parsedProposalId,
-                    feedbackId: parsedFeedbackId,
                 }
             });
 
@@ -60,7 +57,7 @@ feedbackRatingRouter.post(
             });
         } catch (error) {
             res.status(400).json({
-                message: `An error occured while trying to create a rating for feedback ${req.params.feedbackId} for proposal ${req.params.proposalId}.`,
+                message: `An error occured while trying to create a rating for feedback ${req.params.feedbackId}.`,
                 details: {
                   errorMessage: error.message,
                   errorStack: error.stack,

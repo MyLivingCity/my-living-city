@@ -11,8 +11,22 @@ const { collaborator } = require('../lib/prismaClient');
 proposalRouter.post(
     '/create',
     passport.authenticate('jwt', { session: false }),
+    
     async (req, res) => {
         try {
+            //check if user is in bad posting behavior table if so res.status(400).json({message: 'User is in bad posting behavior table'}) 
+            const { id } = req.user;
+            const user = await prisma.bad_Posting_Behavior.findFirst({
+            where: {
+                userId: id,
+                post_comment_ban: true,
+            },
+            });
+            if (user) {
+            return res.status(400).json({
+                message: 'User is in bad posting behavior table',
+            });
+            }
             let {
                 ideaId,
                 banned,

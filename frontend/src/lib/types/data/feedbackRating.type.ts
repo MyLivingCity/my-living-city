@@ -1,6 +1,7 @@
 export interface IFeedbackRating {
     id: number;
-    ideaId: number;
+    proposalId: number;
+    feedbackId: number;
     authorId: string;
     rating: number;
     createdAt: string;

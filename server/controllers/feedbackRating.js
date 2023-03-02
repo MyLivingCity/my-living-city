@@ -101,7 +101,7 @@ feedbackRatingRouter.get(
             res.status(200).json(ratings);
         }  catch (error) {
             res.status(400).json({
-                message: `An error occured while trying to get all ratings for proposal ${req.params.proposalId}.`,
+                message: `An error occured while trying to get all ratings for feedback ${req.params.feedbackId} for proposal ${req.params.proposalId}.`,
                 details: {
                   errorMessage: error.message,
                   errorStack: error.stack,

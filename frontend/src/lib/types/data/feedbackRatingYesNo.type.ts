@@ -13,3 +13,8 @@ export interface IFeedbackRatingYesNoAggregateSummary {
     yesRatings: number;
     noRatings: number;
 }
+
+export interface IFeedbackRatingYesNoAggregateResponse {
+    ratings: IFeedbackRatingYesNo[];
+    summary: IFeedbackRatingYesNoAggregateSummary;
+}

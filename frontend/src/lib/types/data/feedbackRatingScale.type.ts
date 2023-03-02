@@ -19,3 +19,8 @@ export interface IFeedbackRatingScaleAggregateSummary {
     ratingCount: number;
     ratingValueBreakdown: IFeedbackRatingScaleValueBreakdown;
 }
+
+export interface IFeedbackRatingScaleAggregateResponse {
+    ratings: IFeedbackRatingScale[];
+    summary: IFeedbackRatingScaleAggregateSummary;
+}

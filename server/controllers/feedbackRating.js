@@ -73,11 +73,11 @@ feedbackRatingRouter.post(
 )
 
 feedbackRatingRouter.get(
-    '/getall/:proposalId',
+    '/getall/:proposalId/:feedbackId',
     async (req, res) => {
         try {
             const parsedProposalId = parseInt(req.params.proposalId);
-
+            const parsedFeedbackId = parseInt(req.params.feedbackId);
 
             if (!parsedProposalId) {
                 return res.status(400).json({
@@ -85,7 +85,18 @@ feedbackRatingRouter.get(
                 });
             }
 
-            const ratings = await prisma.feedbackRating.findMany({ where: { proposalId: parsedProposalId } });
+            if (!parsedFeedbackId) {
+                return res.status(400).json({
+                    message: `A valid feedbackId must be specified in the route paramater.`,
+                });
+            }
+
+            const ratings = await prisma.feedbackRating.findMany({
+                 where: {
+                    proposalId: parsedProposalId,
+                    feedbackId: parsedFeedbackId 
+                } 
+            });
 
             res.status(200).json(ratings);
         }  catch (error) {

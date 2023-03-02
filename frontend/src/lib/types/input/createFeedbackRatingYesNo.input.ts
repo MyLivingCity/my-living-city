@@ -1,3 +1,3 @@
-export interface ICreateFeedbackRatingYesNoInput {
-    rating : number;
+export interface ICreateFeedbackRatingInput {
+    rating: number;
 }

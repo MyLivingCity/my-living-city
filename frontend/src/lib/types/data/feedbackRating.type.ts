@@ -4,6 +4,7 @@ export interface IFeedbackRating {
     feedbackId: number;
     authorId: string;
     rating: number;
+    ratingExplanation?: string;
     createdAt: string;
     updatedAt: string;
 }

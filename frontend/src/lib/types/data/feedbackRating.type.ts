@@ -1,4 +1,4 @@
-export interface IFeedbackRatingScale {
+export interface IFeedbackRating {
     id: number;
     ideaId: number;
     authorId: string;
@@ -21,6 +21,18 @@ export interface IFeedbackRatingScaleAggregateSummary {
 }
 
 export interface IFeedbackRatingScaleAggregateResponse {
-    ratings: IFeedbackRatingScale[];
+    ratings: IFeedbackRating[];
     summary: IFeedbackRatingScaleAggregateSummary;
+}
+
+export interface IFeedbackRatingYesNoAggregateSummary {
+    ratingRatio: number;
+    ratingCount: number;
+    yesRatings: number;
+    noRatings: number;
+}
+
+export interface IFeedbackRatingYesNoAggregateResponse {
+    ratings: IFeedbackRating[];
+    summary: IFeedbackRatingYesNoAggregateSummary;
 }

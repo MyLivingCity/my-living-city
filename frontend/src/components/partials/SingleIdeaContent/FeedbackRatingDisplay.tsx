@@ -3,7 +3,7 @@ import { Card, Col, Container, Row } from "react-bootstrap";
 import { CanvasJSChart } from "src/lib/canvasjs";
 import { IFeedbackRatingScaleAggregateSummary,
      IFeedbackRatingScaleValueBreakdown }
-      from "src/lib/types/data/feedbackRatingScale.type";
+      from "src/lib/types/data/feedbackRating.type";
 
 interface FeedbackRatingDisplayProps {
     feedbackRatingScaleValueBreakdown: IFeedbackRatingScaleValueBreakdown;

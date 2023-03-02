@@ -23,9 +23,6 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({us
     console.log('segmentIdsFiltered', segmentIdsFiltered);
 
 
-
-
-
     return (
         <Container className="user-profile-content w-100">
             <Row className='mb-4 mt-4 justify-content-left'>
@@ -87,7 +84,19 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({us
                     <Card style={{ width: '18rem' }}>
                         <Card.Header><h4>Region</h4></Card.Header>
                         <ListGroup variant="flush">
-                            <ListGroup.Item>{capitalizeFirstLetterEachWord(data.superSegmentName)}</ListGroup.Item>
+                            <ListGroup.Item action>
+                                {capitalizeFirstLetterEachWord(data.superSegmentName)}
+                            </ListGroup.Item>
+                        </ListGroup>
+                    </Card>
+                </Col>
+                <Col>
+                    <Card style={{ width: '18rem' }}>
+                        <Card.Header><h4>Municipality</h4></Card.Header>
+                        <ListGroup variant="flush" defaultActiveKey="#link1">
+                            <ListGroup.Item action active>
+                                {capitalizeFirstLetterEachWord(segmenData.name)}
+                            </ListGroup.Item>
                         </ListGroup>
                     </Card>
                 </Col>
@@ -96,20 +105,22 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({us
                         <Card.Header><h4>Neighbourhood</h4></Card.Header>
                         <ListGroup variant="flush">
                             {data.subSegments.length > 0 ? data.subSegments.map((subSeg) => 
-                            <ListGroup.Item>{capitalizeFirstLetterEachWord(subSeg)}</ListGroup.Item>) : 
+                            <ListGroup.Item action>{capitalizeFirstLetterEachWord(subSeg)}</ListGroup.Item>) :
                             <ListGroup.Item>No subSegments</ListGroup.Item>}
                         </ListGroup>
                     </Card>
                 </Col>
+
+                {/* TODO: The community partner is not implemented yet
                 <Col>
                     <Card style={{ width: '18rem' }}>
                         <Card.Header><h4>Community Partners</h4></Card.Header>
                         <ListGroup variant="flush">
-                            {/* TODO: The community partner is not implemented yet */}
                             <ListGroup.Item>No community partners</ListGroup.Item>
                         </ListGroup>
                     </Card>
                 </Col>
+                */}
             </Row>
             <Row style={{marginTop: "3rem"}}>
             <NewAndTrendingSection topIdeas={topIdeas} isDashboard={false} showCustomFilter={false}/>

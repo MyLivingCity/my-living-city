@@ -120,6 +120,7 @@ feedbackRatingRouter.get(
             const parsedProposalId = parseInt(req.params.proposalId);
             const parsedFeedbackId = parseInt(req.params.feedbackId);
             let summary = {};
+            let ratio = 0;
 
             if (!parsedProposalId) {
                 return res.status(400).json({
@@ -144,7 +145,7 @@ feedbackRatingRouter.get(
                     where: {
                         proposalId: parsedProposalId,
                         feedbackId: parsedFeedbackId,
-                        rating: "YES"
+                        rating: 1
                     },
                     count: true,
                 });
@@ -153,7 +154,7 @@ feedbackRatingRouter.get(
                     where: {
                         proposalId: parsedProposalId,
                         feedbackId: parsedFeedbackId,
-                        rating: "NO"
+                        rating: 0
                     },
                     count: true,
                 });
@@ -207,10 +208,14 @@ feedbackRatingRouter.get(
             });
 
             if (req.params.type === "YESNO") {
+                ratio = yesRatings.count / aggregates.count;
+            }
+
+            if (req.params.type === "YESNO") {
                 summary = {
                     yesRatings: yesRatings.count,
                     noRatings: noRatings.count,
-                    averageRating: aggregates.avg.rating,
+                    averageRating: ratio,
                     totalRatings: aggregates.count,
                 }
             } else if (req.params.type === "RATING") {

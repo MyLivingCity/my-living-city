@@ -5,15 +5,15 @@ import { IFeedbackRatingScaleAggregateSummary,
      IFeedbackRatingScaleValueBreakdown }
       from "src/lib/types/data/feedbackRating.type";
 
-interface FeedbackRatingDisplayProps {
+interface FeedbackRatingYesNoDisplayProps {
     feedbackRatingScaleValueBreakdown: IFeedbackRatingScaleValueBreakdown;
     feedbackRatingScaleSummary: IFeedbackRatingScaleAggregateSummary;
 }
 
-const FeedbackRatingDisplay = ({
+const FeedbackRatingYesNoDisplay = ({
     feedbackRatingScaleValueBreakdown,
     feedbackRatingScaleSummary,
-}: FeedbackRatingDisplayProps) => {
+}: FeedbackRatingYesNoDisplayProps) => {
     const { oneRatings, twoRatings, threeRatings, fourRatings } =
         feedbackRatingScaleValueBreakdown;
     const options = {
@@ -89,4 +89,4 @@ const FeedbackRatingDisplay = ({
     );
 };
 
-export default FeedbackRatingDisplay;
+export default FeedbackRatingYesNoDisplay;

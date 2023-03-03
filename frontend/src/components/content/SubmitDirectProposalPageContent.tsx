@@ -218,34 +218,6 @@ const SubmitDirectProposalPageContent: React.FC<
     newFeedbackTypeList[index] = feedbackType;
     formik.values.feedbackRatingType![index] = feedbackType;
     setFeedbackTypeList(newFeedbackTypeList);
-    const newFeedbackRatingList = [...feedbackRatingList];
-    newFeedbackRatingList[index] = 0;
-    formik.values.feedbackRating![index] = 0;
-    setFeedbackRating(newFeedbackRatingList);
-    const newFeedbackYesList = [...feedbackYesList];
-    newFeedbackYesList[index] = 0;
-    formik.values.feedbackYes![index] = 0;
-    setFeedbackYes(newFeedbackYesList);
-    const newFeedbackNoList = [...feedbackNoList];
-    newFeedbackNoList[index] = 0;
-    formik.values.feedbackNo![index] = 0;
-    setFeedbackNo(newFeedbackNoList);
-    const newFeedbackOnesList = [...feedbackOnesList];
-    newFeedbackOnesList[index] = 0;
-    formik.values.feedbackOnes![index] = 0;
-    setFeedbackOnes(newFeedbackOnesList);
-    const newFeedbackTwosList = [...feedbackTwosList];
-    newFeedbackTwosList[index] = 0;
-    formik.values.feedbackTwos![index] = 0;
-    setFeedbackTwos(newFeedbackTwosList);
-    const newFeedbackThreesList = [...feedbackThreesList];
-    newFeedbackThreesList[index] = 0;
-    formik.values.feedbackThrees![index] = 0;
-    setFeedbackThrees(newFeedbackThreesList);
-    const newFeedbackFoursList = [...feedbackFoursList];
-    newFeedbackFoursList[index] = 0;
-    formik.values.feedbackFours![index] = 0;
-    setFeedbackFours(newFeedbackFoursList);
   }
 
   const handleCommunityChange = (index: number) => {
@@ -321,7 +293,6 @@ const SubmitDirectProposalPageContent: React.FC<
         location: values.location,
         feedback: values.feedback,
         feedbackRatingType: values.feedbackRatingType,
-        feedbackRating: values.feedbackRating
       };
 
       const proposal = await postCreateProposal(
@@ -392,13 +363,6 @@ const SubmitDirectProposalPageContent: React.FC<
       location: "",
       feedback: ["", "", "", "", ""],
       feedbackRatingType: ["YESNO", "YESNO", "YESNO", "YESNO", "YESNO"],
-      feedbackYes: [0, 0, 0, 0, 0],
-      feedbackNo: [0, 0, 0, 0, 0],
-      feedbackOnes: [0, 0, 0, 0, 0],
-      feedbackTwos: [0, 0, 0, 0, 0],
-      feedbackThrees: [0, 0, 0, 0, 0],
-      feedbackFours: [0, 0, 0, 0, 0],
-      feedbackRating: [0, 0, 0, 0, 0]
     },
     onSubmit: submitHandler,
   });

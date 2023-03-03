@@ -2,18 +2,19 @@ import React,  { useEffect, useState } from "react";
 import { Card, Col, Container, Row } from "react-bootstrap";
 import { CanvasJSChart } from "src/lib/canvasjs";
 import { IFeedbackRatingScaleAggregateSummary,
-     IFeedbackRatingScaleValueBreakdown }
+     IFeedbackRatingScaleValueBreakdown,
+     IFeedbackRatingYesNoAggregateSummary }
       from "src/lib/types/data/feedbackRating.type";
 
-interface FeedbackRatingYesNoDisplayProps {
+interface FeedbackRatingScaleDisplayProps {
     feedbackRatingScaleValueBreakdown: IFeedbackRatingScaleValueBreakdown;
     feedbackRatingScaleSummary: IFeedbackRatingScaleAggregateSummary;
 }
 
-const FeedbackRatingYesNoDisplay = ({
+const FeedbackRatingScaleDisplay = ({
     feedbackRatingScaleValueBreakdown,
     feedbackRatingScaleSummary,
-}: FeedbackRatingYesNoDisplayProps) => {
+}: FeedbackRatingScaleDisplayProps) => {
     const { oneRatings, twoRatings, threeRatings, fourRatings } =
         feedbackRatingScaleValueBreakdown;
     const options = {
@@ -89,4 +90,4 @@ const FeedbackRatingYesNoDisplay = ({
     );
 };
 
-export default FeedbackRatingYesNoDisplay;
+export default FeedbackRatingScaleDisplay;

@@ -20,6 +20,7 @@ import {
 import LoadingSpinner from '../ui/LoadingSpinner';
 import CommentsSection from "../partials/SingleIdeaContent/CommentsSection";
 import RatingsSection from "../partials/SingleIdeaContent/RatingsSection";
+import { FeedbackRatingScaleSection, FeedbackRatingYesNoSection } from "../partials/SingleIdeaContent/FeedbackRatingSection";
 import {
   FacebookShareButton,
   FacebookIcon,
@@ -189,41 +190,6 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     feedbackType3,
     feedbackType4,
     feedbackType5,
-    feedbackRating1,
-    feedbackRating2,
-    feedbackRating3,
-    feedbackRating4,
-    feedbackRating5,
-    feedbackYes1,
-    feedbackYes2,
-    feedbackYes3,
-    feedbackYes4,
-    feedbackYes5,
-    feedbackNo1,
-    feedbackNo2,
-    feedbackNo3,
-    feedbackNo4,
-    feedbackNo5,
-    feedbackOnes1,
-    feedbackOnes2,
-    feedbackOnes3,
-    feedbackOnes4,
-    feedbackOnes5,
-    feedbackTwos1,
-    feedbackTwos2,
-    feedbackTwos3,
-    feedbackTwos4,
-    feedbackTwos5,
-    feedbackThrees1,
-    feedbackThrees2,
-    feedbackThrees3,
-    feedbackThrees4,
-    feedbackThrees5,
-    feedbackFours1,
-    feedbackFours2,
-    feedbackFours3,
-    feedbackFours4,
-    feedbackFours5
   } = proposalData;
 
  
@@ -1348,66 +1314,18 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                       <strong>Specific Feedback 1: </strong> {feedback1}
                     </p>
                     {feedbackType1 === "YESNO" ? (
-                          <Form.Group>
-                          <div className="yesNo">
-                            <p>
-                              <strong>Approval Rating: </strong> {feedbackRating1}
-                            </p>
-                            <Form.Label>
-                              Approve of this feedback?
-                            </Form.Label>
-                            <br />
-                            <Form.Check
-                              value = "Yes"
-                              inline
-                              label = "Yes"
-                              type = "radio"/>
-                              <Form.Check
-                              value = "No"
-                              inline
-                              label = "No"
-                              type = "radio"/>
-                            <Button
-                              type="submit"
-                            />
-                          </div>
-                        </Form.Group>
+                          <FeedbackRatingYesNoSection
+                            feedbackId = {"1"}
+                            proposalId = {proposalId}
+                          >
+                          </FeedbackRatingYesNoSection>
                           ) : null}
                         {feedbackType1 === "RATING" ? (
-                          <Form.Group>
-                            <div className="rating">
-                              <p>
-                                <strong>Feedback Rating: </strong> {feedbackRating1}
-                              </p>
-                              <Form.Label>
-                                Rate feedback from 1-4:
-                              </Form.Label>
-                              <br />
-                              <Form.Check
-                                value="1"
-                                inline
-                                label = "1"
-                                type = "radio"/>
-                                <Form.Check
-                                value="2"
-                                inline
-                                label = "2"
-                                type = "radio"/>
-                                <Form.Check
-                                value="3"
-                                inline
-                                label = "3"
-                                type = "radio"/>
-                                <Form.Check
-                                value="4"
-                                inline
-                                label = "4"
-                                type = "radio"/>
-                              <Button
-                              type="submit"
-                              />
-                            </div>
-                          </Form.Group>
+                          <FeedbackRatingScaleSection
+                            feedbackId = {"1"}
+                            proposalId = {proposalId}
+                          >
+                          </FeedbackRatingScaleSection>
                         ) : null}
                       </Card.Body>
                     </Card>
@@ -1421,66 +1339,18 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                       <strong>Specific Feedback 2: </strong> {feedback2}
                     </p>
                     {feedbackType2 === "YESNO" ? (
-                          <Form.Group>
-                          <div className="yesNo">
-                            <p>
-                              <strong>Approval Rating: </strong> {feedbackRating2}
-                            </p>
-                            <Form.Label>
-                              Approve of this feedback?
-                            </Form.Label>
-                            <br />
-                            <Form.Check
-                              value = "Yes"
-                              inline
-                              label = "Yes"
-                              type = "radio"/>
-                              <Form.Check
-                              value = "No"
-                              inline
-                              label = "No"
-                              type = "radio"/>
-                            <Button
-                              type="submit"
-                            />
-                          </div>
-                        </Form.Group>
+                          <FeedbackRatingYesNoSection
+                            feedbackId = {"2"}
+                            proposalId = {proposalId}
+                          >
+                          </FeedbackRatingYesNoSection>
                           ) : null}
                         {feedbackType2 === "RATING" ? (
-                          <Form.Group>
-                            <div className="rating">
-                              <p>
-                                <strong>Feedback Rating: </strong> {feedbackRating2}
-                              </p>
-                              <Form.Label>
-                                Rate feedback from 1-4:
-                              </Form.Label>
-                              <br />
-                              <Form.Check
-                                value="1"
-                                inline
-                                label = "1"
-                                type = "radio"/>
-                                <Form.Check
-                                value="2"
-                                inline
-                                label = "2"
-                                type = "radio"/>
-                                <Form.Check
-                                value="3"
-                                inline
-                                label = "3"
-                                type = "radio"/>
-                                <Form.Check
-                                value="4"
-                                inline
-                                label = "4"
-                                type = "radio"/>
-                              <Button
-                              type="submit"
-                              />
-                            </div>
-                          </Form.Group>
+                          <FeedbackRatingScaleSection
+                            feedbackId = {"2"}
+                            proposalId = {proposalId}
+                          >
+                          </FeedbackRatingScaleSection>
                         ) : null}
                 </Card.Body>
               </Card>
@@ -1494,66 +1364,18 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                       <strong>Specific Feedback 3: </strong> {feedback3}
                     </p>
                     {feedbackType3 === "YESNO" ? (
-                              <Form.Group>
-                              <div className="yesNo">
-                                <p>
-                                  <strong>Approval Rating: </strong> {feedbackRating3}
-                                </p>
-                                <Form.Label>
-                                  Approve of this feedback?
-                                </Form.Label>
-                                <br />
-                                <Form.Check
-                                  value = "Yes"
-                                  inline
-                                  label = "Yes"
-                                  type = "radio"/>
-                                  <Form.Check
-                                  value = "No"
-                                  inline
-                                  label = "No"
-                                  type = "radio"/>
-                                <Button
-                                  type="submit"
-                                />
-                              </div>
-                            </Form.Group>
+                              <FeedbackRatingYesNoSection
+                                feedbackId = {"3"}
+                                proposalId = {proposalId}
+                              >
+                              </FeedbackRatingYesNoSection>
                               ) : null}
                             {feedbackType3 === "RATING" ? (
-                              <Form.Group>
-                                <div className="rating">
-                                  <p>
-                                    <strong>Feedback Rating: </strong> {feedbackRating3}
-                                  </p>
-                                  <Form.Label>
-                                    Rate feedback from 1-4:
-                                  </Form.Label>
-                                  <br />
-                                  <Form.Check
-                                    value="1"
-                                    inline
-                                    label = "1"
-                                    type = "radio"/>
-                                    <Form.Check
-                                    value="2"
-                                    inline
-                                    label = "2"
-                                    type = "radio"/>
-                                    <Form.Check
-                                    value="3"
-                                    inline
-                                    label = "3"
-                                    type = "radio"/>
-                                    <Form.Check
-                                    value="4"
-                                    inline
-                                    label = "4"
-                                    type = "radio"/>
-                                  <Button
-                                    type="submit"
-                                  />
-                                </div>
-                              </Form.Group>
+                              <FeedbackRatingScaleSection
+                                feedbackId = {"3"}
+                                proposalId = {proposalId}
+                              >
+                              </FeedbackRatingScaleSection>
                             ) : null}
                     </Card.Body>
                   </Card>
@@ -1567,66 +1389,18 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                       <strong>Specific Feedback 4: </strong> {feedback4}
                     </p>
                     {feedbackType4 === "YESNO" ? (
-                              <Form.Group>
-                              <div className="yesNo">
-                                <p>
-                                  <strong>Approval Rating: </strong> {feedbackRating4}
-                                </p>
-                                <Form.Label>
-                                  Approve of this feedback?
-                                </Form.Label>
-                                <br />
-                                <Form.Check
-                                  value = "Yes"
-                                  inline
-                                  label = "Yes"
-                                  type = "radio"/>
-                                  <Form.Check
-                                  value = "No"
-                                  inline
-                                  label = "No"
-                                  type = "radio"/>
-                                  <Button
-                                  type="submit"
-                                  />
-                              </div>
-                            </Form.Group>
+                              <FeedbackRatingYesNoSection
+                                feedbackId = {"4"}
+                                proposalId = {proposalId}
+                              >
+                              </FeedbackRatingYesNoSection>
                               ) : null}
                             {feedbackType4 === "RATING" ? (
-                              <Form.Group>
-                                <div className="rating">
-                                  <p>
-                                    <strong>Feedback Rating: </strong> {feedbackRating2}
-                                  </p>
-                                  <Form.Label>
-                                    Rate feedback from 1-4:
-                                  </Form.Label>
-                                  <br />
-                                  <Form.Check
-                                    value="1"
-                                    inline
-                                    label = "1"
-                                    type = "radio"/>
-                                    <Form.Check
-                                    value="2"
-                                    inline
-                                    label = "2"
-                                    type = "radio"/>
-                                    <Form.Check
-                                    value="3"
-                                    inline
-                                    label = "3"
-                                    type = "radio"/>
-                                    <Form.Check
-                                    value="4"
-                                    inline
-                                    label = "4"
-                                    type = "radio"/>
-                                    <Button
-                                      type="submit"
-                                    />
-                                </div>
-                              </Form.Group>
+                              <FeedbackRatingScaleSection
+                                feedbackId = {"4"}
+                                proposalId = {proposalId}
+                              >
+                              </FeedbackRatingScaleSection>
                             ) : null}
                     </Card.Body>
                   </Card>
@@ -1640,66 +1414,18 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                       <strong>Specific Feedback 5: </strong> {feedback5}
                     </p>
                     {feedbackType5 === "YESNO" ? (
-                              <Form.Group>
-                              <div className="yesNo">
-                                <p>
-                                  <strong>Approval Rating: </strong> {feedbackRating5}
-                                </p>
-                                <Form.Label>
-                                  Approve of this feedback?
-                                </Form.Label>
-                                <br />
-                                <Form.Check
-                                  value = "Yes"
-                                  inline
-                                  label = "Yes"
-                                  type = "radio"/>
-                                  <Form.Check
-                                  value = "No"
-                                  inline
-                                  label = "No"
-                                  type = "radio"/>
-                                  <Button
-                                    type="submit"
-                                  />
-                              </div>
-                            </Form.Group>
+                              <FeedbackRatingYesNoSection
+                                feedbackId = {"5"}
+                                proposalId = {proposalId}
+                              >
+                              </FeedbackRatingYesNoSection>
                               ) : null}
                             {feedbackType5 === "RATING" ? (
-                              <Form.Group>
-                                <div className="rating">
-                                  <p>
-                                    <strong>Feedback Rating: </strong> {feedbackRating5}
-                                  </p>
-                                  <Form.Label>
-                                    Rate feedback from 1-4:
-                                  </Form.Label>
-                                  <br />
-                                  <Form.Check
-                                    value="1"
-                                    inline
-                                    label = "1"
-                                    type = "radio"/>
-                                    <Form.Check
-                                    value="2"
-                                    inline
-                                    label = "2"
-                                    type = "radio"/>
-                                    <Form.Check
-                                    value="3"
-                                    inline
-                                    label = "3"
-                                    type = "radio"/>
-                                    <Form.Check
-                                    value="4"
-                                    inline
-                                    label = "4"
-                                    type = "radio"/>
-                                    <Button
-                                      type="submit"
-                                    />
-                                </div>
-                              </Form.Group>
+                              <FeedbackRatingScaleSection
+                                feedbackId = {"5"}
+                                proposalId = {proposalId}
+                              >
+                              </FeedbackRatingScaleSection>
                             ) : null}
                     </Card.Body>
                   </Card>

@@ -11,6 +11,10 @@ interface FeedbackRatingScaleDisplayProps {
     feedbackRatingScaleSummary: IFeedbackRatingScaleAggregateSummary;
 }
 
+interface FeedbackRatingYesNoDisplayProps {
+    feedbackRatingYesNoSummary: IFeedbackRatingYesNoAggregateSummary;
+}
+
 const FeedbackRatingScaleDisplay = ({
     feedbackRatingScaleValueBreakdown,
     feedbackRatingScaleSummary,
@@ -90,4 +94,38 @@ const FeedbackRatingScaleDisplay = ({
     );
 };
 
-export default FeedbackRatingScaleDisplay;
+const FeedbackRatingYesNoDisplay = ({
+    feedbackRatingYesNoSummary,
+}: FeedbackRatingYesNoDisplayProps) => {
+    const { yesRatings, noRatings, ratingRatio, ratingCount } = feedbackRatingYesNoSummary;
+
+    const aggregateBreakdown = [
+        {
+            title: "Number of Ratings",
+            value: ratingCount,
+        },
+        {
+            title: "Yes to No Ratio",
+            value: ratingRatio,
+        },
+    ];
+
+    return (
+        <Container className="">
+            <Row className="">
+                {aggregateBreakdown &&
+                    aggregateBreakdown.map(({ title, value }, index) => (
+                        <Col key={index} className="text-center">
+                            <Card>
+                                <Card.Body className="d-flex justify-content-between d-md-block">
+                                    <p className="my-auto">{title}</p>
+                                    <p className="my-auto">{value}</p>
+                                </Card.Body>
+                            </Card>
+                        </Col>
+                    ))}
+            </Row>
+        </Container>
+    )
+}
+export default { FeedbackRatingScaleDisplay, FeedbackRatingYesNoDisplay };

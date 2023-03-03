@@ -106,7 +106,7 @@ const FeedbackRatingYesNoDisplay = ({
         },
         {
             title: "Yes to No Ratio",
-            value: ratingRatio,
+            value: `${ratingRatio * 100} %`,
         },
         {
             title: "Yes to No",

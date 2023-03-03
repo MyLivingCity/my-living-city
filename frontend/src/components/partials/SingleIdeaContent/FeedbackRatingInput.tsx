@@ -273,4 +273,4 @@ const FeedbackRatingScaleInput = ({
     )
 }
 
-export default { FeedbackRatingScaleInput, FeedbackRatingYesNoInput };
+export { FeedbackRatingScaleInput, FeedbackRatingYesNoInput };

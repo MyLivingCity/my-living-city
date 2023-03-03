@@ -132,4 +132,4 @@ const FeedbackRatingYesNoDisplay = ({
         </Container>
     )
 }
-export default { FeedbackRatingScaleDisplay, FeedbackRatingYesNoDisplay };
+export { FeedbackRatingScaleDisplay, FeedbackRatingYesNoDisplay };

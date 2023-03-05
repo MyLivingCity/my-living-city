@@ -81,7 +81,7 @@ const ModManagementPage: React.FC<ModManagementProps> = ({ }) => {
   function loadState(state: String) {
     setPageState(state);
   }
-  if (userLoading || ideaLoading || proposalLoading || commentLoading || flagLoading || commentFlagLoading || threshholdLoading || banLoading || banRemovalLoading) {
+  if (userLoading || ideaLoading || proposalLoading || commentLoading || flagLoading || commentFlagLoading || threshholdLoading || banLoading || banRemovalLoading || bannedUsersLoading) {
     return(
       <div className="wrapper">
         <LoadingSpinner />

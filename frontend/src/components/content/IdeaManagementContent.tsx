@@ -10,7 +10,7 @@ import {
 } from "react-bootstrap";
 import { updateFalseFlagIdea } from "src/lib/api/flagRoutes";
 import { updateIdeaStatus } from "src/lib/api/ideaRoutes";
-import { incrementBadPostCount } from "src/lib/api/badPostingBehaviorRoutes"
+import { incrementBadPostCount, resetBadPostCount } from "src/lib/api/badPostingBehaviorRoutes"
 import { updateUser } from "src/lib/api/userRoutes";
 import { USER_TYPES } from "src/lib/constants";
 import { IFlag } from "src/lib/types/data/flag.type";
@@ -240,6 +240,7 @@ export const IdeaManagementContent: React.FC<IdeaManagementContentProps> = ({
                                   req.banned,
                                   req.quarantined_at
                                 );
+                                resetBadPostCount(token, req.id.toString());
                               }}
                             >
                               Remove from Quarantine

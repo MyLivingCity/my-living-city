@@ -26,6 +26,7 @@ import { getUserSubscriptionStatus } from 'src/lib/api/userRoutes'
 import LoadingSpinner from "./LoadingSpinner";
 import { BanMessageModal } from "../modal/BanMessageModal";
 import { FindBanDetailsWithToken } from "src/hooks/banHooks";
+import { FindBadPostingBehaviorDetails } from "src/hooks/badPostingBehaviorHooks";
 import { WarningMessageModal } from "../modal/WarningMessageModal";
 
 export default function Header() {
@@ -37,8 +38,8 @@ export default function Header() {
   });
   // const { data: googleQuery, isLoading: googleQueryLoading } = useGoogleMapSearchLocation({ lat: data?.geo?.lat, lon: data?.geo?.lon }, (data != null && data.geo != null));
   const { data: segData, isLoading: segQueryLoading } = useAllUserSegmentsRefined(token, user?.id || null);
-  const { data: banData, isLoading: banQueryLoading} = FindBanDetailsWithToken(token)
- 
+  const { data: banData, isLoading: banQueryLoading} = FindBanDetailsWithToken(token);
+  const { data: badPostingBehaviorData, isLoading: badPostLoading } = FindBadPostingBehaviorDetails(token);
 
   // const segData = useSingleSegmentByName({
   //   segName:googleQuery.data.city, province:googleQuery.data.province, country:googleQuery.data.country
@@ -90,6 +91,7 @@ export default function Header() {
     }
   }, [user])
 
+  //check if user is banned and remove submit idea button if they are
 
 
   // TODO Redo how information is gathered for Community Dashboard, and remove reliance on params in url.
@@ -173,7 +175,7 @@ export default function Header() {
             <Nav.Link href="/ideas">Conversations</Nav.Link>
               {(user) ? (
                 <>
-                  {((banData && banData.banType === "WARNING") || !user.banned) && (
+                  {((banData && banData.banType === "WARNING") || (!user.banned && (badPostingBehaviorData && !badPostingBehaviorData.post_comment_ban))) && (
                     <NavDropdown title="Submit" id="nav-dropdown">
                       <Nav.Link href="/submit">Submit Idea</Nav.Link>
 

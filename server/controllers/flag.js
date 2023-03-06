@@ -120,6 +120,58 @@ ideaFlagRouter.post(
             falseFlag: isFalse,
           },
         });
+
+        // Check if user is in the false flagging behavior table
+        // if they are increment the false flag count
+        // else create a new entry in the table
+
+        const userFalseFlaggingBehavior = await prisma.false_Flagging_Behavior.findFirst({
+          where: {
+            userId: id
+          }
+        })
+        if(userFalseFlaggingBehavior){
+          const updatedFalseFlaggingBehavior = await prisma.false_Flagging_Behavior.update({
+            where: {
+              id: userFalseFlaggingBehavior.id
+            },
+            data: {
+              flag_count: userFalseFlaggingBehavior.flag_count + 1
+            }
+          })
+          console.log("updatedFalseFlaggingBehavior: ", updatedFalseFlaggingBehavior);
+        }else{
+          const createdFalseFlaggingBehavior = await prisma.false_Flagging_Behavior.create({
+            data: {
+              userId: id,
+              flag_count: 1
+            }
+          })
+          console.log("createdFalseFlaggingBehavior: ", createdFalseFlaggingBehavior);
+        }
+
+        const falseFlagThreshold = await prisma.threshhold.findUnique({
+          where: {
+            id: 2,
+          },
+        });
+
+
+        const falseFlaggingBehavior = await prisma.false_Flagging_Behavior.findMany();
+        falseFlaggingBehavior.forEach(async (user) => {
+          if (user.flag_count >= falseFlagThreshold.number) {
+            const result = await prisma.false_Flagging_Behavior.update({
+              where: {
+                id: user.id,
+              },
+              data: {
+                flag_ban: true,
+              },
+            });result
+            console.log("TURTLE: ", )
+          }
+        });
+
         res.status(200).json({
           message: `false flags succesfully updated under Idea ${parsedIdeaId}`,
           updateIdeaFlags,

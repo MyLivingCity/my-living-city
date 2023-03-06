@@ -3,7 +3,7 @@ import { Card, Table, Dropdown, Container, Button, Form, NavDropdown } from 'rea
 import { updateUser, getUserBanHistory, removeFlagQuarantine, removePostCommentQuarantine } from 'src/lib/api/userRoutes';
 import { USER_TYPES } from 'src/lib/constants';
 import { IComment } from 'src/lib/types/data/comment.type';
-import { ICommentFlag, IFlag } from 'src/lib/types/data/flag.type';
+import { ICommentFlag, IFalseFlagBehavior, IFlag } from 'src/lib/types/data/flag.type';
 import { IIdeaWithAggregations } from 'src/lib/types/data/idea.type';
 import { IProposalWithAggregations } from 'src/lib/types/data/proposal.type';
 import { IUser } from 'src/lib/types/data/user.type';
@@ -27,9 +27,10 @@ interface FalseFlagManagementContentProps {
     proposals: IProposalWithAggregations[] | undefined;
     comments: IComment[] | undefined;
     bans: IBanUser[] | undefined;
+    falseFlaggingUsers: IFalseFlagBehavior[] | undefined;
 }
 
-export const FalseFlagManagementContent: React.FC<FalseFlagManagementContentProps> = ({users, token, user, flags, commentFlags, ideas, proposals, comments, bans}) => {
+export const FalseFlagManagementContent: React.FC<FalseFlagManagementContentProps> = ({users, token, user, flags, commentFlags, ideas, proposals, comments, bans, falseFlaggingUsers}) => {
     const [hideControls, setHideControls] = useState('');
     const [showUserSegmentCard, setShowUserSegmentCard] = useState(false);
     const [email, setEmail] = useState('');
@@ -50,6 +51,10 @@ export const FalseFlagManagementContent: React.FC<FalseFlagManagementContentProp
     // function userModalInfo(users: IUser[], user: IUser, flags: IFlag[], commentFlags: ICommentFlag[] ){
     //     setShowUserFlagsModal(true);
     // }
+
+    console.log("users: ", users)
+    console.log("flags: ", flags)
+    console.log("False Flagging Users: ", falseFlaggingUsers)
 
     function formatBanHistory(banhistory: any){
 
@@ -92,7 +97,6 @@ export const FalseFlagManagementContent: React.FC<FalseFlagManagementContentProp
     }
 
     let userFalseFlags: number[] = []
-    let userFlags: number[] = []
     if(users && flags){
         for(let i = 0; i < users.length; i++){
             let counter = 0;
@@ -106,7 +110,6 @@ export const FalseFlagManagementContent: React.FC<FalseFlagManagementContentProp
                 }
             }
             userFalseFlags.push(counter);
-            userFlags.push(flagCounter);
         }
     }
     if(users && commentFlags){
@@ -122,7 +125,6 @@ export const FalseFlagManagementContent: React.FC<FalseFlagManagementContentProp
                 }
             }
             userFalseFlags[i] = userFalseFlags[i] + counter;
-            userFlags[i] = userFlags[i] + flagCounter;
         }
     }
     const userTypes = Object.keys(USER_TYPES);

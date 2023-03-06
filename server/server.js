@@ -72,6 +72,7 @@ const main = async () => {
 	const banPostRouter = require('./controllers/banPost.js');
 	const banCommentRouter = require('./controllers/banComment.js');
 	const publicProfileRouter = require('./controllers/publicProfile.js');
+	const falseFlaggingBehaviorRouter = require('./controllers/falseFlaggingBehavior.js');
 
 	const apiRouter = express.Router();
 	app.use('/', apiRouter);
@@ -110,6 +111,7 @@ const main = async () => {
 	apiRouter.use('/banPost', banPostRouter);
 	apiRouter.use('/banComment', banCommentRouter);
 	apiRouter.use('/publicProfile', publicProfileRouter);
+	apiRouter.use('/falseFlaggingBehavior', falseFlaggingBehaviorRouter);
 
 	// Listen to server
 	app.listen(PORT, console.log(`Server running on PORT:${PORT}\n\n`));

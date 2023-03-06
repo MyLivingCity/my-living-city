@@ -32,6 +32,7 @@ import { getAllBannedUsers } from 'src/lib/api/userRoutes';
 import { BannedUsersManagementContent } from 'src/components/content/BannedUsersManagementContent';
 import { FalseFlagManagementContent } from 'src/components/content/FalseFlagManagementContent';
 import { BadPostingManagementContent } from 'src/components/content/BadPostingManagementContent';
+import { useAllFalseFlaggingUsers } from 'src/hooks/falseFlaggingBehaviorHooks';
 
 // Extends Route component props with idea title route param
 interface ModManagementProps extends RouteComponentProps<{}> {
@@ -50,6 +51,7 @@ const ModManagementPage: React.FC<ModManagementProps> = ({ }) => {
   const {data: commentFlagData, isLoading: commentFlagLoading} = useAllCommentFlags(token);
   const {data: threshholdData, isLoading: threshholdLoading} = useThreshold(token);
   const {data: banData, isLoading: banLoading} = useAllBanDetails();
+  const {data: falseFlagData, isLoading: falseFlagLoading} = useAllFalseFlaggingUsers();
   const { isLoading: banRemovalLoading } = useRemoveAllExpiredBans(token);
   const [pageState, setPageState] = useState<String>("quarantine");
   const [filteredDay, setfilteredDay] = useState('');
@@ -81,7 +83,7 @@ const ModManagementPage: React.FC<ModManagementProps> = ({ }) => {
   function loadState(state: String) {
     setPageState(state);
   }
-  if (userLoading || ideaLoading || proposalLoading || commentLoading || flagLoading || commentFlagLoading || threshholdLoading || banLoading || banRemovalLoading || bannedUsersLoading) {
+  if (userLoading || ideaLoading || proposalLoading || commentLoading || flagLoading || commentFlagLoading || threshholdLoading || banLoading || banRemovalLoading || bannedUsersLoading || falseFlagLoading) {
     return(
       <div className="wrapper">
         <LoadingSpinner />
@@ -266,7 +268,7 @@ const ModManagementPage: React.FC<ModManagementProps> = ({ }) => {
             <Button onClick={changeThreshold}>Update</Button>
           </div>
           <br></br>
-          <FalseFlagManagementContent users={quarantineUser!} token={token} user={user} flags={flagData} commentFlags={commentFlagData} ideas={ideaData} proposals={proposalData} comments={commentData} bans={banData}/>
+          <FalseFlagManagementContent users={quarantineUser!} token={token} user={user} flags={flagData} commentFlags={commentFlagData} ideas={ideaData} proposals={proposalData} comments={commentData} bans={banData} falseFlaggingUsers={falseFlagData}/>
           <br></br>
           <br></br>
           <BadPostingManagementContent users={quarantineUser!} token={token} user={user} flags={flagData} commentFlags={commentFlagData} ideas={ideaData} proposals={proposalData} comments={commentData} bans={banData}/>

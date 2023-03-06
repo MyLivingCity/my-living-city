@@ -212,6 +212,43 @@ async function main() {
 		}
 	});
 
+	const falseFlaggingThreshold = await prisma.threshhold.upsert({
+		where: {id: 2},
+		update: {
+			id: 2,
+			number: 3
+		},
+		create: {
+			id: 2,
+			number: 3
+		}
+	});
+
+	const badPostingThreshold = await prisma.threshhold.upsert({
+		where: {id: 3},
+		update: {
+			id: 3,
+			number: 3
+		},
+		create: {
+			id: 3,
+			number: 3
+		}
+	});
+
+	const postFlaggingThreshold = await prisma.threshhold.upsert({
+		where: {id: 4},
+		update: {
+			id: 4,
+			number: 3
+		},
+		create: {
+			id: 4,
+			number: 3
+		}
+	});
+
+
 	console.log('Resolved populated Categories', resolvedCategories);
 	//console.log('Resolved populated UserRoles', resolvedUserRoles);
 	console.log('Resolved populated Super Segment', createSuperSegment);
@@ -222,6 +259,9 @@ async function main() {
 	console.log('Resolved populated sub segments', rutledge_parkSubSegment);
 	console.log('Resolved populated sub segments', saxe_pointSubSegment);
 	console.log('Resolved populating threshold', defaultThreshold);
+	console.log('Resolved populating false flagging threshold', falseFlaggingThreshold);
+	console.log('Resolved populating bad posting threshold', badPostingThreshold);
+	console.log('Resolved populating post flagging threshold', postFlaggingThreshold);
 }
 
 main()

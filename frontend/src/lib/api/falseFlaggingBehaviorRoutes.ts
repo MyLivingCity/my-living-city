@@ -8,3 +8,8 @@ export const getAllFalseFlaggingUsers = async () => {
     return res.data;
 }
 
+export const checkFalseFlaggingBehavior = async () => {
+    console.log("checkFalseFlaggingBehavior")
+    const res = await axios.get(`${API_BASE_URL}/falseFlaggingBehavior/checkFalseFlaggingBehavior`);
+    return res.data;
+}

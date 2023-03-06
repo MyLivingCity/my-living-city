@@ -33,6 +33,7 @@ import { BannedUsersManagementContent } from 'src/components/content/BannedUsers
 import { FalseFlagManagementContent } from 'src/components/content/FalseFlagManagementContent';
 import { BadPostingManagementContent } from 'src/components/content/BadPostingManagementContent';
 import { useAllFalseFlaggingUsers } from 'src/hooks/falseFlaggingBehaviorHooks';
+import { checkFalseFlaggingBehavior } from 'src/lib/api/falseFlaggingBehaviorRoutes';
 
 // Extends Route component props with idea title route param
 interface ModManagementProps extends RouteComponentProps<{}> {
@@ -261,8 +262,9 @@ const ModManagementPage: React.FC<ModManagementProps> = ({ }) => {
   const changeFalseFlagThreshold = async () => {
     try {
       await updateFalseFlagThreshold(newFalseFlagThreshhold, token!)
+      await checkFalseFlaggingBehavior()
     } catch (err) {
-      console.log(err);
+      console.log("Error: ", err);
     } finally {
       window.location.reload();
     }

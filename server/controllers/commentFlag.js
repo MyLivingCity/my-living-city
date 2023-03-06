@@ -148,7 +148,26 @@ commentFlagRouter.post(
           console.log("created false flag behavior: ", createdFalseFlagBehavior);
         }
 
+        const falseFlagThreshold = await prisma.threshhold.findUnique({
+          where: {
+            id: 2,
+          },
+        });
 
+        const falseFlaggingBehavior = await prisma.false_Flagging_Behavior.findMany();
+        falseFlaggingBehavior.forEach(async (user) => {
+          if (user.flag_count >= falseFlagThreshold.number) {
+            const result = await prisma.false_Flagging_Behavior.update({
+              where: {
+                id: user.id,
+              },
+              data: {
+                flag_ban: true,
+              },
+            });
+            console.log("TURTLE: ", result)
+          }
+        });
         res.status(200).json({
           message: `false flags succesfully updated under comment: ${parsedCommentId}`,
           updateIdeaFlags: updateIdeaCommentFlags,

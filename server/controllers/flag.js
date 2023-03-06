@@ -150,8 +150,27 @@ ideaFlagRouter.post(
           console.log("createdFalseFlaggingBehavior: ", createdFalseFlaggingBehavior);
         }
 
+        const falseFlagThreshold = await prisma.threshhold.findUnique({
+          where: {
+            id: 2,
+          },
+        });
 
 
+        const falseFlaggingBehavior = await prisma.false_Flagging_Behavior.findMany();
+        falseFlaggingBehavior.forEach(async (user) => {
+          if (user.flag_count >= falseFlagThreshold.number) {
+            const result = await prisma.false_Flagging_Behavior.update({
+              where: {
+                id: user.id,
+              },
+              data: {
+                flag_ban: true,
+              },
+            });result
+            console.log("TURTLE: ", )
+          }
+        });
 
         res.status(200).json({
           message: `false flags succesfully updated under Idea ${parsedIdeaId}`,

@@ -39,6 +39,7 @@ import {
 import SimpleMap from "../map/SimpleMap";
 import { MAP_KEY } from "../../lib/constants";
 import {getUserBanWithToken} from "../../lib/api/banRoutes";
+import { checkUser } from "src/lib/api/badPostingBehaviorRoutes";
 
 interface SubmitDirectProposalPageContentProps {
   categories: ICategory[] | undefined;
@@ -172,9 +173,9 @@ const SubmitDirectProposalPageContent: React.FC<
   };
   const submitHandler = async (values: ICreateIdeaInput) => {
     try {
-      // Set loading and error state
-
-      setError(null);
+      const metThreshhold = await checkUser(token, user!.id);
+      try {
+         setError(null);
       setIsLoading(true);
       setTimeout(() => console.log("timeout"), 5000);
       //const ideaValues with <ICreateIdeaInput> interface
@@ -244,6 +245,14 @@ const SubmitDirectProposalPageContent: React.FC<
     } finally {
       setIsLoading(false);
     }
+  } catch (error) {
+    const genericMessage = 
+    "You have too many bad posts / post flagged. Post was NOT submittted.";
+    const errorObj = handlePotentialAxiosError(genericMessage, error);
+    setError(errorObj);
+  } finally {
+    setIsLoading(false);
+  }
   };
 
   function toggleElement(str: string, str2: string) {

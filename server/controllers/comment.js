@@ -191,9 +191,42 @@ commentRouter.post(
           post_comment_ban: true,
         },
       });
+      
       if (user) {
         return res.status(400).json({
-          message: 'User is in bad posting behavior table',
+          message: 'User is in quaratine',
+        });
+      } 
+
+      //where bad_post_count is greater than or equal to 3 OR where post_flag_count is greater than or equal to 3
+      const checkUser = await prisma.bad_Posting_Behavior.findFirst({
+        where: {
+          userId: id,
+          OR: [
+            {
+              bad_post_count: {
+                gte: 3
+              }
+            },
+            {
+              post_flag_count: {
+                gte: 3
+              }
+            }
+          ]
+        },
+      });
+      if (checkUser) {
+        const updateUser = await prisma.bad_Posting_Behavior.updateMany({
+          where: {
+            userId: id,
+          },
+          data: {
+            post_comment_ban: true,
+          },
+        });
+        return res.status(400).json({
+          message: 'You have too many bad posts / post flagged. Post was NOT submitted.',
         });
       }
       const { email, id: loggedInUserId } = req.user;

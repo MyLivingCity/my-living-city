@@ -50,3 +50,29 @@ export const createThreshhold = async (
     const res = await axios.get(`${API_BASE_URL}/threshhold/get`,getAxiosJwtRequestOption(token!));
     return res.data;
   }
+
+  export const getFalseFlagThreshold = async (token: string | null) => {
+    const res = await axios.get(`${API_BASE_URL}/threshhold/getFalseFlag`,getAxiosJwtRequestOption(token!));
+    return res.data;
+  }
+
+  export const updateFalseFlagThreshold = async (
+    num: number,
+    token: string,
+  ) => {
+    if(!num || !token){
+      throw new Error(
+        "A num and valid JWT must be specified"
+      );
+    }
+    const res = await axios({
+      method: "put",
+      url: `${API_BASE_URL}/threshhold/updateFalseFlag/${num}`,
+      headers: {
+        "x-auth-token": token,
+        "Access-Control-Allow-Origin": "*",
+      },
+      withCredentials: true,
+    })
+    return res.data;
+  }

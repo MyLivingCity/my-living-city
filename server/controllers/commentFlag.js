@@ -118,6 +118,37 @@ commentFlagRouter.post(
             falseFlag: isFalse,
           },
         });
+
+        // Check if user is in the false flagging behavior table
+        // if they are increment the false flag count
+        // else create a new entry in the table
+
+        const foundFalseFlagBehavior = await prisma.false_Flagging_Behavior.findFirst({
+          where: {
+            userId: id,
+          }
+        });
+        if(foundFalseFlagBehavior){
+          const updatedFalseFlagBehavior = await prisma.false_Flagging_Behavior.update({
+            where: {
+              id: foundFalseFlagBehavior.id,
+            },
+            data: {
+              flag_count: foundFalseFlagBehavior.flag_count + 1,
+            }
+          });
+          console.log("updated false flag behavior: ", updatedFalseFlagBehavior);
+        }else{
+          const createdFalseFlagBehavior = await prisma.false_Flagging_Behavior.create({
+            data: {
+              userId: id,
+              flag_count: 1,
+            }
+          });
+          console.log("created false flag behavior: ", createdFalseFlagBehavior);
+        }
+
+
         res.status(200).json({
           message: `false flags succesfully updated under comment: ${parsedCommentId}`,
           updateIdeaFlags: updateIdeaCommentFlags,

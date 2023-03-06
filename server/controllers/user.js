@@ -1091,6 +1091,23 @@ userRouter.patch(
 							bannedUntil: null,
 						}
 					});
+
+					// for each table containing flags (idea_flag and comment_flag)
+					// delete all flags where userId = req.body.userId && false_flag = true
+					await prisma.ideaFlag.deleteMany({
+						where: {
+							flaggerId: req.body.userId,
+							falseFlag: true,
+						}
+					});
+
+					await prisma.commentFlag.deleteMany({
+						where: {
+							flaggerId: req.body.userId,
+							falseFlag: true,
+						}
+					});
+
 				}
 			});
 

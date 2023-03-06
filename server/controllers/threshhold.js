@@ -138,7 +138,7 @@ threshholdRouter.get(
             });
         }else{
             const updatedThresh = await prisma.threshhold.update({
-                where: {id : 1},
+                where: {id : 2},
                 data: { number: newThreshhold}
             });
             return res.status(200).json({

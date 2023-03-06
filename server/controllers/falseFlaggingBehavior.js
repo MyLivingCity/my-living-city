@@ -9,10 +9,7 @@ falseFlaggingBehavior.get(
     async (req, res) => {
       try {
         const result = await prisma.false_Flagging_Behavior.findMany();
-        res.status(200).json({
-          message: 'All users from false flagging behavior table',
-          result,
-        });
+        res.status(200).send(result);
       } catch (error) {
         res.status(400).json({
           message: 'An error occured while trying to get all users from false flagging behavior table',

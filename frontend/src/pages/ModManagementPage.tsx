@@ -268,7 +268,7 @@ const ModManagementPage: React.FC<ModManagementProps> = ({ }) => {
             <Button onClick={changeThreshold}>Update</Button>
           </div>
           <br></br>
-          <FalseFlagManagementContent users={quarantineUser!} token={token} user={user} flags={flagData} commentFlags={commentFlagData} ideas={ideaData} proposals={proposalData} comments={commentData} bans={banData} falseFlaggingUsers={falseFlagData}/>
+          <FalseFlagManagementContent users={userData} token={token} user={user} flags={flagData} commentFlags={commentFlagData} ideas={ideaData} proposals={proposalData} comments={commentData} bans={banData} falseFlaggingUsers={falseFlagData}/>
           <br></br>
           <br></br>
           <BadPostingManagementContent users={quarantineUser!} token={token} user={user} flags={flagData} commentFlags={commentFlagData} ideas={ideaData} proposals={proposalData} comments={commentData} bans={banData}/>

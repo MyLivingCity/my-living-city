@@ -54,7 +54,53 @@ export const FalseFlagManagementContent: React.FC<FalseFlagManagementContentProp
 
     console.log("users: ", users)
     console.log("flags: ", flags)
-    console.log("False Flagging Users: ", falseFlaggingUsers)
+    console.log("False Flagging Users:  ", falseFlaggingUsers)
+
+    // Using users and falseFlaggingUsers create an array with the following structure:
+    // [
+    //     {
+    //         id: "user id",
+    //         email: "user email",
+    //         organization: "user organization",
+    //         firstName: "user first name",
+    //         lastName: "user last name",
+    //         userType: "user type",
+    //         falseFlags: 0,
+    //         banned: false,
+    //         bannedUntil: null,
+    //     }
+    // ]
+
+    let userFalseFlaggingData: any = [];
+    if (users && falseFlaggingUsers) {
+        userFalseFlaggingData = users.map((user) => {
+            const falseFlaggingUser = falseFlaggingUsers.find((falseFlaggingUser) => falseFlaggingUser.userId === user.id)
+            console.log("falseFlaggingUser: ", falseFlaggingUser)
+            console.log("User", user)
+            if (falseFlaggingUser) {
+            return {
+                id: user.id,
+                email: user.email,
+                organization: user.organizationName,
+                firstName: user.fname,
+                lastName: user.lname,
+                userType: user.userType,
+                falseFlags: falseFlaggingUser?.flag_count,
+                banned: falseFlaggingUser?.flag_ban,
+                bannedUntil: falseFlaggingUser?.bannedUntil,
+            }
+            } else {
+                // Add nothing to the array
+                return null
+            }
+        })
+        // Remove null values from the array
+        userFalseFlaggingData = userFalseFlaggingData.filter((user: any) => user !== null)
+    }
+    console.log("userFalseFlaggingData: ", userFalseFlaggingData)
+
+
+
 
     function formatBanHistory(banhistory: any){
 
@@ -164,20 +210,19 @@ export const FalseFlagManagementContent: React.FC<FalseFlagManagementContentProp
                 </tr>
             </thead>
             <tbody>
-            {users?.map((req: IUser, index: number) => (
+            {userFalseFlaggingData?.map((req: any, index: number) => (
                 
                 <tr key={req.id}>
                     {req.id !== hideControls ? 
                     <>
                     <td>{req.email}</td>
-                    <td>{req.organizationName ? req.organizationName : "N/A"}</td>
-                    <td>{req.fname}</td>
-                    <td>{req.lname}</td>
+                    <td>{req.organization ? req.organization : "N/A"}</td>
+                    <td>{req.firstName}</td>
+                    <td>{req.lastName}</td>
                     <td>{req.userType}</td>
-                    <td>{userFalseFlags![index].toString()}</td>
+                    <td>{req.falseFlags}</td>
                     <td>{req.banned ? "Yes" : "No" }</td> 
-                    <td> N/A </td> {/* TODO: Remove this when banned until implemented */}
-                    {/* <td>{req.bannedUntil ? req.bannedUntil : "N/A"}</td> */}
+                    <td>{req.bannedUntil ? req.bannedUntil : "N/A"}</td>
                     </> :
                     <>
                     <td><Form.Control type="text" defaultValue={req.email} onChange={(e)=>req.email = e.target.value}/></td>
@@ -228,8 +273,11 @@ export const FalseFlagManagementContent: React.FC<FalseFlagManagementContentProp
                                 setBanHistory(formatBanHistory(data));
                                 setShowUserBanHistoryModal(true);
                             })} >Ban History</Dropdown.Item>
-                            <Dropdown.Item onClick={() => removeFlagQuarantine(req.id)}>Remove Flag Quarantine</Dropdown.Item>
-                            <Dropdown.Item onClick={() => removePostCommentQuarantine(req.id)}>Remove Post Comment Quarantine</Dropdown.Item>
+                            <Dropdown.Item onClick={() => {removeFlagQuarantine(req.id);
+                            // Change this user's false flag count to 0 and ban to false on the front end
+
+                        }
+                            }>Remove Flag Quarantine</Dropdown.Item>
                         </NavDropdown>
                         : <>
                         <Button size="sm" variant="outline-danger" className="mr-2 mb-2" onClick={()=>setHideControls('')}>Cancel</Button>

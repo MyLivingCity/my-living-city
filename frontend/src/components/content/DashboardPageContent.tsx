@@ -117,8 +117,13 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
       </Row>
       <br/><br/>
       <Row as="article" className="system-updates">
-          <SystemUpdates userFollowedideas={
-            userFollowedIdeaData!.concat(userEndorsedIdeaData!)
+      <SystemUpdates userFollowedideas={
+            // Concat userFollowedIdeaData and userEndorsedIdeaData w/o duplicates
+            userFollowedIdeaData!.concat(userEndorsedIdeaData!.filter((idea) => {
+              return !userFollowedIdeaData!.some((idea2) => {
+                return idea2.id === idea.id
+              })
+            }))
           }
           endorser={canEndorse} 
           />

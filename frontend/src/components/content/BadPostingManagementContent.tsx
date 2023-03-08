@@ -15,6 +15,7 @@ import { UserManagementModifyWarningModal } from '../modal/UserManagementModifyW
 import { UserManagementBanHistoryModal } from '../modal/UserManagementBanHistoryModal';
 import { IBanUser } from 'src/lib/types/data/banUser.type';
 import { format } from 'path';
+import { IBadPostingBehavior } from 'src/lib/types/data/badPostingBehavior.type';
 
 
 interface BadPostingManagementContentProps {
@@ -23,13 +24,14 @@ interface BadPostingManagementContentProps {
     user: IUser | null;
     flags: IFlag[] | undefined;
     commentFlags: ICommentFlag[] | undefined; 
+    badPostingUsers: IBadPostingBehavior[] | undefined;
     ideas: IIdeaWithAggregations[] | undefined;
     proposals: IProposalWithAggregations[] | undefined;
     comments: IComment[] | undefined;
     bans: IBanUser[] | undefined;
 }
 
-export const BadPostingManagementContent: React.FC<BadPostingManagementContentProps> = ({users, token, user, flags, commentFlags, ideas, proposals, comments, bans}) => {
+export const BadPostingManagementContent: React.FC<BadPostingManagementContentProps> = ({users, token, user, flags, commentFlags, ideas, proposals, comments, bans, badPostingUsers}) => {
     const [hideControls, setHideControls] = useState('');
     const [showUserSegmentCard, setShowUserSegmentCard] = useState(false);
     const [email, setEmail] = useState('');
@@ -50,6 +52,40 @@ export const BadPostingManagementContent: React.FC<BadPostingManagementContentPr
     // function userModalInfo(users: IUser[], user: IUser, flags: IFlag[], commentFlags: ICommentFlag[] ){
     //     setShowUserFlagsModal(true);
     // }
+
+    
+    console.log("users: ", users)
+    console.log("flags: ", flags)
+    console.log("Bad Posting Users:  ", badPostingUsers)
+
+    let userBadPostingData: any = [];
+    if(users && badPostingUsers){
+        userBadPostingData = users.map((user) => {
+            const badPostingUser = badPostingUsers.find((badPostingUser) => badPostingUser.userId === user.id);
+            console.log("badPostingUser: ", badPostingUser)
+            console.log("TURTLE User:", user)
+            if(badPostingUser){
+                return {
+                    id: user.id,
+                    email: user.email,
+                    organization: user.organizationName,
+                    firstName: user.fname,
+                    lastName: user.lname,
+                    userType: user.userType,
+                    badPostCount: badPostingUser?.bad_post_count,
+                    postFlagCount: badPostingUser?.post_flag_count,
+                    banned: badPostingUser?.post_comment_ban,
+                    bannedUntil: badPostingUser?.bannedUntil,
+                }
+            } else {
+                return null
+            }
+        })
+        // Remove null values from the array
+        userBadPostingData = userBadPostingData.filter((user: any) => user !== null);
+    }
+    console.log("badPostingData: ", userBadPostingData);
+
 
     function formatBanHistory(banhistory: any){
 
@@ -163,23 +199,20 @@ export const BadPostingManagementContent: React.FC<BadPostingManagementContentPr
                 </tr>
             </thead>
             <tbody>
-            {users?.map((req: IUser, index: number) => (
+            {userBadPostingData?.map((req: any, index: number) => (
                 
                 <tr key={req.id}>
                     {req.id !== hideControls ? 
                     <>
                     <td>{req.email}</td>
-                    <td>{req.organizationName ? req.organizationName : "N/A"}</td>
-                    <td>{req.fname}</td>
-                    <td>{req.lname}</td>
+                    <td>{req.organization ? req.organization : "N/A"}</td>
+                    <td>{req.firstName}</td>
+                    <td>{req.lastName}</td>
                     <td>{req.userType}</td>
-                    <td> N/A </td> {/* TODO: Remove this when userBadPost until implemented */}
-                    <td> N/A </td> {/* TODO: Remove this when userPostFlagged until implemented */}
-                    {/* <td>{userBadPost![index].toString()}</td> */}
-                    {/* <td>{userPostFlagged![index].toString()}</td> */}
-                    <td>{req.banned ? "Yes" : "No" }</td> 
-                    <td> N/A </td> {/* TODO: Remove this when banned until implemented */}
-                    {/* <td>{req.bannedUntil ? req.bannedUntil : "N/A"}</td> */}
+                    <td>{req.badPostCount} </td> 
+                    <td>{req.postFlagCount} </td>
+                    <td>{req.banned ? "Yes" : "No" }</td>
+                    <td>{req.bannedUntil ? req.bannedUntil : "N/A"}</td>
                     </> :
                     <>
                     <td><Form.Control type="text" defaultValue={req.email} onChange={(e)=>req.email = e.target.value}/></td>

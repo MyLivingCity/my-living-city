@@ -66,17 +66,13 @@ export const getBadPostingBehavior = async (
     return res.data;
 }
 
+export const getAllBadPostingUsers = async () => {
+    const res = await axios.get(`${API_BASE_URL}/badPostingBehavior/getAll`);
+    return res.data;
+}
+
 //update post_comment_ban to true if the threshhold sent to route is met
-export const checkThreshhold = async ( token: String | null, userId: string|null, threshhold: number) => {
-    const res = await axios({
-        method: "put",
-        url: `${API_BASE_URL}/badPostingBehavior/checkThreshhold/${threshhold}/${userId}`,
-        headers: {
-        "x-auth-token": token,
-        "Access-Control-Allow-Origin": "*",
-        },
-        data: {userId: userId, threshhold: threshhold},
-        withCredentials: true,
-    })
+export const checkThreshhold = async () => {
+    const res = await axios.put(`${API_BASE_URL}/badPostingBehavior/checkThreshhold`);
     return res.data;
 }

@@ -1,5 +1,6 @@
 import { IAddressInput } from "./address.input";
 import { IGeoInput } from "./geo.input";
+import { ISchoolDetailsInput } from "./schoolDetails.input";
 
 export interface IRegisterInput {
   userRoleId?: number;
@@ -11,6 +12,7 @@ export interface IRegisterInput {
   lname?: string;
   address?: IAddressInput;
   geo?: IGeoInput;
+  schoolDetails?: ISchoolDetailsInput;
   imagePath?: any;
   homeSegmentId?: number;
   workSegmentId?: number;

@@ -225,6 +225,27 @@ badPostBehaviorRouter.put(
     }
 )
 
+badPostBehaviorRouter.get(
+    //get all users from bad_posting_behavior table
+    '/getAll',
+    async (req, res) => {
+        try {
+            const result = await prisma.bad_Posting_Behavior.findMany();
+            res.status(200).send(result);
+        } catch (error) {
+            res.status(400).json({
+                message: 'Users not found',
+                details: {
+                    errorMessage: error.message,
+                    errorStack: error.stack,
+                }
+            });
+        } finally {
+            await prisma.$disconnect();
+        }
+    }
+)
+
 //get all data from bad_posting_behavior table based on userId
 badPostBehaviorRouter.get(
     '/getBadPostingBehavior',
@@ -258,45 +279,43 @@ badPostBehaviorRouter.get(
     }
 )   
 
-//checkThreshhold route that takes the threshhold sent to the route and checks the user connected to the userId in bad posting behavior table and if their bad_post_count and post_flag_count is greater than or equal to the threshhold then update their post_comment_ban to true
 badPostBehaviorRouter.put(
-    '/checkThreshhold/:threshhold/:userId',
-    passport.authenticate('jwt', { session: false }),
+    '/checkThreshhold',
     async (req, res) => {
         try {
-            const user = await prisma.bad_Posting_Behavior.findFirst({
+            //find the threshhold in threshhold table with the id of 3
+            const threshhold = await prisma.threshhold.findUnique({
                 where: {
-                    userId: req.params.id,
+                    id: 3,
                 },
             });
-            if (user) {
-                if (user.bad_post_count >= req.params.threshhold || user.post_flag_count >= req.params.threshhold) {
+            const badPostingBehavior = await prisma.bad_Posting_Behavior.findMany();
+            badPostingBehavior.forEach(async (user) => {
+                if (user.bad_post_count >= threshhold.number || user.post_flag_count >= threshhold.number) {
                     //update post_comment_ban to true
+                    console.log('user', user);
+                    console.log('user.userId', user.userId);
+                    console.log('user.bad_post_count', user.bad_post_count);
+                    console.log('user.post_flag_count', user.post_flag_count);
+                    console.log('5threshhold.number', threshhold.number);
                     await prisma.bad_Posting_Behavior.updateMany({
                         where: {
-                            userId: req.params.id,
+                            userId: user.userId,
                         },
                         data: {
                             post_comment_ban: true,
                         },
-
-                    });
-                    res.status(200).json({
-                        message: 'User banned',
-                    });
-                } else {
-                    res.status(200).json({
-                        message: 'User not banned',
                     });
                 }
-            } else {
-                res.status(200).json({
-                    message: 'User not banned',
-                });
-            }
+            });
+            res.status(200).send('checkBadPostingThreshhold complete');
         } catch (error) {
-            return res.status(400).json({
-                message: 'User has too many bad/flagged posts. Post was NOT submittted.',
+            res.status(400).json({
+                message: 'checkBadPostingThreshhold failed',
+                details: {
+                    errorMessage: error.message,
+                    errorStack: error.stack,
+                },
             });
         } finally {
             await prisma.$disconnect();

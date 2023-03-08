@@ -117,6 +117,12 @@ return (
                         school_lat: undefined,
                         school_lon: undefined,
                     },
+                    schoolDetails: {
+                        streetAddress: '',
+                        postalCode: '',
+                        faculty: '',
+                        programCompletionDate: undefined,
+                    },
                     homeSegmentId: undefined,
                     workSegmentId: undefined,
                     schoolSegmentId: undefined,
@@ -405,8 +411,24 @@ return (
                             {displaySubSegList(segIds[2])}
                         </BForm.Control>
                         <p>Don't see your Municipality?<Button onClick={()=>{setShowModal(true)}}variant="link text-primary">Click here</Button></p>
+                    </BForm.Group>   
+                    <BForm.Group>
+                        <BForm.Label>School Street Name</BForm.Label>
+                        <Field name="schoolDetails.streetAddress" type="text" as={BForm.Control} />
+                    </BForm.Group> 
+                    <BForm.Group>
+                        <BForm.Label>School ZIP / Postal Code</BForm.Label>
+                        <Field name="schoolDetails.postalCode" type="text" as={BForm.Control} />
                     </BForm.Group>
-                    <RequestSegmentModal showModal={showModal} setShowModal={setShowModal} index={2} setSegmentRequests={setSegmentRequests} segmentRequests={segmentRequests}/>                   
+                    <BForm.Group>
+                        <BForm.Label>Faculty / Department of Study</BForm.Label>
+                        <Field name="schoolDetails.faculty" type="text" as={BForm.Control} />
+                    </BForm.Group>
+                    <BForm.Group>
+                        <BForm.Label>Program Completion Date</BForm.Label>
+                        <Field name="schoolDetails.programCompletionDate" type="date" as={BForm.Control} />
+                    </BForm.Group>   
+                    <RequestSegmentModal showModal={showModal} setShowModal={setShowModal} index={2} setSegmentRequests={setSegmentRequests} segmentRequests={segmentRequests}/>           
                 </FormikStep>}
 
                 {(userType === USER_TYPES.BUSINESS || userType === USER_TYPES.COMMUNITY) && 

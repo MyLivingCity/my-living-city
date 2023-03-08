@@ -209,6 +209,7 @@ model User {
   Public_Municipal_Profile          Public_Municipal_Profile[]
   False_Flagging_Behavior           False_Flagging_Behavior[]
   Bad_Posting_Behavior              Bad_Posting_Behavior[]
+  School_Details                    School_Details[]
 
   @@map(name: "user")
 }
@@ -856,4 +857,18 @@ model Bad_Posting_Behavior {
   user       User      @relation(fields: [userId], references: [id])
 
   @@map(name: "bad_posting_behavior")
+}
+
+model School_Details {
+  id         Int      @id @default(autoincrement())
+  streetAddress String?   @map("street_address")
+  postalCode String?   @map("postal_code")
+  faculty   String?   
+  programCompletionDate DateTime? @db.Date @map("program_completion_date")
+  userId     String   @map("user_id")
+  user       User     @relation(fields: [userId], references: [id])
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @default(now()) @map("updated_at")
+
+  @@map(name: "school_details")
 }

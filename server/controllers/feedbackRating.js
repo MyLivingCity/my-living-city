@@ -2,7 +2,7 @@ const passport = require('passport');
 
 const express = require('express');
 const feedbackRatingRouter = express.Router();
-const prisma = require('../prismaClient');
+const prisma = require('../lib/prismaClient');
 
 feedbackRatingRouter.post(
     '/create/:feedbackId/:proposalId',
@@ -246,3 +246,5 @@ feedbackRatingRouter.get(
         }
     }
 )
+
+module.exports = feedbackRatingRouter;

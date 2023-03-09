@@ -108,6 +108,7 @@ export const postRegisterUser = async(registerData: IRegisterInput, requestData:
     lname,
     address,
     geo,
+    schoolDetails,
     homeSegmentId,
     workSegmentId,
     schoolSegmentId,
@@ -187,9 +188,22 @@ if (userType === USER_TYPES.IN_PROGRESS || userType === USER_TYPES.BUSINESS || u
     });
     request7.push(newUserReachReq);
   })
-} 
+}
 
-Promise.all([request, request2, request3, request4, request5, request6, ...request7]).then((...responses)=>{
+console.log("schoolDetails", schoolDetails)
+
+let request8 = await axios({
+  method: "post",
+  url: `${API_BASE_URL}/schoolDetails/create`,
+  data: {
+    schoolDetails: schoolDetails,
+    userId: request.data.user.address?.userId,
+  },
+  headers: {"Access-Control-Allow-Origin": "*", "x-auth-token": request.data.token},
+  withCredentials: true,
+})
+
+Promise.all([request, request2, request3, request4, request5, request6, ...request7, request8]).then((...responses)=>{
   
 })
 const {token, user} = request.data;

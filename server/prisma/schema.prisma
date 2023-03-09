@@ -519,6 +519,7 @@ model FeedbackRating {
   // Keys
   id          Int      @id @default(autoincrement())
   proposalId  Int      @map("proposal_id")
+  feedbackId  Int      @map("feedback_id")
   authorId    String   @map("author_id")
   // Fields
   rating             Int      @default(0)

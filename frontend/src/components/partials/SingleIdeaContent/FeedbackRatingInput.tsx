@@ -163,8 +163,8 @@ const FeedbackRatingScaleInput = ({
         error,
         isSuccess,
     } = useCreateFeedbackRatingMutation(
-        parseInt(proposalId),
         parseInt(feedbackId),
+        parseInt(proposalId),
         token,
         user
     );

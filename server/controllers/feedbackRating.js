@@ -23,7 +23,7 @@ feedbackRatingRouter.post(
             const foundFeedback = await prisma.proposal.findUnique({ where: {id: parsedProposalId}});
             if(!foundFeedback) {
                 return res.status(404).json({ 
-                    message: `The propsal with that listed ID (${ideaId}) does not exist.`, 
+                    message: `The propsal with that listed ID (${parsedProposalId}) does not exist.`, 
                 });
             }
 

@@ -35,7 +35,7 @@ export const useCreateFeedbackRatingMutation = (feedbackId: number, proposalId: 
 
     const feedbackRatingMutation = useMutation<IFeedbackRating, AxiosError, ICreateFeedbackRatingInput>(
         (newFeedbackRating) =>
-            axios.post(`${API_BASE_URL}/feedback-rating/create/${feedbackId}/${proposalId}`, newFeedbackRating, getAxiosJwtRequestOption(token!)),
+            axios.post(`${API_BASE_URL}/feedbackRating/create/${feedbackId}/${proposalId}`, newFeedbackRating, getAxiosJwtRequestOption(token!)),
         {
             onMutate: async (newFeedbackRating) => {
                 const { id: userId } = user!;

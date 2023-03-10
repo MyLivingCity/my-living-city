@@ -523,7 +523,7 @@ model FeedbackRating {
   authorId    String   @map("author_id")
   // Fields
   rating             Int      @default(0)
-  ratingExplaination String? @map("rating_explaination")
+  ratingExplanation String? @map("rating_explaination")
   createdAt          DateTime @default(now()) @map(name: "created_at")
   updatedAt          DateTime @default(now()) @updatedAt @map(name: "updated_at")
   // relations

@@ -229,13 +229,18 @@ const sendEmailVerification = async(user) => {
       verifiedToken: token,
     },
   });
-  const url = `http://localhost:3000/verify?token=${token}`;
+  const url = `http://localhost:3001/emailVerification/checkVerificationCode/${user.id}/${token}`;
   const mailOptions = {
     from: 'MyLivingCity Email Verification<' + process.env.EMAIL + '>', // sender address
     to: user.email, // list of receivers
     subject: "Email Verification", // Subject line
     text: url, // plain text body
-    html: "<h1>" + url + "</h1>", // html body
+    // Html should have an element with a get request to the url
+    html: `<a href="${url}">Click here to verify your email</a>
+    <p>Or copy and paste this link into your browser: ${url}</p>
+    `
+
+
   };
   await transporter.sendMail(mailOptions);
 }

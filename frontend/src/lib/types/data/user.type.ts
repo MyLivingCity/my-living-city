@@ -19,6 +19,8 @@ export interface IUser {
 	imagePath?: string;
 	createdAt: Date;
 	updatedAt: Date;
+	verified: boolean;
+	verifiedToken?: string;
 
 	// Relationships can be nullable
 	geo?: IGeo;

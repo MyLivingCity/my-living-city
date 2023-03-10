@@ -4,6 +4,7 @@ const { JWT_SECRET } = require('../lib/constants');
 const prisma = require('../lib/prismaClient');
 const { argon2Hash, argon2ConfirmHash } = require('../lib/utilityFunctions');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const nodemailer = require('nodemailer');
 
 passport.use(
   'signup',
@@ -44,6 +45,38 @@ passport.use(
           where: { email }
         })
         if (userExists) {
+
+          if (userExists.verified === false) {
+            transporter = nodemailer.createTransport({
+              host: 'smtp-mail.outlook.com',
+              port: 587,
+              auth: {
+                  user:  process.env.EMAIL,
+                  pass:  process.env.EMAIL_PASSWORD
+              }
+            });
+            let token = Math.random().toString(36).substr(2, 6);
+            token = token.toUpperCase();
+            await prisma.user.update({
+              where: {
+                id: userExists.id,
+              },
+              data: {
+                verifiedToken: token,
+              },
+            });
+            const mailOptions = {
+              from: 'MyLivingCity Email Verification<' + process.env.EMAIL + '>', // sender address
+              to: userExists.email, // list of receivers
+              subject: "Email Verification", // Subject line
+              text: token, // plain text body
+              html: "<h1>" + token + "</h1>", // html body
+            };
+            await transporter.sendMail(mailOptions);
+
+            return done(null, userExists, { message: "User with that email already exists. Please check your email for a verification code."})
+          }
+
           return done({ message: "User with that email already exists." })
           // return done(null, false, { message: "User with that email already exists" })
         }
@@ -92,6 +125,37 @@ passport.use(
             }
           })
         }
+
+        if (createdUser.verified === false) {
+          transporter = nodemailer.createTransport({
+            host: 'smtp-mail.outlook.com',
+            port: 587,
+            auth: {
+                user:  process.env.EMAIL,
+                pass:  process.env.EMAIL_PASSWORD
+            }
+          });
+          let token = Math.random().toString(36).substr(2, 6);
+          token = token.toUpperCase();
+          await prisma.user.update({
+            where: {
+              id: userExists.id,
+            },
+            data: {
+              verifiedToken: token,
+            },
+          });
+          const mailOptions = {
+            from: 'MyLivingCity Email Verification<' + process.env.EMAIL + '>', // sender address
+            to: userExists.email, // list of receivers
+            subject: "Email Verification", // Subject line
+            text: token, // plain text body
+            html: "<h1>" + token + "</h1>", // html body
+          };
+          await transporter.sendMail(mailOptions);
+          return done(null, createdUser, { message: "User created. Please check your email for a verification code."})
+        }
+
         return done(null, createdUser);
       } catch (error) {
         // console.log("ERROR")
@@ -191,3 +255,4 @@ passport.use(
     }
   )
 )
+

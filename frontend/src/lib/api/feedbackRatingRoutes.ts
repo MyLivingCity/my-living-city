@@ -13,7 +13,7 @@ export const getAllFeedbackRatingsUnderFeedback = async (
     }
   */
     const res = await axios.get<IFeedbackRating[]>(
-        `${API_BASE_URL}/feedbackRating/getall/${feedbackId ? feedbackId : "7"}/${proposalId ? proposalId : "7"}`
+        `${API_BASE_URL}/feedbackRating/getall/${proposalId ? proposalId : "7"}/${feedbackId ? feedbackId : "7"}`
     );
     return res.data;
 }

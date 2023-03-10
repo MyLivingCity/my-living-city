@@ -97,7 +97,7 @@ feedbackRatingRouter.get(
                     feedbackId: parsedFeedbackId 
                 } 
             });
-
+            
             res.status(200).json(ratings);
         }  catch (error) {
             res.status(400).json({

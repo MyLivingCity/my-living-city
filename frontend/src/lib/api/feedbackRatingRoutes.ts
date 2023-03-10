@@ -36,7 +36,7 @@ export const getAllFeedbackRatingsUnderFeedbackWithAggregations = async (
     }
 
     const res = await axios.get<IFeedbackRatingYesNoAggregateResponse | IFeedbackRatingScaleAggregateResponse>(
-        `${API_BASE_URL}/feedbackRating/getall/${feedbackId ? feedbackId : "7"}/${proposalId ? proposalId : "7"}/aggregations/${type ? type : "scale"}`
+        `${API_BASE_URL}/feedbackRating/getall/${proposalId ? proposalId : "7"}/${feedbackId ? feedbackId : "7"}/aggregations/${type ? type : "scale"}`
     );
     return res.data;
 }

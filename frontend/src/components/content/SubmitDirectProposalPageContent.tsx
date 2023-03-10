@@ -142,7 +142,6 @@ const SubmitDirectProposalPageContent: React.FC<
     }
     formik.values.feedbackRatingType![formik.values.feedbackRatingType!.length - 1] = "YESNO";
     setFeedbackTypeList(newFeedbackTypeList);
-
   }
 
   const updateFeedbackType = (feedbackType:string, index:number) => {
@@ -150,7 +149,6 @@ const SubmitDirectProposalPageContent: React.FC<
     newFeedbackTypeList[index] = feedbackType;
     formik.values.feedbackRatingType![index] = feedbackType;
     setFeedbackTypeList(newFeedbackTypeList);
-
   }
 
   const handleCommunityChange = (index: number) => {
@@ -225,7 +223,7 @@ const SubmitDirectProposalPageContent: React.FC<
         needSuggestions: values.needSuggestions,
         location: values.location,
         feedback: values.feedback,
-        feedbackRatingType: values.feedbackRatingType
+        feedbackRatingType: values.feedbackRatingType,
       };
 
       const proposal = await postCreateProposal(
@@ -303,7 +301,7 @@ const SubmitDirectProposalPageContent: React.FC<
       needSuggestions: false,
       location: "",
       feedback: ["", "", "", "", ""],
-      feedbackRatingType: ["YESNO", "YESNO", "YESNO", "YESNO", "YESNO"]
+      feedbackRatingType: ["YESNO", "YESNO", "YESNO", "YESNO", "YESNO"],
     },
     onSubmit: submitHandler,
   });

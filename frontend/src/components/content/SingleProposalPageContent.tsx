@@ -20,6 +20,7 @@ import {
 import LoadingSpinner from '../ui/LoadingSpinner';
 import CommentsSection from "../partials/SingleIdeaContent/CommentsSection";
 import RatingsSection from "../partials/SingleIdeaContent/RatingsSection";
+import { FeedbackRatingScaleSection, FeedbackRatingYesNoSection } from "../partials/SingleIdeaContent/FeedbackRatingSection";
 import {
   FacebookShareButton,
   FacebookIcon,
@@ -184,7 +185,12 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     feedback2,
     feedback3,
     feedback4,
-    feedback5
+    feedback5,
+    feedbackType1,
+    feedbackType2,
+    feedbackType3,
+    feedbackType4,
+    feedbackType5,
   } = proposalData;
 
  
@@ -1303,33 +1309,128 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
             </Card.Header>
             <Card.Body>
             {feedback1 ? (
+              <Card>
+              <Card.Header></Card.Header>
+              <Card.Body>
                     <p>
                       <strong>Specific Feedback 1: </strong> {feedback1}
                     </p>
+                    {feedbackType1 === "YESNO" ? (
+                          <FeedbackRatingYesNoSection
+                            feedbackId = {"1"}
+                            proposalId = {proposalId}
+                          >
+                          </FeedbackRatingYesNoSection>
+                          ) : null}
+                        {feedbackType1 === "RATING" ? (
+                          <FeedbackRatingScaleSection
+                            feedbackId = {"1"}
+                            proposalId = {proposalId}
+                          >
+                          </FeedbackRatingScaleSection>
+                        ) : null}
+                      </Card.Body>
+                    </Card>
                   ) : null}
 
             {feedback2 ? (
+              <Card>
+              <Card.Header></Card.Header>
+              <Card.Body>
                     <p>
                       <strong>Specific Feedback 2: </strong> {feedback2}
                     </p>
+                    {feedbackType2 === "YESNO" ? (
+                          <FeedbackRatingYesNoSection
+                            feedbackId = {"2"}
+                            proposalId = {proposalId}
+                          >
+                          </FeedbackRatingYesNoSection>
+                          ) : null}
+                        {feedbackType2 === "RATING" ? (
+                          <FeedbackRatingScaleSection
+                            feedbackId = {"2"}
+                            proposalId = {proposalId}
+                          >
+                          </FeedbackRatingScaleSection>
+                        ) : null}
+                </Card.Body>
+              </Card>
                   ) : null}
 
             {feedback3 ? (
+              <Card>
+              <Card.Header></Card.Header>
+              <Card.Body>
                     <p>
                       <strong>Specific Feedback 3: </strong> {feedback3}
                     </p>
+                    {feedbackType3 === "YESNO" ? (
+                              <FeedbackRatingYesNoSection
+                                feedbackId = {"3"}
+                                proposalId = {proposalId}
+                              >
+                              </FeedbackRatingYesNoSection>
+                              ) : null}
+                            {feedbackType3 === "RATING" ? (
+                              <FeedbackRatingScaleSection
+                                feedbackId = {"3"}
+                                proposalId = {proposalId}
+                              >
+                              </FeedbackRatingScaleSection>
+                            ) : null}
+                    </Card.Body>
+                  </Card>
                   ) : null}
 
             {feedback4 ? (
+              <Card>
+              <Card.Header></Card.Header>
+              <Card.Body>
                     <p>
                       <strong>Specific Feedback 4: </strong> {feedback4}
                     </p>
+                    {feedbackType4 === "YESNO" ? (
+                              <FeedbackRatingYesNoSection
+                                feedbackId = {"4"}
+                                proposalId = {proposalId}
+                              >
+                              </FeedbackRatingYesNoSection>
+                              ) : null}
+                            {feedbackType4 === "RATING" ? (
+                              <FeedbackRatingScaleSection
+                                feedbackId = {"4"}
+                                proposalId = {proposalId}
+                              >
+                              </FeedbackRatingScaleSection>
+                            ) : null}
+                    </Card.Body>
+                  </Card>
                   ) : null}
 
             {feedback5 ? (
+              <Card>
+              <Card.Header></Card.Header>
+              <Card.Body>
                     <p>
                       <strong>Specific Feedback 5: </strong> {feedback5}
                     </p>
+                    {feedbackType5 === "YESNO" ? (
+                              <FeedbackRatingYesNoSection
+                                feedbackId = {"5"}
+                                proposalId = {proposalId}
+                              >
+                              </FeedbackRatingYesNoSection>
+                              ) : null}
+                            {feedbackType5 === "RATING" ? (
+                              <FeedbackRatingScaleSection
+                                feedbackId = {"5"}
+                                proposalId = {proposalId}
+                              >
+                              </FeedbackRatingScaleSection>
+                            ) : null}
+                    </Card.Body>
+                  </Card>
                   ) : null}
 
             

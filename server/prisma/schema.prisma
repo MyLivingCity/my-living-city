@@ -197,6 +197,7 @@ model User {
   collaborators       Collaborator[]        @relation("ideaCollaborator")
   volunteers          Volunteer[]           @relation("ideaVolunteer")
   donors              Donor[]               @relation("ideaDonor")
+  feedbackratings     FeedbackRating[]
 
   // Model overwrites
   Advertisements                    Advertisements[]
@@ -493,6 +494,7 @@ model Proposal {
   // Relations
   idea           Idea    @relation("proposal", fields: [ideaId], references: [id])
   suggestedIdeas Idea[]  @relation("supportedProposal")
+  feedbackRatings FeedbackRating[]
 
   @@map(name: "proposal")
 }
@@ -512,6 +514,22 @@ model Project {
   idea Idea @relation(fields: [ideaId], references: [id])
 
   @@map(name: "project")
+}
+
+model FeedbackRating {
+  // Keys
+  id          Int      @id @default(autoincrement())
+  proposalId  Int      @map("proposal_id")
+  feedbackId  Int      @map("feedback_id")
+  authorId    String   @map("author_id")
+  // Fields
+  rating             Int      @default(0)
+  ratingExplanation String? @map("rating_explaination")
+  createdAt          DateTime @default(now()) @map(name: "created_at")
+  updatedAt          DateTime @default(now()) @updatedAt @map(name: "updated_at")
+  // relations
+  author             User     @relation(fields: [authorId], references: [id])
+  proposal           Proposal @relation(fields: [proposalId], references: [id])
 }
 
 model IdeaRating {

@@ -49,6 +49,7 @@ const main = async () => {
 	const imageRouter = require('./controllers/image');
 	const categoryRouter = require('./controllers/category');
 	const ideaRatingRouter = require('./controllers/rating');
+	const feedbackRatingRouter = require('./controllers/feedbackRating');
 	const commentInteractRouter = require('./controllers/commentInteract');
 	const championRouter = require('./controllers/champion');
 	const advertisementRouter = require('./controllers/advertisement');
@@ -114,6 +115,7 @@ const main = async () => {
 	apiRouter.use('/publicProfile', publicProfileRouter);
 	apiRouter.use('/falseFlaggingBehavior', falseFlaggingBehaviorRouter);
 	apiRouter.use('/schoolDetails', schoolDetailsRouter);
+	apiRouter.use('/feedbackRating', feedbackRatingRouter);
 
 	// Listen to server
 	app.listen(PORT, console.log(`Server running on PORT:${PORT}\n\n`));

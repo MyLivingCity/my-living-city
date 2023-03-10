@@ -55,7 +55,7 @@ feedbackRatingRouter.post(
             });
 
             return res.status(200).json({
-                message: `Rating succesfully created under proposal ${parsedIdeaId}`,
+                message: `Rating successfully created under proposal ${parsedProposalId}`,
                 rating: createdRating,
             });
         } catch (error) {

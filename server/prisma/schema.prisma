@@ -211,6 +211,7 @@ model User {
   False_Flagging_Behavior           False_Flagging_Behavior[]
   Bad_Posting_Behavior              Bad_Posting_Behavior[]
   School_Details                    School_Details[]
+  Work_Details                      Work_Details[]
 
   @@map(name: "user")
 }
@@ -889,4 +890,17 @@ model School_Details {
   updatedAt  DateTime @default(now()) @map("updated_at")
 
   @@map(name: "school_details")
+}
+
+model Work_Details {
+  id        Int      @id @default(autoincrement())
+  streetAddress String?   @map("street_address")
+  postalCode String?   @map("postal_code")
+  company    String? 
+  userId     String   @map("user_id")
+  user       User     @relation(fields: [userId], references: [id])
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @default(now()) @map("updated_at")
+
+  @@map(name: "Work_Details")
 }

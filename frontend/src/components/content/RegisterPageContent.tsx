@@ -385,7 +385,7 @@ return (
                         <Field name="workDetails.postalCode" type="text" as={BForm.Control}/>
                     </BForm.Group>
                     <BForm.Group>
-                        <BForm.Label>company</BForm.Label>
+                        <BForm.Label>Company</BForm.Label>
                         <Field name="workDetails.company" type="text" as={BForm.Control}/>
                     </BForm.Group>
                     <RequestSegmentModal showModal={showModal} setShowModal={setShowModal} index={1} setSegmentRequests={setSegmentRequests} segmentRequests={segmentRequests}/>

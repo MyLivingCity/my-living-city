@@ -117,6 +117,11 @@ return (
                         school_lat: undefined,
                         school_lon: undefined,
                     },
+                    workDetails: {
+                        streetAddress: '',
+                        postalCode: '',
+                        company: '',
+                    },
                     schoolDetails: {
                         streetAddress: '',
                         postalCode: '',
@@ -370,6 +375,18 @@ return (
                             {displaySubSegList(segIds[1])}
                         </BForm.Control>
                         <p>Don't see your Municipality?<Button onClick={()=>{setShowModal(true)}}variant="link text-primary">Click here</Button></p>
+                    </BForm.Group>
+                    <BForm.Group>
+                        <BForm.Label>Work Street Name</BForm.Label>
+                        <Field name="workDetails.streetAddress" type="text" as={BForm.Control}/>
+                    </BForm.Group>
+                    <BForm.Group>
+                        <BForm.Label>Work ZIP / Postal Code</BForm.Label>
+                        <Field name="workDetails.postalCode" type="text" as={BForm.Control}/>
+                    </BForm.Group>
+                    <BForm.Group>
+                        <BForm.Label>Company</BForm.Label>
+                        <Field name="workDetails.company" type="text" as={BForm.Control}/>
                     </BForm.Group>
                     <RequestSegmentModal showModal={showModal} setShowModal={setShowModal} index={1} setSegmentRequests={setSegmentRequests} segmentRequests={segmentRequests}/>
                 </FormikStep>

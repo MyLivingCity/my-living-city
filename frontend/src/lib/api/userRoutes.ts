@@ -108,6 +108,7 @@ export const postRegisterUser = async(registerData: IRegisterInput, requestData:
     lname,
     address,
     geo,
+    workDetails,
     schoolDetails,
     homeSegmentId,
     workSegmentId,
@@ -197,6 +198,19 @@ let request8 = await axios({
   url: `${API_BASE_URL}/schoolDetails/create`,
   data: {
     schoolDetails: schoolDetails,
+    userId: request.data.user.address?.userId,
+  },
+  headers: {"Access-Control-Allow-Origin": "*", "x-auth-token": request.data.token},
+  withCredentials: true,
+})
+
+console.log("workDetails", workDetails)
+
+let request9 = await axios({
+  method: "post",
+  url: `${API_BASE_URL}/workDetails/create`,
+  data: {
+    workDetails: workDetails,
     userId: request.data.user.address?.userId,
   },
   headers: {"Access-Control-Allow-Origin": "*", "x-auth-token": request.data.token},

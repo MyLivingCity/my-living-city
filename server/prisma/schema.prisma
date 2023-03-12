@@ -902,5 +902,5 @@ model Work_Details {
   createdAt  DateTime @default(now()) @map("created_at")
   updatedAt  DateTime @default(now()) @map("updated_at")
 
-  @@map(name: "Work_Details")
+  @@map(name: "work_details")
 }

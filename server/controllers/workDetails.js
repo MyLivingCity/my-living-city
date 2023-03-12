@@ -22,3 +22,5 @@ workDetailsRouter.post(
         }
     }
 )
+
+module.exports = workDetailsRouter;

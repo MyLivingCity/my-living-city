@@ -91,55 +91,69 @@ const FeedbackRatingYesNoInput = ({
     return (
         <Container>
             <Row>
-                <FormControl 
+                <FormControl
                     component="fieldset"
-                    style={{ width: "100%", padding: "0rem 8rem 0rem 25rem"}}>
+                    style={{ width: "100%", padding: "0rem 0rem 0rem 0rem" }}>
                     <RadioGroup
                         row
                         aria-label="rating"
                         name="rating"
                         value={ratingValue}
                         onChange={(e) => setRatingValue(parseInt(e.target.value))}
+                        sx={{ width: "70%", height: "70%" }}
                     >
                         <FormControlLabel
                             value={1}
                             control={<Radio />}
                             label="Yes"
-                            labelPlacement="bottom"
+                            sx = {{
+                                '& .MuiSvgIcon-root': {
+                                    fontSize: 18,
+                                  },
+                                '& .MuiTypography-root': {
+                                    fontSize: 13,
+                                },
+                            }}
                             disabled={shouldButtonBeDisabled()}
                         />
                         <FormControlLabel
-                            value={0}
+                            value={1}
                             control={<Radio />}
                             label="No"
-                            labelPlacement="bottom"
+                            sx = {{
+                                '& .MuiSvgIcon-root': {
+                                    fontSize: 18,
+                                  },
+                                '& .MuiTypography-root': {
+                                    fontSize: 13,
+                                },
+                            }}
                             disabled={shouldButtonBeDisabled()}
                         />
+                        {showRatingSubmitError && (
+                            <Alert
+                                className=""
+                                show={showRatingSubmitError}
+                                onClose={() => setShowRatingSubmitError(false)}
+                                dismissible
+                                variant="danger"
+                            >
+                                {error?.message ??
+                                    "An error occurred while submitting your rating"}
+                            </Alert>
+                        )}
+                        {!userHasRated && (
+                            <Button className="mr-2 mt-2 mb-3"
+                                variant="primary"
+                                onClick={submitHandler}
+                                disabled={shouldButtonBeDisabled()}
+                                size="sm"
+                            >
+                                {buttonTextOutput()}
+                            </Button>
+                        )}
                     </RadioGroup>
                 </FormControl>
-            </Row>
-            <Row style={{padding: "0rem 0rem 0rem 25rem" }}>
-                {showRatingSubmitError && (
-                    <Alert
-                        className=""
-                        show={showRatingSubmitError}
-                        onClose={() => setShowRatingSubmitError(false)}
-                        dismissible
-                        variant="danger"
-                    >
-                        {error?.message ??
-                            "An error occurred while submitting your rating"}
-                    </Alert>
-                )}
-                {!userHasRated && (
-                    <Button
-                        variant="primary"
-                        onClick={submitHandler}
-                        disabled={shouldButtonBeDisabled()}
-                    >
-                        {buttonTextOutput()}
-                    </Button>
-                )}
             </Row>
         </Container>
     );
@@ -207,69 +221,111 @@ const FeedbackRatingScaleInput = ({
     return (
         <Container>
             <Row>
-                <FormControl 
+                <FormControl
                     component="fieldset"
-                    style={{ width: "100%", padding: "0rem 8rem 0rem 20rem" }}>
+                    style={{ width: "100%", padding: "0rem 0rem 0rem 0rem" }}>
                     <RadioGroup
                         row
                         aria-label="rating"
                         name="rating"
                         value={ratingValue}
                         onChange={(e) => setRatingValue(parseInt(e.target.value))}
+                        sx={{ width: "70%", height: "70%" }}
                     >
                         <FormControlLabel
                             value={1}
                             control={<Radio color="success" />}
                             label="1"
-                            labelPlacement="bottom"
+                            sx = {{
+                                '& .MuiSvgIcon-root': {
+                                    fontSize: 18,
+                                  },
+                                '& .MuiTypography-root': {
+                                    fontSize: 13,
+                                },
+                            }}
                             disabled={shouldButtonBeDisabled()}
                         />
                         <FormControlLabel
                             value={2}
                             control={<Radio color="success" />}
                             label="2"
-                            labelPlacement="bottom"
+                            sx = {{
+                                '& .MuiSvgIcon-root': {
+                                    fontSize: 18,
+                                  },
+                                '& .MuiTypography-root': {
+                                    fontSize: 13,
+                                },
+                            }}
                             disabled={shouldButtonBeDisabled()}
                         />
                         <FormControlLabel
                             value={3}
                             control={<Radio color="success" />}
                             label="3"
-                            labelPlacement="bottom"
+                            sx = {{
+                                '& .MuiSvgIcon-root': {
+                                    fontSize: 18,
+                                  },
+                                '& .MuiTypography-root': {
+                                    fontSize: 13,
+                                },
+                            }}
                             disabled={shouldButtonBeDisabled()}
                         />
                         <FormControlLabel
                             value={4}
                             control={<Radio color="success" />}
                             label="4"
-                            labelPlacement="bottom"
+                            sx = {{
+                                '& .MuiSvgIcon-root': {
+                                    fontSize: 18,
+                                  },
+                                '& .MuiTypography-root': {
+                                    fontSize: 13,
+                                },
+                            }}
                             disabled={shouldButtonBeDisabled()}
                         />
+                        <FormControlLabel
+                            value={5}
+                            control={<Radio color="success" />}
+                            label="5"
+                            sx = {{
+                                '& .MuiSvgIcon-root': {
+                                    fontSize: 18,
+                                  },
+                                '& .MuiTypography-root': {
+                                    fontSize: 13,
+                                },
+                            }}
+                            disabled={shouldButtonBeDisabled()}
+                        />
+                        {showRatingSubmitError && (
+                            <Alert
+                                className=""
+                                show={showRatingSubmitError}
+                                onClose={() => setShowRatingSubmitError(false)}
+                                dismissible
+                                variant="danger"
+                            >
+                                {error?.message ??
+                                    "An error occurred while submitting your rating"}
+                            </Alert>
+                        )}
+                        {!userHasRated && (
+                            <Button className="mr-2 mt-2 mb-3"
+                                variant="primary"
+                                onClick={submitHandler}
+                                disabled={shouldButtonBeDisabled()}
+                                size="sm"
+                            >
+                                {buttonTextOutput()}
+                            </Button>
+                        )}
                     </RadioGroup>
                 </FormControl>
-            </Row>
-            <Row style={{padding: "0rem 0rem 0rem 25rem" }}>
-                {showRatingSubmitError && (
-                    <Alert
-                        className=""
-                        show={showRatingSubmitError}
-                        onClose={() => setShowRatingSubmitError(false)}
-                        dismissible
-                        variant="danger"
-                    >
-                        {error?.message ??
-                            "An error occurred while submitting your rating"}
-                    </Alert>
-                )}
-                {!userHasRated && (
-                    <Button
-                        variant="primary"
-                        onClick={submitHandler}
-                        disabled={shouldButtonBeDisabled()}
-                    >
-                        {buttonTextOutput()}
-                    </Button>
-                )}
             </Row>
         </Container>
     )

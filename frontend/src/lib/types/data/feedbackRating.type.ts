@@ -9,17 +9,8 @@ export interface IFeedbackRating {
     updatedAt: string;
 }
 
-export interface IFeedbackRatingScaleValueBreakdown {
-    oneRatings: number;
-    twoRatings: number;
-    threeRatings: number;
-    fourRatings: number;
-}
-
 export interface IFeedbackRatingScaleAggregateSummary {
     ratingAvg: number;
-    ratingCount: number;
-    ratingValueBreakdown: IFeedbackRatingScaleValueBreakdown;
 }
 
 export interface IFeedbackRatingScaleAggregateResponse {
@@ -28,8 +19,6 @@ export interface IFeedbackRatingScaleAggregateResponse {
 }
 
 export interface IFeedbackRatingYesNoAggregateSummary {
-    ratingRatio: number;
-    ratingCount: number;
     yesRatings: number;
     noRatings: number;
 }

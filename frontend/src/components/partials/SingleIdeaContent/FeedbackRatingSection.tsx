@@ -59,15 +59,14 @@ const FeedbackRatingYesNoSection: React.FC<FeedbackRatingsSectionProps> = ({
     }
     return (
         <Container>
-            <Row className="py-5">
-                <h2 className="mx-auto">Ratings Breakdown</h2>
-                    {feedbackRatingSummary && (
-                        <FeedbackRatingYesNoDisplay
-                            feedbackRatingYesNoSummary={feedbackRatingSummary}
-                        />
-                    )}
+            <Row>
+                {feedbackRatingSummary && (
+                    <FeedbackRatingYesNoDisplay
+                        feedbackRatingYesNoSummary={feedbackRatingSummary}
+                    />
+                )}
             </Row>
-            <Row className="py-5">
+            <Row>
                 {user && (
                     <FeedbackRatingYesNoInput
                         feedbackId={feedbackId}
@@ -122,19 +121,16 @@ const FeedbackRatingScaleSection: React.FC<FeedbackRatingsSectionProps> = ({
         return <LoadingSpinner />;
     }
 
-    const { ratingValueBreakdown } = feedbackRatingSummary;
     return (
         <Container>
-            <Row className="py-5">
-                <h2 className="mx-auto">Ratings Breakdown</h2>
-                    {ratingValueBreakdown && feedbackRatingSummary && (
-                        <FeedbackRatingScaleDisplay
-                            feedbackRatingScaleValueBreakdown={ratingValueBreakdown}
-                            feedbackRatingScaleSummary={feedbackRatingSummary}
-                        />
-                    )}
+            <Row>
+                {feedbackRatingSummary && (
+                    <FeedbackRatingScaleDisplay
+                        feedbackRatingScaleSummary={feedbackRatingSummary}
+                    />
+                )}
             </Row>
-            <Row className="py-5">
+            <Row>
                 {user && (
                     <FeedbackRatingScaleInput
                         feedbackId={feedbackId}

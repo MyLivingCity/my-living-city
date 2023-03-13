@@ -158,74 +158,27 @@ feedbackRatingRouter.get(
                     },
                     count: true,
                 });
-            } else if (req.params.type === "RATING") {
-                const ones = await prisma.feedbackRating.aggregate({
-                    where: {
-                        proposalId: parsedProposalId,
-                        feedbackId: parsedFeedbackId,
-                        rating: 1
-                    },
-                    count: true,
-                });
 
-                const twos = await prisma.feedbackRating.aggregate({
-                    where: {
-                        proposalId: parsedProposalId,
-                        feedbackId: parsedFeedbackId,
-                        rating: 2
-                    },
-                    count: true,
-                });
-
-                const threes = await prisma.feedbackRating.aggregate({
-                    where: {
-                        proposalId: parsedProposalId,
-                        feedbackId: parsedFeedbackId,
-                        rating: 3
-                    },
-                    count: true,
-                });
-
-                const fours = await prisma.feedbackRating.aggregate({
-                    where: {
-                        proposalId: parsedProposalId,
-                        feedbackId: parsedFeedbackId,
-                        rating: 4
-                    },
-                    count: true,
-                });
-            }
-
-            const aggregates = await prisma.feedbackRating.aggregate({
-                where: {
-                    proposalId: parsedProposalId,
-                    feedbackId: parsedFeedbackId,
-                },
-                avg: {
-                    rating: true,
-                },
-                count: true,
-            });
-
-            if (req.params.type === "YESNO") {
-                ratio = yesRatings.count / aggregates.count;
-            }
-
-            if (req.params.type === "YESNO") {
                 summary = {
                     yesRatings: yesRatings.count,
                     noRatings: noRatings.count,
-                    averageRating: ratio,
-                    totalRatings: aggregates.count,
                 }
-            } else if (req.params.type === "RATING") {
+            }
+
+            if (req.params.type === "RATING") {
+
+                const aggregates = await prisma.feedbackRating.aggregate({
+                    where: {
+                        proposalId: parsedProposalId,
+                        feedbackId: parsedFeedbackId,
+                    },
+                    avg: {
+                        rating: true,
+                    },
+                });
+
                 summary = {
-                    ones: ones.count,
-                    twos: twos.count,
-                    threes: threes.count,
-                    fours: fours.count,
                     averageRating: aggregates.avg.rating,
-                    totalRatings: aggregates.count,
                 }
             }
 

@@ -122,14 +122,12 @@ const FeedbackRatingScaleSection: React.FC<FeedbackRatingsSectionProps> = ({
         return <LoadingSpinner />;
     }
 
-    const { ratingValueBreakdown } = feedbackRatingSummary;
     return (
         <Container>
             <Row className="py-5">
                 <h2 className="mx-auto">Ratings Breakdown</h2>
-                    {ratingValueBreakdown && feedbackRatingSummary && (
+                    {feedbackRatingSummary && (
                         <FeedbackRatingScaleDisplay
-                            feedbackRatingScaleValueBreakdown={ratingValueBreakdown}
                             feedbackRatingScaleSummary={feedbackRatingSummary}
                         />
                     )}

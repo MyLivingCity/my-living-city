@@ -245,6 +245,13 @@ const FeedbackRatingScaleInput = ({
                             labelPlacement="bottom"
                             disabled={shouldButtonBeDisabled()}
                         />
+                        <FormControlLabel
+                            value={5}
+                            control={<Radio color="success" />}
+                            label="5"
+                            labelPlacement="bottom"
+                            disabled={shouldButtonBeDisabled()}
+                        />
                     </RadioGroup>
                 </FormControl>
             </Row>

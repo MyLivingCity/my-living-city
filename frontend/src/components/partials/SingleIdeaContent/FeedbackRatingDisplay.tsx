@@ -22,7 +22,7 @@ const FeedbackRatingScaleDisplay = ({
     return (
         <Container className="">
             <Row className="">
-                <p>Average Rating: {ratingAvg}</p>
+                <p style={{fontSize: "70%"}}>Average Rating: {ratingAvg}</p>
             </Row>
         </Container>
     );
@@ -37,7 +37,7 @@ const FeedbackRatingYesNoDisplay = ({
     return (
         <Container className="">
             <Row className="">
-                <p> Yes to No: {yesToNo} </p>
+                <p style={{fontSize: "70%"}}> Yes to No: {yesToNo} </p>
             </Row>
         </Container>
     )

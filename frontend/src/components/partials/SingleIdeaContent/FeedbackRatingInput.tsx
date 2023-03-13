@@ -100,17 +100,34 @@ const FeedbackRatingYesNoInput = ({
                         name="rating"
                         value={ratingValue}
                         onChange={(e) => setRatingValue(parseInt(e.target.value))}
+                        sx={{ width: "70%", height: "70%" }}
                     >
                         <FormControlLabel
                             value={1}
                             control={<Radio />}
                             label="Yes"
+                            sx = {{
+                                '& .MuiSvgIcon-root': {
+                                    fontSize: 20,
+                                  },
+                                '& .MuiTypography-root': {
+                                    fontSize: 15,
+                                },
+                            }}
                             disabled={shouldButtonBeDisabled()}
                         />
                         <FormControlLabel
-                            value={0}
+                            value={1}
                             control={<Radio />}
                             label="No"
+                            sx = {{
+                                '& .MuiSvgIcon-root': {
+                                    fontSize: 20,
+                                  },
+                                '& .MuiTypography-root': {
+                                    fontSize: 15,
+                                },
+                            }}
                             disabled={shouldButtonBeDisabled()}
                         />
                         {showRatingSubmitError && (
@@ -126,10 +143,11 @@ const FeedbackRatingYesNoInput = ({
                             </Alert>
                         )}
                         {!userHasRated && (
-                            <Button
+                            <Button className="mr-2 mt-2 mb-3"
                                 variant="primary"
                                 onClick={submitHandler}
                                 disabled={shouldButtonBeDisabled()}
+                                size="sm"
                             >
                                 {buttonTextOutput()}
                             </Button>
@@ -212,35 +230,76 @@ const FeedbackRatingScaleInput = ({
                         name="rating"
                         value={ratingValue}
                         onChange={(e) => setRatingValue(parseInt(e.target.value))}
+                        sx={{ width: "70%", height: "70%" }}
                     >
                         <FormControlLabel
                             value={1}
                             control={<Radio color="success" />}
                             label="1"
+                            sx = {{
+                                '& .MuiSvgIcon-root': {
+                                    fontSize: 20,
+                                  },
+                                '& .MuiTypography-root': {
+                                    fontSize: 15,
+                                },
+                            }}
                             disabled={shouldButtonBeDisabled()}
                         />
                         <FormControlLabel
                             value={2}
                             control={<Radio color="success" />}
                             label="2"
+                            sx = {{
+                                '& .MuiSvgIcon-root': {
+                                    fontSize: 20,
+                                  },
+                                '& .MuiTypography-root': {
+                                    fontSize: 15,
+                                },
+                            }}
                             disabled={shouldButtonBeDisabled()}
                         />
                         <FormControlLabel
                             value={3}
                             control={<Radio color="success" />}
                             label="3"
+                            sx = {{
+                                '& .MuiSvgIcon-root': {
+                                    fontSize: 20,
+                                  },
+                                '& .MuiTypography-root': {
+                                    fontSize: 15,
+                                },
+                            }}
                             disabled={shouldButtonBeDisabled()}
                         />
                         <FormControlLabel
                             value={4}
                             control={<Radio color="success" />}
                             label="4"
+                            sx = {{
+                                '& .MuiSvgIcon-root': {
+                                    fontSize: 20,
+                                  },
+                                '& .MuiTypography-root': {
+                                    fontSize: 15,
+                                },
+                            }}
                             disabled={shouldButtonBeDisabled()}
                         />
                         <FormControlLabel
                             value={5}
                             control={<Radio color="success" />}
                             label="5"
+                            sx = {{
+                                '& .MuiSvgIcon-root': {
+                                    fontSize: 20,
+                                  },
+                                '& .MuiTypography-root': {
+                                    fontSize: 15,
+                                },
+                            }}
                             disabled={shouldButtonBeDisabled()}
                         />
                         {showRatingSubmitError && (
@@ -256,10 +315,11 @@ const FeedbackRatingScaleInput = ({
                             </Alert>
                         )}
                         {!userHasRated && (
-                            <Button
+                            <Button className="mr-2 mt-2 mb-3"
                                 variant="primary"
                                 onClick={submitHandler}
                                 disabled={shouldButtonBeDisabled()}
+                                size="sm"
                             >
                                 {buttonTextOutput()}
                             </Button>

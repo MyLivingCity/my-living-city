@@ -321,6 +321,7 @@ export const getFeedbackRatingScaleAggregateSummary = (feedbackRatings: IFeedbac
 		twoRatings: 0,
 		threeRatings: 0,
 		fourRatings: 0,
+		fiveRatings: 0,
 	}
 
 	if (!feedbackRatings) {
@@ -343,6 +344,7 @@ export const getFeedbackRatingScaleAggregateSummary = (feedbackRatings: IFeedbac
 		if (rating === 2) { ratingValueBreakdown.twoRatings++ } else;
 		if (rating === 3) { ratingValueBreakdown.threeRatings++ } else;
 		if (rating === 4) { ratingValueBreakdown.fourRatings++ } else;
+		if (rating === 5) { ratingValueBreakdown.fiveRatings++ } else;
 	})
 
 	return {

@@ -14,6 +14,7 @@ export interface IFeedbackRatingScaleValueBreakdown {
     twoRatings: number;
     threeRatings: number;
     fourRatings: number;
+    fiveRatings: number;
 }
 
 export interface IFeedbackRatingScaleAggregateSummary {

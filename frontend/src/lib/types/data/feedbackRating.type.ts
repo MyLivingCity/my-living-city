@@ -19,7 +19,6 @@ export interface IFeedbackRatingScaleAggregateResponse {
 }
 
 export interface IFeedbackRatingYesNoAggregateSummary {
-    ratingRatio: number;
     yesRatings: number;
     noRatings: number;
 }

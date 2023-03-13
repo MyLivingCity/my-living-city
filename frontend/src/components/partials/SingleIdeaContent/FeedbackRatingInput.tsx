@@ -108,10 +108,10 @@ const FeedbackRatingYesNoInput = ({
                             label="Yes"
                             sx = {{
                                 '& .MuiSvgIcon-root': {
-                                    fontSize: 20,
+                                    fontSize: 18,
                                   },
                                 '& .MuiTypography-root': {
-                                    fontSize: 15,
+                                    fontSize: 13,
                                 },
                             }}
                             disabled={shouldButtonBeDisabled()}
@@ -122,10 +122,10 @@ const FeedbackRatingYesNoInput = ({
                             label="No"
                             sx = {{
                                 '& .MuiSvgIcon-root': {
-                                    fontSize: 20,
+                                    fontSize: 18,
                                   },
                                 '& .MuiTypography-root': {
-                                    fontSize: 15,
+                                    fontSize: 13,
                                 },
                             }}
                             disabled={shouldButtonBeDisabled()}
@@ -238,10 +238,10 @@ const FeedbackRatingScaleInput = ({
                             label="1"
                             sx = {{
                                 '& .MuiSvgIcon-root': {
-                                    fontSize: 20,
+                                    fontSize: 18,
                                   },
                                 '& .MuiTypography-root': {
-                                    fontSize: 15,
+                                    fontSize: 13,
                                 },
                             }}
                             disabled={shouldButtonBeDisabled()}
@@ -252,10 +252,10 @@ const FeedbackRatingScaleInput = ({
                             label="2"
                             sx = {{
                                 '& .MuiSvgIcon-root': {
-                                    fontSize: 20,
+                                    fontSize: 18,
                                   },
                                 '& .MuiTypography-root': {
-                                    fontSize: 15,
+                                    fontSize: 13,
                                 },
                             }}
                             disabled={shouldButtonBeDisabled()}
@@ -266,10 +266,10 @@ const FeedbackRatingScaleInput = ({
                             label="3"
                             sx = {{
                                 '& .MuiSvgIcon-root': {
-                                    fontSize: 20,
+                                    fontSize: 18,
                                   },
                                 '& .MuiTypography-root': {
-                                    fontSize: 15,
+                                    fontSize: 13,
                                 },
                             }}
                             disabled={shouldButtonBeDisabled()}
@@ -280,10 +280,10 @@ const FeedbackRatingScaleInput = ({
                             label="4"
                             sx = {{
                                 '& .MuiSvgIcon-root': {
-                                    fontSize: 20,
+                                    fontSize: 18,
                                   },
                                 '& .MuiTypography-root': {
-                                    fontSize: 15,
+                                    fontSize: 13,
                                 },
                             }}
                             disabled={shouldButtonBeDisabled()}
@@ -294,10 +294,10 @@ const FeedbackRatingScaleInput = ({
                             label="5"
                             sx = {{
                                 '& .MuiSvgIcon-root': {
-                                    fontSize: 20,
+                                    fontSize: 18,
                                   },
                                 '& .MuiTypography-root': {
-                                    fontSize: 15,
+                                    fontSize: 13,
                                 },
                             }}
                             disabled={shouldButtonBeDisabled()}

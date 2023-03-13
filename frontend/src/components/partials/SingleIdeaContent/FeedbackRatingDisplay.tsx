@@ -19,7 +19,7 @@ const FeedbackRatingScaleDisplay = ({
     feedbackRatingScaleValueBreakdown,
     feedbackRatingScaleSummary,
 }: FeedbackRatingScaleDisplayProps) => {
-    const { oneRatings, twoRatings, threeRatings, fourRatings } =
+    const { oneRatings, twoRatings, threeRatings, fourRatings, fiveRatings } =
         feedbackRatingScaleValueBreakdown;
     const options = {
         // title: {
@@ -52,6 +52,11 @@ const FeedbackRatingScaleDisplay = ({
                         y: fourRatings,
                         color: "#99DC56",
                     },
+                    {
+                        label: "5",
+                        y: fiveRatings,
+                        color: "#8FD945",
+                    }
                 ],
             },
         ],

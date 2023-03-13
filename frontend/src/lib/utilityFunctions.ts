@@ -1,6 +1,6 @@
 import { TOKEN_EXPIRY, UTIL_FUNCTIONS } from './constants';
 import { IRating, IRatingAggregateSummary, IRatingValueBreakdown } from './types/data/rating.type';
-import { IFeedbackRating, IFeedbackRatingScaleAggregateSummary, IFeedbackRatingScaleValueBreakdown, IFeedbackRatingYesNoAggregateSummary } from './types/data/feedbackRating.type';
+import { IFeedbackRating, IFeedbackRatingScaleAggregateSummary, IFeedbackRatingYesNoAggregateSummary } from './types/data/feedbackRating.type';
 import { IUser } from './types/data/user.type';
 import { IFetchError } from './types/types';
 
@@ -292,16 +292,12 @@ export const getFeedbackRatingYesNoAggregateSummary = (feedbackRatings: IFeedbac
 		return {
 			noRatings: 0,
 			yesRatings: 0,
-			ratingRatio: 0,
-			ratingCount: 0,
 		}
 	}
-	let ratingCount = 0;
 	let noRatings = 0;
 	let yesRatings = 0;
 
 	feedbackRatings.forEach(({ rating }) => {
-		ratingCount++;
 
 		if (rating === 0) noRatings++;
 		if (rating === 1) yesRatings++;
@@ -310,46 +306,25 @@ export const getFeedbackRatingYesNoAggregateSummary = (feedbackRatings: IFeedbac
 	return {
 		noRatings,
 		yesRatings,
-		ratingRatio: ratingCount ? yesRatings / ratingCount : 0,
-		ratingCount,
 	}
 }
 
 export const getFeedbackRatingScaleAggregateSummary = (feedbackRatings: IFeedbackRating[] | undefined): IFeedbackRatingScaleAggregateSummary => {
-	const defaultRatingValueBreakdown = {
-		oneRatings: 0,
-		twoRatings: 0,
-		threeRatings: 0,
-		fourRatings: 0,
-		fiveRatings: 0,
-	}
 
 	if (!feedbackRatings) {
 		return {
 			ratingAvg: 0,
-			ratingCount: 0,
-			ratingValueBreakdown: defaultRatingValueBreakdown
 		}
 	}
 	let ratingCount = 0;
 	let ratingAvg = 0;
-	let ratingValueBreakdown: IFeedbackRatingScaleValueBreakdown = defaultRatingValueBreakdown;
 
 	feedbackRatings.forEach(({ rating }) => {
 		ratingCount++;
 		ratingAvg += rating;
-
-		// Check ratings
-		if (rating === 1) { ratingValueBreakdown.oneRatings++ } else;
-		if (rating === 2) { ratingValueBreakdown.twoRatings++ } else;
-		if (rating === 3) { ratingValueBreakdown.threeRatings++ } else;
-		if (rating === 4) { ratingValueBreakdown.fourRatings++ } else;
-		if (rating === 5) { ratingValueBreakdown.fiveRatings++ } else;
 	})
 
 	return {
-		ratingCount,
 		ratingAvg: ratingCount ? ratingAvg / ratingCount : 0,
-		ratingValueBreakdown,
 	}
 }

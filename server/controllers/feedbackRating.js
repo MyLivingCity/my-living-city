@@ -194,6 +194,15 @@ feedbackRatingRouter.get(
                     },
                     count: true,
                 });
+
+                const fives = await prisma.feedbackRating.aggregate({
+                    where: {
+                        proposalId: parsedProposalId,
+                        feedbackId: parsedFeedbackId,
+                        rating: 5
+                    },
+                    count: true,
+                });
             }
 
             const aggregates = await prisma.feedbackRating.aggregate({
@@ -224,6 +233,7 @@ feedbackRatingRouter.get(
                     twos: twos.count,
                     threes: threes.count,
                     fours: fours.count,
+                    fives: fives.count,
                     averageRating: aggregates.avg.rating,
                     totalRatings: aggregates.count,
                 }

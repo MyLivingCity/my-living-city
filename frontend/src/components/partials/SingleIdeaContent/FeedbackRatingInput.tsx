@@ -91,9 +91,9 @@ const FeedbackRatingYesNoInput = ({
     return (
         <Container>
             <Row>
-                <FormControl 
+                <FormControl
                     component="fieldset"
-                    style={{ width: "100%", padding: "0rem 8rem 0rem 25rem"}}>
+                    style={{ width: "100%", padding: "0rem 0rem 0rem 0rem" }}>
                     <RadioGroup
                         row
                         aria-label="rating"
@@ -105,41 +105,37 @@ const FeedbackRatingYesNoInput = ({
                             value={1}
                             control={<Radio />}
                             label="Yes"
-                            labelPlacement="bottom"
                             disabled={shouldButtonBeDisabled()}
                         />
                         <FormControlLabel
                             value={0}
                             control={<Radio />}
                             label="No"
-                            labelPlacement="bottom"
                             disabled={shouldButtonBeDisabled()}
                         />
+                        {showRatingSubmitError && (
+                            <Alert
+                                className=""
+                                show={showRatingSubmitError}
+                                onClose={() => setShowRatingSubmitError(false)}
+                                dismissible
+                                variant="danger"
+                            >
+                                {error?.message ??
+                                    "An error occurred while submitting your rating"}
+                            </Alert>
+                        )}
+                        {!userHasRated && (
+                            <Button
+                                variant="primary"
+                                onClick={submitHandler}
+                                disabled={shouldButtonBeDisabled()}
+                            >
+                                {buttonTextOutput()}
+                            </Button>
+                        )}
                     </RadioGroup>
                 </FormControl>
-            </Row>
-            <Row style={{padding: "0rem 0rem 0rem 25rem" }}>
-                {showRatingSubmitError && (
-                    <Alert
-                        className=""
-                        show={showRatingSubmitError}
-                        onClose={() => setShowRatingSubmitError(false)}
-                        dismissible
-                        variant="danger"
-                    >
-                        {error?.message ??
-                            "An error occurred while submitting your rating"}
-                    </Alert>
-                )}
-                {!userHasRated && (
-                    <Button
-                        variant="primary"
-                        onClick={submitHandler}
-                        disabled={shouldButtonBeDisabled()}
-                    >
-                        {buttonTextOutput()}
-                    </Button>
-                )}
             </Row>
         </Container>
     );
@@ -207,9 +203,9 @@ const FeedbackRatingScaleInput = ({
     return (
         <Container>
             <Row>
-                <FormControl 
+                <FormControl
                     component="fieldset"
-                    style={{ width: "100%", padding: "0rem 8rem 0rem 20rem" }}>
+                    style={{ width: "100%", padding: "0rem 0rem 0rem 0rem" }}>
                     <RadioGroup
                         row
                         aria-label="rating"
@@ -221,62 +217,55 @@ const FeedbackRatingScaleInput = ({
                             value={1}
                             control={<Radio color="success" />}
                             label="1"
-                            labelPlacement="bottom"
                             disabled={shouldButtonBeDisabled()}
                         />
                         <FormControlLabel
                             value={2}
                             control={<Radio color="success" />}
                             label="2"
-                            labelPlacement="bottom"
                             disabled={shouldButtonBeDisabled()}
                         />
                         <FormControlLabel
                             value={3}
                             control={<Radio color="success" />}
                             label="3"
-                            labelPlacement="bottom"
                             disabled={shouldButtonBeDisabled()}
                         />
                         <FormControlLabel
                             value={4}
                             control={<Radio color="success" />}
                             label="4"
-                            labelPlacement="bottom"
                             disabled={shouldButtonBeDisabled()}
                         />
                         <FormControlLabel
                             value={5}
                             control={<Radio color="success" />}
                             label="5"
-                            labelPlacement="bottom"
                             disabled={shouldButtonBeDisabled()}
                         />
+                        {showRatingSubmitError && (
+                            <Alert
+                                className=""
+                                show={showRatingSubmitError}
+                                onClose={() => setShowRatingSubmitError(false)}
+                                dismissible
+                                variant="danger"
+                            >
+                                {error?.message ??
+                                    "An error occurred while submitting your rating"}
+                            </Alert>
+                        )}
+                        {!userHasRated && (
+                            <Button
+                                variant="primary"
+                                onClick={submitHandler}
+                                disabled={shouldButtonBeDisabled()}
+                            >
+                                {buttonTextOutput()}
+                            </Button>
+                        )}
                     </RadioGroup>
                 </FormControl>
-            </Row>
-            <Row style={{padding: "0rem 0rem 0rem 25rem" }}>
-                {showRatingSubmitError && (
-                    <Alert
-                        className=""
-                        show={showRatingSubmitError}
-                        onClose={() => setShowRatingSubmitError(false)}
-                        dismissible
-                        variant="danger"
-                    >
-                        {error?.message ??
-                            "An error occurred while submitting your rating"}
-                    </Alert>
-                )}
-                {!userHasRated && (
-                    <Button
-                        variant="primary"
-                        onClick={submitHandler}
-                        disabled={shouldButtonBeDisabled()}
-                    >
-                        {buttonTextOutput()}
-                    </Button>
-                )}
             </Row>
         </Container>
     )

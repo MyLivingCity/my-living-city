@@ -28,6 +28,7 @@ import { BanMessageModal } from "../modal/BanMessageModal";
 import { FindBanDetailsWithToken } from "src/hooks/banHooks";
 import { FindBadPostingBehaviorDetails } from "src/hooks/badPostingBehaviorHooks";
 import { WarningMessageModal } from "../modal/WarningMessageModal";
+import {useBadPostingThreshhold } from 'src/hooks/threshholdHooks';
 
 export default function Header() {
   const [stripeStatus, setStripeStatus] = useState("");
@@ -40,6 +41,7 @@ export default function Header() {
   const { data: segData, isLoading: segQueryLoading } = useAllUserSegmentsRefined(token, user?.id || null);
   const { data: banData, isLoading: banQueryLoading} = FindBanDetailsWithToken(token);
   const { data: badPostingBehaviorData, isLoading: badPostLoading } = FindBadPostingBehaviorDetails(token);
+  const {data: badPostingThreshholdData, isLoading: badPostingThreshholdLoading} = useBadPostingThreshhold(token);
 
   // const segData = useSingleSegmentByName({
   //   segName:googleQuery.data.city, province:googleQuery.data.province, country:googleQuery.data.country
@@ -175,7 +177,7 @@ export default function Header() {
             <Nav.Link href="/ideas">Conversations</Nav.Link>
               {(user) ? (
                 <>
-                  {((banData && banData.banType === "WARNING") || (!user.banned && (badPostingBehaviorData && !badPostingBehaviorData.post_comment_ban))) && (
+                  {((banData && banData.banType === "WARNING") || (!user.banned && (badPostingBehaviorData && (badPostingThreshholdData && ((badPostingBehaviorData.bad_post_count + badPostingBehaviorData.post_flag_count) < badPostingThreshholdData.number))))) && (
                     <NavDropdown title="Submit" id="nav-dropdown">
                       <Nav.Link href="/submit">Submit Idea</Nav.Link>
 

@@ -25,8 +25,11 @@ userSegmentRouter.post(
             let homeSubSegmentName = '';
             let workSubSegmentName = '';
             let schoolSubSegmentName = '';
+            let homeSegmentHandle = '';
+            let workSegmentHandle = '';
+            let schoolSegmentHandle = '';
             //get email and user id from request
-            const { email, id } = req.user;
+            const { email, id, firstName, address } = req.user;
 
             const exist = await prisma.userSegments.findFirst({
                 where:{userId:id}
@@ -35,6 +38,14 @@ userSegmentRouter.post(
             if(exist){
                 return res.status(409).json("You are not allow to create another user segment!");
             }
+
+            const workDetails = await prisma.work_Details.findFirst({
+                where:{userId:id}
+            });
+
+            const schoolDetails = await prisma.school_Details.findFirst({
+                where:{userId:id}
+            });
 
             console.log(req.body);
             const {homeSegmentId,workSegmentId,schoolSegmentId,homeSubSegmentId,workSubSegmentId,schoolSubSegmentId} = req.body;
@@ -59,6 +70,8 @@ userSegmentRouter.post(
                         homeSuperSegId = queryResult.superSegId;
 
                         homeSuperSegName = queryResult.superSegName;
+
+                        homeSegmentHandle = `${firstName} @ ${address.streetAddress}`;
                     }
                 }
             }
@@ -83,6 +96,8 @@ userSegmentRouter.post(
                         workSuperSegId=queryResult.superSegId;
 
                         workSuperSegName=queryResult.superSegName;
+
+                        workSegmentHandle = `${firstName} @ ${workDetails.company}`;
                     }
                 }
             }
@@ -107,6 +122,8 @@ userSegmentRouter.post(
                         schoolSuperSegId=queryResult.superSegId;
 
                         schoolSuperSegName=queryResult.superSegName;
+
+                        schoolSegmentHandle = `${firstName} @ ${schoolDetails.faculty}`;
                     }
                 }
             }
@@ -220,7 +237,10 @@ userSegmentRouter.post(
                     workSubSegmentId:workSubSegmentId,
                     workSubSegmentName:workSubSegmentName,
                     schoolSubSegmentId:schoolSubSegmentId,
-                    schoolSubSegmentName:schoolSubSegmentName
+                    schoolSubSegmentName:schoolSubSegmentName,
+                    homeSegmentHandle:homeSegmentHandle,
+                    workSegmentHandle:workSegmentHandle,
+                    schoolSegmentHandle:schoolSegmentHandle,
                 }
             })
 
@@ -360,9 +380,12 @@ userSegmentRouter.put(
             let homeSubSegmentName = '';
             let workSubSegmentName = '';
             let schoolSubSegmentName = '';
+            let homeSegmentHandle = '';
+            let workSegmentHandle = '';
+            let schoolSegmentHandle = '';
 
             //get email and user id from request
-            const { email, id } = req.user;
+            const { email, id, address, firstName } = req.user;
 
             const {homeSegmentId,workSegmentId,schoolSegmentId,homeSubSegmentId,workSubSegmentId,schoolSubSegmentId} = req.body;
 
@@ -373,6 +396,14 @@ userSegmentRouter.put(
             if(!exist){
                 exists = false;
             }
+
+            const work_Details = await prisma.workDetails.findFirst({
+                where:{userId:id}
+            })
+
+            const school_Details = await prisma.schoolDetails.findFirst({
+                where:{userId:id}
+            })
 
             if(exists){
                 updateId = exist.id;
@@ -386,6 +417,9 @@ userSegmentRouter.put(
                 homeSubSegmentName = exist.homeSubSegmentName;
                 workSubSegmentName = exist.workSubSegmentName;
                 schoolSubSegmentName = exist.schoolSubSegmentName;
+                homeSegmentHandle = exist.homeSegmentHandle;
+                workSegmentHandle = exist.workSegmentHandle;
+                schoolSegmentHandle = exist.schoolSegmentHandle;
             }
             
             if(homeSegmentId){
@@ -408,6 +442,8 @@ userSegmentRouter.put(
                         homeSuperSegId = queryResult.superSegId;
 
                         homeSegmentName = queryResult.superSegName;
+
+                        homeSegmentHandle = `${firstName} @ ${address.streetAddress}`
                     }
                 }
             }
@@ -432,6 +468,8 @@ userSegmentRouter.put(
                         workSuperSegId=queryResult.superSegId;
 
                         workSuperSegName=queryResult.superSegName;
+
+                        workSegmentHandle = `${firstName} @ ${work_Details.company}`
                     }
                 }
             }
@@ -456,6 +494,8 @@ userSegmentRouter.put(
                         schoolSuperSegId=queryResult.superSegId;
 
                         schoolSegmentName=queryResult.superSegName;
+
+                        schoolSegmentHandle = `${firstName} @ ${school_Details.faculty}`
                     }
                 }
             }
@@ -573,7 +613,10 @@ userSegmentRouter.put(
                         workSubSegmentId:workSubSegmentId,
                         workSubSegmentName:workSubSegmentName,
                         schoolSubSegmentId:schoolSubSegmentId,
-                        schoolSubSegmentName:schoolSubSegmentName
+                        schoolSubSegmentName:schoolSubSegmentName,
+                        homeSegmentHandle:homeSegmentHandle,
+                        workSegmentHandle:workSegmentHandle,
+                        schoolSegmentHandle:schoolSegmentHandle
                     }
                 })
             }else{
@@ -597,7 +640,10 @@ userSegmentRouter.put(
                         workSubSegmentId:workSubSegmentId,
                         workSubSegmentName:workSubSegmentName,
                         schoolSubSegmentId:schoolSubSegmentId,
-                        schoolSubSegmentName:schoolSubSegmentName
+                        schoolSubSegmentName:schoolSubSegmentName,
+                        homeSegmentHandle:homeSegmentHandle,
+                        workSegmentHandle:workSegmentHandle,
+                        schoolSegmentHandle:schoolSegmentHandle
                     }
                 })
             }

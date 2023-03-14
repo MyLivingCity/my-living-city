@@ -7,8 +7,10 @@ import { capitalizeString } from '../../lib/utilityFunctions';
 import { RequestSegmentModal } from '../partials/RequestSegmentModal';
 import StripeCheckoutButton from "src/components/partials/StripeCheckoutButton"
 import {getUserSubscriptionStatus} from 'src/lib/api/userRoutes'
-import { LinkType, Link, PublicCommunityBusinessProfile, PublicMunicipalProfile } from 'src/lib/types/data/publicProfile.type'; 
-import { getCommunityBusinessProfile, updateCommunityBusinessProfile, getCommunityBusinessLinks, getMunicipalProfile, updateMunicipalProfile, getMunicipalLinks } from 'src/lib/api/publicProfileRoutes';
+import { LinkType, Link, PublicStandardProfile, PublicCommunityBusinessProfile, PublicMunicipalProfile } from 'src/lib/types/data/publicProfile.type'; 
+import { getCommunityBusinessProfile, updateCommunityBusinessProfile, getCommunityBusinessLinks, getMunicipalProfile, getStandardProfile, updateStandardProfile,updateMunicipalProfile, getMunicipalLinks } from 'src/lib/api/publicProfileRoutes';
+import { postAvatarImage } from 'src/lib/api/avatarRoutes';
+import ImageUploader from 'react-images-upload';
 interface ProfileContentProps {
   user: IUser;
   token: string;
@@ -44,6 +46,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
   const [segmentRequests, setSegmentRequests] = useState<any[]>([]);
   const [communityBusinessProfile, setCommunityBusinessProfile] = useState<any>({});
   const [municipalProfile, setMunicipalProfile] = useState<any>({});
+  const [standardProfile, setStandardProfile] = useState<any>({});
   const [links, setLinks] = useState<any[]>([]);
   const [showAlert, setShowAlert] = useState(false);
 
@@ -80,6 +83,10 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
       getMunicipalLinks(municipalProfile.id, token).then(e => setLinks(e)).catch(e => console.log(e));
     }
   },[municipalProfile])
+
+  useEffect(()=>{
+    getStandardProfile(user.id, token).then(e => setStandardProfile(e)).catch(e => console.log(e));
+  },[])
 
   const updateLink = (linkValue: string, link: any) => {
     const linksCopy = [...links];
@@ -181,6 +188,20 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
 
   }
 
+  const handleStandardProfile = () => {
+    const id = user.id;
+    const firstName = (document.getElementById("formStandardFirstName") as HTMLInputElement).value;
+    const lastName = (document.getElementById("formStandardLastName") as HTMLInputElement).value;
+    const email = (document.getElementById("formStandardEmail") as HTMLInputElement).value;
+    const profileNew: PublicStandardProfile = {
+      id: id,
+      email: email,
+      fname: firstName,
+      lname: lastName,
+    }
+    const test = updateStandardProfile(profileNew, token).then(e => console.log(e)).catch(e => console.log(e));
+    setShowAlert(true);
+  }
 
   if (userType === USER_TYPES.BUSINESS || userType === USER_TYPES.COMMUNITY) {
     return (<Container className='user-profile-content w-100'>
@@ -654,7 +675,6 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
            
           </Card>
         
-          
         <Card style={{ width: '40rem'}}>
           <Row className='justify-content-center mt-3'>
               <ListGroup variant='flush' className=''>
@@ -682,7 +702,76 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
         </Card>
       </Row>
       
-      
+      <Row className='mb-4 mt-4 justify-content-center'>
+        <h2 className="pb-2 pt-2 display-6">Edit Profile</h2>
+      </Row>
+
+      <Row>
+        <Card style={{ width: '80rem'}}>
+          <Card.Body className="my-5">
+          <Form
+          id="formPublicProfile"
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleStandardProfile();
+          }}
+          >
+            {showAlert ? <Alert variant="primary" dismissible onClose={() => setShowAlert(false)}>Profile Updated</Alert> : null}
+              <Form.Group className="mb-3" controlId="formProfileInformation">
+                <Form.Label>Personal Information</Form.Label>
+                <Table bordered hover size="sm">
+                  <thead>
+                    <tr>
+                      <th>First Name</th>
+                      <th>Last Name</th>
+                      <th>Email</th>
+                    </tr>
+                  </thead>
+                  {standardProfile ? (
+                  <tbody>
+                    <tr>
+                      <td>
+                      <Form.Control 
+                        type="text"
+                        id="formStandardFirstName"
+                        placeholder="First Name" 
+                        defaultValue={fname}
+                      />
+                      </td>
+                      <td>
+                      <Form.Control 
+                        type="text"
+                        id="formStandardLastName"
+                        placeholder="Last Name" 
+                        defaultValue={lname}
+                      />
+                      </td>
+                      <td>
+                      <Form.Control 
+                        type="email"
+                        id="formStandardEmail"
+                        placeholder="Email Address" 
+                        defaultValue={standardProfile.email}
+                      />
+                      </td>
+                    </tr>
+                  </tbody>
+                  ) : null}
+                </Table>
+                  {/* //create a image uploader here
+                  <Form.Group className="mb-3" controlId="formStandardImage">
+                    <ImageUploader name="formStandardImage" withPreview={true} withIcon={true} buttonText='Choose image' onChange={(picture) => {
+                      setFieldValue("formStandardImage", picture);
+                    }} imgExtension={['.jpg', '.gif', '.png', '.gif']} maxFileSize={5242880} /> 
+                  </Form.Group> */}
+                <Button variant="primary" type="submit">
+                Update
+                </Button>
+              </Form.Group>
+            </Form>
+          </Card.Body>
+        </Card>
+      </Row>
     </Container>
   )};
 }

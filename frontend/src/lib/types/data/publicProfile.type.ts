@@ -18,6 +18,13 @@ export interface Link {
     public_municipal_profile_id?: number;
 }
 
+export interface PublicStandardProfile {
+    id: string;
+    email: string;
+    fname: string;
+    lname: string;
+}
+
 export interface PublicCommunityBusinessProfile {
     userId: string;
     statement: string;

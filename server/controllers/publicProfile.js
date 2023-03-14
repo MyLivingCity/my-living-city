@@ -6,6 +6,68 @@ const { Link } = require('@prisma/client');
 
 const fs = require('fs');
 
+publicProfileRouter.get(
+    '/standardProfile/:userId',
+    async (req, res) => {
+        try {
+            const userId = req.params.userId;
+            if (!userId) {
+                return res.status(400).json({
+                    message: `A valid userId must be specified in the route paramater.`,
+                });
+            }
+
+            const result = await prisma.user.findFirst({
+                where: { id: userId },
+            });
+
+            if (!result) {
+                return res.status(404).json({
+                    message: `The user with that listed ID (${userId}) does not exist.`,
+                });
+            } else {
+                return res.status(200).json(result);
+            }
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ message: 'Internal server error' });
+        }
+    }
+);
+
+publicProfileRouter.put(
+    '/standardProfile/:userId',
+    async (req, res) => {
+        try {
+            const userId = req.params.userId;
+            if (!userId) {
+                return res.status(400).json({
+                    message: `A valid userId must be specified in the route paramater.`,
+                });
+            }
+
+            const data = req.body;
+            const {fname, lname, email} = data;
+            const updatedAt = new Date();
+
+            const result = await prisma.user.update({
+                where: { id: userId },
+                data: {
+                    fname: fname,
+                    lname: lname,
+                    email: email,
+                    updatedAt: updatedAt,
+                },
+            });
+
+            return res.status(200).json(result);
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ message: 'Internal server error' });
+        }
+    }
+);
+
 // Get profile by userId
 publicProfileRouter.get(
     '/communityBusinessProfile/:userId',

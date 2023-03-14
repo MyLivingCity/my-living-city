@@ -321,13 +321,13 @@ const ModManagementPage: React.FC<ModManagementProps> = ({ }) => {
         </div>
         <div style={{ width: '80%', marginLeft: '22%' }}>
           <div style={{ float: 'right', marginRight: '17.7%' }}>
-            <p style={{ textAlign: 'right', fontSize: 18, fontWeight: 'bold' }} className='ml-10 mr-2 display-6 mb-2'>Current Threshhold: {threshhold.toString()}</p>
+            <p style={{ textAlign: 'right', fontSize: 18, fontWeight: 'bold' }} className='ml-10 mr-2 display-6 mb-2'>Bad Posting Threshold: {threshhold.toString()}</p>
             <input type="number" onChange={(val) => changeThresholdData(val)} style={{ textAlign: 'left', right: "0" }} className='ml-10 mr-2 display-6' />
             <Button onClick={changeThreshold}>Update</Button>
-            <p style={{ textAlign: 'right', fontSize: 18, fontWeight: 'bold' }} className='ml-10 mr-2 display-6 mb-2'>User False Flagging Threshold: {falseFlagThreshhold.toString()}</p>
+            <p style={{ textAlign: 'right', fontSize: 18, fontWeight: 'bold' }} className='ml-10 mr-2 display-6 mb-2'>User False Flagging Behavior Threshold: {falseFlagThreshhold.toString()}</p>
             <input type="number" onChange={(val) => changeFalseFlagThresholdData(val)} style={{ textAlign: 'left', right: "0" }} className='ml-10 mr-2 display-6' />
             <Button onClick={changeFalseFlagThreshold}>Update</Button>
-            <p style={{ textAlign: 'right', fontSize: 18, fontWeight: 'bold' }} className='ml-10 mr-2 display-6 mb-2'>User Bad Post Threshold: {badPostingThreshhold.toString()}</p>
+            <p style={{ textAlign: 'right', fontSize: 18, fontWeight: 'bold' }} className='ml-10 mr-2 display-6 mb-2'>User Bad Posting Behavior Threshold: {badPostingThreshhold.toString()}</p>
             <input type="number" onChange={(val) => changeBadPostingThreshholdData(val)} style={{ textAlign: 'left', right: "0" }} className='ml-10 mr-2 display-6' />
             <Button onClick={changeBadPostingThreshhold}>Update</Button>
             <p style={{ textAlign: 'right', fontSize: 18, fontWeight: 'bold' }} className='ml-10 mr-2 display-6 mb-2'>User Post Flagging Threshold: {threshhold.toString()}</p>

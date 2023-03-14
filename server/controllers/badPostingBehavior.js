@@ -291,7 +291,8 @@ badPostBehaviorRouter.put(
             });
             const badPostingBehavior = await prisma.bad_Posting_Behavior.findMany();
             badPostingBehavior.forEach(async (user) => {
-                if (user.bad_post_count >= threshhold.number || user.post_flag_count >= threshhold.number) {
+                total = user.bad_post_count + user.post_flag_count;
+                if (total >= threshhold.number) {
                     //update post_comment_ban to true
                     console.log('user', user);
                     console.log('user.userId', user.userId);

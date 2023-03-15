@@ -133,7 +133,7 @@ userSegmentRouter.post(
 
                         schoolSuperSegName=queryResult.superSegName;
 
-                        if (schoolDetails) {
+                        if (schoolDetails.faculty == '') {
                             schoolSegHandle = `${user.fname} @ ${schoolDetails.faculty}`;
                         }
                     }

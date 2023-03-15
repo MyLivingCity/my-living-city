@@ -23,8 +23,12 @@ emailVerificationRouter.get(
           },
         });
 
-        // close the tab
-        res.status(200).send(result);
+        // Send back to login page either localhost or production
+        var login = process.env.CORS_ORIGIN + '/login' || 'http://localhost:3000/login';
+
+        // redirect to login with a message that the user is verified
+        res.redirect(login);
+
       } else {
         res.status(400).json({
           message: 'Verification code does not match',

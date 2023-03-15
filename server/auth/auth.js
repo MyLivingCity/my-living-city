@@ -44,17 +44,16 @@ passport.use(
         const userExists = await prisma.user.findUnique({
           where: { email }
         })
-        if (userExists) {
+        if (userExists && userExists.verified === true) {
 
-          if (userExists.verified === false) {
-            sendEmailVerification(userExists)
-            return done(null, userExists, { message: "User with that email already exists. Please check your email for a verification code."})
-          }
-
-          return done({ message: "User with that email already exists." })
-          // return done(null, false, { message: "User with that email already exists" })
+          return done(null, false, { message: "User already exists." })
         }
 
+        if (userExists && userExists.verified === false) {
+          // Send email verification
+          sendEmailVerification(userExists)
+          return done(null, userExists)
+        }
         // Parse body
         const geoData = { ...req.body.geo };
         const addressData = { ...req.body.address };
@@ -102,7 +101,8 @@ passport.use(
 
         if (createdUser.verified === false) {
           sendEmailVerification(createdUser)
-          return done(null, createdUser, { message: "User created. Please check your email for a verification code."})
+          // stop here if user is not verified
+          return done(null, createdUser);
         }
 
         return done(null, createdUser);
@@ -156,7 +156,6 @@ passport.use(
 
         if (parsedUser.verified === false) {
           sendEmailVerification(parsedUser)
-          return done(null, false, { message: "Please check your email for a verification code."})
         }
 
         return done(null, parsedUser, { message: "Logged in succesfully" });

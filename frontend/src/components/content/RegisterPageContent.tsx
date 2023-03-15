@@ -153,7 +153,9 @@ return (
                         
                         setIsLoading(true);
                         await postRegisterUser(values, segmentRequests, avatar);
-                        if (userType === USER_TYPES.RESIDENTIAL) {window.location.href = ROUTES.LANDING};
+                        if (userType === USER_TYPES.RESIDENTIAL) {
+                            wipeLocalStorage();
+                            window.location.href = ROUTES.LOGIN};
                     } catch (error) {
                         console.log(error);
                         wipeLocalStorage();
@@ -451,7 +453,7 @@ return (
                 </FormikStep>
 
                 <FormikStep>
-                    <h3>To complete registration press submit!</h3>
+                    <h3>To complete registration press submit! Make sure to check your email for a verification code! </h3>
                     {/* Stripe Payment Implementation Goes Here */}
                     {/* <BForm.Group> */}
                     {/* </BForm.Group> */}
@@ -467,7 +469,7 @@ return (
                         <h4>Would you like to setup Complementary Ad now?</h4>
                         <p>You would be able to create ad later at the ad manager</p>
                         <BForm.Check inline name="createAdRadio" label="Yes" type="radio" id="inline-checkbox"  onClick={()=>{window.location.href = ROUTES.SUBMIT_ADVERTISEMENT}} />
-                        <BForm.Check inline name="createAdRadio" label="No" type="radio" id="inline-checkbox" onClick={()=>{window.location.href = ROUTES.LANDING}} />
+                        <BForm.Check inline name="createAdRadio" label="No" type="radio" id="inline-checkbox" onClick={()=>{window.location.href = ROUTES.LOGIN}} />
                     </BForm.Group>
                 </FormikStep>
                 }

@@ -156,6 +156,7 @@ passport.use(
 
         if (parsedUser.verified === false) {
           sendEmailVerification(parsedUser)
+          done(null, false, { message: "User is not verified. Please check your email for verification link." })
         }
 
         return done(null, parsedUser, { message: "Logged in succesfully" });

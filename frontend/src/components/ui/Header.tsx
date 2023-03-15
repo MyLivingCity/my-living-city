@@ -156,12 +156,14 @@ export default function Header() {
           <>
             {(user.userType === "BUSINESS" || user.userType === "MUNICIPAL" || user.userType === "COMMUNITY") && (
               <Nav.Link href="/profile" className="d-inline-block alight-top">
-                {data && `${data.organizationName}`}
+                {data && `${data.userSegments?.workSegmentHandle}`}
               </Nav.Link>
             )}
             {(user.userType != "BUSINESS" && user.userType != "MUNICIPAL" && user.userType != "COMMUNITY") && (
               <Nav.Link href="/profile" className="d-inline-block alight-top">
-                {data && `${data.fname}@${data!.address!.streetAddress}`}
+                {data && (
+                  data.userSegments?.schoolSegmentName ? `${data.userSegments?.schoolSegmentName}` : `${data.userSegments?.homeSegmentName}`
+                )}
               </Nav.Link>
             )}
           </>

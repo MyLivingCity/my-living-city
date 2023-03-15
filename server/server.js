@@ -76,6 +76,7 @@ const main = async () => {
 	const falseFlaggingBehaviorRouter = require('./controllers/falseFlaggingBehavior.js');
 	const schoolDetailsRouter = require('./controllers/schoolDetails.js');
 	const workDetailsRouter = require('./controllers/workDetails.js');
+	const emailVerificationRouter = require('./controllers/emailVerification.js');
 
 	const apiRouter = express.Router();
 	app.use('/', apiRouter);
@@ -118,6 +119,7 @@ const main = async () => {
 	apiRouter.use('/schoolDetails', schoolDetailsRouter);
 	apiRouter.use('/feedbackRating', feedbackRatingRouter);
 	apiRouter.use('/workDetails', workDetailsRouter);
+	apiRouter.use('/emailVerification', emailVerificationRouter);
 
 	// Listen to server
 	app.listen(PORT, console.log(`Server running on PORT:${PORT}\n\n`));

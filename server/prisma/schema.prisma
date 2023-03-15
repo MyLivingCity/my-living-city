@@ -175,6 +175,8 @@ model User {
   reviewed         Boolean  @default(false)
   totalFlagged     Int      @default(0) @map("total_flagged")
   hasFlagged       Int      @default(0) @map("has_flagged")
+  verified         Boolean  @default(false)
+  verifiedToken    String?  @default(cuid())
 
   // Relationships
   address             UserAddress?

@@ -459,7 +459,7 @@ userSegmentRouter.put(
 
                         homeSegmentName = queryResult.superSegName;
 
-                        homeSegmentHandle = `${firstName} @ ${address.streetAddress}`
+                        homeSegmentHandle = `${user.fname} @ ${user.address.streetAddress}`
                     }
                 }
             }

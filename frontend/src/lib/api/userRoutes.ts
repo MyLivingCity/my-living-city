@@ -133,6 +133,28 @@ export const postRegisterUser = async(registerData: IRegisterInput, requestData:
   const request = await axios.post<LoginResponse>(`${API_BASE_URL}/user/signup`, {email,password,confirmPassword,organizationName,fname,lname,address,geo, userType});
   const request2 = await axios({
     method: "post",
+    url: `${API_BASE_URL}/schoolDetails/create`,
+    data: {
+      schoolDetails: schoolDetails,
+      userId: request.data.user.address?.userId,
+    },
+    headers: {"Access-Control-Allow-Origin": "*", "x-auth-token": request.data.token},
+    withCredentials: true,
+  })
+
+  await axios({
+    method: "post",
+    url: `${API_BASE_URL}/workDetails/create`,
+    data: {
+      workDetails: workDetails,
+      userId: request.data.user.address?.userId,
+    },
+    headers: {"Access-Control-Allow-Origin": "*", "x-auth-token": request.data.token},
+    withCredentials: true,
+  })
+
+  await axios({
+    method: "post",
     url: `${API_BASE_URL}/userSegment/create`,
     data: { 
         homeSegmentId,
@@ -193,31 +215,7 @@ if (userType === USER_TYPES.IN_PROGRESS || userType === USER_TYPES.BUSINESS || u
 
 console.log("schoolDetails", schoolDetails)
 
-let request8 = await axios({
-  method: "post",
-  url: `${API_BASE_URL}/schoolDetails/create`,
-  data: {
-    schoolDetails: schoolDetails,
-    userId: request.data.user.address?.userId,
-  },
-  headers: {"Access-Control-Allow-Origin": "*", "x-auth-token": request.data.token},
-  withCredentials: true,
-})
-
-console.log("workDetails", workDetails)
-
-let request9 = await axios({
-  method: "post",
-  url: `${API_BASE_URL}/workDetails/create`,
-  data: {
-    workDetails: workDetails,
-    userId: request.data.user.address?.userId,
-  },
-  headers: {"Access-Control-Allow-Origin": "*", "x-auth-token": request.data.token},
-  withCredentials: true,
-})
-
-Promise.all([request, request2, request3, request4, request5, request6, ...request7, request8]).then((...responses)=>{
+Promise.all([request, request2, request3, request4, request5, request6, ...request7]).then((...responses)=>{
   
 })
 const {token, user} = request.data;

@@ -12,6 +12,8 @@ import { getCommunityBusinessProfile, updateCommunityBusinessProfile, getCommuni
 import { postAvatarImage } from 'src/lib/api/avatarRoutes';
 import ImageUploader from 'react-images-upload';
 
+// TODO: Add and implement functions for edit and delete
+
 interface SegmentInfoProps {
     user: IUser;
     token: string;
@@ -35,13 +37,13 @@ export const SegmentInfo: React.FC<SegmentInfoProps> = ({ user, token, title, se
     const [edit, setEdit] = useState(false);
 
     function handleEdit() {
-        // TODO: Add confirmation modal and then edit
+        // TODO: Add confirmation modal (optional) and then edit
         setEdit(!edit);
     }
 
     function handleDelete() {
         if (deleteFunction) {
-            // TODO: Add confirmation modal and then delete 
+            // TODO: Add confirmation modal (optional) and then delete 
             setEdit(!edit);
         }
     }

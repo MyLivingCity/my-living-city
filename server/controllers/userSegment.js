@@ -25,11 +25,19 @@ userSegmentRouter.post(
             let homeSubSegmentName = '';
             let workSubSegmentName = '';
             let schoolSubSegmentName = '';
-            let homeSegmentHandle = '';
-            let workSegmentHandle = '';
-            let schoolSegmentHandle = '';
+            let homeSegHandle = '';
+            let workSegHandle = '';
+            let schoolSegHandle = '';
             //get email and user id from request
-            const { email, id, firstName, address } = req.user;
+            const { email, id } = req.user;
+
+            const user = await prisma.user.findUnique({
+                where:{id: id},
+                select:{
+                    fname:true,
+                    address:true
+                }
+            });
 
             const exist = await prisma.userSegments.findFirst({
                 where:{userId:id}
@@ -70,8 +78,8 @@ userSegmentRouter.post(
                         homeSuperSegId = queryResult.superSegId;
 
                         homeSuperSegName = queryResult.superSegName;
-
-                        homeSegmentHandle = `${firstName} @ ${address.streetAddress}`;
+                        
+                        homeSegHandle = `${user.fname} @ ${user.address.streetAddress}`;
                     }
                 }
             }
@@ -97,7 +105,9 @@ userSegmentRouter.post(
 
                         workSuperSegName=queryResult.superSegName;
 
-                        workSegmentHandle = `${firstName} @ ${workDetails.company}`;
+                        if (workDetails) {
+                            workSegHandle = `${user.fname} @ ${workDetails.company}`;
+                        }
                     }
                 }
             }
@@ -123,7 +133,9 @@ userSegmentRouter.post(
 
                         schoolSuperSegName=queryResult.superSegName;
 
-                        schoolSegmentHandle = `${firstName} @ ${schoolDetails.faculty}`;
+                        if (schoolDetails) {
+                            schoolSegHandle = `${user.fname} @ ${schoolDetails.school}`;
+                        }
                     }
                 }
             }
@@ -238,9 +250,9 @@ userSegmentRouter.post(
                     workSubSegmentName:workSubSegmentName,
                     schoolSubSegmentId:schoolSubSegmentId,
                     schoolSubSegmentName:schoolSubSegmentName,
-                    homeSegmentHandle:homeSegmentHandle,
-                    workSegmentHandle:workSegmentHandle,
-                    schoolSegmentHandle:schoolSegmentHandle,
+                    homeSegHandle:homeSegHandle,
+                    workSegHandle:workSegHandle,
+                    schoolSegHandle:schoolSegHandle,
                 }
             })
 
@@ -380,12 +392,12 @@ userSegmentRouter.put(
             let homeSubSegmentName = '';
             let workSubSegmentName = '';
             let schoolSubSegmentName = '';
-            let homeSegmentHandle = '';
-            let workSegmentHandle = '';
-            let schoolSegmentHandle = '';
+            let homeSegHandle = '';
+            let workSegHandle = '';
+            let schoolSegHandle = '';
 
             //get email and user id from request
-            const { email, id, address, firstName } = req.user;
+            const { email, id } = req.user;
 
             const {homeSegmentId,workSegmentId,schoolSegmentId,homeSubSegmentId,workSubSegmentId,schoolSubSegmentId} = req.body;
 
@@ -396,6 +408,10 @@ userSegmentRouter.put(
             if(!exist){
                 exists = false;
             }
+
+            const user = await prisma.user.findFirst({
+                where:{id:id}
+            })
 
             const work_Details = await prisma.workDetails.findFirst({
                 where:{userId:id}
@@ -469,7 +485,7 @@ userSegmentRouter.put(
 
                         workSuperSegName=queryResult.superSegName;
 
-                        workSegmentHandle = `${firstName} @ ${work_Details.company}`
+                        workSegmentHandle = `${user.fname} @ ${work_Details.company}`
                     }
                 }
             }
@@ -495,7 +511,7 @@ userSegmentRouter.put(
 
                         schoolSegmentName=queryResult.superSegName;
 
-                        schoolSegmentHandle = `${firstName} @ ${school_Details.faculty}`
+                        schoolSegmentHandle = `${user.fname} @ ${school_Details.faculty}`
                     }
                 }
             }
@@ -614,9 +630,9 @@ userSegmentRouter.put(
                         workSubSegmentName:workSubSegmentName,
                         schoolSubSegmentId:schoolSubSegmentId,
                         schoolSubSegmentName:schoolSubSegmentName,
-                        homeSegmentHandle:homeSegmentHandle,
-                        workSegmentHandle:workSegmentHandle,
-                        schoolSegmentHandle:schoolSegmentHandle
+                        homeSegHandle:homeSegHandle,
+                        workSegHandle:workSegHandle,
+                        schoolSegHandle:schoolSegHandle
                     }
                 })
             }else{
@@ -641,9 +657,9 @@ userSegmentRouter.put(
                         workSubSegmentName:workSubSegmentName,
                         schoolSubSegmentId:schoolSubSegmentId,
                         schoolSubSegmentName:schoolSubSegmentName,
-                        homeSegmentHandle:homeSegmentHandle,
-                        workSegmentHandle:workSegmentHandle,
-                        schoolSegmentHandle:schoolSegmentHandle
+                        homeSegHandle:homeSegHandle,
+                        workSegHandle:workSegHandle,
+                        schoolSegHandle:schoolSegHandle
                     }
                 })
             }

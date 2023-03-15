@@ -48,9 +48,9 @@ export interface IUserSegment {
   workSubSegmentName: string;
   schoolSubSegmentId: number;
   schoolSubSegmentName: string;
-  homeSegmentHandle: string;
-  workSegmentHandle: string;
-  schoolSegmentHandle: string;
+  homeSegHandle: string;
+  workSegHandle: string;
+  schoolSegHandle: string;
 }
 
 export interface ISegmentData {

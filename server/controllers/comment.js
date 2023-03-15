@@ -149,7 +149,7 @@ commentRouter.get(
           },
           {
             updatedAt: 'desc'
-          }
+          },
         ]
       });
 
@@ -161,7 +161,13 @@ commentRouter.get(
 
       result.sort(compareCommentsBasedOnLikesAndDislikes);
 
-      res.status(200).json(result);
+      // put comments with a userType == 'MOD' at the top
+      const moderatorComments = result.filter(comment => comment.author.userType === 'MOD');
+      const nonModeratorComments = result.filter(comment => comment.author.userType !== 'MOD');
+
+      const sortedResult = [...moderatorComments, ...nonModeratorComments];
+
+      res.status(200).json(sortedResult);
     } catch (error) {
       console.error(error);
       res.status(400).json({

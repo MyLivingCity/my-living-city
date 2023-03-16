@@ -23,11 +23,12 @@ interface SegmentInfoProps {
     type: string;
     segmentData: SegmentData;
     deleteFunction?: (user: string | undefined) => void;
+    updateFunction?: (user: string | undefined, data: any) => Promise<void>;
 }
 
 interface SegmentData {
-    displayNameFirst: string;
-    displayNameLast: string;
+    displayFName: string;
+    displayLName: string;
     street: string;
     city: string;
     postalCode: string;
@@ -35,7 +36,7 @@ interface SegmentData {
 }
 
 
-export const SegmentInfo: React.FC<SegmentInfoProps> = ({ user, token, title, type, segmentData, deleteFunction }) => {
+export const SegmentInfo: React.FC<SegmentInfoProps> = ({ user, token, title, type, segmentData, deleteFunction, updateFunction }) => {
 
     const [edit, setEdit] = useState(false);
 
@@ -68,6 +69,11 @@ export const SegmentInfo: React.FC<SegmentInfoProps> = ({ user, token, title, ty
     const handleDeleteClose = () => setShowDelete(false);
     const handleDeleteShow = () => setShowDelete(true);
 
+    const [data, setData] = useState<SegmentData>(segmentData);
+    const handleDataUpdate = (data: SegmentData) => setData(data);
+
+    segmentData && console.log(segmentData);
+
 
 return (
     <>
@@ -83,21 +89,34 @@ return (
                 onSubmit={async (e) => {
                     e.preventDefault();
                     console.log(e.target);
+                    // Get form data
                     const formData = new FormData(e.target as HTMLFormElement);
                     const data = Object.fromEntries(formData.entries());
                     console.log(data);
+                    updateFunction && await updateFunction(user.id, data);
+                    // Reimplement this later
+                    // const newData = {
+                    //     displayFName: data.displayFName.toString(),
+                    //     displayLName: data.displayLName.toString(),
+                    //     street: data.streetAddress.toString(),
+                    //     city: (data.city ? data.city.toString() : segmentData.city),
+                    //     postalCode: data.postalCode.toString(),
+                    //     neighborhood: (data.neighborhood ? data.neighborhood.toString() : segmentData.neighborhood)
+                    // }
+                    window.location.reload();
+
                 }}
                 >
                     <Col>
-                    <Form.Group controlId='displayNameFirst'>
+                    <Form.Group controlId='displayName'>
                         <Form.Label><strong>Display Name</strong></Form.Label>
-                        <Form.Control type='text' placeholder='First Name' defaultValue={capitalizeString(segmentData.displayNameFirst)}></Form.Control>
+                        <Form.Control name="displayFName" type='text' placeholder='First Name' defaultValue={capitalizeString(segmentData.displayFName)}></Form.Control>
                         <Form.Text>@</Form.Text>
-                        <Form.Control type='text' placeholder='First Name' defaultValue={capitalizeString(segmentData.displayNameLast)}></Form.Control>
+                        <Form.Control name="displayLName" type='text' placeholder='Last Name' defaultValue={capitalizeString(segmentData.displayLName)}></Form.Control>
                     </Form.Group>
                     <Form.Group controlId='street'>
                         <Form.Label><strong>Street</strong></Form.Label>
-                        <Form.Control type='text' placeholder='Street' defaultValue={capitalizeString(segmentData.street)}></Form.Control>
+                        <Form.Control name="streetAddress" type='text' placeholder='Street' defaultValue={capitalizeString(segmentData.street)}></Form.Control>
                     </Form.Group>
                     <Form.Group controlId='city'>
                         <Form.Label><strong>City</strong>
@@ -112,7 +131,7 @@ return (
                     </Form.Group>
                     <Form.Group controlId='postalCode'>
                         <Form.Label><strong>Postal Code / Zip</strong></Form.Label>
-                        <Form.Control type='text' placeholder='Postal Code / Zip' defaultValue={segmentData.postalCode.toUpperCase()}></Form.Control>
+                        <Form.Control name="postalCode" type='text' placeholder='Postal Code / Zip' defaultValue={segmentData.postalCode.toUpperCase()}></Form.Control>
                     </Form.Group>
                     <Form.Group controlId='neighborhood'>
                         <Form.Label><strong>Neighborhood</strong>
@@ -141,7 +160,7 @@ return (
                         <ListGroupItem><strong>Neighborhood: </strong></ListGroupItem>
                     </ListGroup>
                     <ListGroup variant='flush'>
-                        <ListGroupItem>{capitalizeString(segmentData.displayNameFirst)}@{capitalizeString(segmentData.displayNameLast)}</ListGroupItem>
+                        <ListGroupItem>{capitalizeString(segmentData.displayFName)}@{capitalizeString(segmentData.displayLName)}</ListGroupItem>
                         <ListGroupItem>{capitalizeString(segmentData.street)}</ListGroupItem>
                         <ListGroupItem>{capitalizeString(segmentData.city)}</ListGroupItem>
                         <ListGroupItem>{segmentData.postalCode.toUpperCase()}</ListGroupItem>

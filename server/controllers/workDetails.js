@@ -71,4 +71,25 @@ workDetailsRouter.get(
     }
 )
 
+workDetailsRouter.patch(
+    '/update/:id',
+    async (req, res) => {
+        try {
+            const workDetails = await prisma.work_Details.update({
+                where: {
+                    userId: req.params.id,
+                },
+                data: {
+                    streetAddress: req.body.workDetails.streetAddress,
+                    postalCode: req.body.workDetails.postalCode,
+                    company: req.body.workDetails.company,
+                },
+            });
+            res.status(200).json(workDetails);
+        } catch (error) {
+            res.status(400).json({ error: error.message });
+        }
+    }
+)
+
 module.exports = workDetailsRouter;

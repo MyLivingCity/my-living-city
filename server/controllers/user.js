@@ -1176,5 +1176,39 @@ userRouter.patch(
 	}
 )
 
+userRouter.patch(
+	'/updateDisplayName',
+	async (req, res, next) => {
+		try {
+			const user = await prisma.user.findUnique({
+				where: { id: req.body.userId },
+			});
+
+			if (user) {
+				await prisma.user.update({
+					where: { id: req.body.userId },
+					data: {
+						displayFname: req.body.displayFname,
+						displayLname: req.body.displayLname,
+					}
+				});
+			}
+
+			res.status(200).json({
+				message: "Display name successfully updated"
+			});
+		} catch (error) {
+			res.status(400).json({
+				message: `An Error occured while trying to update display name.`,
+				details: {
+					errorMessage: error.message,
+					errorStack: error.stack,
+				}
+			});
+		} finally {
+			await prisma.$disconnect();
+		}
+	}
+)
 
 module.exports = userRouter;

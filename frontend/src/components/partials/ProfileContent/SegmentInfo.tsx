@@ -11,6 +11,8 @@ import { LinkType, Link, PublicStandardProfile, PublicCommunityBusinessProfile, 
 import { getCommunityBusinessProfile, updateCommunityBusinessProfile, getCommunityBusinessLinks, getMunicipalProfile, getStandardProfile, updateStandardProfile,updateMunicipalProfile, getMunicipalLinks } from 'src/lib/api/publicProfileRoutes';
 import { postAvatarImage } from 'src/lib/api/avatarRoutes';
 import ImageUploader from 'react-images-upload';
+import Modal from 'react-bootstrap/Modal';
+import SimpleMap from 'src/components/map/SimpleMap';
 
 // TODO: Add and implement functions for edit and delete
 
@@ -18,6 +20,7 @@ interface SegmentInfoProps {
     user: IUser;
     token: string;
     title: string;
+    type: string;
     segmentData: SegmentData;
     deleteFunction?: () => void;
 }
@@ -32,7 +35,7 @@ interface SegmentData {
 }
 
 
-export const SegmentInfo: React.FC<SegmentInfoProps> = ({ user, token, title, segmentData, deleteFunction }) => {
+export const SegmentInfo: React.FC<SegmentInfoProps> = ({ user, token, title, type, segmentData, deleteFunction }) => {
 
     const [edit, setEdit] = useState(false);
 
@@ -48,8 +51,21 @@ export const SegmentInfo: React.FC<SegmentInfoProps> = ({ user, token, title, se
         }
     }
 
+    const [show, setShow] = useState(false);
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
+    const [select, setSelect] = useState(false);
+    const handleSelectClose = () => setSelect(false);
+    const handleSelectShow = () => {
+        setSelect(true);
+        setShow(false);
+    };
+
 
 return (
+    <>
+
     <Card style={{ width: '40rem', padding: '1.5rem'}}>
         <Row>
         <Col>
@@ -60,25 +76,38 @@ return (
                 <Form>
                     <Form.Group controlId='displayNameFirst'>
                         <Form.Label><strong>Display Name</strong></Form.Label>
-                        <Form.Control type='text' placeholder='First Name' value={capitalizeString(segmentData.displayNameFirst)}></Form.Control>
+                        <Form.Control type='text' placeholder='First Name' defaultValue={capitalizeString(segmentData.displayNameFirst)}></Form.Control>
                         <Form.Text>@</Form.Text>
-                        <Form.Control type='text' placeholder='First Name' value={capitalizeString(segmentData.displayNameLast)}></Form.Control>
+                        <Form.Control type='text' placeholder='First Name' defaultValue={capitalizeString(segmentData.displayNameLast)}></Form.Control>
                     </Form.Group>
                     <Form.Group controlId='street'>
                         <Form.Label><strong>Street</strong></Form.Label>
-                        <Form.Control type='text' placeholder='Street' value={capitalizeString(segmentData.street)}></Form.Control>
+                        <Form.Control type='text' placeholder='Street' defaultValue={capitalizeString(segmentData.street)}></Form.Control>
                     </Form.Group>
                     <Form.Group controlId='city'>
-                        <Form.Label><strong>City</strong></Form.Label>
-                        <Form.Control type='text' placeholder='City' value={capitalizeString(segmentData.city)}></Form.Control>
+                        <Form.Label><strong>City</strong>
+                        <Button 
+                        variant='info' 
+                        className='btn-sm' 
+                        style={{marginLeft: "1rem"}}
+                        onClick={handleShow}
+                        > Change City </Button>
+                        </Form.Label>
+                        <Form.Control type='text' placeholder='City' defaultValue={capitalizeString(segmentData.city)} readOnly plaintext></Form.Control>
                     </Form.Group>
                     <Form.Group controlId='postalCode'>
                         <Form.Label><strong>Postal Code / Zip</strong></Form.Label>
-                        <Form.Control type='text' placeholder='Postal Code / Zip' value={segmentData.postalCode.toUpperCase()}></Form.Control>
+                        <Form.Control type='text' placeholder='Postal Code / Zip' defaultValue={segmentData.postalCode.toUpperCase()}></Form.Control>
                     </Form.Group>
                     <Form.Group controlId='neighborhood'>
-                        <Form.Label><strong>Neighborhood</strong></Form.Label>
-                        <Form.Control type='text' placeholder='Neighborhood' value={capitalizeString(segmentData.neighborhood)}></Form.Control>
+                        <Form.Label><strong>Neighborhood</strong>
+                        <Button 
+                        variant='info' 
+                        className='btn-sm' 
+                        style={{marginLeft: "1rem"}}
+                        onClick={handleShow}
+                        > Change Neighbourhood </Button></Form.Label>
+                        <Form.Control type='text' placeholder='Neighborhood' defaultValue={capitalizeString(segmentData.neighborhood)} readOnly plaintext></Form.Control>
                     </Form.Group>
                 </Form>
             ) : 
@@ -126,6 +155,56 @@ return (
         </Row>
     <br/>
   </Card>
+  <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Show us where your {type} is</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+            <SimpleMap 
+            iconName={type}
+            ></SimpleMap>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={handleSelectShow}>
+            Continue
+          </Button>
+        </Modal.Footer>
+    </Modal>
+    <Modal show={select} onHide={handleSelectClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Show us where your {type} is</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+            <Form>
+            <Form.Group controlId={type + "Segment"}>
+              <Form.Label>Your {type} Municipality is</Form.Label>
+              <Form.Control readOnly name="schoolSegmentId" defaultValue={capitalizeString('testReplace')}>
+              </Form.Control>
+            </Form.Group>
+            <Form.Group controlId={type + "SubSegment"}>
+              <Form.Label>Select your Neighbourhood</Form.Label>
+              <Form.Control
+                as="select"
+                name="sub-segment"
+                onChange={(e)=>{console.log(e)}}
+              >
+              </Form.Control>
+            </Form.Group>
+            </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleSelectClose}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={handleSelectClose}>
+            Continue
+          </Button>
+        </Modal.Footer>
+    </Modal>
+  </>
 )
 }
 

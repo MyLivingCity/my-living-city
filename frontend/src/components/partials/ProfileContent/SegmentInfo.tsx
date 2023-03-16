@@ -62,6 +62,10 @@ export const SegmentInfo: React.FC<SegmentInfoProps> = ({ user, token, title, ty
         setShow(false);
     };
 
+    const [showDelete, setShowDelete] = useState(false);
+    const handleDeleteClose = () => setShowDelete(false);
+    const handleDeleteShow = () => setShowDelete(true);
+
 
 return (
     <>
@@ -147,7 +151,7 @@ return (
                     >Edit
                     </Button> 
             
-                    {deleteFunction && <Button variant='danger' className=''>Delete</Button>}
+                    {deleteFunction && <Button variant='danger' className='' onClick={handleDeleteShow}>Delete</Button>}
                 </>
             )
             }
@@ -204,6 +208,27 @@ return (
           </Button>
         </Modal.Footer>
     </Modal>
+    <Modal show={showDelete} onHide={handleDeleteClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Are you sure?</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+            <p>
+            You are about to delete all of your information on your {type} community. <strong>This cannot be undone.</strong>
+            </p>
+            <p>
+            Would you like to proceed?
+            </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleDeleteClose}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={handleDeleteClose}>
+            Confirm
+          </Button>
+        </Modal.Footer>
+      </Modal>
   </>
 )
 }

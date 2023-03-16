@@ -6,7 +6,7 @@ import { IUser } from '../../lib/types/data/user.type';
 import { capitalizeString } from '../../lib/utilityFunctions';
 import { RequestSegmentModal } from '../partials/RequestSegmentModal';
 import StripeCheckoutButton from "src/components/partials/StripeCheckoutButton"
-import {getUserSubscriptionStatus} from 'src/lib/api/userRoutes'
+import {getSchoolSegmentDetails, getUserSubscriptionStatus, getWorkSegmentDetails} from 'src/lib/api/userRoutes'
 import { LinkType, Link, PublicStandardProfile, PublicCommunityBusinessProfile, PublicMunicipalProfile } from 'src/lib/types/data/publicProfile.type'; 
 import { getCommunityBusinessProfile, updateCommunityBusinessProfile, getCommunityBusinessLinks, getMunicipalProfile, getStandardProfile, updateStandardProfile,updateMunicipalProfile, getMunicipalLinks } from 'src/lib/api/publicProfileRoutes';
 import { SegmentInfo } from '../partials/ProfileContent/SegmentInfo';
@@ -66,7 +66,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
   const [standardProfile, setStandardProfile] = useState<any>({});
   const [links, setLinks] = useState<any[]>([]);
   const [showAlert, setShowAlert] = useState(false);
-  const [businessData, setBusinessData] = useState<any>({});
+  const [workData, setWorkData] = useState<any>({});
   const [schoolData, setSchoolData] = useState<any>({});
 
 
@@ -106,6 +106,14 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
 
   useEffect(()=>{
     getStandardProfile(user.id, token).then(e => setStandardProfile(e)).catch(e => console.log(e));
+  },[])
+
+  useEffect(()=>{
+    getWorkSegmentDetails(user.id).then(e => setWorkData(e)).catch(e => console.log(e));
+  },[])
+
+  useEffect(()=>{
+    getSchoolSegmentDetails(user.id).then(e => setSchoolData(e)).catch(e => console.log(e));
   },[])
 
   const updateLink = (linkValue: string, link: any) => {
@@ -222,6 +230,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
     const test = updateStandardProfile(profileNew, token).then(e => console.log(e)).catch(e => console.log(e));
     setShowAlert(true);
   }
+  
 
   if (userType === USER_TYPES.BUSINESS || userType === USER_TYPES.COMMUNITY) {
     return (<Container className='user-profile-content w-100'>
@@ -802,7 +811,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
         segmentData={
           {
             displayNameFirst: (fname ? fname : "Unknown"),
-            displayNameLast: (lname ? lname : "Unknown"),
+            displayNameLast: (streetAddress ? streetAddress : "Unknown"),
             street: (streetAddress ? streetAddress : "Unknown"),
             city: (userSegments!.homeSegmentName ? userSegments!.homeSegmentName : "Unknown"),
             postalCode: (postalCode ? postalCode : "Unknown"),
@@ -818,11 +827,11 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
         type={"work"}
         segmentData={
           {
-            displayNameFirst: (fname ? fname : "Unknown"),
-            displayNameLast: (lname ? lname : "Unknown"),
-            street: (streetAddress ? streetAddress : "Unknown"),
+            displayNameFirst: (workData!.displayFName ? workData!.displayFName : (fname ? fname : "Unknown")),
+            displayNameLast: (workData!.displayLName ? workData!.displayLName : (workData!.company ? workData!.company : "Unknown")),
+            street: (workData!.streetAddress ? workData!.streetAddress : "Unknown"),
             city: (userSegments!.workSegmentName ? userSegments!.workSegmentName : "Unknown"),
-            postalCode: (postalCode ? postalCode : "Unknown"),
+            postalCode: (workData!.postalCode ? workData!.postalCode : "Unknown"),
             neighborhood: (userSegments!.workSubSegmentName ? userSegments!.workSubSegmentName : "Unknown"),
           }
         }
@@ -837,11 +846,11 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
         type={"school"}
         segmentData={
           {
-            displayNameFirst: (fname ? fname : "Unknown"),
-            displayNameLast: (lname ? lname : "Unknown"),
-            street: (streetAddress ? streetAddress : "Unknown"),
+            displayNameFirst: (schoolData!.displayFName ? schoolData!.displayFName : (fname ? fname : "Unknown")),
+            displayNameLast: (schoolData!.displayLName ? schoolData!.displayLName : (schoolData!.faculty ? schoolData!.faculty : "Unknown")),
+            street: (schoolData!.streetAddress ? schoolData!.streetAddress : "Unknown"),
             city: (userSegments!.schoolSegmentName ? userSegments!.schoolSegmentName : "Unknown"),
-            postalCode: (postalCode ? postalCode : "Unknown"),
+            postalCode: (schoolData!.postalCode ? schoolData!.postalCode : "Unknown"),
             neighborhood: (userSegments!.schoolSubSegmentName ? userSegments!.schoolSubSegmentName : "Unknown"),
           }
         }

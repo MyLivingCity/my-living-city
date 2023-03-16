@@ -9,8 +9,8 @@ import StripeCheckoutButton from "src/components/partials/StripeCheckoutButton"
 import {getUserSubscriptionStatus} from 'src/lib/api/userRoutes'
 import { LinkType, Link, PublicStandardProfile, PublicCommunityBusinessProfile, PublicMunicipalProfile } from 'src/lib/types/data/publicProfile.type'; 
 import { getCommunityBusinessProfile, updateCommunityBusinessProfile, getCommunityBusinessLinks, getMunicipalProfile, getStandardProfile, updateStandardProfile,updateMunicipalProfile, getMunicipalLinks } from 'src/lib/api/publicProfileRoutes';
-import { postAvatarImage } from 'src/lib/api/avatarRoutes';
-import ImageUploader from 'react-images-upload';
+import { SegmentInfo } from '../partials/ProfileContent/SegmentInfo';
+
 interface ProfileContentProps {
   user: IUser;
   token: string;
@@ -19,6 +19,10 @@ interface ProfileContentProps {
 const LinkTypes = Object.keys(LinkType).filter((item) => {
   return isNaN(Number(item));
 });
+
+const TestFunction = () => {
+  console.log("TestFunction");
+}
 
 
 const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
@@ -49,6 +53,9 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
   const [standardProfile, setStandardProfile] = useState<any>({});
   const [links, setLinks] = useState<any[]>([]);
   const [showAlert, setShowAlert] = useState(false);
+  const [businessData, setBusinessData] = useState<any>({});
+  const [schoolData, setSchoolData] = useState<any>({});
+
 
   function addNewRow() {
     let table = document.getElementById("formLinksBody");
@@ -772,6 +779,65 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
           </Card.Body>
         </Card>
       </Row>
+
+      <Row>
+        <SegmentInfo 
+        user={user!} 
+        token={token!} 
+        title={"Residence Segment"} 
+        type={"home"}
+        segmentData={
+          {
+            displayNameFirst: (fname ? fname : "Unknown"),
+            displayNameLast: (lname ? lname : "Unknown"),
+            street: (streetAddress ? streetAddress : "Unknown"),
+            city: (userSegments!.homeSegmentName ? userSegments!.homeSegmentName : "Unknown"),
+            postalCode: (postalCode ? postalCode : "Unknown"),
+            neighborhood: (userSegments!.homeSubSegmentName ? userSegments!.homeSubSegmentName : "Unknown"),
+          }
+        }>
+
+        </SegmentInfo>
+        <SegmentInfo 
+        user={user!} 
+        token={token!} 
+        title={"Business Segment"}
+        type={"work"}
+        segmentData={
+          {
+            displayNameFirst: (fname ? fname : "Unknown"),
+            displayNameLast: (lname ? lname : "Unknown"),
+            street: (streetAddress ? streetAddress : "Unknown"),
+            city: (userSegments!.workSegmentName ? userSegments!.workSegmentName : "Unknown"),
+            postalCode: (postalCode ? postalCode : "Unknown"),
+            neighborhood: (userSegments!.workSubSegmentName ? userSegments!.workSubSegmentName : "Unknown"),
+          }
+        }
+        deleteFunction={TestFunction}
+        >
+          
+        </SegmentInfo>
+        <SegmentInfo 
+        user={user!} 
+        token={token!} 
+        title={"School Segment"}
+        type={"school"}
+        segmentData={
+          {
+            displayNameFirst: (fname ? fname : "Unknown"),
+            displayNameLast: (lname ? lname : "Unknown"),
+            street: (streetAddress ? streetAddress : "Unknown"),
+            city: (userSegments!.schoolSegmentName ? userSegments!.schoolSegmentName : "Unknown"),
+            postalCode: (postalCode ? postalCode : "Unknown"),
+            neighborhood: (userSegments!.schoolSubSegmentName ? userSegments!.schoolSubSegmentName : "Unknown"),
+          }
+        }
+        deleteFunction={TestFunction}
+        >
+          
+        </SegmentInfo>
+      </Row>
+
     </Container>
   )};
 }

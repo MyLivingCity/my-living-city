@@ -282,3 +282,19 @@ export const deleteWorkSegmentDetails = async (userId: string | undefined) => {
   console.log("deleteWorkSegmentDetails", res.data);
   return res.data;
 }
+
+export const getSchoolSegmentDetails = async (userId: string | undefined) => {
+  const res = await axios.get(
+    `${API_BASE_URL}/schoolDetails/get/${userId}`,
+  );
+  console.log("getSchoolSegmentDetails", res.data);
+  return res.data;
+}
+
+export const getWorkSegmentDetails = async (userId: string | undefined) => {
+  const res = await axios.get(
+    `${API_BASE_URL}/workDetails/get/${userId}`,
+  );
+  console.log("getWorkSegmentDetails", res.data);
+  return res.data;
+}

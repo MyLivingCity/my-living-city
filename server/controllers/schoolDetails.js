@@ -57,6 +57,24 @@ schoolDetailsRouter.delete(
     }
 )
 
+schoolDetailsRouter.get(
+    '/get/:id',
+    async (req, res) => {
+        try {
+            const schoolDetails = await prisma.school_Details.findFirst({
+                where: {
+                    userId: req.params.id,
+                },
+            });
+            res.status(200).json(schoolDetails);
+        } catch (error) {
+            res.status(400).json({ error: error.message });
+        }
+    }
+)
+
+
+
 
 
 module.exports = schoolDetailsRouter;

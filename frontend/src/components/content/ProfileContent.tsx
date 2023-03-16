@@ -785,6 +785,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
         user={user!} 
         token={token!} 
         title={"Residence Segment"} 
+        type={"home"}
         segmentData={
           {
             displayNameFirst: (fname ? fname : "Unknown"),
@@ -801,6 +802,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
         user={user!} 
         token={token!} 
         title={"Business Segment"}
+        type={"work"}
         segmentData={
           {
             displayNameFirst: (fname ? fname : "Unknown"),
@@ -819,6 +821,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
         user={user!} 
         token={token!} 
         title={"School Segment"}
+        type={"school"}
         segmentData={
           {
             displayNameFirst: (fname ? fname : "Unknown"),

@@ -330,9 +330,6 @@ const ModManagementPage: React.FC<ModManagementProps> = ({ }) => {
             <p style={{ textAlign: 'right', fontSize: 18, fontWeight: 'bold' }} className='ml-10 mr-2 display-6 mb-2'>User Bad Posting Behavior Threshold: {badPostingThreshhold.toString()}</p>
             <input type="number" onChange={(val) => changeBadPostingThreshholdData(val)} style={{ textAlign: 'left', right: "0" }} className='ml-10 mr-2 display-6' />
             <Button onClick={changeBadPostingThreshhold}>Update</Button>
-            <p style={{ textAlign: 'right', fontSize: 18, fontWeight: 'bold' }} className='ml-10 mr-2 display-6 mb-2'>User Post Flagging Threshold: {threshhold.toString()}</p>
-            <input type="number" onChange={(val) => changeThresholdData(val)} style={{ textAlign: 'left', right: "0" }} className='ml-10 mr-2 display-6' />
-            <Button onClick={changeThreshold}>Update</Button>
           </div>
           <br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br>
           <FalseFlagManagementContent users={userData} token={token} user={user} flags={flagData} commentFlags={commentFlagData} ideas={ideaData} proposals={proposalData} comments={commentData} bans={banData} falseFlaggingUsers={falseFlagData}/>

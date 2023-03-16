@@ -23,4 +23,36 @@ workDetailsRouter.post(
     }
 )
 
+workDetailsRouter.delete(
+    '/delete/:id',
+    async (req, res) => {
+        try {
+            const workDetails = await prisma.work_Details.deleteMany({
+                where: {
+                    userId: req.params.id,
+                },
+            });
+            const userWorkUpdate = await prisma.userSegments.update({
+                where: {
+                    userId: req.params.id,
+                },
+                data: {
+                    workSegmentId: null,
+                    workSubSegmentId: null,
+                    workSegmentName: '',
+                    workSubSegmentName: '',
+                    workSuperSegId: null,
+                    workSuperSegName: '',
+                    workSegHandle: '',
+                },
+            });
+            
+            res.status(200).json(workDetails);
+        } catch (error) {
+            console.log(error)
+            res.status(400).json({ error: error.message });
+        }
+    }
+)
+
 module.exports = workDetailsRouter;

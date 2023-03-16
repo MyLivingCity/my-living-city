@@ -1177,16 +1177,16 @@ userRouter.patch(
 )
 
 userRouter.patch(
-	'/updateDisplayName',
+	'/updateDisplayName/:id',
 	async (req, res, next) => {
 		try {
 			const user = await prisma.user.findUnique({
-				where: { id: req.body.userId },
+				where: { userId: req.params.id },
 			});
 
 			if (user) {
 				await prisma.user.update({
-					where: { id: req.body.userId },
+					where: { userId: req.params.id },
 					data: {
 						displayFname: req.body.displayFname,
 						displayLname: req.body.displayLname,
@@ -1200,6 +1200,44 @@ userRouter.patch(
 		} catch (error) {
 			res.status(400).json({
 				message: `An Error occured while trying to update display name.`,
+				details: {
+					errorMessage: error.message,
+					errorStack: error.stack,
+				}
+			});
+		} finally {
+			await prisma.$disconnect();
+		}
+	}
+)
+
+userRouter.patch(
+	'/updateAddress/:id',
+	async (req, res, next) => {
+		try {
+			const user = await prisma.user.findUnique({
+				where: { userId: req.params.id },
+			});
+
+			const now = new Date();
+
+			if (user) {
+				await prisma.userAddress.update({
+					where: { userId: req.params.id },
+					data: {
+						streetAddress: req.body.streetAddress,
+						postalCode: req.body.postalCode,
+						updatedAt: now,
+					}
+				});
+			}
+
+			res.status(200).json({
+				message: "Address successfully updated"
+			});
+		} catch (error) {
+			res.status(400).json({
+				message: `An Error occured while trying to update address.`,
 				details: {
 					errorMessage: error.message,
 					errorStack: error.stack,

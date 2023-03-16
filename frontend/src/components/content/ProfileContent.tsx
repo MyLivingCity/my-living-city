@@ -10,6 +10,7 @@ import {getUserSubscriptionStatus} from 'src/lib/api/userRoutes'
 import { LinkType, Link, PublicStandardProfile, PublicCommunityBusinessProfile, PublicMunicipalProfile } from 'src/lib/types/data/publicProfile.type'; 
 import { getCommunityBusinessProfile, updateCommunityBusinessProfile, getCommunityBusinessLinks, getMunicipalProfile, getStandardProfile, updateStandardProfile,updateMunicipalProfile, getMunicipalLinks } from 'src/lib/api/publicProfileRoutes';
 import { SegmentInfo } from '../partials/ProfileContent/SegmentInfo';
+import { deleteSchoolSegmentDetails, deleteWorkSegmentDetails } from 'src/lib/api/userRoutes';
 
 interface ProfileContentProps {
   user: IUser;
@@ -20,8 +21,20 @@ const LinkTypes = Object.keys(LinkType).filter((item) => {
   return isNaN(Number(item));
 });
 
-const TestFunction = () => {
-  console.log("TestFunction");
+const deleteSchoolSegmentDetail = async (user: string | undefined) => {
+  if(user === undefined) {
+  } else {
+      await deleteSchoolSegmentDetails(user);
+      window.location.reload();
+  }
+}
+
+const deleteWorkSegmentDetail = async (user: string | undefined) => {
+  if(user === undefined) {
+  } else {
+      await deleteWorkSegmentDetails(user);
+      window.location.reload();
+  } 
 }
 
 
@@ -813,7 +826,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
             neighborhood: (userSegments!.workSubSegmentName ? userSegments!.workSubSegmentName : "Unknown"),
           }
         }
-        deleteFunction={TestFunction}
+        deleteFunction={deleteWorkSegmentDetail}
         >
           
         </SegmentInfo>
@@ -832,7 +845,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
             neighborhood: (userSegments!.schoolSubSegmentName ? userSegments!.schoolSubSegmentName : "Unknown"),
           }
         }
-        deleteFunction={TestFunction}
+        deleteFunction={deleteSchoolSegmentDetail}
         >
           
         </SegmentInfo>

@@ -266,3 +266,19 @@ export const removePostCommentQuarantine = async (userId: string | undefined) =>
   console.log("removePostCommentQuarantine", res.data);
   return res.data;
 }
+
+export const deleteSchoolSegmentDetails = async (userId: string | undefined) => {
+  const res = await axios.delete(
+    `${API_BASE_URL}/schoolDetails/delete/${userId}`,
+  );
+  console.log("deleteSchoolSegmentDetails", res.data);
+  return res.data;
+}
+
+export const deleteWorkSegmentDetails = async (userId: string | undefined) => {
+  const res = await axios.delete(
+    `${API_BASE_URL}/workDetails/delete/${userId}`,
+  );
+  console.log("deleteWorkSegmentDetails", res.data);
+  return res.data;
+}

@@ -25,6 +25,38 @@ schoolDetailsRouter.post(
     }
 )
 
+schoolDetailsRouter.delete(
+    '/delete/:id',
+    async (req, res) => {    
+        try {
+            const schoolDetails = await prisma.school_Details.deleteMany({
+                where: {
+                    userId: req.params.id,
+                },
+            });
+            const userSchoolUpdate = await prisma.userSegments.update({
+                where: {
+                    userId: req.params.id,
+                },
+                data: {
+                    schoolSegmentId: null,
+                    schoolSubSegmentId: null,
+                    schoolSegmentName: '',
+                    schoolSubSegmentName: '',
+                    schoolSuperSegId: null,
+                    schoolSuperSegName: '',
+                    schoolSegHandle: '',
+                },
+            });
+
+            res.status(200).json(schoolDetails);
+        } catch (error) {
+            console.log(error)
+            res.status(400).json({ error: error.message });
+        }
+    }
+)
+
 
 
 module.exports = schoolDetailsRouter;

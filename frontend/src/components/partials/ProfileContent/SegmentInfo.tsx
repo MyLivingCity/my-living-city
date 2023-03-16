@@ -22,7 +22,7 @@ interface SegmentInfoProps {
     title: string;
     type: string;
     segmentData: SegmentData;
-    deleteFunction?: () => void;
+    deleteFunction?: (user: string | undefined) => void;
 }
 
 interface SegmentData {
@@ -41,12 +41,14 @@ export const SegmentInfo: React.FC<SegmentInfoProps> = ({ user, token, title, ty
 
     function handleEdit() {
         // TODO: Add confirmation modal (optional) and then edit
+        
         setEdit(!edit);
     }
 
     function handleDelete() {
         if (deleteFunction) {
             // TODO: Add confirmation modal (optional) and then delete 
+            deleteFunction(user.id);
             setEdit(!edit);
         }
     }
@@ -224,7 +226,7 @@ return (
           <Button variant="secondary" onClick={handleDeleteClose}>
             Cancel
           </Button>
-          <Button variant="primary" onClick={handleDeleteClose}>
+          <Button variant="primary" onClick={handleDelete}>
             Confirm
           </Button>
         </Modal.Footer>

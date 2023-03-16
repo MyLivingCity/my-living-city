@@ -21,6 +21,8 @@ export interface IUser {
 	updatedAt: Date;
 	verified: boolean;
 	verifiedToken?: string;
+	displayFName?: string;
+	displayLName?: string;
 
 	// Relationships can be nullable
 	geo?: IGeo;

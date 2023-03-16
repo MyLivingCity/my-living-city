@@ -72,7 +72,7 @@ export const SegmentInfo: React.FC<SegmentInfoProps> = ({ user, token, title, ty
 return (
     <>
 
-    <Card style={{ width: '40rem', padding: '1.5rem'}}>
+    <Card style={{ width: '50rem', padding: '1.5rem'}}>
         <Row>
         <Col>
             <Card.Title className='text-center'>{title}</Card.Title>
@@ -127,7 +127,7 @@ return (
                         <ListGroupItem><strong>Neighborhood: </strong></ListGroupItem>
                     </ListGroup>
                     <ListGroup variant='flush'>
-                        <ListGroupItem>{capitalizeString(segmentData.displayNameFirst)} {capitalizeString(segmentData.displayNameLast)}</ListGroupItem>
+                        <ListGroupItem>{capitalizeString(segmentData.displayNameFirst)}@{capitalizeString(segmentData.displayNameLast)}</ListGroupItem>
                         <ListGroupItem>{capitalizeString(segmentData.street)}</ListGroupItem>
                         <ListGroupItem>{capitalizeString(segmentData.city)}</ListGroupItem>
                         <ListGroupItem>{segmentData.postalCode.toUpperCase()}</ListGroupItem>

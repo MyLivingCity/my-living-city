@@ -48,6 +48,8 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
     address,
     userSegments,
     imagePath,
+    displayFName,
+    displayLName,
   } = user;
    
 
@@ -810,8 +812,8 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
         type={"home"}
         segmentData={
           {
-            displayNameFirst: (fname ? fname : "Unknown"),
-            displayNameLast: (streetAddress ? streetAddress : "Unknown"),
+            displayNameFirst: (displayFName ? displayFName : (fname ? fname : "Unknown")),
+            displayNameLast: (displayLName ? displayLName : (streetAddress ? streetAddress : "Unknown")),
             street: (streetAddress ? streetAddress : "Unknown"),
             city: (userSegments!.homeSegmentName ? userSegments!.homeSegmentName : "Unknown"),
             postalCode: (postalCode ? postalCode : "Unknown"),

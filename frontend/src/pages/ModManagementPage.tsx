@@ -320,22 +320,26 @@ const ModManagementPage: React.FC<ModManagementProps> = ({ }) => {
           <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black' }} onClick={() => loadState("comment")}>Comment View</Button>
         </div>
         <div style={{ width: '80%', marginLeft: '22%' }}>
-          <div style={{ float: 'right', marginRight: '17.7%' }}>
-            <p style={{ textAlign: 'right', fontSize: 18, fontWeight: 'bold' }} className='ml-10 mr-2 display-6 mb-2'>Bad Posting Threshold: {threshhold.toString()}</p>
-            <input type="number" onChange={(val) => changeThresholdData(val)} style={{ textAlign: 'left', right: "0" }} className='ml-10 mr-2 display-6' />
-            <Button onClick={changeThreshold}>Update</Button>
+          <div style={{ float: 'right', marginRight: '10.7%' }}>
             <p style={{ textAlign: 'right', fontSize: 18, fontWeight: 'bold' }} className='ml-10 mr-2 display-6 mb-2'>User False Flagging Behavior Threshold: {falseFlagThreshhold.toString()}</p>
             <input type="number" onChange={(val) => changeFalseFlagThresholdData(val)} style={{ textAlign: 'left', right: "0" }} className='ml-10 mr-2 display-6' />
             <Button onClick={changeFalseFlagThreshold}>Update</Button>
-            <p style={{ textAlign: 'right', fontSize: 18, fontWeight: 'bold' }} className='ml-10 mr-2 display-6 mb-2'>User Bad Posting Behavior Threshold: {badPostingThreshhold.toString()}</p>
+          </div>
+          <br></br>
+          <FalseFlagManagementContent users={userData} token={token} user={user} flags={flagData} commentFlags={commentFlagData} ideas={ideaData} proposals={proposalData} comments={commentData} bans={banData} falseFlaggingUsers={falseFlagData}/>
+          <br></br>
+          <div style={{ float: 'right', marginRight: '12.3%' }}>
+          <p style={{ textAlign: 'right', fontSize: 18, fontWeight: 'bold' }} className='ml-10 mr-2 display-6 mb-2'>User Bad Posting Behavior Threshold: {badPostingThreshhold.toString()}</p>
             <input type="number" onChange={(val) => changeBadPostingThreshholdData(val)} style={{ textAlign: 'left', right: "0" }} className='ml-10 mr-2 display-6' />
             <Button onClick={changeBadPostingThreshhold}>Update</Button>
           </div>
-          <br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br>
-          <FalseFlagManagementContent users={userData} token={token} user={user} flags={flagData} commentFlags={commentFlagData} ideas={ideaData} proposals={proposalData} comments={commentData} bans={banData} falseFlaggingUsers={falseFlagData}/>
-          <br></br>
-          <br></br>
           <BadPostingManagementContent users={userData} token={token} user={user} flags={flagData} commentFlags={commentFlagData} ideas={ideaData} proposals={proposalData} comments={commentData} bans={banData} badPostingUsers={badPostingData}/>
+          <br></br>
+          <div style={{ float: 'right', marginRight: '17.7%' }}>
+          <p style={{ textAlign: 'right', fontSize: 18, fontWeight: 'bold' }} className='ml-10 mr-2 display-6 mb-2'>Bad Posting Threshold: {threshhold.toString()}</p>
+            <input type="number" onChange={(val) => changeThresholdData(val)} style={{ textAlign: 'left', right: "0" }} className='ml-10 mr-2 display-6' />
+            <Button onClick={changeThreshold}>Update</Button>
+          </div>
           <br></br>
           <div className="d-flex" >
             {(filteredDay === '' || filteredDay === 'all') ? (<IdeaManagementContent users={userData!} token={token} user={user} ideas={quarantineIdea!} flags={flagData} />) : <IdeaManagementContent users={userData!} token={token} user={user} ideas={agedQuarantinedIdeas!} flags={flagData} />}

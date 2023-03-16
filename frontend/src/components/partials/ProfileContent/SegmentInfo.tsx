@@ -74,12 +74,21 @@ return (
 
     <Card style={{ width: '50rem', padding: '1.5rem'}}>
         <Row>
-        <Col>
+        <Col style={{maxWidth: "10rem"}}>
             <Card.Title className='text-center'>{title}</Card.Title>
         </Col>
         {edit ? 
             (
-                <Form>
+                <Form
+                onSubmit={async (e) => {
+                    e.preventDefault();
+                    console.log(e.target);
+                    const formData = new FormData(e.target as HTMLFormElement);
+                    const data = Object.fromEntries(formData.entries());
+                    console.log(data);
+                }}
+                >
+                    <Col>
                     <Form.Group controlId='displayNameFirst'>
                         <Form.Label><strong>Display Name</strong></Form.Label>
                         <Form.Control type='text' placeholder='First Name' defaultValue={capitalizeString(segmentData.displayNameFirst)}></Form.Control>
@@ -115,6 +124,11 @@ return (
                         > Change Neighbourhood </Button></Form.Label>
                         <Form.Control type='text' placeholder='Neighborhood' defaultValue={capitalizeString(segmentData.neighborhood)} readOnly plaintext></Form.Control>
                     </Form.Group>
+                    </Col>
+                    <Col>
+                    <Button variant='primary' type='submit' style={{marginRight: '1rem'}}>Save</Button>
+                    <Button variant='danger' className='' onClick={handleEdit}>Cancel</Button>
+                    </Col>
                 </Form>
             ) : 
             (
@@ -133,19 +147,7 @@ return (
                         <ListGroupItem>{segmentData.postalCode.toUpperCase()}</ListGroupItem>
                         <ListGroupItem>{capitalizeString(segmentData.neighborhood)}</ListGroupItem>
                     </ListGroup>
-                </>
-
-            )
-        }
-        <Col className='text-center justify-content-center'>
-            {edit ? (
-                <>
-                <Button variant='primary' className='' onClick={handleEdit}>Save</Button> 
-                <Button variant='danger' className='' onClick={handleEdit}>Cancel</Button>
-                </>
-            )
-            : (
-                <>
+                    <Col style={{maxWidth: "10rem"}}>
                     <Button 
                     variant='primary' 
                     className=''
@@ -154,10 +156,11 @@ return (
                     </Button> 
             
                     {deleteFunction && <Button variant='danger' className='' onClick={handleDeleteShow}>Delete</Button>}
+                    </Col>
                 </>
+
             )
-            }
-        </Col>
+        }
         </Row>
     <br/>
   </Card>

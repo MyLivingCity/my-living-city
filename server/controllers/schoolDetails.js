@@ -73,6 +73,29 @@ schoolDetailsRouter.get(
     }
 )
 
+schoolDetailsRouter.patch(
+    '/update/:id',
+    async (req, res) => {
+        try {
+            const schoolDate = new Date(req.body.schoolDetails.programCompletionDate);
+            const schoolDetails = await prisma.school_Details.update({
+                where: {
+                    userId: req.params.id,
+                },
+                data: {
+                    streetAddress: req.body.schoolDetails.streetAddress,
+                    postalCode: req.body.schoolDetails.postalCode,
+                    faculty: req.body.schoolDetails.faculty,
+                    programCompletionDate: schoolDate,
+                },
+            });
+            res.status(200).json(schoolDetails);
+        } catch (error) {
+            res.status(400).json({ error: error.message });
+        }
+    }
+)
+
 
 
 

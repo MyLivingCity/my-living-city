@@ -10,7 +10,13 @@ import {getSchoolSegmentDetails, getUserSubscriptionStatus, getWorkSegmentDetail
 import { LinkType, Link, PublicStandardProfile, PublicCommunityBusinessProfile, PublicMunicipalProfile } from 'src/lib/types/data/publicProfile.type'; 
 import { getCommunityBusinessProfile, updateCommunityBusinessProfile, getCommunityBusinessLinks, getMunicipalProfile, getStandardProfile, updateStandardProfile,updateMunicipalProfile, getMunicipalLinks } from 'src/lib/api/publicProfileRoutes';
 import { SegmentInfo } from '../partials/ProfileContent/SegmentInfo';
-import { deleteSchoolSegmentDetails, deleteWorkSegmentDetails } from 'src/lib/api/userRoutes';
+import { 
+  deleteSchoolSegmentDetails, 
+  deleteWorkSegmentDetails,
+  updateSchoolSegmentDetails,
+  updateWorkSegmentDetails,
+  updateHomeSegmentDetails,
+} from 'src/lib/api/userRoutes';
 
 interface ProfileContentProps {
   user: IUser;
@@ -35,6 +41,27 @@ const deleteWorkSegmentDetail = async (user: string | undefined) => {
       await deleteWorkSegmentDetails(user);
       window.location.reload();
   } 
+}
+
+const updateSchoolSegmentDetail = async (user: string | undefined, data: any) => {
+  if(user === undefined) {
+  } else {
+      await updateSchoolSegmentDetails(user, data);
+  }
+}
+
+const updateWorkSegmentDetail = async (user: string | undefined, data: any) => {
+  if(user === undefined) {
+  } else {
+      await updateWorkSegmentDetails(user, data);
+  }
+}
+
+const updateHomeSegmentDetail = async (user: string | undefined, data: any) => {
+  if(user === undefined) {
+  } else {
+      await updateHomeSegmentDetails(user, data);
+  }
 }
 
 
@@ -812,14 +839,16 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
         type={"home"}
         segmentData={
           {
-            displayNameFirst: (displayFName ? displayFName : (fname ? fname : "Unknown")),
-            displayNameLast: (displayLName ? displayLName : (streetAddress ? streetAddress : "Unknown")),
+            displayFName: (displayFName ? displayFName : (fname ? fname : "Unknown")),
+            displayLName: (displayLName ? displayLName : (streetAddress ? streetAddress : "Unknown")),
             street: (streetAddress ? streetAddress : "Unknown"),
             city: (userSegments!.homeSegmentName ? userSegments!.homeSegmentName : "Unknown"),
             postalCode: (postalCode ? postalCode : "Unknown"),
             neighborhood: (userSegments!.homeSubSegmentName ? userSegments!.homeSubSegmentName : "Unknown"),
           }
-        }>
+        }
+        updateFunction={updateHomeSegmentDetail}
+        >
 
         </SegmentInfo>
         <SegmentInfo 
@@ -829,8 +858,8 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
         type={"work"}
         segmentData={
           {
-            displayNameFirst: (workData!.displayFName ? workData!.displayFName : (fname ? fname : "Unknown")),
-            displayNameLast: (workData!.displayLName ? workData!.displayLName : (workData!.company ? workData!.company : "Unknown")),
+            displayFName: (workData!.displayFName ? workData!.displayFName : (fname ? fname : "Unknown")),
+            displayLName: (workData!.displayLName ? workData!.displayLName : (workData!.company ? workData!.company : "Unknown")),
             street: (workData!.streetAddress ? workData!.streetAddress : "Unknown"),
             city: (userSegments!.workSegmentName ? userSegments!.workSegmentName : "Unknown"),
             postalCode: (workData!.postalCode ? workData!.postalCode : "Unknown"),
@@ -838,6 +867,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
           }
         }
         deleteFunction={deleteWorkSegmentDetail}
+        updateFunction={updateWorkSegmentDetail}
         >
           
         </SegmentInfo>
@@ -848,8 +878,8 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
         type={"school"}
         segmentData={
           {
-            displayNameFirst: (schoolData!.displayFName ? schoolData!.displayFName : (fname ? fname : "Unknown")),
-            displayNameLast: (schoolData!.displayLName ? schoolData!.displayLName : (schoolData!.faculty ? schoolData!.faculty : "Unknown")),
+            displayFName: (schoolData!.displayFName ? schoolData!.displayFName : (fname ? fname : "Unknown")),
+            displayLName: (schoolData!.displayLName ? schoolData!.displayLName : (schoolData!.faculty ? schoolData!.faculty : "Unknown")),
             street: (schoolData!.streetAddress ? schoolData!.streetAddress : "Unknown"),
             city: (userSegments!.schoolSegmentName ? userSegments!.schoolSegmentName : "Unknown"),
             postalCode: (schoolData!.postalCode ? schoolData!.postalCode : "Unknown"),
@@ -857,6 +887,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
           }
         }
         deleteFunction={deleteSchoolSegmentDetail}
+        updateFunction={updateSchoolSegmentDetail}
         >
           
         </SegmentInfo>

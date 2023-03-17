@@ -16,12 +16,15 @@ import {
   updateSchoolSegmentDetails,
   updateWorkSegmentDetails,
   updateHomeSegmentDetails,
+  getUserGeoData,
 } from 'src/lib/api/userRoutes';
+import { getAllSegments } from 'src/lib/api/segmentRoutes';
 
 interface ProfileContentProps {
   user: IUser;
   token: string;
 }
+
 
 const LinkTypes = Object.keys(LinkType).filter((item) => {
   return isNaN(Number(item));
@@ -97,6 +100,9 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
   const [showAlert, setShowAlert] = useState(false);
   const [workData, setWorkData] = useState<any>({});
   const [schoolData, setSchoolData] = useState<any>({});
+  const [geoData, setGeoData] = useState<any>({});
+  const [segments, setSegments] = useState<any[]>([]);
+  const [subSegments, setSubSegments] = useState<any[]>([]);
 
 
   function addNewRow() {
@@ -143,6 +149,14 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
 
   useEffect(()=>{
     getSchoolSegmentDetails(user.id).then(e => setSchoolData(e)).catch(e => console.log(e));
+  },[])
+
+  useEffect(()=>{
+    getUserGeoData(user.id).then(e => setGeoData(e)).catch(e => console.log(e));
+  },[])
+
+  useEffect(()=>{
+    getAllSegments().then(e => setSegments(e)).catch(e => console.log(e));
   },[])
 
   const updateLink = (linkValue: string, link: any) => {
@@ -847,6 +861,13 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
             neighborhood: (userSegments!.homeSubSegmentName ? userSegments!.homeSubSegmentName : "Unknown"),
           }
         }
+        geoData={
+          {
+            lat: (geoData!.lat ? geoData!.lat : 0),
+            lon: (geoData!.lon ? geoData!.lon : 0),
+          }
+        }
+        segments={segments!}
         updateFunction={updateHomeSegmentDetail}
         >
 
@@ -866,6 +887,13 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
             neighborhood: (userSegments!.workSubSegmentName ? userSegments!.workSubSegmentName : "Unknown"),
           }
         }
+        geoData={
+          {
+            lat: (geoData!.work_lat ? geoData!.work_lat : 0),
+            lon: (geoData!.work_lon ? geoData!.work_lon : 0),
+          }
+        }
+        segments={segments!}
         deleteFunction={deleteWorkSegmentDetail}
         updateFunction={updateWorkSegmentDetail}
         >
@@ -886,6 +914,13 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
             neighborhood: (userSegments!.schoolSubSegmentName ? userSegments!.schoolSubSegmentName : "Unknown"),
           }
         }
+        geoData={
+          {
+            lat: (geoData!.school_lat ? geoData!.school_lat : 0),
+            lon: (geoData!.school_lon ? geoData!.school_lon : 0),
+          }
+        }
+        segments={segments!}
         deleteFunction={deleteSchoolSegmentDetail}
         updateFunction={updateSchoolSegmentDetail}
         >

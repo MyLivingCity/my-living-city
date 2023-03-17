@@ -5,6 +5,10 @@ import { IRegisterInput, IUserRegisterData, IUserSegmentRequest } from "../types
 import { delay, storeTokenExpiryInLocalStorage, storeUserAndTokenInLocalStorage } from "../utilityFunctions";
 import { postAvatarImage } from "./avatarRoutes";
 import { getAxiosJwtRequestOption } from "./axiosRequestOptions";
+import { IWorkDetailsInput } from "../types/input/workDetails.input";
+import { ISchoolDetailsInput } from "../types/input/schoolDetails.input";
+import { IHomeDetailsInput } from "../types/input/homeDetails.input";
+
 export interface LoginData {
   email: string;
   password: string;
@@ -280,5 +284,66 @@ export const deleteWorkSegmentDetails = async (userId: string | undefined) => {
     `${API_BASE_URL}/workDetails/delete/${userId}`,
   );
   console.log("deleteWorkSegmentDetails", res.data);
+  return res.data;
+}
+
+export const getSchoolSegmentDetails = async (userId: string | undefined) => {
+  const res = await axios.get(
+    `${API_BASE_URL}/schoolDetails/get/${userId}`,
+  );
+  return res.data;
+}
+
+export const getWorkSegmentDetails = async (userId: string | undefined) => {
+  const res = await axios.get(
+    `${API_BASE_URL}/workDetails/get/${userId}`,
+  );
+  return res.data;
+}
+
+export const updateWorkSegmentDetails = async (userId: string | undefined, data: IWorkDetailsInput) => {
+  const res = await axios.patch(
+    `${API_BASE_URL}/workDetails/update/${userId}`,
+    data
+  );
+  return res.data;
+}
+
+export const updateSchoolSegmentDetails = async (userId: string | undefined, data: ISchoolDetailsInput) => {
+  const res = await axios.patch(
+    `${API_BASE_URL}/schoolDetails/update/${userId}`,
+    data
+  );
+  console.log("updateSchoolSegmentDetails", res.data);
+  return res.data;
+}
+
+export const updateHomeSegmentDetails = async (userId: string | undefined, data: IHomeDetailsInput) => {
+  const res1 = await axios.patch(
+    `${API_BASE_URL}/user/updateDisplayName/${userId}`,
+    {
+      displayFName: data.displayFName,
+      displayLName: data.displayLName
+    }
+  );
+
+  const res2 = await axios.patch(
+    `${API_BASE_URL}/user/updateAddress/${userId}`,
+    {
+      streetAddress: data.streetAddress,
+      postalCode: data.postalCode
+    }
+  );
+  console.log("updateHomeSegmentDetails, part1", res1.data);
+  console.log("updateHomeSegmentDetails, part2", res2.data);
+  // Combine data from both responses
+  return {...res1.data, ...res2.data};
+}
+
+export const getUserGeoData = async (userId: string | undefined) => {
+  const res = await axios.get(
+    `${API_BASE_URL}/user/getGeoData/${userId}`,
+  );
+  console.log("getUserGeoData", res.data);
   return res.data;
 }

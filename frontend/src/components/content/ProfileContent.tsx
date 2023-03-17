@@ -6,16 +6,25 @@ import { IUser } from '../../lib/types/data/user.type';
 import { capitalizeString } from '../../lib/utilityFunctions';
 import { RequestSegmentModal } from '../partials/RequestSegmentModal';
 import StripeCheckoutButton from "src/components/partials/StripeCheckoutButton"
-import {getUserSubscriptionStatus} from 'src/lib/api/userRoutes'
+import {getSchoolSegmentDetails, getUserSubscriptionStatus, getWorkSegmentDetails} from 'src/lib/api/userRoutes'
 import { LinkType, Link, PublicStandardProfile, PublicCommunityBusinessProfile, PublicMunicipalProfile } from 'src/lib/types/data/publicProfile.type'; 
 import { getCommunityBusinessProfile, updateCommunityBusinessProfile, getCommunityBusinessLinks, getMunicipalProfile, getStandardProfile, updateStandardProfile,updateMunicipalProfile, getMunicipalLinks } from 'src/lib/api/publicProfileRoutes';
 import { SegmentInfo } from '../partials/ProfileContent/SegmentInfo';
-import { deleteSchoolSegmentDetails, deleteWorkSegmentDetails } from 'src/lib/api/userRoutes';
+import { 
+  deleteSchoolSegmentDetails, 
+  deleteWorkSegmentDetails,
+  updateSchoolSegmentDetails,
+  updateWorkSegmentDetails,
+  updateHomeSegmentDetails,
+  getUserGeoData,
+} from 'src/lib/api/userRoutes';
+import { getAllSegments } from 'src/lib/api/segmentRoutes';
 
 interface ProfileContentProps {
   user: IUser;
   token: string;
 }
+
 
 const LinkTypes = Object.keys(LinkType).filter((item) => {
   return isNaN(Number(item));
@@ -37,6 +46,27 @@ const deleteWorkSegmentDetail = async (user: string | undefined) => {
   } 
 }
 
+const updateSchoolSegmentDetail = async (user: string | undefined, data: any) => {
+  if(user === undefined) {
+  } else {
+      await updateSchoolSegmentDetails(user, data);
+  }
+}
+
+const updateWorkSegmentDetail = async (user: string | undefined, data: any) => {
+  if(user === undefined) {
+  } else {
+      await updateWorkSegmentDetails(user, data);
+  }
+}
+
+const updateHomeSegmentDetail = async (user: string | undefined, data: any) => {
+  if(user === undefined) {
+  } else {
+      await updateHomeSegmentDetails(user, data);
+  }
+}
+
 
 const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
   const {
@@ -48,6 +78,8 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
     address,
     userSegments,
     imagePath,
+    displayFName,
+    displayLName,
   } = user;
    
 
@@ -66,8 +98,11 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
   const [standardProfile, setStandardProfile] = useState<any>({});
   const [links, setLinks] = useState<any[]>([]);
   const [showAlert, setShowAlert] = useState(false);
-  const [businessData, setBusinessData] = useState<any>({});
+  const [workData, setWorkData] = useState<any>({});
   const [schoolData, setSchoolData] = useState<any>({});
+  const [geoData, setGeoData] = useState<any>({});
+  const [segments, setSegments] = useState<any[]>([]);
+  const [subSegments, setSubSegments] = useState<any[]>([]);
 
 
   function addNewRow() {
@@ -106,6 +141,22 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
 
   useEffect(()=>{
     getStandardProfile(user.id, token).then(e => setStandardProfile(e)).catch(e => console.log(e));
+  },[])
+
+  useEffect(()=>{
+    getWorkSegmentDetails(user.id).then(e => setWorkData(e)).catch(e => console.log(e));
+  },[])
+
+  useEffect(()=>{
+    getSchoolSegmentDetails(user.id).then(e => setSchoolData(e)).catch(e => console.log(e));
+  },[])
+
+  useEffect(()=>{
+    getUserGeoData(user.id).then(e => setGeoData(e)).catch(e => console.log(e));
+  },[])
+
+  useEffect(()=>{
+    getAllSegments().then(e => setSegments(e)).catch(e => console.log(e));
   },[])
 
   const updateLink = (linkValue: string, link: any) => {
@@ -222,6 +273,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
     const test = updateStandardProfile(profileNew, token).then(e => console.log(e)).catch(e => console.log(e));
     setShowAlert(true);
   }
+  
 
   if (userType === USER_TYPES.BUSINESS || userType === USER_TYPES.COMMUNITY) {
     return (<Container className='user-profile-content w-100'>
@@ -801,14 +853,23 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
         type={"home"}
         segmentData={
           {
-            displayNameFirst: (fname ? fname : "Unknown"),
-            displayNameLast: (lname ? lname : "Unknown"),
+            displayFName: (displayFName ? displayFName : (fname ? fname : "Unknown")),
+            displayLName: (displayLName ? displayLName : (streetAddress ? streetAddress : "Unknown")),
             street: (streetAddress ? streetAddress : "Unknown"),
             city: (userSegments!.homeSegmentName ? userSegments!.homeSegmentName : "Unknown"),
             postalCode: (postalCode ? postalCode : "Unknown"),
             neighborhood: (userSegments!.homeSubSegmentName ? userSegments!.homeSubSegmentName : "Unknown"),
           }
-        }>
+        }
+        geoData={
+          {
+            lat: (geoData!.lat ? geoData!.lat : 0),
+            lon: (geoData!.lon ? geoData!.lon : 0),
+          }
+        }
+        segments={segments!}
+        updateFunction={updateHomeSegmentDetail}
+        >
 
         </SegmentInfo>
         <SegmentInfo 
@@ -818,15 +879,23 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
         type={"work"}
         segmentData={
           {
-            displayNameFirst: (fname ? fname : "Unknown"),
-            displayNameLast: (lname ? lname : "Unknown"),
-            street: (streetAddress ? streetAddress : "Unknown"),
+            displayFName: (workData!.displayFName ? workData!.displayFName : (fname ? fname : "Unknown")),
+            displayLName: (workData!.displayLName ? workData!.displayLName : (workData!.company ? workData!.company : "Unknown")),
+            street: (workData!.streetAddress ? workData!.streetAddress : "Unknown"),
             city: (userSegments!.workSegmentName ? userSegments!.workSegmentName : "Unknown"),
-            postalCode: (postalCode ? postalCode : "Unknown"),
+            postalCode: (workData!.postalCode ? workData!.postalCode : "Unknown"),
             neighborhood: (userSegments!.workSubSegmentName ? userSegments!.workSubSegmentName : "Unknown"),
           }
         }
+        geoData={
+          {
+            lat: (geoData!.work_lat ? geoData!.work_lat : 0),
+            lon: (geoData!.work_lon ? geoData!.work_lon : 0),
+          }
+        }
+        segments={segments!}
         deleteFunction={deleteWorkSegmentDetail}
+        updateFunction={updateWorkSegmentDetail}
         >
           
         </SegmentInfo>
@@ -837,15 +906,23 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
         type={"school"}
         segmentData={
           {
-            displayNameFirst: (fname ? fname : "Unknown"),
-            displayNameLast: (lname ? lname : "Unknown"),
-            street: (streetAddress ? streetAddress : "Unknown"),
+            displayFName: (schoolData!.displayFName ? schoolData!.displayFName : (fname ? fname : "Unknown")),
+            displayLName: (schoolData!.displayLName ? schoolData!.displayLName : (schoolData!.faculty ? schoolData!.faculty : "Unknown")),
+            street: (schoolData!.streetAddress ? schoolData!.streetAddress : "Unknown"),
             city: (userSegments!.schoolSegmentName ? userSegments!.schoolSegmentName : "Unknown"),
-            postalCode: (postalCode ? postalCode : "Unknown"),
+            postalCode: (schoolData!.postalCode ? schoolData!.postalCode : "Unknown"),
             neighborhood: (userSegments!.schoolSubSegmentName ? userSegments!.schoolSubSegmentName : "Unknown"),
           }
         }
+        geoData={
+          {
+            lat: (geoData!.school_lat ? geoData!.school_lat : 0),
+            lon: (geoData!.school_lon ? geoData!.school_lon : 0),
+          }
+        }
+        segments={segments!}
         deleteFunction={deleteSchoolSegmentDetail}
+        updateFunction={updateSchoolSegmentDetail}
         >
           
         </SegmentInfo>

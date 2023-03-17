@@ -177,7 +177,7 @@ export default function Header() {
             <Nav.Link href="/ideas">Conversations</Nav.Link>
               {(user) ? (
                 <>
-                  {((banData && banData.banType === "WARNING") || (!user.banned && (badPostingBehaviorData && (badPostingThreshholdData && ((badPostingBehaviorData.bad_post_count + badPostingBehaviorData.post_flag_count) < badPostingThreshholdData.number) && !badPostingBehaviorData.post_comment_ban)))) && (
+                 {((banData && banData.banType === "WARNING") || !badPostingBehaviorData ||(!user.banned && (badPostingBehaviorData && (badPostingThreshholdData && ((badPostingBehaviorData.bad_post_count + badPostingBehaviorData.post_flag_count) < badPostingThreshholdData.number) && !badPostingBehaviorData.post_comment_ban)))) && (
                     <NavDropdown title="Submit" id="nav-dropdown">
                       <Nav.Link href="/submit">Submit Idea</Nav.Link>
 

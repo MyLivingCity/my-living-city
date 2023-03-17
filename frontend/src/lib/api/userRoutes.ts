@@ -291,7 +291,6 @@ export const getSchoolSegmentDetails = async (userId: string | undefined) => {
   const res = await axios.get(
     `${API_BASE_URL}/schoolDetails/get/${userId}`,
   );
-  console.log("getSchoolSegmentDetails", res.data);
   return res.data;
 }
 
@@ -299,7 +298,6 @@ export const getWorkSegmentDetails = async (userId: string | undefined) => {
   const res = await axios.get(
     `${API_BASE_URL}/workDetails/get/${userId}`,
   );
-  console.log("getWorkSegmentDetails", res.data);
   return res.data;
 }
 
@@ -308,7 +306,6 @@ export const updateWorkSegmentDetails = async (userId: string | undefined, data:
     `${API_BASE_URL}/workDetails/update/${userId}`,
     data
   );
-  console.log("updateWorkSegmentDetails", res.data);
   return res.data;
 }
 
@@ -341,4 +338,12 @@ export const updateHomeSegmentDetails = async (userId: string | undefined, data:
   console.log("updateHomeSegmentDetails, part2", res2.data);
   // Combine data from both responses
   return {...res1.data, ...res2.data};
+}
+
+export const getUserGeoData = async (userId: string | undefined) => {
+  const res = await axios.get(
+    `${API_BASE_URL}/user/getGeoData/${userId}`,
+  );
+  console.log("getUserGeoData", res.data);
+  return res.data;
 }

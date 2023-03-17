@@ -261,9 +261,8 @@ badPostBehaviorRouter.get(
             if (user) {
                 res.status(200).send(user);
             } else {
-                res.status(200).json({
-                    message: 'User not found',
-                });
+                //send null
+                res.status(200).send(null);
             }
         } catch (error) {
             res.status(400).json({

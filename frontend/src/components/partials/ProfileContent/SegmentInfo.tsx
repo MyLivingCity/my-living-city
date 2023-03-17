@@ -13,6 +13,11 @@ import { postAvatarImage } from 'src/lib/api/avatarRoutes';
 import ImageUploader from 'react-images-upload';
 import Modal from 'react-bootstrap/Modal';
 import SimpleMap from 'src/components/map/SimpleMap';
+import { findSegmentByName, getAllSegments, getAllSubSegmentsWithId, getSegmentByName, getSingleSegmentBySegmentId } from 'src/lib/api/segmentRoutes';
+import { useAllSegments } from 'src/hooks/segmentHooks';
+import { ISegment } from 'src/lib/types/data/segment.type';
+import { ISubSegment } from 'src/lib/types/data/segment.type';
+
 
 // TODO: Add and implement functions for edit and delete
 
@@ -22,6 +27,8 @@ interface SegmentInfoProps {
     title: string;
     type: string;
     segmentData: SegmentData;
+    geoData: any;
+    segments: ISegment[];
     deleteFunction?: (user: string | undefined) => void;
     updateFunction?: (user: string | undefined, data: any) => Promise<void>;
 }
@@ -36,7 +43,7 @@ interface SegmentData {
 }
 
 
-export const SegmentInfo: React.FC<SegmentInfoProps> = ({ user, token, title, type, segmentData, deleteFunction, updateFunction }) => {
+export const SegmentInfo: React.FC<SegmentInfoProps> = ({ user, token, title, type, segmentData, geoData, segments, deleteFunction, updateFunction }) => {
 
     const [edit, setEdit] = useState(false);
 
@@ -59,7 +66,9 @@ export const SegmentInfo: React.FC<SegmentInfoProps> = ({ user, token, title, ty
     const handleShow = () => setShow(true);
 
     const [select, setSelect] = useState(false);
-    const handleSelectClose = () => setSelect(false);
+    const handleSelectClose = () => {
+      setSelect(false);
+    }
     const handleSelectShow = () => {
         setSelect(true);
         setShow(false);
@@ -72,8 +81,43 @@ export const SegmentInfo: React.FC<SegmentInfoProps> = ({ user, token, title, ty
     const [data, setData] = useState<SegmentData>(segmentData);
     const handleDataUpdate = (data: SegmentData) => setData(data);
 
-    segmentData && console.log(segmentData);
+    const [markers, sendData]:any = useState({home: {lat: null, lon: null},work: {lat: null, lon: null},school: {lat: null, lon: null}});
 
+    const [selectedSegment, setSelectedSegment] = useState<string>("");
+    const [subSegments, setSubSegments] = useState<ISubSegment[]>([]);
+
+    const [formCity, setFormCity] = useState<string>(segmentData.city);
+    const [formNeighborhood, setFormNeighborhood] = useState<string>(segmentData.neighborhood);
+
+    function handleSegmentChange (e: any) {
+        const index = e.target.selectedIndex;
+        if (index === 0) {
+            setSubSegments([]);
+            return;
+        }
+
+        getAllSubSegmentsWithId(index).then((res) => {
+            console.log(res);
+            setSubSegments(res);
+        })
+    }
+
+
+    function handleCommunityChange (segName : FormDataEntryValue, subSegName : FormDataEntryValue) {
+        console.log(segName, subSegName);
+        // Get segment and subsegment using the ids
+    }
+
+    function handleUpdateSegment(segId : number, subSegId : number) {
+      // Get segment and subsegment using the ids
+      const seg = segments.find((seg) => seg.segId === segId);
+      const subSeg = subSegments.find((subSeg) => subSeg.id === subSegId);
+      if (seg && subSeg) {
+        console.log(seg, subSeg);
+        setFormCity(seg.name);
+        setFormNeighborhood(subSeg.name);
+      }
+    }
 
 return (
     <>
@@ -127,11 +171,11 @@ return (
                         onClick={handleShow}
                         > Change City </Button>
                         </Form.Label>
-                        <Form.Control type='text' placeholder='City' defaultValue={capitalizeString(segmentData.city)} readOnly plaintext></Form.Control>
+                        <Form.Control name="city" type='text' placeholder='City' value={capitalizeString(formCity)} readOnly plaintext></Form.Control>
                     </Form.Group>
                     <Form.Group controlId='postalCode'>
                         <Form.Label><strong>Postal Code / Zip</strong></Form.Label>
-                        <Form.Control name="postalCode" type='text' placeholder='Postal Code / Zip' defaultValue={segmentData.postalCode.toUpperCase()}></Form.Control>
+                        <Form.Control name="postalCode" type='text' placeholder='Postal Code / Zip' defaultValue={capitalizeString(segmentData.postalCode)}></Form.Control>
                     </Form.Group>
                     <Form.Group controlId='neighborhood'>
                         <Form.Label><strong>Neighborhood</strong>
@@ -141,7 +185,7 @@ return (
                         style={{marginLeft: "1rem"}}
                         onClick={handleShow}
                         > Change Neighbourhood </Button></Form.Label>
-                        <Form.Control type='text' placeholder='Neighborhood' defaultValue={capitalizeString(segmentData.neighborhood)} readOnly plaintext></Form.Control>
+                        <Form.Control name="neighbourhood" type='text' placeholder='Neighborhood' value={capitalizeString(formNeighborhood)} readOnly plaintext></Form.Control>
                     </Form.Group>
                     </Col>
                     <Col>
@@ -162,9 +206,9 @@ return (
                     <ListGroup variant='flush'>
                         <ListGroupItem>{capitalizeString(segmentData.displayFName)}@{capitalizeString(segmentData.displayLName)}</ListGroupItem>
                         <ListGroupItem>{capitalizeString(segmentData.street)}</ListGroupItem>
-                        <ListGroupItem>{capitalizeString(segmentData.city)}</ListGroupItem>
+                        <ListGroupItem>{capitalizeString(formCity)}</ListGroupItem>
                         <ListGroupItem>{segmentData.postalCode.toUpperCase()}</ListGroupItem>
-                        <ListGroupItem>{capitalizeString(segmentData.neighborhood)}</ListGroupItem>
+                        <ListGroupItem>{capitalizeString(formNeighborhood)}</ListGroupItem>
                     </ListGroup>
                     <Col style={{maxWidth: "10rem"}}>
                     <Button 
@@ -190,6 +234,7 @@ return (
         <Modal.Body>
             <SimpleMap 
             iconName={type}
+            sendData={(markers:any)=>sendData(markers)}
             ></SimpleMap>
         </Modal.Body>
         <Modal.Footer>
@@ -206,31 +251,63 @@ return (
           <Modal.Title>Show us where your {type} is</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-            <Form>
+            <Form
+            onSubmit={(e)=>{
+              e.preventDefault();
+              const formData = new FormData(e.target as HTMLFormElement);
+              const data = Object.fromEntries(formData.entries());
+              // Parse data
+              const stringSegId = data.segmentId.toString();
+              const stringSubSegId = data.subSegment.toString();
+              console.log(data);
+              handleUpdateSegment(parseInt(stringSegId), parseInt(stringSubSegId));
+              handleSelectClose();
+            }}
+            >
             <Form.Group controlId={type + "Segment"}>
-              <Form.Label>Your {type} Municipality is</Form.Label>
-              <Form.Control readOnly name="schoolSegmentId" defaultValue={capitalizeString('testReplace')}>
+              <Form.Label>Select your {type} Municipality</Form.Label>
+              <Form.Control 
+              readOnly 
+              name="segmentId" 
+              as="select"
+              onChange={(e)=>{
+                handleSegmentChange(e);
+              }}
+              >
+                <option>Please select a city</option>
+                {
+                  segments && segments.map((segment: ISegment) => {
+                    return <option key={segment.segId} value={segment.segId}>{capitalizeString(segment.name)}
+                    </option>
+                  })
+                }
               </Form.Control>
             </Form.Group>
             <Form.Group controlId={type + "SubSegment"}>
               <Form.Label>Select your Neighbourhood</Form.Label>
               <Form.Control
                 as="select"
-                name="sub-segment"
+                name="subSegment"
                 onChange={(e)=>{console.log(e)}}
               >
+                {
+                  subSegments && subSegments.map((subSegment:any) => {
+                    return <option key={subSegment.id} value={subSegment.id}>{capitalizeString(subSegment.name)}
+                    </option>
+                  })
+                }
               </Form.Control>
             </Form.Group>
-            </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleSelectClose}>
+            <Button variant="secondary" onClick={handleSelectClose}>
             Cancel
           </Button>
-          <Button variant="primary" onClick={handleSelectClose}>
+          <Button 
+          className='float-right'
+          variant="primary" type='submit'>
             Continue
           </Button>
-        </Modal.Footer>
+            </Form>
+        </Modal.Body>
     </Modal>
     <Modal show={showDelete} onHide={handleDeleteClose}>
         <Modal.Header closeButton>

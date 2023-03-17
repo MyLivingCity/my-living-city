@@ -20,6 +20,7 @@ import {
 import { UserProfileContext } from "../../contexts/UserProfile.Context";
 import { postCreateIdea } from "../../lib/api/ideaRoutes";
 import { getUserBanWithToken } from "../../lib/api/banRoutes";
+import { checkUser } from "src/lib/api/badPostingBehaviorRoutes";
 import { ICategory } from "../../lib/types/data/category.type";
 import { ICreateIdeaInput } from "../../lib/types/input/createIdea.input";
 import { IFetchError } from "../../lib/types/types";
@@ -72,25 +73,33 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
   };
   const submitHandler = async (values: ICreateIdeaInput) => {
     try {
-      // Set loading and error state
-   
-      setError(null);
-      setIsLoading(true);
-      setTimeout(() => console.log("timeout"), 5000);
-      const banDetails = await getUserBanWithToken(token);
-      let banned = true;
-      if (!user!.banned || !banDetails || banDetails.banType === "WARNING") {
-        banned = false;
-      }
-      const res = await postCreateIdea(values, banned, token);
-   
-
-      setError(null);
-      history.push("/ideas/" + res.id);
-      formik.resetForm();
+      const metThreshhold = await checkUser(token, user!.id);
+      try {
+          setError(null);
+          setIsLoading(true);
+          setTimeout(() => console.log("timeout"), 5000);
+          const banDetails = await getUserBanWithToken(token);
+          let banned = true;
+          if (!user!.banned || !banDetails || banDetails.banType === "WARNING") {
+            banned = false;
+          }
+          const res = await postCreateIdea(values, banned, token);
+          
+          setError(null);
+          history.push("/ideas/" + res.id);
+          formik.resetForm();
+        } catch (error) {
+          const genericMessage =
+            "An error occured while trying to create an Proposal.";
+          const errorObj = handlePotentialAxiosError(genericMessage, error);
+          setError(errorObj);
+        } finally {
+          setIsLoading(false);
+        }
     } catch (error) {
+      //print the error message attached to the error object
       const genericMessage =
-        "An error occured while trying to create an Proposal.";
+        "You have too many bad posts / post flagged. Post was NOT submittted.";
       const errorObj = handlePotentialAxiosError(genericMessage, error);
       setError(errorObj);
     } finally {
@@ -136,7 +145,7 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
       //supportingProposalId that is not null
       supportingProposalId: parsedProposalId,
     },
-    onSubmit: submitHandler,
+    onSubmit: submitHandler, 
   });
 
   useEffect(() => {
@@ -353,6 +362,7 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
               disabled={isLoading ? true : false}
             >
               {isLoading ? "Saving..." : "Submit your idea!"}
+              
             </Button>
           </Form>
 

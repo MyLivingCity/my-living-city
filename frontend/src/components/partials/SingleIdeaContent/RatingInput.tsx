@@ -189,7 +189,7 @@ const RatingInput = ({
                 "An Error occured while trying to submit your rating."}
             </Alert>
           )}
-
+          {!userHasRated && (
           <Button
             onClick={submitHandler}
             disabled={shouldButtonBeDisabled()}
@@ -197,8 +197,6 @@ const RatingInput = ({
           >
             {buttonTextOutput()}
           </Button>
-          {userHasRated && (
-            <div style={{ marginTop: "1rem" }}>You have already submitted.</div>
           )}
         </Col>
       </Row>

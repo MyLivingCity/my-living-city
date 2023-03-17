@@ -74,18 +74,19 @@ export const updateSegment = async (segData: any, token:any) =>{
   return res.data;
 }
 
-export const updateSubSegment = async (segData: any, token:any) =>{
-  if(typeof segData.lat === 'string'){
-    segData.lat = parseFloat(segData.lat);
+export const updateSubSegment = async (subSegData: any, token:any) =>{
+
+  if(typeof subSegData.lat === 'string'){
+    subSegData.lat = parseFloat(subSegData.lat);
   }
-  if(typeof segData.lon === 'string'){
-    segData.lon = parseFloat(segData.lon);
+  if(typeof subSegData.lon === 'string'){
+    subSegData.lon = parseFloat(subSegData.lon);
   }
-  const{id}=segData;
-  const parsedPayload = {...segData};
+  const{id}=subSegData;
+  const parsedPayload = {...subSegData};
  
   const res = await axios({
-      method: "put",
+      method: "post",
       url: `${API_BASE_URL}/subSegment/update/${id}`,
       data: parsedPayload,
       headers: { "x-auth-token": token, "Access-Control-Allow-Origin": "*",},
@@ -161,6 +162,14 @@ export const getSegmentAgggregateInfo = async (segmentId: number) => {
   const res = await axios({
     method: "get",
     url: `${API_BASE_URL}/segment/aggregateInfo/${segmentId}`,
+  })
+  return res.data;
+}
+
+export const getSegmentByName = async (segmentName: string) => {
+  const res = await axios({
+    method: "get",
+    url: `${API_BASE_URL}/segment/getByName/${segmentName}`,
   })
   return res.data;
 }

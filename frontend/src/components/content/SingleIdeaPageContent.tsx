@@ -1,5 +1,6 @@
 import {Button, Card, Col, Row, Image, ButtonGroup, Table} from "react-bootstrap";
 import { IIdeaWithRelationship } from "../../lib/types/data/idea.type";
+import { incrementPostFlagCount } from "src/lib/api/badPostingBehaviorRoutes";
 import ProposalTile from "../tiles/ProposalTile";
 import { useSingleProposal } from "src/hooks/proposalHooks";
 import { useSingleIdea } from "src/hooks/ideaHooks";
@@ -31,9 +32,18 @@ import React, { useContext, useEffect, useState } from "react";
 import { API_BASE_URL, USER_TYPES } from "src/lib/constants";
 import { UserProfileContext } from "src/contexts/UserProfile.Context";
 import { createFlagUnderIdea, updateFalseFlagIdea, compareIdeaFlagsWithThreshold } from "src/lib/api/flagRoutes";
-import { followIdeaByUser, isIdeaFollowedByUser, unfollowIdeaByUser, updateIdeaStatus, endorseIdeaByUser, isIdeaEndorsedByUser, unendorseIdeaByUser,} from "src/lib/api/ideaRoutes";
+import { 
+  followIdeaByUser, 
+  isIdeaFollowedByUser, 
+  unfollowIdeaByUser, 
+  updateIdeaStatus, 
+  endorseIdeaByUser, 
+  isIdeaEndorsedByUser, 
+  unendorseIdeaByUser,
+  getEndorsedUsersByIdea,
+} from "src/lib/api/ideaRoutes";
 import CSS from "csstype"
-import { useCheckIdeaFollowedByUser, useCheckIdeaEndorsedByUser } from "src/hooks/ideaHooks";
+import { useCheckIdeaFollowedByUser, useCheckIdeaEndorsedByUser, useGetEndorsedUsersByIdea } from "src/hooks/ideaHooks";
 
 import Modal from 'react-bootstrap/Modal';
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -41,6 +51,7 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
 
 import Form from 'react-bootstrap/Form';
 import { Hidden } from "@mui/material";
+import { useCheckFlagBan } from "src/hooks/flagHooks";
 
 interface SingleIdeaPageContentProps {
   ideaData: IIdeaWithRelationship;
@@ -115,11 +126,17 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
   const [followingPost, setFollowingPost] = useState(false);
   const [endorsingPost, setEndorsingPost] = useState(false);
 
+  const [endorsedUsers, setEndorsedUsers] = useState<any[]>([]);
+  const [endorsedUsersLoading, setEndorsedUsersLoading] = useState(true);
+
+
   const {user, token} = useContext(UserProfileContext);
   const {data: isFollowingPost, isLoading: isFollowingPostLoading} = useCheckIdeaFollowedByUser(token, (user ? user.id : user), ideaId);
   const {data: isEndorsingPost, isLoading: isEndorsingPostLoading} = useCheckIdeaEndorsedByUser(token, (user ? user.id : user), ideaId);
+  const {data: endorsedUsersData, isLoading: isEndorsedUsersDataLoading} = useGetEndorsedUsersByIdea(token, ideaId);
   const {data: proposal} = useSingleProposal("" + (supportedProposal ? supportedProposal!.id : ""));
   const {data: proposalIdea } = useSingleIdea("" + (supportedProposal ? supportedProposal!.ideaId : ""));
+  const {data: flagBanData, isLoading: flagBanDataLoading} = useCheckFlagBan(token, (user ? user.id : ""));
 
 
   const [showFlagButton, setShowFlagButton] = useState(true);
@@ -163,11 +180,26 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
   }
 
   useEffect(() => {
+    if (!isEndorsedUsersDataLoading) {
+      setEndorsedUsers(endorsedUsersData);
+      setEndorsedUsersLoading(false);
+    }
+  }, [isEndorsedUsersDataLoading, endorsedUsersData])
+
+  useEffect(() => {
     if (!isFollowingPostLoading) {
       setFollowingPost(isFollowingPost.isFollowed);
     }
 
   }, [isFollowingPostLoading, isFollowingPost])
+
+  useEffect(() => {
+    if (!flagBanDataLoading) {
+      if (flagBanData?.flag_ban || showFlagButton == false) {
+        handleHideFlagButton();
+      }
+    }
+  }, [flagBanDataLoading, flagBanData])
 
   const handleFollowUnfollow = async () => {
     let res;
@@ -214,6 +246,12 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
     handleHideFlagButton();
     await flagFunc(ideaId, token, userId, ideaActive, otherFlagReason, quarantined_at);
    
+  }
+
+
+
+  if (isEndorsedUsersDataLoading || isEndorsingPostLoading || isFollowingPostLoading || flagBanDataLoading) {
+    return <LoadingSpinner></LoadingSpinner>;
   }
 
   return (
@@ -272,7 +310,8 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
               <Modal.Body>Are you sure about flagging this post?</Modal.Body>
               <Modal.Footer>
                 <Button style={{background: 'red'}} variant="primary"  onClick={
-                    () => submitFlagReasonHandler(parseInt(ideaId), token!, user!.id, ideaData.active, new Date())
+                    () => {submitFlagReasonHandler(parseInt(ideaId), token!, user!.id, ideaData.active, new Date());
+                    incrementPostFlagCount(token, ideaId);}
                 }>Flag
                 </Button>
                 <Button variant="secondary" onClick={handleClose}>
@@ -551,6 +590,35 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
         </Card>
       </div>
       }
+
+      {(endorsedUsersData && endorsedUsersData.length > 0) ? (
+        <div style={{ marginTop: "2rem" }}>
+        <Card>
+          <Card.Header>
+            <div className="d-flex">
+              <h4 className="h4 p-2 flex-grow-1">Endorse List</h4>
+            </div>
+          </Card.Header>
+          <Card.Body>
+            <Table style={{margin: "0rem"}}>
+              <tbody>
+                {endorsedUsers.map((user) => (
+                  <tr key={user.id}>
+                    <td>
+                      {user.organizationName}
+                    </td>
+                  </tr>
+                ))
+                }
+              </tbody>
+            </Table>
+           </Card.Body>
+        </Card>   
+      </div>
+      ) : null
+      }
+      
+
 
       <Row>
         <RatingsSection ideaId={ideaId} />

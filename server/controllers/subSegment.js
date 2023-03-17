@@ -287,7 +287,7 @@ subSegmentRouter.get(
     }
 );
 
-subSegmentRouter.put(
+subSegmentRouter.post(
     '/update/:subSegmentId',
     passport.authenticate('jwt', { session: false }),
     async (req, res) => {
@@ -307,6 +307,7 @@ subSegmentRouter.put(
             if (theUser.userType == 'ADMIN') {
                 const { subSegmentId } = req.params;
 
+
                 const parsedSubSegmentId = parseInt(subSegmentId);
 
                 const theSubSegment = await prisma.subSegments.findUnique({
@@ -314,7 +315,6 @@ subSegmentRouter.put(
                         id: parsedSubSegmentId
                     }
                 })
-
                 if (!theSubSegment) {
                     res.status(404).json("the subSegment need to be updated not found!");
                 }
@@ -370,7 +370,6 @@ subSegmentRouter.put(
                     errorMessage += 'Updating a subsegment must explicitly be supplied with a radius field. ';
                     errorStack += 'radius must be provided in the body with a valid value. ';
                 }
-
                 //If there's error in error holder
                 if (error || errorMessage || errorStack) {
                     return res.status(400).json({

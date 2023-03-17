@@ -43,6 +43,19 @@ ideaRouter.post(
   passport.authenticate('jwt', { session: false }),
   //upload.single('imagePath'),
   async (req, res) => {
+    //check if user is in bad posting behavior table if so res.status(400).json({message: 'User is in bad posting behavior table'}) 
+    const { id } = req.user;
+    const user = await prisma.bad_Posting_Behavior.findFirst({
+      where: {
+        userId: id,
+        post_comment_ban: true,
+      },
+    });
+    if (user) {
+      return res.status(400).json({
+        message: 'User is in bad posting behavior table',
+      });
+    }
     upload(req, res, async function (err) {
       //multer error handling method
       let error = '';
@@ -1491,4 +1504,54 @@ ideaRouter.get(
     }
   }
 )
+
+ideaRouter.get(
+  '/getAllEndorsersByIdea/:ideaId',
+  passport.authenticate('jwt', { session: false }),
+  async (req, res) => {
+    try {
+      const { ideaId } = req.params;
+
+      if (!ideaId) {
+        res.status(400).json({
+          message: `"ideaId" is missing or empty from the request body!`
+        })
+      }
+
+      const theIdea = await prisma.idea.findUnique({ where: { id: parseInt(ideaId) } });
+
+      if (!theIdea) {
+        res.status(400).json({
+          message: `Idea with id ${ideaId} cannot be found or does not exists!`
+        })
+      }
+
+      const userIdeaEndorses = await prisma.userIdeaEndorse.findMany({
+        where: {
+          ideaId: parseInt(ideaId),
+        }
+      })
+
+      let users = [];
+      for await (const endorse of userIdeaEndorses) {
+        const user = await prisma.user.findUnique({ where: { id: endorse.userId } });
+        users.push(user);
+      }
+      res.status(200).json(users);
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({
+        details: {
+          errorMessage: error.message,
+          errorStack: error.stack,
+        }
+      });
+    } finally {
+      await prisma.$disconnect();
+    }
+  }
+)
+
+
+
 module.exports = ideaRouter;

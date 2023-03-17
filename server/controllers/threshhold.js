@@ -117,5 +117,140 @@ threshholdRouter.get(
     }
   )
 
+  threshholdRouter.put(
+    '/updateFalseFlag/:num',
+    passport.authenticate('jwt', {session: false}),
+    async(req, res, next) =>{
+      try{
+        const newThreshhold = parseInt(req.params.num);
+
+        if (!newThreshhold) {
+            return res.status(400).json({
+              message: `A valid number must be specified in the route parameter.`,
+            });
+        }
+
+        const threshhold = await prisma.threshhold.findUnique({ where: { id: 2 } });
+
+        if(threshhold === null){
+            return res.status(400).json({
+                message: `A threshhold doesn't currently exist, please create one first`,
+            });
+        }else{
+            const updatedThresh = await prisma.threshhold.update({
+                where: {id : 2},
+                data: { number: newThreshhold}
+            });
+            return res.status(200).json({
+                message: `Threshhold successfuly updated`,
+                updatedThresh,
+              });
+        }
+
+      }catch(error){
+        res.status(400).json({
+          message: "An error occured while trying to update the threshhold",
+          details: {
+            errorMessage: error.message,
+            errorStack: error.stack,
+          }
+        });
+      } finally {
+        await prisma.$disconnect();
+      }
+    }
+);
+
+threshholdRouter.put(
+  '/updateBadPosting/:num',
+  passport.authenticate('jwt', {session: false}),
+  async(req, res, next) =>{
+    try {
+      const newThreshhold = parseInt(req.params.num);
+
+      if (!newThreshhold) {
+          return res.status(400).json({
+            message: `A valid number must be specified in the route parameter.`,
+          });
+      }
+
+      const threshhold = await prisma.threshhold.findUnique({ where: { id: 3 } });
+
+      if(threshhold === null){
+          return res.status(400).json({
+              message: `A threshhold doesn't currently exist, please create one first`,
+          });
+      }else{
+          const updatedThresh = await prisma.threshhold.update({
+              where: {id : 3},
+              data: { number: newThreshhold}
+          });
+          return res.status(200).json({
+              message: `Threshhold successfuly updated`,
+              updatedThresh,
+            });
+      }
+    } catch (error) {
+      res.status(400).json({
+        message: "An error occured while trying to update the threshhold",
+        details: {
+          errorMessage: error.message,
+          errorStack: error.stack,
+        }
+      });
+    } finally {
+      await prisma.$disconnect();
+    }
+  }
+);
+
+threshholdRouter.get(
+  '/getBadPosting',
+  passport.authenticate('jwt', { session: false }),
+    async (req, res, next) => {
+      try {
+
+        const threshhold = await prisma.threshhold.findUnique({where: {id: 3}});
+        res.json(threshhold);
+
+      } catch (error) {
+        res.status(400).json({
+          message: "An error occured while trying to fetch threshhold.",
+          details: {
+            errorMessage: error.message,
+            errorStack: error.stack,
+          }
+        });
+      } finally {
+        await prisma.$disconnect();
+      }
+    }
+)
+
+threshholdRouter.get(
+  '/getFalseFlag',
+  passport.authenticate('jwt', { session: false }),
+    async (req, res, next) => {
+      try {
+
+        const threshhold = await prisma.threshhold.findUnique({where: {id: 2}});
+        res.json(threshhold);
+
+      } catch (error) {
+        res.status(400).json({
+          message: "An error occured while trying to fetch threshhold.",
+          details: {
+            errorMessage: error.message,
+            errorStack: error.stack,
+          }
+        });
+      } finally {
+        await prisma.$disconnect();
+      }
+    }
+  )
+
+
+
 
 module.exports = threshholdRouter;

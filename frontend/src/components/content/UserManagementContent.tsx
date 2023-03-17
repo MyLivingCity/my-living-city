@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Card, Table, Dropdown, Container, Button, Form, NavDropdown } from 'react-bootstrap';
-import { updateUser, getUserBanHistory } from 'src/lib/api/userRoutes';
+import { updateUser, getUserBanHistory, removeFlagQuarantine, removePostCommentQuarantine } from 'src/lib/api/userRoutes';
 import { USER_TYPES } from 'src/lib/constants';
 import { IComment } from 'src/lib/types/data/comment.type';
 import { ICommentFlag, IFlag } from 'src/lib/types/data/flag.type';
@@ -151,6 +151,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
             <thead className="table-active">
             <tr>
                 <th scope="col">Email</th>
+                <th scope="col">Organization</th>
                 <th scope="col">First</th>
                 <th scope="col">Last</th>
                 <th scope="col">User Type</th>
@@ -168,6 +169,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                     {req.id !== hideControls ? 
                     <>
                     <td>{req.email}</td>
+                    <td>{req.organizationName ? req.organizationName : "N/A"}</td>
                     <td>{req.fname}</td>
                     <td>{req.lname}</td>
                     <td>{req.userType}</td>
@@ -225,6 +227,8 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                                 setBanHistory(formatBanHistory(data));
                                 setShowUserBanHistoryModal(true);
                             })} >Ban History</Dropdown.Item>
+                            <Dropdown.Item onClick={() => removeFlagQuarantine(req.id)}>Remove Flag Quarantine</Dropdown.Item>
+                            <Dropdown.Item onClick={() => removePostCommentQuarantine(req.id)}>Remove Post Comment Quarantine</Dropdown.Item>
                         </NavDropdown>
                         : <>
                         <Button size="sm" variant="outline-danger" className="mr-2 mb-2" onClick={()=>setHideControls('')}>Cancel</Button>

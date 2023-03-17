@@ -3,6 +3,7 @@ import { Card, Table, Dropdown, Container, Button, Form, NavDropdown } from 'rea
 import { updateCommentStatus } from 'src/lib/api/commentRoutes';
 import { updateFalseFlagComment } from 'src/lib/api/flagRoutes';
 import { updateUser } from 'src/lib/api/userRoutes';
+import { incrementBadPostCount } from 'src/lib/api/badPostingBehaviorRoutes';
 import { USER_TYPES } from 'src/lib/constants';
 import { IComment } from 'src/lib/types/data/comment.type';
 import { ICommentFlag } from 'src/lib/types/data/flag.type';
@@ -163,6 +164,7 @@ export const CommentManagementContent: React.FC<CommentManagementContentProps> =
                                         setBanModalPostLink(ideaURL + req.ideaId);
                                         setBanModalAuthorName(userName[index].toString());
                                         setShowCommentBanModal(true);
+                                        incrementBadPostCount(token, req.id.toString());
                                         }}>Ban Comment
                                     </Dropdown.Item>
                                     {req.reviewed && req.active ?

@@ -120,6 +120,58 @@ ideaFlagRouter.post(
             falseFlag: isFalse,
           },
         });
+
+        // Check if user is in the false flagging behavior table
+        // if they are increment the false flag count
+        // else create a new entry in the table
+
+        const userFalseFlaggingBehavior = await prisma.false_Flagging_Behavior.findFirst({
+          where: {
+            userId: id
+          }
+        })
+        if(userFalseFlaggingBehavior){
+          const updatedFalseFlaggingBehavior = await prisma.false_Flagging_Behavior.update({
+            where: {
+              id: userFalseFlaggingBehavior.id
+            },
+            data: {
+              flag_count: userFalseFlaggingBehavior.flag_count + 1
+            }
+          })
+          console.log("updatedFalseFlaggingBehavior: ", updatedFalseFlaggingBehavior);
+        }else{
+          const createdFalseFlaggingBehavior = await prisma.false_Flagging_Behavior.create({
+            data: {
+              userId: id,
+              flag_count: 1
+            }
+          })
+          console.log("createdFalseFlaggingBehavior: ", createdFalseFlaggingBehavior);
+        }
+
+        const falseFlagThreshold = await prisma.threshhold.findUnique({
+          where: {
+            id: 2,
+          },
+        });
+
+
+        const falseFlaggingBehavior = await prisma.false_Flagging_Behavior.findMany();
+        falseFlaggingBehavior.forEach(async (user) => {
+          if (user.flag_count >= falseFlagThreshold.number) {
+            const result = await prisma.false_Flagging_Behavior.update({
+              where: {
+                id: user.id,
+              },
+              data: {
+                flag_ban: true,
+              },
+            });result
+            console.log("TURTLE: ", )
+          }
+        });
+
         res.status(200).json({
           message: `false flags succesfully updated under Idea ${parsedIdeaId}`,
           updateIdeaFlags,
@@ -150,6 +202,33 @@ ideaFlagRouter.post(
           }
         })
         res.json(ideaFlagsCount);
+      } catch (error) {
+        console.log(error.message);
+        res.status(400).json({
+          message: "An error occured while trying to fetch the count of ideaFlags.",
+          details: {
+            errorMessage: error.message,
+            errorStack: error.stack,
+          }
+        });
+      } finally {
+        await prisma.$disconnect();
+      }
+    }
+  )
+
+  // Check if user has a flag ban
+  ideaFlagRouter.get(
+    '/checkFlagBan/:userID',
+    passport.authenticate('jwt', {session: false}),
+    async (req, res, next) => {
+      try {
+        const userFlagBan = await prisma.false_Flagging_Behavior.findFirst({
+          where: {
+            userId: req.params.userID
+          }
+        })
+        res.json(userFlagBan);
       } catch (error) {
         console.log(error.message);
         res.status(400).json({

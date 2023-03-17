@@ -10,10 +10,11 @@ import { AdsSectionPage } from "src/pages/AdsSectionPage";
 import Notifications from "../partials/DashboardContent/Notifications";
 import SystemUpdates from "../partials/DashboardContent/SystemUpdates";
 import LoadingSpinner from "../ui/LoadingSpinner";
-import { useIdeasHomepage, useUserFollowedIdeas, useUserIdeas } from "../../hooks/ideaHooks";
+import { useIdeasHomepage, useUserFollowedIdeas, useUserIdeas, useUserEndorsedIdeas } from "../../hooks/ideaHooks";
 import { IUser } from "src/lib/types/data/user.type";
 import { FindBanDetails, FindUndismissedPostBans, FindUndismissedCommentBans } from "src/hooks/banHooks";
 import { useAllComments } from "src/hooks/commentHooks";
+import { USER_TYPES } from "src/lib/constants";
 import { useQuarantinePostNotifications } from "src/hooks/quarantinePostNotificationHooks";
 
 interface LandingPageContentProps {
@@ -61,6 +62,12 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
   } = useUserFollowedIdeas(user.id)
 
   const {
+    data: userEndorsedIdeaData,
+    error: userEndorsedError,
+    isLoading: userEndorsedLoading,
+  } = useUserEndorsedIdeas(user.id)
+
+  const {
       data: userBannedData,
       isError: userBannedDataError,
       isLoading: userBannedDataLoading
@@ -72,13 +79,22 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
     isLoading: quarantinePostNotificationsLoading
   } = useQuarantinePostNotifications();
 
-  if (iLoading || uLoading || userFollowedLoading || userBannedDataLoading || commentLoading || undismissedPostBansLoading || undismissedCommentBansLoading || quarantinePostNotificationsLoading) {
+  const canEndorse = (
+    user &&
+    user.userType === USER_TYPES.COMMUNITY ||
+    user.userType === USER_TYPES.BUSINESS ||
+    user.userType === USER_TYPES.MUNICIPAL
+  );
+
+  if (iLoading || uLoading || userFollowedLoading || userEndorsedLoading || userBannedDataLoading || commentLoading || undismissedPostBansLoading || undismissedCommentBansLoading || quarantinePostNotificationsLoading) {
     return <LoadingSpinner />;
   }
 
-  if (iError || iIsError || uError || userFollowedError || userBannedDataError || commentError || undismissedPostBansError || undismissedCommentBansError || quarantinePostNotificationsError) {
+  if (iError || iIsError || uError || userFollowedError || (canEndorse && userEndorsedError) || userBannedDataError || commentError || undismissedPostBansError || undismissedCommentBansError || quarantinePostNotificationsError) {
     return <div>Error when fetching necessary data</div>;
   }
+
+  
   return (
     <Container className="landing-page-content">
       <Row as="article" className="featured"></Row>
@@ -101,8 +117,17 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
       </Row>
       <br/><br/>
       <Row as="article" className="system-updates">
-        <SystemUpdates userFollowedideas={userFollowedIdeaData!} />
-      </Row>
+      <SystemUpdates userFollowedideas={
+            // Concat userFollowedIdeaData and userEndorsedIdeaData w/o duplicates
+            userFollowedIdeaData!.concat(userEndorsedIdeaData!.filter((idea) => {
+              return !userFollowedIdeaData!.some((idea2) => {
+                return idea2.id === idea.id
+              })
+            }))
+          }
+          endorser={canEndorse} 
+          />
+        </Row>
     </Container>
   );
 };

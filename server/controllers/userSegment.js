@@ -25,8 +25,19 @@ userSegmentRouter.post(
             let homeSubSegmentName = '';
             let workSubSegmentName = '';
             let schoolSubSegmentName = '';
+            let homeSegHandle = '';
+            let workSegHandle = '';
+            let schoolSegHandle = '';
             //get email and user id from request
             const { email, id } = req.user;
+
+            const user = await prisma.user.findUnique({
+                where:{id: id},
+                select:{
+                    fname:true,
+                    address:true
+                }
+            });
 
             const exist = await prisma.userSegments.findFirst({
                 where:{userId:id}
@@ -35,6 +46,14 @@ userSegmentRouter.post(
             if(exist){
                 return res.status(409).json("You are not allow to create another user segment!");
             }
+
+            const workDetails = await prisma.work_Details.findFirst({
+                where:{userId:id}
+            });
+
+            const schoolDetails = await prisma.school_Details.findFirst({
+                where:{userId:id}
+            });
 
             console.log(req.body);
             const {homeSegmentId,workSegmentId,schoolSegmentId,homeSubSegmentId,workSubSegmentId,schoolSubSegmentId} = req.body;
@@ -59,6 +78,8 @@ userSegmentRouter.post(
                         homeSuperSegId = queryResult.superSegId;
 
                         homeSuperSegName = queryResult.superSegName;
+                        
+                        homeSegHandle = `${user.fname} @ ${user.address.streetAddress}`;
                     }
                 }
             }
@@ -83,6 +104,10 @@ userSegmentRouter.post(
                         workSuperSegId=queryResult.superSegId;
 
                         workSuperSegName=queryResult.superSegName;
+
+                        if (workDetails) {
+                            workSegHandle = `${user.fname} @ ${workDetails.company}`;
+                        }
                     }
                 }
             }
@@ -107,6 +132,10 @@ userSegmentRouter.post(
                         schoolSuperSegId=queryResult.superSegId;
 
                         schoolSuperSegName=queryResult.superSegName;
+
+                        if (schoolDetails.faculty == '') {
+                            schoolSegHandle = `${user.fname} @ ${schoolDetails.faculty}`;
+                        }
                     }
                 }
             }
@@ -220,7 +249,10 @@ userSegmentRouter.post(
                     workSubSegmentId:workSubSegmentId,
                     workSubSegmentName:workSubSegmentName,
                     schoolSubSegmentId:schoolSubSegmentId,
-                    schoolSubSegmentName:schoolSubSegmentName
+                    schoolSubSegmentName:schoolSubSegmentName,
+                    homeSegHandle:homeSegHandle,
+                    workSegHandle:workSegHandle,
+                    schoolSegHandle:schoolSegHandle,
                 }
             })
 
@@ -360,6 +392,9 @@ userSegmentRouter.put(
             let homeSubSegmentName = '';
             let workSubSegmentName = '';
             let schoolSubSegmentName = '';
+            let homeSegHandle = '';
+            let workSegHandle = '';
+            let schoolSegHandle = '';
 
             //get email and user id from request
             const { email, id } = req.user;
@@ -374,6 +409,18 @@ userSegmentRouter.put(
                 exists = false;
             }
 
+            const user = await prisma.user.findFirst({
+                where:{id:id}
+            })
+
+            const work_Details = await prisma.workDetails.findFirst({
+                where:{userId:id}
+            })
+
+            const school_Details = await prisma.schoolDetails.findFirst({
+                where:{userId:id}
+            })
+
             if(exists){
                 updateId = exist.id;
 
@@ -386,6 +433,9 @@ userSegmentRouter.put(
                 homeSubSegmentName = exist.homeSubSegmentName;
                 workSubSegmentName = exist.workSubSegmentName;
                 schoolSubSegmentName = exist.schoolSubSegmentName;
+                homeSegmentHandle = exist.homeSegmentHandle;
+                workSegmentHandle = exist.workSegmentHandle;
+                schoolSegmentHandle = exist.schoolSegmentHandle;
             }
             
             if(homeSegmentId){
@@ -408,6 +458,8 @@ userSegmentRouter.put(
                         homeSuperSegId = queryResult.superSegId;
 
                         homeSegmentName = queryResult.superSegName;
+
+                        homeSegmentHandle = `${user.fname} @ ${user.address.streetAddress}`
                     }
                 }
             }
@@ -432,6 +484,8 @@ userSegmentRouter.put(
                         workSuperSegId=queryResult.superSegId;
 
                         workSuperSegName=queryResult.superSegName;
+
+                        workSegmentHandle = `${user.fname} @ ${work_Details.company}`
                     }
                 }
             }
@@ -456,6 +510,8 @@ userSegmentRouter.put(
                         schoolSuperSegId=queryResult.superSegId;
 
                         schoolSegmentName=queryResult.superSegName;
+
+                        schoolSegmentHandle = `${user.fname} @ ${school_Details.faculty}`
                     }
                 }
             }
@@ -573,7 +629,10 @@ userSegmentRouter.put(
                         workSubSegmentId:workSubSegmentId,
                         workSubSegmentName:workSubSegmentName,
                         schoolSubSegmentId:schoolSubSegmentId,
-                        schoolSubSegmentName:schoolSubSegmentName
+                        schoolSubSegmentName:schoolSubSegmentName,
+                        homeSegHandle:homeSegHandle,
+                        workSegHandle:workSegHandle,
+                        schoolSegHandle:schoolSegHandle
                     }
                 })
             }else{
@@ -597,7 +656,10 @@ userSegmentRouter.put(
                         workSubSegmentId:workSubSegmentId,
                         workSubSegmentName:workSubSegmentName,
                         schoolSubSegmentId:schoolSubSegmentId,
-                        schoolSubSegmentName:schoolSubSegmentName
+                        schoolSubSegmentName:schoolSubSegmentName,
+                        homeSegHandle:homeSegHandle,
+                        workSegHandle:workSegHandle,
+                        schoolSegHandle:schoolSegHandle
                     }
                 })
             }
@@ -840,6 +902,34 @@ userSegmentRouter.get(
             console.log(error);
             res.status(400).json({
                 message: "An error occured while trying to retrieve a userSegment.",
+                details: {
+                    errorMessage: error.message,
+                    errorStack: error.stack,
+                }
+            });
+        }
+    }
+);
+
+userSegmentRouter.get(
+    '/getSegmentByName/:name',
+    async(req,res)=>{
+        try{
+            const {name} = req.params;
+
+            const result = await prisma.segments.findFirst({
+                where:{name:name}
+            })
+
+            if(!result){
+                res.status(404).json("segment not found!");
+            }
+
+            return res.status(200).json(result);
+        }catch(error){
+            console.log(error);
+            res.status(400).json({
+                message: "An error occured while trying to retrieve a segment.",
                 details: {
                     errorMessage: error.message,
                     errorStack: error.stack,

@@ -39,6 +39,7 @@ import {
 import SimpleMap from "../map/SimpleMap";
 import { MAP_KEY } from "../../lib/constants";
 import {getUserBanWithToken} from "../../lib/api/banRoutes";
+import { checkUser } from "src/lib/api/badPostingBehaviorRoutes";
 
 interface SubmitDirectProposalPageContentProps {
   categories: ICategory[] | undefined;
@@ -141,7 +142,6 @@ const SubmitDirectProposalPageContent: React.FC<
     }
     formik.values.feedbackRatingType![formik.values.feedbackRatingType!.length - 1] = "YESNO";
     setFeedbackTypeList(newFeedbackTypeList);
-
   }
 
   const updateFeedbackType = (feedbackType:string, index:number) => {
@@ -149,7 +149,6 @@ const SubmitDirectProposalPageContent: React.FC<
     newFeedbackTypeList[index] = feedbackType;
     formik.values.feedbackRatingType![index] = feedbackType;
     setFeedbackTypeList(newFeedbackTypeList);
-
   }
 
   const handleCommunityChange = (index: number) => {
@@ -172,9 +171,9 @@ const SubmitDirectProposalPageContent: React.FC<
   };
   const submitHandler = async (values: ICreateIdeaInput) => {
     try {
-      // Set loading and error state
-
-      setError(null);
+      const metThreshhold = await checkUser(token, user!.id);
+      try {
+         setError(null);
       setIsLoading(true);
       setTimeout(() => console.log("timeout"), 5000);
       //const ideaValues with <ICreateIdeaInput> interface
@@ -224,7 +223,7 @@ const SubmitDirectProposalPageContent: React.FC<
         needSuggestions: values.needSuggestions,
         location: values.location,
         feedback: values.feedback,
-        feedbackRatingType: values.feedbackRatingType
+        feedbackRatingType: values.feedbackRatingType,
       };
 
       const proposal = await postCreateProposal(
@@ -244,6 +243,14 @@ const SubmitDirectProposalPageContent: React.FC<
     } finally {
       setIsLoading(false);
     }
+  } catch (error) {
+    const genericMessage = 
+    "You have too many bad posts / post flagged. Post was NOT submittted.";
+    const errorObj = handlePotentialAxiosError(genericMessage, error);
+    setError(errorObj);
+  } finally {
+    setIsLoading(false);
+  }
   };
 
   function toggleElement(str: string, str2: string) {
@@ -294,7 +301,7 @@ const SubmitDirectProposalPageContent: React.FC<
       needSuggestions: false,
       location: "",
       feedback: ["", "", "", "", ""],
-      feedbackRatingType: ["YESNO", "YESNO", "YESNO", "YESNO", "YESNO"]
+      feedbackRatingType: ["YESNO", "YESNO", "YESNO", "YESNO", "YESNO"],
     },
     onSubmit: submitHandler,
   });

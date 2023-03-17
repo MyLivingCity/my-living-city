@@ -5,6 +5,10 @@ import { IRegisterInput, IUserRegisterData, IUserSegmentRequest } from "../types
 import { delay, storeTokenExpiryInLocalStorage, storeUserAndTokenInLocalStorage } from "../utilityFunctions";
 import { postAvatarImage } from "./avatarRoutes";
 import { getAxiosJwtRequestOption } from "./axiosRequestOptions";
+import { IWorkDetailsInput } from "../types/input/workDetails.input";
+import { ISchoolDetailsInput } from "../types/input/schoolDetails.input";
+import { IHomeDetailsInput } from "../types/input/homeDetails.input";
+
 export interface LoginData {
   email: string;
   password: string;
@@ -108,6 +112,8 @@ export const postRegisterUser = async(registerData: IRegisterInput, requestData:
     lname,
     address,
     geo,
+    workDetails,
+    schoolDetails,
     homeSegmentId,
     workSegmentId,
     schoolSegmentId,
@@ -130,6 +136,28 @@ export const postRegisterUser = async(registerData: IRegisterInput, requestData:
   }
   const request = await axios.post<LoginResponse>(`${API_BASE_URL}/user/signup`, {email,password,confirmPassword,organizationName,fname,lname,address,geo, userType});
   const request2 = await axios({
+    method: "post",
+    url: `${API_BASE_URL}/schoolDetails/create`,
+    data: {
+      schoolDetails: schoolDetails,
+      userId: request.data.user.address?.userId,
+    },
+    headers: {"Access-Control-Allow-Origin": "*", "x-auth-token": request.data.token},
+    withCredentials: true,
+  })
+
+  await axios({
+    method: "post",
+    url: `${API_BASE_URL}/workDetails/create`,
+    data: {
+      workDetails: workDetails,
+      userId: request.data.user.address?.userId,
+    },
+    headers: {"Access-Control-Allow-Origin": "*", "x-auth-token": request.data.token},
+    withCredentials: true,
+  })
+
+  await axios({
     method: "post",
     url: `${API_BASE_URL}/userSegment/create`,
     data: { 
@@ -187,7 +215,9 @@ if (userType === USER_TYPES.IN_PROGRESS || userType === USER_TYPES.BUSINESS || u
     });
     request7.push(newUserReachReq);
   })
-} 
+}
+
+console.log("schoolDetails", schoolDetails)
 
 Promise.all([request, request2, request3, request4, request5, request6, ...request7]).then((...responses)=>{
   
@@ -216,5 +246,104 @@ export const getAllBannedUsers = async () => {
   const res = await axios.get(
     `${API_BASE_URL}/user/getBannedUsers`
   );
+  return res.data;
+}
+
+export const removeFlagQuarantine = async (userId: string | undefined) => {
+  const res = await axios.patch(
+    `${API_BASE_URL}/user/removeFlagQuarantine`,
+    {
+      userId: userId
+    }
+  );
+  console.log("removeFlagQuarantine", res.data);
+  return res.data;
+}
+
+export const removePostCommentQuarantine = async (userId: string | undefined) => {
+  const res = await axios.patch(
+    `${API_BASE_URL}/user/removePostCommentQuarantine`,
+    {
+      userId: userId
+    }
+  );
+  console.log("removePostCommentQuarantine", res.data);
+  return res.data;
+}
+
+export const deleteSchoolSegmentDetails = async (userId: string | undefined) => {
+  const res = await axios.delete(
+    `${API_BASE_URL}/schoolDetails/delete/${userId}`,
+  );
+  console.log("deleteSchoolSegmentDetails", res.data);
+  return res.data;
+}
+
+export const deleteWorkSegmentDetails = async (userId: string | undefined) => {
+  const res = await axios.delete(
+    `${API_BASE_URL}/workDetails/delete/${userId}`,
+  );
+  console.log("deleteWorkSegmentDetails", res.data);
+  return res.data;
+}
+
+export const getSchoolSegmentDetails = async (userId: string | undefined) => {
+  const res = await axios.get(
+    `${API_BASE_URL}/schoolDetails/get/${userId}`,
+  );
+  return res.data;
+}
+
+export const getWorkSegmentDetails = async (userId: string | undefined) => {
+  const res = await axios.get(
+    `${API_BASE_URL}/workDetails/get/${userId}`,
+  );
+  return res.data;
+}
+
+export const updateWorkSegmentDetails = async (userId: string | undefined, data: IWorkDetailsInput) => {
+  const res = await axios.patch(
+    `${API_BASE_URL}/workDetails/update/${userId}`,
+    data
+  );
+  return res.data;
+}
+
+export const updateSchoolSegmentDetails = async (userId: string | undefined, data: ISchoolDetailsInput) => {
+  const res = await axios.patch(
+    `${API_BASE_URL}/schoolDetails/update/${userId}`,
+    data
+  );
+  console.log("updateSchoolSegmentDetails", res.data);
+  return res.data;
+}
+
+export const updateHomeSegmentDetails = async (userId: string | undefined, data: IHomeDetailsInput) => {
+  const res1 = await axios.patch(
+    `${API_BASE_URL}/user/updateDisplayName/${userId}`,
+    {
+      displayFName: data.displayFName,
+      displayLName: data.displayLName
+    }
+  );
+
+  const res2 = await axios.patch(
+    `${API_BASE_URL}/user/updateAddress/${userId}`,
+    {
+      streetAddress: data.streetAddress,
+      postalCode: data.postalCode
+    }
+  );
+  console.log("updateHomeSegmentDetails, part1", res1.data);
+  console.log("updateHomeSegmentDetails, part2", res2.data);
+  // Combine data from both responses
+  return {...res1.data, ...res2.data};
+}
+
+export const getUserGeoData = async (userId: string | undefined) => {
+  const res = await axios.get(
+    `${API_BASE_URL}/user/getGeoData/${userId}`,
+  );
+  console.log("getUserGeoData", res.data);
   return res.data;
 }

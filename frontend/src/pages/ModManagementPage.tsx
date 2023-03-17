@@ -12,7 +12,7 @@ import { CommentManagementContent } from 'src/components/content/CommentManageme
 import { useIdeasWithBreakdown } from 'src/hooks/ideaHooks';
 import { useProposalsWithBreakdown } from 'src/hooks/proposalHooks';
 import { useAllCommentFlags, useAllFlags } from 'src/hooks/flagHooks';
-import { useThreshold } from 'src/hooks/threshholdHooks';
+import { useThreshold, useFalseFlagThreshold, useBadPostingThreshhold } from 'src/hooks/threshholdHooks';
 import { IIdea, IIdeaWithAggregations } from 'src/lib/types/data/idea.type';
 import { useAllComments } from 'src/hooks/commentHooks';
 import { IUser } from 'src/lib/types/data/user.type';
@@ -22,7 +22,7 @@ import { Button } from 'react-bootstrap';
 import { checkIfUserHasRated } from 'src/lib/utilityFunctions';
 import UserFlagsModal from 'src/components/partials/SingleIdeaContent/UserFlagsModal';
 import { updateLanguageServiceSourceFile } from 'typescript';
-import { updateThreshhold } from 'src/lib/api/threshholdRoutes';
+import { updateThreshhold, updateFalseFlagThreshold, updateBadPostingThreshhold } from 'src/lib/api/threshholdRoutes';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import { ButtonGroup } from "react-bootstrap";
@@ -30,6 +30,12 @@ import { now } from 'moment';
 import { useAllBanDetails, useRemoveAllExpiredBans } from 'src/hooks/banHooks';
 import { getAllBannedUsers } from 'src/lib/api/userRoutes';
 import { BannedUsersManagementContent } from 'src/components/content/BannedUsersManagementContent';
+import { FalseFlagManagementContent } from 'src/components/content/FalseFlagManagementContent';
+import { BadPostingManagementContent } from 'src/components/content/BadPostingManagementContent';
+import { useAllFalseFlaggingUsers } from 'src/hooks/falseFlaggingBehaviorHooks';
+import { useAllBadPostingUsers } from 'src/hooks/badPostingBehaviorHooks';
+import { checkFalseFlaggingBehavior } from 'src/lib/api/falseFlaggingBehaviorRoutes';
+import { checkThreshhold } from 'src/lib/api/badPostingBehaviorRoutes';
 
 // Extends Route component props with idea title route param
 interface ModManagementProps extends RouteComponentProps<{}> {
@@ -47,7 +53,11 @@ const ModManagementPage: React.FC<ModManagementProps> = ({ }) => {
   const { data: flagData, isLoading: flagLoading} = useAllFlags(token);
   const {data: commentFlagData, isLoading: commentFlagLoading} = useAllCommentFlags(token);
   const {data: threshholdData, isLoading: threshholdLoading} = useThreshold(token);
+  const {data: falseFlagThreshholdData, isLoading: falseFlagThreshholdLoading} = useFalseFlagThreshold(token);
+  const {data: badPostingThreshholdData, isLoading: badPostingThreshholdLoading} = useBadPostingThreshhold(token);
   const {data: banData, isLoading: banLoading} = useAllBanDetails();
+  const {data: falseFlagData, isLoading: falseFlagLoading} = useAllFalseFlaggingUsers();
+  const {data: badPostingData, isLoading: badPostingLoading} = useAllBadPostingUsers();
   const { isLoading: banRemovalLoading } = useRemoveAllExpiredBans(token);
   const [pageState, setPageState] = useState<String>("quarantine");
   const [filteredDay, setfilteredDay] = useState('');
@@ -66,6 +76,12 @@ const ModManagementPage: React.FC<ModManagementProps> = ({ }) => {
   let threshhold: number = 3;
   const [newThreshold, setNewThreshhold] = useState(threshhold);
 
+  let falseFlagThreshhold: number = 3;
+  const [newFalseFlagThreshhold, setNewFalseFlagThreshhold] = useState(falseFlagThreshhold);
+
+  let badPostingThreshhold: number = 3;
+  const [newBadPostingThreshhold, setNewBadPostingThreshhold] = useState(badPostingThreshhold);
+
 
   let propIdeaData: IIdeaWithAggregations[] = []
   let quarantineIdea: IIdeaWithAggregations[] = [];
@@ -79,7 +95,7 @@ const ModManagementPage: React.FC<ModManagementProps> = ({ }) => {
   function loadState(state: String) {
     setPageState(state);
   }
-  if (userLoading || ideaLoading || proposalLoading || commentLoading || flagLoading || commentFlagLoading || threshholdLoading || banLoading || banRemovalLoading) {
+  if (userLoading || ideaLoading || proposalLoading || commentLoading || flagLoading || commentFlagLoading || threshholdLoading || banLoading || banRemovalLoading || bannedUsersLoading || falseFlagLoading || falseFlagThreshholdLoading || badPostingLoading || badPostingThreshholdLoading) {
     return(
       <div className="wrapper">
         <LoadingSpinner />
@@ -95,10 +111,32 @@ const ModManagementPage: React.FC<ModManagementProps> = ({ }) => {
       threshhold = threshholdData.number;
     }
   }
+  if (badPostingThreshholdData) {
+    if (badPostingThreshholdData.number) {
+      badPostingThreshhold = badPostingThreshholdData.number;
+    }
+  }
+  if (falseFlagThreshholdData) {
+    if (falseFlagThreshholdData.number) {
+      falseFlagThreshhold = falseFlagThreshholdData.number;
+    }
+  }
   function changeThresholdData(val: any) {
     let num = parseInt(val.target.value);
     if (!isNaN(num)) {
       setNewThreshhold(num);
+    }
+  }
+  function changeFalseFlagThresholdData(val: any) {
+    let num = parseInt(val.target.value);
+    if (!isNaN(num)) {
+      setNewFalseFlagThreshhold(num);
+    }
+  }
+  function changeBadPostingThreshholdData(val: any) {
+    let num = parseInt(val.target.value);
+    if (!isNaN(num)) {
+      setNewBadPostingThreshhold(num);
     }
   }
   function metThreshholdUser(user: IUser) {
@@ -239,6 +277,30 @@ const ModManagementPage: React.FC<ModManagementProps> = ({ }) => {
 
   }
 
+  const changeFalseFlagThreshold = async () => {
+    try {      
+      await updateFalseFlagThreshold(newFalseFlagThreshhold, token!)
+      await checkFalseFlaggingBehavior()
+    } catch (err) {
+      console.log("Error: ", err);
+    } finally {
+      window.location.reload();
+    }
+
+  }
+
+  const changeBadPostingThreshhold = async () => {
+    try {
+      await updateBadPostingThreshhold(newBadPostingThreshhold, token!)
+      await checkThreshhold()
+    } catch (err) {
+      console.log("Error: ", err);
+    } finally {
+      window.location.reload();
+    }
+
+  }
+
   if (pageState === "quarantine") {
     return (
       <div>
@@ -258,13 +320,26 @@ const ModManagementPage: React.FC<ModManagementProps> = ({ }) => {
           <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black' }} onClick={() => loadState("comment")}>Comment View</Button>
         </div>
         <div style={{ width: '80%', marginLeft: '22%' }}>
+          <div style={{ float: 'right', marginRight: '10.7%' }}>
+            <p style={{ textAlign: 'right', fontSize: 18, fontWeight: 'bold' }} className='ml-10 mr-2 display-6 mb-2'>User False Flagging Behavior Threshold: {falseFlagThreshhold.toString()}</p>
+            <input type="number" onChange={(val) => changeFalseFlagThresholdData(val)} style={{ textAlign: 'left', right: "0" }} className='ml-10 mr-2 display-6' />
+            <Button onClick={changeFalseFlagThreshold}>Update</Button>
+          </div>
+          <br></br>
+          <FalseFlagManagementContent users={userData} token={token} user={user} flags={flagData} commentFlags={commentFlagData} ideas={ideaData} proposals={proposalData} comments={commentData} bans={banData} falseFlaggingUsers={falseFlagData}/>
+          <br></br>
+          <div style={{ float: 'right', marginRight: '12.3%' }}>
+          <p style={{ textAlign: 'right', fontSize: 18, fontWeight: 'bold' }} className='ml-10 mr-2 display-6 mb-2'>User Bad Posting Behavior Threshold: {badPostingThreshhold.toString()}</p>
+            <input type="number" onChange={(val) => changeBadPostingThreshholdData(val)} style={{ textAlign: 'left', right: "0" }} className='ml-10 mr-2 display-6' />
+            <Button onClick={changeBadPostingThreshhold}>Update</Button>
+          </div>
+          <BadPostingManagementContent users={userData} token={token} user={user} flags={flagData} commentFlags={commentFlagData} ideas={ideaData} proposals={proposalData} comments={commentData} bans={banData} badPostingUsers={badPostingData}/>
+          <br></br>
           <div style={{ float: 'right', marginRight: '17.7%' }}>
-            <p style={{ textAlign: 'right', fontSize: 18, fontWeight: 'bold' }} className='ml-10 mr-2 display-6 mb-2'>Current Threshhold: {threshhold.toString()}</p>
+          <p style={{ textAlign: 'right', fontSize: 18, fontWeight: 'bold' }} className='ml-10 mr-2 display-6 mb-2'>Bad Posting Threshold: {threshhold.toString()}</p>
             <input type="number" onChange={(val) => changeThresholdData(val)} style={{ textAlign: 'left', right: "0" }} className='ml-10 mr-2 display-6' />
             <Button onClick={changeThreshold}>Update</Button>
           </div>
-          <br></br>
-          <UserManagementContent users={quarantineUser!} token={token} user={user} flags={flagData} commentFlags={commentFlagData} ideas={ideaData} proposals={proposalData} comments={commentData} bans={banData}/>
           <br></br>
           <div className="d-flex" >
             {(filteredDay === '' || filteredDay === 'all') ? (<IdeaManagementContent users={userData!} token={token} user={user} ideas={quarantineIdea!} flags={flagData} />) : <IdeaManagementContent users={userData!} token={token} user={user} ideas={agedQuarantinedIdeas!} flags={flagData} />}

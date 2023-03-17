@@ -44,10 +44,12 @@ const main = async () => {
 	const reportRouter = require('./controllers/report');
 	const commentRouter = require('./controllers/comment');
 	const blogRouter = require('./controllers/blog');
+	const badPostingBehaviorRouter = require('./controllers/badPostingBehavior');
 	const ideaRouter = require('./controllers/idea');
 	const imageRouter = require('./controllers/image');
 	const categoryRouter = require('./controllers/category');
 	const ideaRatingRouter = require('./controllers/rating');
+	const feedbackRatingRouter = require('./controllers/feedbackRating');
 	const commentInteractRouter = require('./controllers/commentInteract');
 	const championRouter = require('./controllers/champion');
 	const advertisementRouter = require('./controllers/advertisement');
@@ -70,7 +72,11 @@ const main = async () => {
 	const banUserRouter = require('./controllers/banUser.js');
 	const banPostRouter = require('./controllers/banPost.js');
 	const banCommentRouter = require('./controllers/banComment.js');
-
+	const publicProfileRouter = require('./controllers/publicProfile.js');
+	const falseFlaggingBehaviorRouter = require('./controllers/falseFlaggingBehavior.js');
+	const schoolDetailsRouter = require('./controllers/schoolDetails.js');
+	const workDetailsRouter = require('./controllers/workDetails.js');
+	const emailVerificationRouter = require('./controllers/emailVerification.js');
 
 	const apiRouter = express.Router();
 	app.use('/', apiRouter);
@@ -79,6 +85,7 @@ const main = async () => {
 	apiRouter.use('/report', reportRouter);
 	apiRouter.use('/comment', commentRouter);
 	apiRouter.use('/blog', blogRouter);
+	apiRouter.use('/badPostingBehavior', badPostingBehaviorRouter);
 	apiRouter.use('/idea', ideaRouter);
 	apiRouter.use('/image', imageRouter);
 	apiRouter.use('/category', categoryRouter);
@@ -107,6 +114,12 @@ const main = async () => {
 	apiRouter.use('/banUser', banUserRouter);
 	apiRouter.use('/banPost', banPostRouter);
 	apiRouter.use('/banComment', banCommentRouter);
+	apiRouter.use('/publicProfile', publicProfileRouter);
+	apiRouter.use('/falseFlaggingBehavior', falseFlaggingBehaviorRouter);
+	apiRouter.use('/schoolDetails', schoolDetailsRouter);
+	apiRouter.use('/feedbackRating', feedbackRatingRouter);
+	apiRouter.use('/workDetails', workDetailsRouter);
+	apiRouter.use('/emailVerification', emailVerificationRouter);
 
 	// Listen to server
 	app.listen(PORT, console.log(`Server running on PORT:${PORT}\n\n`));

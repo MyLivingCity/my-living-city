@@ -117,6 +117,17 @@ return (
                         school_lat: undefined,
                         school_lon: undefined,
                     },
+                    workDetails: {
+                        streetAddress: '',
+                        postalCode: '',
+                        company: '',
+                    },
+                    schoolDetails: {
+                        streetAddress: '',
+                        postalCode: '',
+                        faculty: '',
+                        programCompletionDate: undefined,
+                    },
                     homeSegmentId: undefined,
                     workSegmentId: undefined,
                     schoolSegmentId: undefined,
@@ -147,7 +158,9 @@ return (
                         
                         setIsLoading(true);
                         await postRegisterUser(values, segmentRequests, avatar);
-                        if (userType === USER_TYPES.RESIDENTIAL) {window.location.href = ROUTES.LANDING};
+                        if (userType === USER_TYPES.RESIDENTIAL) {
+                            wipeLocalStorage();
+                            window.location.href = ROUTES.LOGIN};
                     } catch (error) {
                         console.log(error);
                         wipeLocalStorage();
@@ -365,6 +378,18 @@ return (
                         </BForm.Control>
                         <p>Don't see your Municipality?<Button onClick={()=>{setShowModal(true)}}variant="link text-primary">Click here</Button></p>
                     </BForm.Group>
+                    <BForm.Group>
+                        <BForm.Label>Work Street Name</BForm.Label>
+                        <Field name="workDetails.streetAddress" type="text" as={BForm.Control}/>
+                    </BForm.Group>
+                    <BForm.Group>
+                        <BForm.Label>Work ZIP / Postal Code</BForm.Label>
+                        <Field name="workDetails.postalCode" type="text" as={BForm.Control}/>
+                    </BForm.Group>
+                    <BForm.Group>
+                        <BForm.Label>Company</BForm.Label>
+                        <Field name="workDetails.company" type="text" as={BForm.Control}/>
+                    </BForm.Group>
                     <RequestSegmentModal showModal={showModal} setShowModal={setShowModal} index={1} setSegmentRequests={setSegmentRequests} segmentRequests={segmentRequests}/>
                 </FormikStep>
                 }
@@ -405,8 +430,24 @@ return (
                             {displaySubSegList(segIds[2])}
                         </BForm.Control>
                         <p>Don't see your Municipality?<Button onClick={()=>{setShowModal(true)}}variant="link text-primary">Click here</Button></p>
+                    </BForm.Group>   
+                    <BForm.Group>
+                        <BForm.Label>School Street Name</BForm.Label>
+                        <Field name="schoolDetails.streetAddress" type="text" as={BForm.Control} />
+                    </BForm.Group> 
+                    <BForm.Group>
+                        <BForm.Label>School ZIP / Postal Code</BForm.Label>
+                        <Field name="schoolDetails.postalCode" type="text" as={BForm.Control} />
                     </BForm.Group>
-                    <RequestSegmentModal showModal={showModal} setShowModal={setShowModal} index={2} setSegmentRequests={setSegmentRequests} segmentRequests={segmentRequests}/>                   
+                    <BForm.Group>
+                        <BForm.Label>Faculty / Department of Study</BForm.Label>
+                        <Field name="schoolDetails.faculty" type="text" as={BForm.Control} />
+                    </BForm.Group>
+                    <BForm.Group>
+                        <BForm.Label>Program Completion Date</BForm.Label>
+                        <Field name="schoolDetails.programCompletionDate" type="date" as={BForm.Control} />
+                    </BForm.Group>   
+                    <RequestSegmentModal showModal={showModal} setShowModal={setShowModal} index={2} setSegmentRequests={setSegmentRequests} segmentRequests={segmentRequests}/>           
                 </FormikStep>}
 
                 {(userType === USER_TYPES.BUSINESS || userType === USER_TYPES.COMMUNITY) && 
@@ -429,7 +470,7 @@ return (
                 </FormikStep>
 
                 <FormikStep>
-                    <h3>To complete registration press submit!</h3>
+                    <h3>To complete registration press submit! Make sure to check your email for a verification code! </h3>
                     {/* Stripe Payment Implementation Goes Here */}
                     {/* <BForm.Group> */}
                     {/* </BForm.Group> */}
@@ -445,7 +486,7 @@ return (
                         <h4>Would you like to setup Complementary Ad now?</h4>
                         <p>You would be able to create ad later at the ad manager</p>
                         <BForm.Check inline name="createAdRadio" label="Yes" type="radio" id="inline-checkbox"  onClick={()=>{window.location.href = ROUTES.SUBMIT_ADVERTISEMENT}} />
-                        <BForm.Check inline name="createAdRadio" label="No" type="radio" id="inline-checkbox" onClick={()=>{window.location.href = ROUTES.LANDING}} />
+                        <BForm.Check inline name="createAdRadio" label="No" type="radio" id="inline-checkbox" onClick={()=>{window.location.href = ROUTES.LOGIN}} />
                     </BForm.Group>
                 </FormikStep>
                 }

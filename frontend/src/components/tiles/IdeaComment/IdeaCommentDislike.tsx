@@ -45,7 +45,7 @@ const IdeaCommentDislike = ({ commentData }: IdeaCommentLikeProps) => {
     // TODO: Implement logic to like a comment
     <IconContext.Provider
       value={{
-        size: '1.0rem',
+        size: '0.7rem',
         color: isUserAuthenticated() && checkIfUserHasDisliked() ? MLC_COLOUR_THEME.redWarning : '',
       }}
     >
@@ -55,7 +55,7 @@ const IdeaCommentDislike = ({ commentData }: IdeaCommentLikeProps) => {
           onClick={submitHandler}
         >
           <FaRegThumbsDown />
-          <span className="ml-1" style={{fontSize: "80%"}}>Dislike</span>
+          <span className="ml-1" style={{fontSize: "70%"}}>Dislike</span>
         </div>
       </div>
     </IconContext.Provider>

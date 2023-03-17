@@ -11,8 +11,22 @@ const { collaborator } = require('../lib/prismaClient');
 proposalRouter.post(
     '/create',
     passport.authenticate('jwt', { session: false }),
+    
     async (req, res) => {
         try {
+            //check if user is in bad posting behavior table if so res.status(400).json({message: 'User is in bad posting behavior table'}) 
+            const { id } = req.user;
+            const user = await prisma.bad_Posting_Behavior.findFirst({
+            where: {
+                userId: id,
+                post_comment_ban: true,
+            },
+            });
+            if (user) {
+            return res.status(400).json({
+                message: 'User is in bad posting behavior table',
+            });
+            }
             let {
                 ideaId,
                 banned,
@@ -31,7 +45,7 @@ proposalRouter.post(
                 feedbackType2,
                 feedbackType3,
                 feedbackType4,
-                feedbackType5
+                feedbackType5,
             } = req.body;
             const bannedBoolean = (banned === 'true');
             const needCollaboratorsBoolean = (needCollaborators === 'true');
@@ -65,7 +79,7 @@ proposalRouter.post(
                     feedbackType2,
                     feedbackType3,
                     feedbackType4,
-                    feedbackType5
+                    feedbackType5,
                 }
             });
             console.log("createdProposal", createdProposal);
@@ -327,8 +341,10 @@ proposalRouter.get(
                                     id: true,
                                     fname: true,
                                     lname: true,
+                                    address: true,
                                 }
-                            }
+                            },
+
                         },
                     },
                     donors: {
@@ -340,6 +356,7 @@ proposalRouter.get(
                                     id: true,
                                     fname: true,
                                     lname: true,
+                                    address: true,
                                 }
                             }
                         },
@@ -353,6 +370,7 @@ proposalRouter.get(
             }
 
             const result = { ...foundProposal };
+            console.log("VOLUNTEERS33", result.volunteers.map(volunteer => volunteer.author.address));
 
             res.status(200).json(result);
         } catch (error) {

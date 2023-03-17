@@ -5,11 +5,13 @@ import { IIdeaWithAggregations } from "src/lib/types/data/idea.type";
 
 interface SystemUpdatesProps {
   userFollowedideas: IIdeaWithAggregations[];
+  endorser: boolean;
   postType?: string;
 }
 
 const SystemUpdates: React.FC<SystemUpdatesProps> = ({
   userFollowedideas,
+  endorser,
   postType,
 }) => {
 
@@ -40,7 +42,11 @@ const SystemUpdates: React.FC<SystemUpdatesProps> = ({
         `}
       </style>
 
-      <h2 className="pb-1 border-bottom display-6">Followed Posts</h2>
+      {endorser ? 
+      (<h2 className="pb-1 border-bottom display-6">Followed and Endorsed Posts</h2>)
+      :
+      (<h2 className="pb-1 border-bottom display-6">Followed Ideas</h2>)
+      }
 
       <Carousel controls={true} interval={null}>
         {[...Array(4)].map((x, i) => (

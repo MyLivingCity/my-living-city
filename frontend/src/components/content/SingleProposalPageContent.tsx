@@ -17,8 +17,10 @@ import {
   capitalizeFirstLetterEachWord,
   capitalizeString,
 } from "../../lib/utilityFunctions";
+import LoadingSpinner from '../ui/LoadingSpinner';
 import CommentsSection from "../partials/SingleIdeaContent/CommentsSection";
 import RatingsSection from "../partials/SingleIdeaContent/RatingsSection";
+import { FeedbackRatingScaleSection, FeedbackRatingYesNoSection } from "../partials/SingleIdeaContent/FeedbackRatingSection";
 import {
   FacebookShareButton,
   FacebookIcon,
@@ -35,7 +37,7 @@ import {
 } from "react-share";
 import ChampionSubmit from "../partials/SingleIdeaContent/ChampionSubmit";
 import React, { useContext, useEffect, useState } from "react";
-import { API_BASE_URL } from "src/lib/constants";
+import { API_BASE_URL, USER_TYPES } from "src/lib/constants";
 import Popup from "../content/Popup";
 import { UserProfileContext } from "../../contexts/UserProfile.Context";
 import { IFetchError } from "../../lib/types/types";
@@ -43,13 +45,26 @@ import { useFormik } from "formik";
 import { useHistory } from "react-router-dom";
 import "react-image-crop/dist/ReactCrop.css";
 import { handlePotentialAxiosError } from "../../lib/utilityFunctions";
-import { postCreateIdea, updateIdeaStatus } from "../../lib/api/ideaRoutes";
+import { 
+  postCreateIdea, 
+  followIdeaByUser, 
+  isIdeaFollowedByUser, 
+  unfollowIdeaByUser, 
+  updateIdeaStatus, 
+  endorseIdeaByUser, 
+  isIdeaEndorsedByUser, 
+  unendorseIdeaByUser,
+} from "src/lib/api/ideaRoutes";
+import { incrementPostFlagCount } from 'src/lib/api/badPostingBehaviorRoutes';
+import { useCheckIdeaFollowedByUser, useCheckIdeaEndorsedByUser } from "src/hooks/ideaHooks";
 import {
   postCreateCollabotator,
   postCreateVolunteer,
   postCreateDonor,
 } from "src/lib/api/communityRoutes";
 import { createFlagUnderIdea, updateFalseFlagIdea, compareIdeaFlagsWithThreshold } from "src/lib/api/flagRoutes";
+import { useCheckFlagBan } from 'src/hooks/flagHooks';
+
 interface SingleIdeaPageContentProps {
   ideaData: IIdeaWithRelationship;
   proposalData: any;
@@ -170,8 +185,14 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     feedback2,
     feedback3,
     feedback4,
-    feedback5
+    feedback5,
+    feedbackType1,
+    feedbackType2,
+    feedbackType3,
+    feedbackType4,
+    feedbackType5,
   } = proposalData;
+
  
 
 
@@ -345,10 +366,62 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
   });
 
   const [followingPost, setFollowingPost] = useState(false);
+  const [endorsingPost, setEndorsingPost] = useState(false);
 
-  const addIdeaToUserFollowList = () => {
-    
-    setFollowingPost(!followingPost);
+  const {data: isFollowingPost, isLoading: isFollowingPostLoading} = useCheckIdeaFollowedByUser(token, (user ? user.id : user), ideaId);
+  const {data: isEndorsingPost, isLoading: isEndorsingPostLoading} = useCheckIdeaEndorsedByUser(token, (user ? user.id : user), ideaId);
+  const {data: flagBanData, isLoading: flagBanDataLoading} = useCheckFlagBan(token, (user ? user.id : ""));
+
+  const canEndorse = user?.userType == USER_TYPES.BUSINESS || user?.userType == USER_TYPES.COMMUNITY 
+  || user?.userType == USER_TYPES.MUNICIPAL || user?.userType == USER_TYPES.MUNICIPAL_SEG_ADMIN; 
+  const [showEndorseButton, setShowEndorseButton] = useState(false);
+  const handleHideEndorseButton = () => setShowEndorseButton(false);
+  useEffect(() => {
+    if (!isEndorsingPostLoading) {
+      setEndorsingPost(isEndorsingPost.isEndorsed);
+      setShowEndorseButton(true);
+    }
+  }, [isEndorsingPostLoading, isEndorsingPost])
+
+  const handleEndorseUnendorse = async () => {
+    let res;
+    if (user && token) {
+      if (endorsingPost) {
+        res = await unendorseIdeaByUser(token, user.id, ideaId);
+      } else {
+        res = await endorseIdeaByUser(token, user.id, ideaId);
+      }
+      setEndorsingPost(!endorsingPost);
+    }
+  }
+
+  const [showFollowButton, setShowFollowButton] = useState(false);
+  useEffect(() => {
+    if (!isFollowingPostLoading) {
+      setFollowingPost(isFollowingPost.isFollowed);
+      setShowFollowButton(true);
+    }
+
+  }, [isFollowingPostLoading, isFollowingPost])
+
+  useEffect(() => {
+    if (!flagBanDataLoading) {
+      if (flagBanData?.flag_ban || showFlagButton == false) {
+        handleHideFlagButton();
+      }
+    }
+  }, [flagBanDataLoading, flagBanData])
+
+  const handleFollowUnfollow = async () => {
+    let res;
+    if (user && token) {
+      if (followingPost) {
+        res = await unfollowIdeaByUser(token, user.id, ideaId);
+      } else {
+        res = await followIdeaByUser(token, user.id, ideaId);
+      }
+      setFollowingPost(!followingPost);
+    }
   };
 
   let isPostAuthor = false;
@@ -395,6 +468,10 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     return (
       <div>Proposal Is Currently Inactive</div>
     )
+  }
+
+  if (isEndorsingPostLoading || isFollowingPostLoading || flagBanDataLoading) {
+    return <LoadingSpinner />;
   }
 
   return (
@@ -444,11 +521,19 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                   </ButtonGroup>
                   ) : null}
                   <ButtonGroup className="mr-2">
-                    {user && token ? <Button
+                    {user && token && showFollowButton ? <Button
                       // style={{ height: "3rem"}}
-                      onClick={async () => await addIdeaToUserFollowList()}
+                      onClick={async () => await handleFollowUnfollow()}
                     >
                       {followingPost ? "Unfollow" : "Follow"}
+                    </Button> : null}
+                  </ButtonGroup>
+                  <ButtonGroup className="mr-2">
+                    {user && token && showEndorseButton && canEndorse ? <Button
+                      // style={{ height: "3rem"}}
+                      onClick={async () => await handleEndorseUnendorse()}
+                    >
+                      {endorsingPost ? "Unendorse" : "Endorse"}
                     </Button> : null}
                   </ButtonGroup>
                 </div>
@@ -465,7 +550,8 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                   Cancel
                 </Button>
                 <Button style={{background: 'red'}} variant="primary"  onClick={
-                  () => submitFlagReasonHandler(parseInt(ideaId), token!, user!.id, ideaData.active, new Date())
+                  () => {submitFlagReasonHandler(parseInt(ideaId), token!, user!.id, ideaData.active, new Date())
+                  incrementPostFlagCount(token, ideaId);}
                 }>
                   Flag
                 </Button>
@@ -1013,7 +1099,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                       {volunteers.map((volunteer: any, index: number) => (
                         <tr>
                           <td>
-                            {volunteer.author.fname} {volunteer.author.lname}
+                            {volunteer.author.fname}@{volunteer.author.address.streetAddress}
                           </td>
                         </tr>
                       ))}
@@ -1143,7 +1229,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                       {donors.map((donor: any, index: number) => (
                         <tr>
                           <td>
-                            {donor.author.fname} {donor.author.lname}
+                            {donor.author.fname}@{donor.author.address.streetAddress}
                           </td>
                         </tr>
                       ))}
@@ -1223,33 +1309,128 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
             </Card.Header>
             <Card.Body>
             {feedback1 ? (
+              <Card>
+              <Card.Header></Card.Header>
+              <Card.Body>
                     <p>
                       <strong>Specific Feedback 1: </strong> {feedback1}
                     </p>
+                    {feedbackType1 === "YESNO" ? (
+                          <FeedbackRatingYesNoSection
+                            feedbackId = {"1"}
+                            proposalId = {proposalId}
+                          >
+                          </FeedbackRatingYesNoSection>
+                          ) : null}
+                        {feedbackType1 === "RATING" ? (
+                          <FeedbackRatingScaleSection
+                            feedbackId = {"1"}
+                            proposalId = {proposalId}
+                          >
+                          </FeedbackRatingScaleSection>
+                        ) : null}
+                      </Card.Body>
+                    </Card>
                   ) : null}
 
             {feedback2 ? (
+              <Card>
+              <Card.Header></Card.Header>
+              <Card.Body>
                     <p>
                       <strong>Specific Feedback 2: </strong> {feedback2}
                     </p>
+                    {feedbackType2 === "YESNO" ? (
+                          <FeedbackRatingYesNoSection
+                            feedbackId = {"2"}
+                            proposalId = {proposalId}
+                          >
+                          </FeedbackRatingYesNoSection>
+                          ) : null}
+                        {feedbackType2 === "RATING" ? (
+                          <FeedbackRatingScaleSection
+                            feedbackId = {"2"}
+                            proposalId = {proposalId}
+                          >
+                          </FeedbackRatingScaleSection>
+                        ) : null}
+                </Card.Body>
+              </Card>
                   ) : null}
 
             {feedback3 ? (
+              <Card>
+              <Card.Header></Card.Header>
+              <Card.Body>
                     <p>
                       <strong>Specific Feedback 3: </strong> {feedback3}
                     </p>
+                    {feedbackType3 === "YESNO" ? (
+                              <FeedbackRatingYesNoSection
+                                feedbackId = {"3"}
+                                proposalId = {proposalId}
+                              >
+                              </FeedbackRatingYesNoSection>
+                              ) : null}
+                            {feedbackType3 === "RATING" ? (
+                              <FeedbackRatingScaleSection
+                                feedbackId = {"3"}
+                                proposalId = {proposalId}
+                              >
+                              </FeedbackRatingScaleSection>
+                            ) : null}
+                    </Card.Body>
+                  </Card>
                   ) : null}
 
             {feedback4 ? (
+              <Card>
+              <Card.Header></Card.Header>
+              <Card.Body>
                     <p>
                       <strong>Specific Feedback 4: </strong> {feedback4}
                     </p>
+                    {feedbackType4 === "YESNO" ? (
+                              <FeedbackRatingYesNoSection
+                                feedbackId = {"4"}
+                                proposalId = {proposalId}
+                              >
+                              </FeedbackRatingYesNoSection>
+                              ) : null}
+                            {feedbackType4 === "RATING" ? (
+                              <FeedbackRatingScaleSection
+                                feedbackId = {"4"}
+                                proposalId = {proposalId}
+                              >
+                              </FeedbackRatingScaleSection>
+                            ) : null}
+                    </Card.Body>
+                  </Card>
                   ) : null}
 
             {feedback5 ? (
+              <Card>
+              <Card.Header></Card.Header>
+              <Card.Body>
                     <p>
                       <strong>Specific Feedback 5: </strong> {feedback5}
                     </p>
+                    {feedbackType5 === "YESNO" ? (
+                              <FeedbackRatingYesNoSection
+                                feedbackId = {"5"}
+                                proposalId = {proposalId}
+                              >
+                              </FeedbackRatingYesNoSection>
+                              ) : null}
+                            {feedbackType5 === "RATING" ? (
+                              <FeedbackRatingScaleSection
+                                feedbackId = {"5"}
+                                proposalId = {proposalId}
+                              >
+                              </FeedbackRatingScaleSection>
+                            ) : null}
+                    </Card.Body>
+                  </Card>
                   ) : null}
 
             

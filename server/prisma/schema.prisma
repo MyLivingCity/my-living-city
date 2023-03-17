@@ -162,19 +162,23 @@ model User {
   userType UserType @default(RESIDENTIAL) @map("user_type")
 
   // Fields
-  email     String   @unique
-  password  String
-  organizationName String? @map("organization_name")
-  fname     String?  @map("f_name")
-  lname     String?  @map("l_name")
-  createdAt DateTime @default(now()) @map(name: "created_at")
-  updatedAt DateTime @default(now()) @updatedAt @map(name: "updated_at")
-  imagePath String?
-  passCode  String?  @default(cuid())
-  banned    Boolean  @default(false)
-  reviewed  Boolean  @default(false)
-  totalFlagged Int      @default(0) @map("total_flagged")
-  hasFlagged   Int      @default(0) @map("has_flagged")
+  email            String   @unique
+  password         String
+  organizationName String?  @map("organization_name")
+  fname            String?  @map("f_name")
+  lname            String?  @map("l_name")
+  createdAt        DateTime @default(now()) @map(name: "created_at")
+  updatedAt        DateTime @default(now()) @updatedAt @map(name: "updated_at")
+  imagePath        String?
+  passCode         String?  @default(cuid())
+  banned           Boolean  @default(false)
+  reviewed         Boolean  @default(false)
+  totalFlagged     Int      @default(0) @map("total_flagged")
+  hasFlagged       Int      @default(0) @map("has_flagged")
+  verified         Boolean  @default(false)
+  verifiedToken    String?  @default(cuid())
+  displayFName      String?  @map("display_f_name")
+  displayLName      String?  @map("display_l_name")
 
   // Relationships
   address             UserAddress?
@@ -197,6 +201,7 @@ model User {
   collaborators       Collaborator[]        @relation("ideaCollaborator")
   volunteers          Volunteer[]           @relation("ideaVolunteer")
   donors              Donor[]               @relation("ideaDonor")
+  feedbackratings     FeedbackRating[]
 
   // Model overwrites
   Advertisements                    Advertisements[]
@@ -207,6 +212,10 @@ model User {
   Ban_History                       Ban_History[]
   Public_Community_Business_Profile Public_Community_Business_Profile[]
   Public_Municipal_Profile          Public_Municipal_Profile[]
+  False_Flagging_Behavior           False_Flagging_Behavior[]
+  Bad_Posting_Behavior              Bad_Posting_Behavior[]
+  School_Details                    School_Details[]
+  Work_Details                      Work_Details[]
 
   @@map(name: "user")
 }
@@ -234,6 +243,9 @@ model UserSegments {
   workSubSegmentName   String?       @map("work_sub_segment_name")
   schoolSubSegmentId   Int?          @map("school_sub_segment")
   schoolSubSegmentName String?       @map("school_sub_segment_name")
+  homeSegHandle       String?       @map("home_seg_handle")
+  workSegHandle       String?       @map("work_seg_handle")
+  schoolSegHandle     String?       @map("school_seg_handle")
   homeSuperSeg         SuperSegment? @relation("homeSuperSeg", fields: [homeSuperSegId], references: [superSegId])
   workSuperSeg         SuperSegment? @relation("workSuperSeg", fields: [workSuperSegId], references: [superSegId])
   schoolSuperSeg       SuperSegment? @relation("schoolSuperSeg", fields: [schoolSuperSegId], references: [superSegId])
@@ -407,15 +419,15 @@ model Idea {
   quarantined_at         DateTime  @default(now()) @map(name: "quarantined_at")
 
   // relations
-  comments       IdeaComment[]
-  ratings        IdeaRating[]
-  flags          IdeaFlag[]
-  PostBan        PostBan[]
-  proposalInfo   Proposal?        @relation("proposal")
-  projectInfo    Project?
-  address        IdeaAddress?
-  geo            IdeaGeo?
-  userIdeaFollow UserIdeaFollow[]
+  comments        IdeaComment[]
+  ratings         IdeaRating[]
+  flags           IdeaFlag[]
+  PostBan         PostBan[]
+  proposalInfo    Proposal?         @relation("proposal")
+  projectInfo     Project?
+  address         IdeaAddress?
+  geo             IdeaGeo?
+  userIdeaFollow  UserIdeaFollow[]
   userIdeaEndorse UserIdeaEndorse[]
 
   // Multiple relationships pointing to same User Model
@@ -490,6 +502,7 @@ model Proposal {
   // Relations
   idea           Idea    @relation("proposal", fields: [ideaId], references: [id])
   suggestedIdeas Idea[]  @relation("supportedProposal")
+  feedbackRatings FeedbackRating[]
 
   @@map(name: "proposal")
 }
@@ -509,6 +522,22 @@ model Project {
   idea Idea @relation(fields: [ideaId], references: [id])
 
   @@map(name: "project")
+}
+
+model FeedbackRating {
+  // Keys
+  id          Int      @id @default(autoincrement())
+  proposalId  Int      @map("proposal_id")
+  feedbackId  Int      @map("feedback_id")
+  authorId    String   @map("author_id")
+  // Fields
+  rating             Int      @default(0)
+  ratingExplanation String? @map("rating_explaination")
+  createdAt          DateTime @default(now()) @map(name: "created_at")
+  updatedAt          DateTime @default(now()) @updatedAt @map(name: "updated_at")
+  // relations
+  author             User     @relation(fields: [authorId], references: [id])
+  proposal           Proposal @relation(fields: [proposalId], references: [id])
 }
 
 model IdeaRating {
@@ -800,31 +829,89 @@ model Link {
 
 // Split the public profiles so it is easier to scale them individually
 model Public_Community_Business_Profile {
-  id                 Int      @id @default(autoincrement())
-  userId             String
-  statement          String
-  description        String
-  links              Link[]
-  address            String
-  contactInformation String
-  createdAt          DateTime @default(now()) @map("created_at")
-  updatedAt          DateTime @default(now()) @map("updated_at")
-  user               User     @relation(fields: [userId], references: [id])
+  id           Int      @id @default(autoincrement())
+  userId       String
+  statement    String?
+  description  String?
+  links        Link[]
+  address      String?
+  contactEmail String?  @map("contact_email")
+  contactPhone String?  @map("contact_phone")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @default(now()) @map("updated_at")
+  user         User     @relation(fields: [userId], references: [id])
 
   @@map(name: "public_community_business_profile")
 }
 
 model Public_Municipal_Profile {
-  id                 Int      @id @default(autoincrement())
-  userId             String
-  statement          String
-  responsibility     String
-  links              Link[]
-  address            String
-  contactInformation String
-  createdAt          DateTime @default(now()) @map("created_at")
-  updatedAt          DateTime @default(now()) @map("updated_at")
-  user               User     @relation(fields: [userId], references: [id])
+  id             Int      @id @default(autoincrement())
+  userId         String
+  statement      String
+  responsibility String
+  links          Link[]
+  address        String
+  contactEmail   String?  @map("contact_email")
+  contactPhone   String?  @map("contact_phone")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @default(now()) @map("updated_at")
+  user           User     @relation(fields: [userId], references: [id])
 
   @@map(name: "public_municipal_profile")
+}
+
+model False_Flagging_Behavior {
+  id          Int       @id @default(autoincrement())
+  flag_count  Int       @default(0)
+  flag_ban    Boolean   @default(false)
+  userId      String    @map("user_id")
+  bannedAt    DateTime? @map("banned_at")
+  bannedUntil DateTime? @map("banned_until")
+  user        User      @relation(fields: [userId], references: [id])
+
+  @@map(name: "false_flagging_behavior")
+}
+
+model Bad_Posting_Behavior {
+  id         Int       @id @default(autoincrement())
+  bad_post_count Int    @default(0)
+  post_flag_count Int  @default(0)
+  post_comment_ban Boolean @default(false)
+  bannedAt   DateTime? @map("banned_at")
+  bannedUntil DateTime? @map("banned_until")
+  userId     String    @map("user_id")
+  user       User      @relation(fields: [userId], references: [id])
+
+  @@map(name: "bad_posting_behavior")
+}
+
+model School_Details {
+  id         Int      @id @default(autoincrement())
+  displayFName String? @map("display_f_name")
+  displayLName String? @map("display_l_name")
+  streetAddress String?   @map("street_address")
+  postalCode String?   @map("postal_code")
+  faculty   String?   
+  programCompletionDate DateTime? @db.Date @map("program_completion_date")
+  userId     String   @map("user_id")
+  user       User     @relation(fields: [userId], references: [id])
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @default(now()) @map("updated_at")
+
+  @@map(name: "school_details")
+}
+
+model Work_Details {
+  id        Int      @id @default(autoincrement())
+  displayFName String? @map("display_f_name")
+  displayLName String? @map("display_l_name")
+  streetAddress String?   @map("street_address")
+  postalCode String?   @map("postal_code")
+  company    String? 
+  userId     String   @map("user_id")
+  user       User     @relation(fields: [userId], references: [id])
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @default(now()) @map("updated_at")
+
+  @@map(name: "work_details")
 }

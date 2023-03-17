@@ -10,6 +10,7 @@ import IdeaCommentLike from './IdeaCommentLike';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import React, { useEffect, useState } from "react";
+import { useCheckFlagBan } from "src/hooks/flagHooks";
 
 
 
@@ -29,6 +30,7 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
 
   }
 
+
   const handleHideFlagButton = () => setShowFlagButton(false);
 
   const handleClose = () => setShow(false);
@@ -39,6 +41,7 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
 
 
   const { token, user, isUserAuthenticated } = useContext(UserProfileContext);
+  const {data: flagBanData, isLoading: flagBanDataLoading} = useCheckFlagBan(token, (user ? user.id : ""));
   
   const {
     id,
@@ -94,7 +97,7 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
           break;
       }
     }
-    return(<span className={`name d-block font-weight-bold ${colour}`} style={{fontSize: "80%"}}>{userName}</span>)
+    return(<span className={`name d-block font-weight-bold ${colour}`} style={{fontSize: "70%"}}>{userName}</span>)
   }
 
   // const flagFunc = async(ideaId: number, token: string, userId: string, ideaActive: boolean, reason: string, quarantined_at: Date) => {
@@ -133,6 +136,19 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
   
   }
 
+  useEffect(() => {
+    if (!flagBanDataLoading) {
+      if (flagBanData?.flag_ban || showFlagButton == false) {
+        handleHideFlagButton();
+      }
+    }
+  }, [flagBanDataLoading, flagBanData])
+
+  if (flagBanDataLoading) {
+    return <div>Loading...</div>
+  }
+
+
   return (
     <Container fluid className='my-1'>
       <Row className='justify-content-center'>
@@ -147,14 +163,14 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
             </>
           }
             
-            <span className="date text-black-50" style={{fontSize: "80%"}}>
+            <span className="date text-black-50" style={{fontSize: "70%"}}>
               Shared publicly - {timeDifference(new Date(), new Date(createdAt))}
             </span>
           </div>
           <div className="mt-2">
             <h3>{content}</h3>
           </div>
-          <div style={{fontSize: "80%"}}>
+          <div style={{fontSize: "70%"}}>
             Likes and Dislikes: {likes} / {dislikes}
           </div>
           {isUserAuthenticated() && (
@@ -168,7 +184,7 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
               ) : null} */}
               {!reviewed ? (
               <ButtonGroup className="mr-2 mt-3">
-                    {showFlagButton ? (<DropdownButton id="dropdown-basic-button d-flex" style={{ fontSize: "12px", font: "12px sans-serif"}} title="Flag" size="sm">
+                    {showFlagButton ? (<DropdownButton id="dropdown-basic-button d-flex" style={{ fontSize: "10px", font: "10px sans-serif"}} title="Flag" size="sm">
                     <Dropdown.Item eventKey= "Abusive or Inappropriate Language" onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Abusive or Inappropriate Language</Dropdown.Item>
                     <Dropdown.Item eventKey= "Submission in Wrong Community" onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Submission in Wrong Community</Dropdown.Item>
                     <Dropdown.Item eventKey= "Spam/Unsolicited Advertisement" onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Spam/Unsolicited Advertisement</Dropdown.Item>

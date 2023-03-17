@@ -1,5 +1,6 @@
 import { TOKEN_EXPIRY, UTIL_FUNCTIONS } from './constants';
 import { IRating, IRatingAggregateSummary, IRatingValueBreakdown } from './types/data/rating.type';
+import { IFeedbackRating, IFeedbackRatingScaleAggregateSummary, IFeedbackRatingYesNoAggregateSummary } from './types/data/feedbackRating.type';
 import { IUser } from './types/data/user.type';
 import { IFetchError } from './types/types';
 
@@ -224,7 +225,7 @@ export const getRatingAggregateSummary = (ratings: IRating[] | undefined): IRati
 	}
 }
 
-export const checkIfUserHasRated = (ratings: IRating[] | undefined, userId: string | undefined): boolean => {
+export const checkIfUserHasRated = (ratings: IRating[] | IFeedbackRating[] | undefined, userId: string | undefined): boolean => {
 	let flag = false;
 	if (!ratings || !userId) return flag;
 
@@ -272,4 +273,58 @@ export const getDuplicatesRemoved = (arr: any[]) => {
 		return index === self.indexOf(element);
 	});
 	return unique;
+}
+
+export const findUserFeedbackRatingSubmission = (
+	feedbackRatings?: IFeedbackRating[],
+	userId?: string
+): number | null => {
+	if (!feedbackRatings || !userId) {
+		return null
+	}
+
+	let foundRating = feedbackRatings.find(rating => rating.authorId === userId);
+	return foundRating ? foundRating.rating : null;
+}
+
+export const getFeedbackRatingYesNoAggregateSummary = (feedbackRatings: IFeedbackRating[] | undefined): IFeedbackRatingYesNoAggregateSummary => {
+	if (!feedbackRatings) {
+		return {
+			noRatings: 0,
+			yesRatings: 0,
+		}
+	}
+	let noRatings = 0;
+	let yesRatings = 0;
+
+	feedbackRatings.forEach(({ rating }) => {
+
+		if (rating === 0) noRatings++;
+		if (rating === 1) yesRatings++;
+	})
+
+	return {
+		noRatings,
+		yesRatings,
+	}
+}
+
+export const getFeedbackRatingScaleAggregateSummary = (feedbackRatings: IFeedbackRating[] | undefined): IFeedbackRatingScaleAggregateSummary => {
+
+	if (!feedbackRatings) {
+		return {
+			ratingAvg: 0,
+		}
+	}
+	let ratingCount = 0;
+	let ratingAvg = 0;
+
+	feedbackRatings.forEach(({ rating }) => {
+		ratingCount++;
+		ratingAvg += rating;
+	})
+
+	return {
+		ratingAvg: ratingCount ? ratingAvg / ratingCount : 0,
+	}
 }

@@ -149,7 +149,7 @@ commentRouter.get(
           },
           {
             updatedAt: 'desc'
-          }
+          },
         ]
       });
 
@@ -161,7 +161,13 @@ commentRouter.get(
 
       result.sort(compareCommentsBasedOnLikesAndDislikes);
 
-      res.status(200).json(result);
+      // put comments with a userType == 'MOD' at the top
+      const moderatorComments = result.filter(comment => comment.author.userType === 'MOD');
+      const nonModeratorComments = result.filter(comment => comment.author.userType !== 'MOD');
+
+      const sortedResult = [...moderatorComments, ...nonModeratorComments];
+
+      res.status(200).json(sortedResult);
     } catch (error) {
       console.error(error);
       res.status(400).json({
@@ -182,7 +188,53 @@ commentRouter.post(
   '/create/:ideaId',
   passport.authenticate('jwt', { session: false }),
   async (req, res, next) => {
-    try {
+    try {    
+      //check if user is in bad posting behavior table if so res.status(400).json({message: 'User is in bad posting behavior table'}) 
+      const { id } = req.user;
+      const user = await prisma.bad_Posting_Behavior.findFirst({
+        where: {
+          userId: id,
+          post_comment_ban: true,
+        },
+      });
+      
+      if (user) {
+        return res.status(400).json({
+          message: 'User is in quaratine',
+        });
+      } 
+
+      //where bad_post_count is greater than or equal to 3 OR where post_flag_count is greater than or equal to 3
+      const checkUser = await prisma.bad_Posting_Behavior.findFirst({
+        where: {
+          userId: id,
+          OR: [
+            {
+              bad_post_count: {
+                gte: 3
+              }
+            },
+            {
+              post_flag_count: {
+                gte: 3
+              }
+            }
+          ]
+        },
+      });
+      if (checkUser) {
+        const updateUser = await prisma.bad_Posting_Behavior.updateMany({
+          where: {
+            userId: id,
+          },
+          data: {
+            post_comment_ban: true,
+          },
+        });
+        return res.status(400).json({
+          message: 'You have too many bad posts / post flagged. Post was NOT submitted.',
+        });
+      }
       const { email, id: loggedInUserId } = req.user;
       const { content } = req.body;
       const parsedIdeaId = parseInt(req.params.ideaId);

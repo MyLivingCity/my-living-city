@@ -1181,12 +1181,12 @@ userRouter.patch(
 	async (req, res, next) => {
 		try {
 			const user = await prisma.user.findUnique({
-				where: { userId: req.params.id },
+				where: { id: req.params.id },
 			});
 
 			if (user) {
 				await prisma.user.update({
-					where: { userId: req.params.id },
+					where: { id: user.id },
 					data: {
 						displayFname: req.body.displayFname,
 						displayLname: req.body.displayLname,
@@ -1198,6 +1198,7 @@ userRouter.patch(
 				message: "Display name successfully updated"
 			});
 		} catch (error) {
+			console.log(error)
 			res.status(400).json({
 				message: `An Error occured while trying to update display name.`,
 				details: {
@@ -1216,7 +1217,7 @@ userRouter.patch(
 	async (req, res, next) => {
 		try {
 			const user = await prisma.user.findUnique({
-				where: { userId: req.params.id },
+				where: { id: req.params.id },
 			});
 
 			const now = new Date();
@@ -1248,5 +1249,46 @@ userRouter.patch(
 		}
 	}
 )
+
+userRouter.get(
+	'/getGeoData/:id',
+	async (req, res, next) => {
+		try {
+			const user = await prisma.user.findUnique({
+				where: { id: req.params.id },
+			});
+
+			if (user) {
+				const geoData = await prisma.userGeo.findUnique({
+					where: { userId: req.params.id },
+					select: {
+						lat: true,
+						lon: true,
+						school_lat: true,
+						school_lon: true,
+						work_lat: true,
+						work_lon: true,
+					}
+				});
+
+				console.log("getGeoData")
+				console.log(geoData)
+				res.status(200).json(geoData);
+			}
+		} catch (error) {
+			console.log(error)
+			res.status(400).json({
+				message: `An Error occured while trying to retrieve geo data.`,
+				details: {
+					errorMessage: error.message,
+					errorStack: error.stack,
+				}
+			});
+		} finally {
+			await prisma.$disconnect();
+		}
+	}
+)
+
 
 module.exports = userRouter;

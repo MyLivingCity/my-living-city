@@ -911,4 +911,32 @@ userSegmentRouter.get(
     }
 );
 
+userSegmentRouter.get(
+    '/getSegmentByName/:name',
+    async(req,res)=>{
+        try{
+            const {name} = req.params;
+
+            const result = await prisma.segments.findFirst({
+                where:{name:name}
+            })
+
+            if(!result){
+                res.status(404).json("segment not found!");
+            }
+
+            return res.status(200).json(result);
+        }catch(error){
+            console.log(error);
+            res.status(400).json({
+                message: "An error occured while trying to retrieve a segment.",
+                details: {
+                    errorMessage: error.message,
+                    errorStack: error.stack,
+                }
+            });
+        }
+    }
+);
+
 module.exports = userSegmentRouter;

@@ -30,9 +30,8 @@ emailVerificationRouter.get(
         res.redirect(login);
 
       } else {
-        res.status(400).json({
-          message: 'Verification code does not match',
-        });
+        var login = process.env.CORS_ORIGIN + '/login' || 'http://localhost:3000/login';
+        res.redirect(login);
       }
     } catch (error) {
       res.status(400).json({

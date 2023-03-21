@@ -230,7 +230,7 @@ const sendEmailVerification = async(user) => {
     },
   });
   const appUrl = process.env.APP_URL || 'http://localhost:3000';
-  var url = process.env.APP.URL || 'http://localhost:3001';
+  var url = process.env.APP_URL || 'http://localhost:3001';
   url += `/emailVerification/checkVerificationCode/${user.id}/${token}`;
   const mailOptions = {
     from: 'MyLivingCity Email Verification<' + process.env.EMAIL + '>', // sender address

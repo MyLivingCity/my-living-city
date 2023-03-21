@@ -268,7 +268,8 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
             <Card.Header>
               <div className="d-flex">
                 <h1 className="h1 p-2 flex-grow-1">{capitalizeString(title)}</h1>
-                <div className="p-2 justify-content-end" >
+                <div style={{display: "flex", minWidth: "16rem", justifyContent: "center", marginTop: "0.5rem"}}>
+                  <div>
                   {/* <div id="flagButtonDiv" style={{display: showFlagButton ? 'block' : 'none'}}> */}
                   {showFlagButton ? (<ButtonGroup className="mr-2">
                   {!reviewed ? (
@@ -299,6 +300,8 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                       {endorsingPost ? "Unendorse" : "Endorse"}
                     </Button> : null}
                   </ButtonGroup>
+                    
+                  </div>
                 </div>
               </div>
             </Card.Header>

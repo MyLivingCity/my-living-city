@@ -875,6 +875,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
         >
 
         </SegmentInfo>
+        {workData &&
         <SegmentInfo 
         user={user!} 
         token={token!} 
@@ -883,11 +884,11 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
         segmentData={
           {
             displayFName: (workData!.displayFName ? workData!.displayFName : (fname ? fname : "Unknown")),
-            displayLName: (workData!.displayLName ? workData!.displayLName : (workData!.company ? workData!.company : "Unknown")),
-            street: (workData!.streetAddress ? workData!.streetAddress : "Unknown"),
-            city: (userSegments!.workSegmentName ? userSegments!.workSegmentName : "Unknown"),
-            postalCode: (workData!.postalCode ? workData!.postalCode : "Unknown"),
-            neighborhood: (userSegments!.workSubSegmentName ? userSegments!.workSubSegmentName : "Unknown"),
+            displayLName: (workData!.displayLName ? workData!.displayLName : (workData!.company ? workData!.company : (streetAddress ? streetAddress : "Unknown"))),
+            street: (workData!.streetAddress ? workData!.streetAddress : (streetAddress ? streetAddress : "Unknown")),
+            city: (userSegments!.workSegmentName ? userSegments!.workSegmentName : (userSegments!.homeSegmentName ? userSegments!.homeSegmentName : "Unknown")),
+            postalCode: (workData!.postalCode ? workData!.postalCode : (postalCode ? postalCode : "Unknown")),
+            neighborhood: (userSegments!.workSubSegmentName ? userSegments!.workSubSegmentName : (userSegments!.homeSubSegmentName ? userSegments!.homeSubSegmentName : "Unknown")),
           }
         }
         geoData={
@@ -902,6 +903,8 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
         >
           
         </SegmentInfo>
+  }
+  {schoolData &&
         <SegmentInfo 
         user={user!} 
         token={token!} 
@@ -910,11 +913,11 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
         segmentData={
           {
             displayFName: (schoolData!.displayFName ? schoolData!.displayFName : (fname ? fname : "Unknown")),
-            displayLName: (schoolData!.displayLName ? schoolData!.displayLName : (schoolData!.faculty ? schoolData!.faculty : "Unknown")),
-            street: (schoolData!.streetAddress ? schoolData!.streetAddress : "Unknown"),
-            city: (userSegments!.schoolSegmentName ? userSegments!.schoolSegmentName : "Unknown"),
-            postalCode: (schoolData!.postalCode ? schoolData!.postalCode : "Unknown"),
-            neighborhood: (userSegments!.schoolSubSegmentName ? userSegments!.schoolSubSegmentName : "Unknown"),
+            displayLName: (schoolData!.displayLName ? schoolData!.displayLName : (schoolData!.faculty ? schoolData!.faculty : (streetAddress ? streetAddress : "Unknown"))),
+            street: (schoolData!.streetAddress ? schoolData!.streetAddress : (streetAddress ? streetAddress : "Unknown")),
+            city: (userSegments!.schoolSegmentName ? userSegments!.schoolSegmentName : (userSegments!.homeSegmentName ? userSegments!.homeSegmentName : "Unknown")),
+            postalCode: (schoolData!.postalCode ? schoolData!.postalCode : (postalCode ? postalCode : "Unknown")),
+            neighborhood: (userSegments!.schoolSubSegmentName ? userSegments!.schoolSubSegmentName : (userSegments!.homeSubSegmentName ? userSegments!.homeSubSegmentName : "Unknown")),
           }
         }
         geoData={
@@ -929,6 +932,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
         >
           
         </SegmentInfo>
+  }
       </Row>
 
     </Container>

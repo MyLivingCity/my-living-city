@@ -875,6 +875,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
         >
 
         </SegmentInfo>
+        {workData &&
         <SegmentInfo 
         user={user!} 
         token={token!} 
@@ -902,6 +903,8 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
         >
           
         </SegmentInfo>
+  }
+  {schoolData &&
         <SegmentInfo 
         user={user!} 
         token={token!} 
@@ -929,6 +932,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
         >
           
         </SegmentInfo>
+  }
       </Row>
 
     </Container>

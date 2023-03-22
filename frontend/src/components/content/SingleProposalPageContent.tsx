@@ -109,14 +109,14 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
   let reducedTextProposalGoal = requirements.substring(0, 250) + "..."
 
-  let reducedTextBenefits = requirements.substring(0, 250) + "..."
+  let reducedTextBenefits = proposal_benefits.substring(0, 250) + "..."
 
   let reducedTextProposorInfo = proposal_role.substring(0, 250) + "..."
 
   const [descriptionText, setDescriptionText] = useState(reducedText);
   const [proposalText, setProposalText] = useState(reducedTextProposalGoal);
   const [benefitText, setBenefitsText] = useState(reducedTextBenefits);
-  const [proposorText, setProposorText] = useState(reducedTextBenefits);
+  const [proposorText, setProposorText] = useState(reducedTextProposorInfo);
   const [readMore, setReadmore] = useState('Read More');
   const [readLess, setReadLess] = useState('Read Less');
   const [expanded, setExpanded] = useState(false)
@@ -648,15 +648,15 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                     <strong>Proposer Info:</strong> {proposal_role}<br />
                     {expandedProposorInfo && <b onClick={reduceTextProposor}>{readLess}</b>}
                   </p>}
-                  {description.length > 100 && !expandedGoal ? (
+                  {description.length > 100 && !expanded ? (
                     <p>
-                      <strong>Proposal info:</strong> {proposalText}<br />
-                      {<b onClick={expandTextGoal}>{readMore}</b>}
+                      <strong>Description:</strong> {descriptionText}<br />
+                      {<b onClick={expandText}>{readMore}</b>}
                     </p>
 
                   ) : <p>
-                    <strong>Proposal Info:</strong> {description} <br />
-                    {expandedGoal && <b onClick={reduceTextGoal}>{readLess}</b>}
+                    <strong>Description:</strong> {description} <br />
+                    {expanded && <b onClick={reduceText}>{readLess}</b>}
                   </p>}
                   {proposal_benefits.length > 100 && !expandedBenefits ? (
                     <p>
@@ -668,15 +668,15 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                     {expandedBenefits && <b onClick={reduceTextBenefits}>{readLess}</b>}
                   </p>}
 
-                  {requirements.length > 100 && !expanded ? (
+                  {requirements.length > 100 && !expandedGoal ? (
                     <p>
-                      <strong>Requirements:</strong> {descriptionText}<br />
-                      <b id="more-text" onClick={expandText}>{readMore}</b>
+                      <strong>Requirements:</strong> {reducedTextProposalGoal}<br />
+                      <b id="more-text" onClick={expandTextGoal}>{readMore}</b>
                     </p>
 
                   ) : <p>
                     <strong>Requirements:</strong> {requirements} <br />
-                    {expanded && <b id="more-text" onClick={reduceText}>{readLess}</b>}
+                    {expandedGoal && <b id="more-text" onClick={reduceTextGoal}>{readLess}</b>}
                   </p>}
 
                   {communityImpact ? (

@@ -154,7 +154,7 @@ feedbackRatingRouter.get(
                     where: {
                         proposalId: parsedProposalId,
                         feedbackId: parsedFeedbackId,
-                        rating: 0
+                        rating: 2
                     },
                     count: true,
                 });

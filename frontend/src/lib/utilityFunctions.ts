@@ -299,7 +299,7 @@ export const getFeedbackRatingYesNoAggregateSummary = (feedbackRatings: IFeedbac
 
 	feedbackRatings.forEach(({ rating }) => {
 
-		if (rating === 0) noRatings++;
+		if (rating === 2) noRatings++;
 		if (rating === 1) yesRatings++;
 	})
 

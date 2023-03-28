@@ -117,7 +117,7 @@ const FeedbackRatingYesNoInput = ({
                             disabled={shouldButtonBeDisabled()}
                         />
                         <FormControlLabel
-                            value={1}
+                            value={2}
                             control={<Radio />}
                             label="No"
                             sx = {{

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Col, Container, Row, Card, Image, ListGroup, ListGroupItem, Button, Form, Table, NavDropdown, Dropdown, Alert} from 'react-bootstrap';
+import { Col, Container, Row, Card, Image, ListGroup, ListGroupItem, Button, Form, Table, NavDropdown, Dropdown, Alert, ButtonGroup} from 'react-bootstrap';
 import { postUserSegmentRequest } from 'src/lib/api/userSegmentRequestRoutes';
 import { API_BASE_URL, USER_TYPES } from 'src/lib/constants';
 import { IUser } from '../../lib/types/data/user.type';
@@ -103,6 +103,11 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
   const [geoData, setGeoData] = useState<any>({});
   const [segments, setSegments] = useState<any[]>([]);
   const [subSegments, setSubSegments] = useState<any[]>([]);
+  const [editPersonalInfo, setEditPersonalInfo] = useState(false);
+
+  function handleEditPersonalInfo() {
+    setEditPersonalInfo(!editPersonalInfo);
+  }
 
 
   function addNewRow() {
@@ -272,6 +277,11 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
     }
     const test = updateStandardProfile(profileNew, token).then(e => console.log(e)).catch(e => console.log(e));
     setShowAlert(true);
+    return {
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+    }
   }
   
 
@@ -726,7 +736,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
           <h2 className="pb-2 pt-2 display-6">User Profile</h2>
       </Row>
 
-      <Row>
+      <Row style={{marginBottom: "2rem"}}>
         <Card className='text-center mx-5 mb-5' style={{ width: '18rem'}}>
             <Row className='mt-3'>
               <Col>
@@ -746,102 +756,95 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
             }
            
           </Card>
-        
-        <Card style={{ width: '40rem'}}>
-          <Row className='justify-content-center mt-3'>
-              <ListGroup variant='flush' className=''>
-                <ListGroup.Item><strong>Full Name</strong></ListGroup.Item>
-                <ListGroup.Item><strong>Email</strong></ListGroup.Item>
-                <ListGroup.Item><strong>Street Address</strong></ListGroup.Item>
-                {streetAddress2 ? <ListGroup.Item><strong>Street Address 2</strong></ListGroup.Item> : null}
-                <ListGroup.Item><strong>City</strong></ListGroup.Item>
-                <ListGroup.Item><strong>Postal Code / Zip</strong></ListGroup.Item>
-                <ListGroup.Item><strong>Community Request</strong></ListGroup.Item>
-              </ListGroup>
-            
-              <ListGroup variant='flush' className=''>
-                <ListGroup.Item>{ fname ? capitalizeString(fname) : "Unknown" } { lname ? capitalizeString(lname) : "Unknown" }</ListGroup.Item>
-                <ListGroup.Item>{ email }</ListGroup.Item>
-                <ListGroup.Item>{ streetAddress ? capitalizeString(streetAddress) : "Unknown" }</ListGroup.Item>
-                {streetAddress2 ? <ListGroup.Item>{ streetAddress2 ? capitalizeString(streetAddress2) : "Unknown" }</ListGroup.Item> : null}
-                <ListGroup.Item>{ city ? capitalizeString(city) : capitalizeString(userSegments!.homeSegmentName) }</ListGroup.Item>
-                <ListGroup.Item>{ postalCode ? postalCode.toUpperCase() : "Unknown" }</ListGroup.Item>
-                <ListGroup.Item><Button variant="link" onClick={()=>setShow(b=>!b)}>Request your Community!</Button></ListGroup.Item>
-              </ListGroup>
-              <RequestSegmentModal showModal={show} setShowModal={setShow} index={0} 
-              setSegmentRequests={setSegmentRequests} segmentRequests={segmentRequests}/>
-          </Row>
-        </Card>
-      </Row>
-      
-      <Row className='mb-4 mt-4 justify-content-center'>
-        <h2 className="pb-2 pt-2 display-6">Edit Profile</h2>
-      </Row>
 
-      <Row>
-        <Card style={{ width: '80rem'}}>
-          <Card.Body className="my-5">
-          <Form
-          id="formPublicProfile"
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleStandardProfile();
-          }}
-          >
-            {showAlert ? <Alert variant="primary" dismissible onClose={() => setShowAlert(false)}>Profile Updated</Alert> : null}
-              <Form.Group className="mb-3" controlId="formProfileInformation">
-                <Form.Label>Personal Information</Form.Label>
-                <Table bordered hover size="sm">
-                  <thead>
-                    <tr>
-                      <th>First Name</th>
-                      <th>Last Name</th>
-                      <th>Email</th>
-                    </tr>
-                  </thead>
+          <Card style={{ width: '42rem', padding: '1.5rem', paddingBottom: "0", paddingTop: "0", justifyContent: "center"}}>
+          {showAlert ? <Alert variant="primary" dismissible onClose={() => setShowAlert(false)}>Profile Updated</Alert> : null}
+          <Row>
+            <Col style={{maxWidth: "4rem"}}></Col>
+          { editPersonalInfo ? (
+            <Form 
+              id="formPublicProfile" 
+              style={{ minWidth: "20rem"}}
+              onSubmit={(e) => { 
+                e.preventDefault();
+                handleStandardProfile();
+                setEditPersonalInfo(false);
+                // Change
+                window.location.reload();
+              }}
+            >
+                <Form.Group className="mb-3" controlId="formProfileInformation">
                   {standardProfile ? (
-                  <tbody>
-                    <tr>
-                      <td>
+                    <>
+                    <Form.Group className="mb-3" controlId="firstName">
+                      <Form.Label><strong>First Name:</strong></Form.Label>
                       <Form.Control 
                         type="text"
                         id="formStandardFirstName"
                         placeholder="First Name" 
                         defaultValue={fname}
                       />
-                      </td>
-                      <td>
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="lastName">
+                      <Form.Label><strong>Last Name:</strong></Form.Label>
                       <Form.Control 
-                        type="text"
-                        id="formStandardLastName"
-                        placeholder="Last Name" 
-                        defaultValue={lname}
-                      />
-                      </td>
-                      <td>
+                          type="text"
+                          id="formStandardLastName"
+                          placeholder="Last Name" 
+                          defaultValue={lname}
+                        />
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="email">
+                      <Form.Label><strong>Email:</strong></Form.Label>
                       <Form.Control 
-                        type="email"
-                        id="formStandardEmail"
-                        placeholder="Email Address" 
-                        defaultValue={standardProfile.email}
-                      />
-                      </td>
-                    </tr>
-                  </tbody>
+                          type="email"
+                          id="formStandardEmail"
+                          placeholder="Email Address" 
+                          defaultValue={email}
+                        />
+                    </Form.Group>
+                    </>
                   ) : null}
-                </Table>
-                  {/* //create a image uploader here
-                  <Form.Group className="mb-3" controlId="formStandardImage">
-                    <ImageUploader name="formStandardImage" withPreview={true} withIcon={true} buttonText='Choose image' onChange={(picture) => {
-                      setFieldValue("formStandardImage", picture);
-                    }} imgExtension={['.jpg', '.gif', '.png', '.gif']} maxFileSize={5242880} /> 
-                  </Form.Group> */}
-                <Button variant="primary" type="submit">
-                Update
-                </Button>
-              </Form.Group>
-            </Form>
-          </Card.Body>
+                    <Button variant="danger" className="btn-sm" style={{marginRight: "1rem"}} onClick={handleEditPersonalInfo}>
+                      Cancel
+                    </Button>
+                    <Button variant="primary" className="btn-sm" type="submit">
+                      Update
+                    </Button>
+                </Form.Group>
+              </Form>
+          ) : (
+            <>
+            <Col style={{padding: "0", maxWidth: "15rem"}}>
+              <ListGroup variant='flush'>
+                <ListGroupItem><strong>Full Name: </strong></ListGroupItem>
+                <ListGroupItem><strong>Email: </strong></ListGroupItem>
+                <ListGroupItem><strong>Community Request: </strong></ListGroupItem>
+              </ListGroup>
+            </Col>
+            <Col style={{padding: "0"}}>
+              <ListGroup variant='flush'>
+                <ListGroupItem>{capitalizeString(fname!)} {capitalizeString(lname!)}</ListGroupItem>
+                <ListGroupItem>{email!}</ListGroupItem>
+                <ListGroup.Item><Button variant="link" style={{padding: "0"}}onClick={()=>setShow(b=>!b)}>Request your Community!</Button></ListGroup.Item>
+              </ListGroup>
+              
+            </Col>
+            <Col style={{maxWidth: "8rem"}}>
+              <Button 
+                variant='primary' 
+                className=''
+                onClick={handleEditPersonalInfo}
+                style={{float: "right"}}
+                >Edit
+              </Button>
+            </Col>
+          </>
+          )
+          }
+          </Row>
+          <RequestSegmentModal showModal={show} setShowModal={setShow} index={0} 
+            setSegmentRequests={setSegmentRequests} segmentRequests={segmentRequests}/>
         </Card>
       </Row>
 
@@ -872,6 +875,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
         >
 
         </SegmentInfo>
+        {workData &&
         <SegmentInfo 
         user={user!} 
         token={token!} 
@@ -880,11 +884,11 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
         segmentData={
           {
             displayFName: (workData!.displayFName ? workData!.displayFName : (fname ? fname : "Unknown")),
-            displayLName: (workData!.displayLName ? workData!.displayLName : (workData!.company ? workData!.company : "Unknown")),
-            street: (workData!.streetAddress ? workData!.streetAddress : "Unknown"),
-            city: (userSegments!.workSegmentName ? userSegments!.workSegmentName : "Unknown"),
-            postalCode: (workData!.postalCode ? workData!.postalCode : "Unknown"),
-            neighborhood: (userSegments!.workSubSegmentName ? userSegments!.workSubSegmentName : "Unknown"),
+            displayLName: (workData!.displayLName ? workData!.displayLName : (workData!.company ? workData!.company : (streetAddress ? streetAddress : "Unknown"))),
+            street: (workData!.streetAddress ? workData!.streetAddress : (streetAddress ? streetAddress : "Unknown")),
+            city: (userSegments!.workSegmentName ? userSegments!.workSegmentName : (userSegments!.homeSegmentName ? userSegments!.homeSegmentName : "Unknown")),
+            postalCode: (workData!.postalCode ? workData!.postalCode : (postalCode ? postalCode : "Unknown")),
+            neighborhood: (userSegments!.workSubSegmentName ? userSegments!.workSubSegmentName : (userSegments!.homeSubSegmentName ? userSegments!.homeSubSegmentName : "Unknown")),
           }
         }
         geoData={
@@ -899,6 +903,8 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
         >
           
         </SegmentInfo>
+  }
+  {schoolData &&
         <SegmentInfo 
         user={user!} 
         token={token!} 
@@ -907,11 +913,11 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
         segmentData={
           {
             displayFName: (schoolData!.displayFName ? schoolData!.displayFName : (fname ? fname : "Unknown")),
-            displayLName: (schoolData!.displayLName ? schoolData!.displayLName : (schoolData!.faculty ? schoolData!.faculty : "Unknown")),
-            street: (schoolData!.streetAddress ? schoolData!.streetAddress : "Unknown"),
-            city: (userSegments!.schoolSegmentName ? userSegments!.schoolSegmentName : "Unknown"),
-            postalCode: (schoolData!.postalCode ? schoolData!.postalCode : "Unknown"),
-            neighborhood: (userSegments!.schoolSubSegmentName ? userSegments!.schoolSubSegmentName : "Unknown"),
+            displayLName: (schoolData!.displayLName ? schoolData!.displayLName : (schoolData!.faculty ? schoolData!.faculty : (streetAddress ? streetAddress : "Unknown"))),
+            street: (schoolData!.streetAddress ? schoolData!.streetAddress : (streetAddress ? streetAddress : "Unknown")),
+            city: (userSegments!.schoolSegmentName ? userSegments!.schoolSegmentName : (userSegments!.homeSegmentName ? userSegments!.homeSegmentName : "Unknown")),
+            postalCode: (schoolData!.postalCode ? schoolData!.postalCode : (postalCode ? postalCode : "Unknown")),
+            neighborhood: (userSegments!.schoolSubSegmentName ? userSegments!.schoolSubSegmentName : (userSegments!.homeSubSegmentName ? userSegments!.homeSubSegmentName : "Unknown")),
           }
         }
         geoData={
@@ -926,6 +932,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
         >
           
         </SegmentInfo>
+  }
       </Row>
 
     </Container>

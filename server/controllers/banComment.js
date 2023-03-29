@@ -62,6 +62,8 @@ banCommentRouter.post(
                     errorStack: error.stack,
                 }
             });
+        } finally {
+            await prisma.$disconnect();
         }
     }
 )
@@ -90,6 +92,8 @@ banCommentRouter.get(
                     errorStack: error.stack,
                 }
             });
+        } finally {
+            await prisma.$disconnect();
         }
     }
 )
@@ -114,6 +118,8 @@ banCommentRouter.get(
                     errorStack: error.stack,
                 }
             });
+        } finally {
+            await prisma.$disconnect();
         }
     }
 )
@@ -147,6 +153,8 @@ banCommentRouter.put(
                     errorStack: error.stack,
                 }
             });
+        } finally {
+            await prisma.$disconnect();
         }
     }
 )
@@ -176,6 +184,8 @@ banCommentRouter.delete(
                     errorStack: error.stack,
                 }
             });
+        } finally {
+            await prisma.$disconnect();
         }
     }
 )

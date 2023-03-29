@@ -61,6 +61,8 @@ banUserRouter.post(
                     errorStack: error.stack,
                 }
             });
+        } finally {
+            await prisma.$disconnect();
         }
     }
 )
@@ -79,6 +81,8 @@ banUserRouter.get(
                     errorStack: error.stack,
                 }
             });
+        } finally {
+            await prisma.$disconnect();
         }
     }
 )
@@ -111,6 +115,8 @@ banUserRouter.get(
                     errorStack: error.stack,
                 }
             });
+        } finally {
+            await prisma.$disconnect();
         }
     }
 )
@@ -143,6 +149,8 @@ banUserRouter.get(
                     errorStack: error.stack,
                 }
             });
+        } finally {
+            await prisma.$disconnect();
         }
     }
 )
@@ -175,6 +183,8 @@ banUserRouter.get(
                     errorStack: err.stack
                 }
             });
+        } finally {
+            await prisma.$disconnect();
         }
     }
 );
@@ -218,6 +228,8 @@ banUserRouter.put(
                     errorStack: err.stack
                 }
             });
+        } finally {
+            await prisma.$disconnect();
         }
     }
 )
@@ -284,6 +296,8 @@ banUserRouter.get(
                     errorStack: error.stack,
                 }
             });
+        } finally {
+            await prisma.$disconnect();
         }
     }
 );
@@ -313,6 +327,8 @@ banUserRouter.delete(
                     errorStack: error.stack,
                 }
             });
+        } finally {
+            await prisma.$disconnect();
         }
     }
 )

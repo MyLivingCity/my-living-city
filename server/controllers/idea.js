@@ -43,19 +43,7 @@ ideaRouter.post(
   passport.authenticate('jwt', { session: false }),
   //upload.single('imagePath'),
   async (req, res) => {
-    //check if user is in bad posting behavior table if so res.status(400).json({message: 'User is in bad posting behavior table'}) 
-    const { id } = req.user;
-    const user = await prisma.bad_Posting_Behavior.findFirst({
-      where: {
-        userId: id,
-        post_comment_ban: true,
-      },
-    });
-    if (user) {
-      return res.status(400).json({
-        message: 'User is in bad posting behavior table',
-      });
-    }
+
     upload(req, res, async function (err) {
       //multer error handling method
       let error = '';
@@ -68,6 +56,21 @@ ideaRouter.post(
         errorStack += err + ' ';
       };
       try {
+
+        //check if user is in bad posting behavior table if so res.status(400).json({message: 'User is in bad posting behavior table'})
+        const { id } = req.user;
+        const user = await prisma.bad_Posting_Behavior.findFirst({
+          where: {
+            userId: id,
+            post_comment_ban: true,
+          },
+        });
+        if (user) {
+          return res.status(400).json({
+            message: 'User is in bad posting behavior table',
+          });
+        }
+
         //if there's no object in the request body
         if (isEmpty(req.body)) {
           return res.status(400).json({
@@ -82,7 +85,7 @@ ideaRouter.post(
         console.log(req.body);
 
         // passport middleware provides this based on JWT
-        const { email, id } = req.user;
+        const { email } = req.user;
 
         const theUserSegment = await prisma.userSegments.findFirst({ where: { userId: id } });
 
@@ -769,6 +772,8 @@ ideaRouter.put(
         }
       } catch (error) {
         console.log("Error while creating quarantine notification: " + error);
+      } finally {
+        await prisma.$disconnect();
       }
 
       const updateIdea = await prisma.idea.update({
@@ -848,6 +853,8 @@ ideaRouter.put(
           errorStack: error.stack,
         }
       });
+    } finally {
+      await prisma.$disconnect();
     }
   }
 )

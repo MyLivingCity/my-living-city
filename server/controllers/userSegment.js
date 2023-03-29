@@ -299,6 +299,8 @@ userSegmentRouter.get(
                     errorStack: error.stack,
                 }
             });
+        } finally {
+            await prisma.$disconnect();
         }
     }
 )
@@ -329,6 +331,8 @@ userSegmentRouter.get(
                     errorStack: error.stack,
                 }
             });
+        } finally {
+            await prisma.$disconnect();
         }
     }
 )
@@ -716,6 +720,8 @@ userSegmentRouter.get(
                     errorStack: error.stack,
                 }
             });
+        } finally {
+            await prisma.$disconnect();
         }
     }
 );
@@ -754,6 +760,8 @@ userSegmentRouter.get(
                     errorStack: error.stack,
                 }
             });
+        } finally {
+            await prisma.$disconnect();
         }
     }
 );
@@ -792,6 +800,8 @@ userSegmentRouter.get(
                     errorStack: error.stack,
                 }
             });
+        } finally {
+            await prisma.$disconnect();
         }
     }
 );
@@ -831,6 +841,8 @@ userSegmentRouter.get(
                     errorStack: error.stack,
                 }
             });
+        } finally {
+            await prisma.$disconnect();
         }
     }
 );
@@ -869,6 +881,8 @@ userSegmentRouter.get(
                     errorStack: error.stack,
                 }
             });
+        } finally {
+            await prisma.$disconnect();
         }
     }
 );
@@ -907,6 +921,8 @@ userSegmentRouter.get(
                     errorStack: error.stack,
                 }
             });
+        } finally {
+            await prisma.$disconnect();
         }
     }
 );
@@ -935,6 +951,8 @@ userSegmentRouter.get(
                     errorStack: error.stack,
                 }
             });
+        } finally {
+            await prisma.$disconnect();
         }
     }
 );

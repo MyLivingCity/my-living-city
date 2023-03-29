@@ -21,6 +21,8 @@ schoolDetailsRouter.post(
             res.status(200).json(schoolDetails);
         } catch (error) {
             res.status(400).json({ error: error.message });
+        } finally {
+            await prisma.$disconnect();
         }
     }
 )
@@ -53,6 +55,8 @@ schoolDetailsRouter.delete(
         } catch (error) {
             console.log(error)
             res.status(400).json({ error: error.message });
+        } finally {
+            await prisma.$disconnect();
         }
     }
 )
@@ -69,6 +73,8 @@ schoolDetailsRouter.get(
             res.status(200).json(schoolDetails);
         } catch (error) {
             res.status(400).json({ error: error.message });
+        } finally {
+            await prisma.$disconnect();
         }
     }
 )
@@ -112,6 +118,8 @@ schoolDetailsRouter.patch(
         } catch (error) {
             console.log(error)
             res.status(400).json({ error: error.message });
+        } finally {
+            await prisma.$disconnect();
         }
     }
 )

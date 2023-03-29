@@ -61,6 +61,8 @@ banPostRouter.post(
                     errorStack: error.stack,
                 }
             });
+        } finally {
+            await prisma.$disconnect();
         }
     }
 )
@@ -89,6 +91,8 @@ banPostRouter.get(
                     errorStack: error.stack,
                 }
             });
+        } finally {
+            await prisma.$disconnect();
         }
     }
 )
@@ -113,6 +117,8 @@ banPostRouter.get(
                     errorStack: error.stack,
                 }
             });
+        } finally {
+            await prisma.$disconnect();
         }
     }
 )
@@ -145,6 +151,8 @@ banPostRouter.put(
                     errorStack: error.stack,
                 }
             });
+        } finally {
+            await prisma.$disconnect();
         }
     }
 )
@@ -175,6 +183,8 @@ banPostRouter.delete(
                     errorStack: error.stack,
                 }
             });
+        } finally {
+            await prisma.$disconnect();
         }
     }
 )

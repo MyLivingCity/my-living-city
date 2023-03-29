@@ -342,6 +342,8 @@ advertisementRouter.get(
                     errorStack: error.stack,
                 }
             });
+        } finally {
+            await prisma.$disconnect();
         }
     }
 )
@@ -371,6 +373,8 @@ advertisementRouter.get(
                     errorStack: error.stack,
                 }
             });
+        } finally {
+            await prisma.$disconnect();
         }
     }
 )
@@ -395,6 +399,8 @@ advertisementRouter.get(
                     errorStack: error.stack,
                 }
             });
+        } finally {
+            await prisma.$disconnect();
         }
     }
 )
@@ -572,7 +578,7 @@ advertisementRouter.put(
                 }
             });
         } finally {
-            await prisma.$disconnect
+            await prisma.$disconnect()
         }
     }
 )
@@ -643,7 +649,7 @@ advertisementRouter.delete(
                 }
             });
         } finally {
-            await prisma.$disconnect
+            await prisma.$disconnect()
         }
     }
 )

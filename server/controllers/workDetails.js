@@ -19,6 +19,8 @@ workDetailsRouter.post(
             res.status(200).json(workDetails);
         } catch (error) {
             res.status(400).json({ error: error.message });
+        } finally {
+            await prisma.$disconnect();
         }
     }
 )
@@ -51,6 +53,8 @@ workDetailsRouter.delete(
         } catch (error) {
             console.log(error)
             res.status(400).json({ error: error.message });
+        } finally {
+            await prisma.$disconnect();
         }
     }
 )
@@ -67,6 +71,8 @@ workDetailsRouter.get(
             res.status(200).json(workDetails);
         } catch (error) {
             res.status(400).json({ error: error.message });
+        } finally {
+            await prisma.$disconnect();
         }
     }
 )
@@ -108,6 +114,8 @@ workDetailsRouter.patch(
             }
         } catch (error) {
             res.status(400).json({ error: error.message });
+        } finally {
+            await prisma.$disconnect();
         }
     }
 )

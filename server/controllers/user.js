@@ -1029,6 +1029,8 @@ userRouter.get(
 					errorStack: error.stack,
 				}
 			});
+		} finally {
+			await prisma.$disconnect();
 		}
 	}
 )
@@ -1061,6 +1063,8 @@ userRouter.get(
 					errorStack: error.stack,
 				}
 			});
+		} finally {
+			await prisma.$disconnect();
 		}
 	}
 )

@@ -31,6 +31,8 @@ publicProfileRouter.get(
         } catch (error) {
             console.log(error);
             return res.status(500).json({ message: 'Internal server error' });
+        } finally {
+            await prisma.$disconnect();
         }
     }
 );
@@ -64,6 +66,8 @@ publicProfileRouter.put(
         } catch (error) {
             console.log(error);
             return res.status(500).json({ message: 'Internal server error' });
+        } finally {
+            await prisma.$disconnect();
         }
     }
 );
@@ -96,6 +100,8 @@ publicProfileRouter.get(
         } catch (error) {
             console.log(error);
             return res.status(500).json({ message: 'Internal server error' });
+        } finally {
+            await prisma.$disconnect();
         }
     }
 );
@@ -228,6 +234,8 @@ publicProfileRouter.get(
         } catch (error) {
             console.log(error);
             return res.status(500).json({ message: 'Internal server error' });
+        } finally {
+            await prisma.$disconnect();
         }
     }
 );
@@ -257,6 +265,8 @@ publicProfileRouter.get(
         } catch (error) {
             console.log(error);
             return res.status(500).json({ message: 'Internal server error' });
+        } finally {
+            await prisma.$disconnect();
         }
     }
 
@@ -385,6 +395,8 @@ publicProfileRouter.get(
         } catch (error) {
             console.log(error);
             return res.status(500).json({ message: 'Internal server error' });
+        } finally {
+            await prisma.$disconnect();
         }
     }
 );

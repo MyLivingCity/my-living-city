@@ -1188,8 +1188,8 @@ userRouter.patch(
 				await prisma.user.update({
 					where: { id: user.id },
 					data: {
-						displayFname: req.body.displayFname,
-						displayLname: req.body.displayLname,
+						displayFName: req.body.displayFName,
+						displayLName: req.body.displayLName,
 					}
 				});
 			}

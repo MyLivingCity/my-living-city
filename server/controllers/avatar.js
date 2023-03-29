@@ -54,6 +54,8 @@ avatarRouter.get(
             errorStack: error.stack,
           }
               });
+      } finally {
+        await prisma.$disconnect();
       }
     }
   )
@@ -62,48 +64,60 @@ avatarRouter.get(
     '/image',
     passport.authenticate('jwt',{session:false}),
     async (req, res, next) => {
-      upload(req, res, async function(err){
-        const {email,id} = req.user;
+      try {
+        upload(req, res, async function(err){
+          const {email,id} = req.user;
 
-        const theUser = await prisma.user.findUnique({where:{id:id}});
+          const theUser = await prisma.user.findUnique({where:{id:id}});
 
-        const originalPath = theUser.imagePath;
-        //multer error handling method
-        let error = '';
-        let errorMessage = '';
-        let errorStack = '';
-        if(err){
-            console.log(err);
-            error+=err+' ';
-            errorMessage+=err+' ';
-            errorStack+=err+' ';
+          const originalPath = theUser.imagePath;
+          //multer error handling method
+          let error = '';
+          let errorMessage = '';
+          let errorStack = '';
+          if(err){
+              console.log(err);
+              error+=err+' ';
+              errorMessage+=err+' ';
+              errorStack+=err+' ';
 
-            return res.status(400).json(err);
-        };
-        
-        let imagePath = '';
+              return res.status(400).json(err);
+          };
 
-        if(!req.file){
-          return res.status(400).json({
-            message: 'The image in the request body are missing. '
-          });
-        }else{
-          imagePath = req.file.path;
-        }
+          let imagePath = '';
 
-        const result = await prisma.user.update({
-          where:{id:id},
-          data:{
-            imagePath:imagePath
+          if(!req.file){
+            return res.status(400).json({
+              message: 'The image in the request body are missing. '
+            });
+          }else{
+            imagePath = req.file.path;
           }
-        });
 
-        if(fs.existsSync(originalPath)){
-          fs.unlinkSync(originalPath);
+          const result = await prisma.user.update({
+            where:{id:id},
+            data:{
+              imagePath:imagePath
+            }
+          });
+
+          if(fs.existsSync(originalPath)){
+            fs.unlinkSync(originalPath);
+          }
+
+          res.status(200).json(result);
+        })
+        } catch (error) {
+                res.status(400).json({
+                    message: error.message,
+            details: {
+              errorMessage: error.message,
+              errorStack: error.stack,
+            }
+                });
+        } finally {
+          await prisma.$disconnect();
         }
-
-        res.status(200).json(result);
-      })
     }
   )
   

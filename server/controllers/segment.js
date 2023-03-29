@@ -171,6 +171,7 @@ segmentRouter.get(
 segmentRouter.get(
     '/getBySuperSegId/:superSegId',
     async(req,res) => {
+        try {
         let {superSegId} = req.params;
         superSegId = parseInt(superSegId, 10);
         if(!isInteger(superSegId)){
@@ -190,6 +191,18 @@ segmentRouter.get(
         });
 
         res.status(200).json(segments);
+        } catch (error) {
+            console.log(error);
+            res.status(400).json({
+                message: "An error occured while trying to retrieve segments.",
+                details: {
+                    errorMessage: error.message,
+                    errorStack: error.stack,
+                }
+            });
+        } finally {
+            await prisma.$disconnect();
+        }
     }
 );
 

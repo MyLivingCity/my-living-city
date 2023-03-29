@@ -136,6 +136,8 @@ proposalRouter.get(
                     errorStack: error.stack,
                 }
             })
+        } finally {
+            await prisma.$disconnect();
         }
     }
 )
@@ -185,6 +187,8 @@ proposalRouter.post(
                     errorStack: error.stack,
                 }
             })
+        } finally {
+            await prisma.$disconnect();
         }
     }
 )

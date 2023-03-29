@@ -6,6 +6,7 @@ const interactRouter = express.Router();
 const prisma = require('../lib/prismaClient');
 
 const likeCommentAndRemoveDislike = async (userId, commentId) => {
+  try {
   const prismaWhereClause = {
     where: {
       authorId: userId,
@@ -41,9 +42,15 @@ const likeCommentAndRemoveDislike = async (userId, commentId) => {
     });
   }
   return createdLike
+  } catch (error) {
+    console.log(error.message);
+  } finally {
+    await prisma.$disconnect();
+  }
 }
 
 const dislikeCommentAndRemoveLike = async (userId, commentId) => {
+  try {
   const prismaWhereClause = {
     where: {
       authorId: userId,
@@ -79,6 +86,11 @@ const dislikeCommentAndRemoveLike = async (userId, commentId) => {
 
 
   return createdDislike;
+} catch (error) {
+  console.log(error.message);
+} finally {
+  await prisma.$disconnect();
+}
 }
 
 

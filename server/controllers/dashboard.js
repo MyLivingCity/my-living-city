@@ -26,6 +26,8 @@ dashboardRouter.get(
           errorStack: error.stack,
         }
       });
+    } finally {
+      await prisma.$disconnect();
     }
   }
 )
@@ -54,6 +56,8 @@ dashboardRouter.put(
           errorStack: error.stack,
         }
       });
+    } finally {
+      await prisma.$disconnect();
     }
   }
 )

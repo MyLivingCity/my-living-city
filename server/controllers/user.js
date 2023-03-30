@@ -1254,6 +1254,71 @@ userRouter.patch(
 	}
 )
 
+userRouter.patch(
+	'/updateCityNeighbourhood/:id',
+	async (req, res, next) => {
+		try {
+			const user = await prisma.user.findUnique({
+				where: { id: req.params.id },
+			});
+
+			// get the id of the city from the segment table
+			// ignore case
+			const city = await prisma.segments.findFirst({
+				where: { name: { equals: req.body.city, mode: "insensitive" } },
+			});
+
+			console.log("city", city)
+			// get the id of the neighbourhood from the subsegment table
+			// ignore case
+			const neighbourhood = await prisma.subSegments.findFirst({
+				where: { name: { equals: req.body.neighbourhood, mode: "insensitive" } },
+			});
+
+			console.log("neighbourhood", neighbourhood)
+
+			// if all three are found, update the user's city and neighbourhood
+			// in the UserSegment table
+			if (user && city && neighbourhood) {
+				const res = await prisma.userSegments.update({
+					where: { userId: req.params.id },
+					data: {
+						homeSegmentId: city.id,
+						homeSubSegmentId: neighbourhood.id,
+						homeSegmentName: req.body.city,
+						homeSubSegmentName: req.body.neighbourhood,
+					}
+				});
+			} else {
+				console.log("Error: user, city, or neighbourhood not found")
+				res.status(400).json({
+					message: `Error: user, city, or neighbourhood not found`,
+				});
+				return;
+			}
+
+			res.status(200).json({
+				message: "City and neighbourhood successfully updated"
+			});
+		} catch (error) {
+			console.log(error)
+			res.status(400).json({
+				message: `An Error occured while trying to update city and neighbourhood.`,
+				details: {
+					errorMessage: error.message,
+					errorStack: error.stack,
+				}
+			});
+		} finally {
+			await prisma.$disconnect();
+		}
+	}
+)
+
+
+
+
+
 userRouter.get(
 	'/getGeoData/:id',
 	async (req, res, next) => {

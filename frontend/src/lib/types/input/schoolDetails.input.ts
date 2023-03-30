@@ -5,4 +5,6 @@ export interface ISchoolDetailsInput {
     postalCode?: string;
     faculty?: string;
     programCompletionDate?: Date;
+    city?: string;
+    neighbourhood?: string;
   }

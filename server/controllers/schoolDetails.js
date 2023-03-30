@@ -124,6 +124,49 @@ schoolDetailsRouter.patch(
     }
 )
 
+schoolDetailsRouter.patch(
+    '/updateCityNeighbourhood/:id',
+    async (req, res) => {
+        try {
+            const city = await prisma.segments.findFirst({
+                where: {name: {equals: req.body.city, mode: 'insensitive'}},
+            });
+
+            const neighbourhood = await prisma.subSegments.findFirst({
+                where: {name: {equals: req.body.neighbourhood, mode: 'insensitive'}},
+            });
+
+            if (city && neighbourhood) {
+                const res = await prisma.userSegments.update({
+                    where: {
+                        userId: req.params.id,
+                    },
+                    data: {
+                        schoolSegmentId: city.id,
+                        schoolSubSegmentId: neighbourhood.id,
+                        schoolSegmentName: city.name,
+                        schoolSubSegmentName: neighbourhood.name,
+                    }
+                });
+            } else {
+                console.log('City or neighbourhood not found');
+                res.status(400).json({ error: 'City or neighbourhood not found' });
+                return;
+            }
+
+            res.status(200).json(
+                {
+                   messsage: 'City and neighbourhood updated successfully'
+                }
+            );
+        } catch (error) {
+            console.log(error);
+            res.status(400).json({ error: error.message });
+        } finally {
+            await prisma.$disconnect();
+        }
+    }
+)
 
 
 

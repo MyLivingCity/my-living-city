@@ -327,6 +327,16 @@ export const updateSchoolSegmentDetails = async (userId: string | undefined, dat
     data
   );
   console.log("updateSchoolSegmentDetails", res.data);
+
+  const res1 = await axios.patch(
+    `${API_BASE_URL}/schoolDetails/updateCityNeighbourhood/${userId}`,
+    {
+      city: data.city,
+      neighbourhood: data.neighbourhood
+    }
+  );
+  console.log("updateSchoolSegmentDetails", res1.data);
+
   return res.data;
 }
 

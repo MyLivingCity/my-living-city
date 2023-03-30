@@ -16,6 +16,7 @@ import { FindBanDetails, FindUndismissedPostBans, FindUndismissedCommentBans } f
 import { useAllComments } from "src/hooks/commentHooks";
 import { USER_TYPES } from "src/lib/constants";
 import { useQuarantinePostNotifications } from "src/hooks/quarantinePostNotificationHooks";
+import { useProposalsWithBreakdown } from "src/hooks/proposalHooks";
 
 interface LandingPageContentProps {
   user: IUser
@@ -42,6 +43,13 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
     error: uError,
     isLoading: uLoading,
   } = useUserIdeas(user.id);
+
+  const {
+    data: pData,
+    error: pError,
+    isLoading: pLoading,
+    isError: pIsError,
+  } = useProposalsWithBreakdown();
 
   const {
     data: undismissedPostBansData,
@@ -86,14 +94,22 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
     user.userType === USER_TYPES.MUNICIPAL
   );
 
-  if (iLoading || uLoading || userFollowedLoading || userEndorsedLoading || userBannedDataLoading || commentLoading || undismissedPostBansLoading || undismissedCommentBansLoading || quarantinePostNotificationsLoading) {
+  if (iLoading || uLoading || pLoading || userFollowedLoading || userEndorsedLoading || userBannedDataLoading || commentLoading || undismissedPostBansLoading || undismissedCommentBansLoading || quarantinePostNotificationsLoading) {
     return <LoadingSpinner />;
   }
 
-  if (iError || iIsError || uError || userFollowedError || (canEndorse && userEndorsedError) || userBannedDataError || commentError || undismissedPostBansError || undismissedCommentBansError || quarantinePostNotificationsError) {
+  if (iError || iIsError || uError || pError || userFollowedError || (canEndorse && userEndorsedError) || userBannedDataError || commentError || undismissedPostBansError || undismissedCommentBansError || quarantinePostNotificationsError) {
     return <div>Error when fetching necessary data</div>;
   }
 
+
+  const userIdeasWithoutProposals = userIdeaData!?.filter((idea) => {
+    return !pData?.some((proposal) => {
+      return proposal.ideaId === idea.id
+    })
+  })
+
+  console.log(userIdeaData!);
   
   return (
     <Container className="landing-page-content">
@@ -102,7 +118,11 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
         <Notifications userIdeas={userIdeaData} userBanInfo={userBannedData} userComments={commentData} userPostBans={undismissedPostBansData} userCommentBans={undismissedCommentBansData} userQuarantineNotifications={quarantinePostNotifications}/>
       </Row>
       <Row as="article" className="new-and-trending">
-        <MyPosts userIdeas={userIdeaData!} numPosts={6} isDashboard={true} />
+        <MyPosts 
+          userIdeas={userIdeaData!} 
+          userProposals={pData!}
+          numPosts={6} 
+          isDashboard={true} />
         <div className="" style={{ margin: "0rem 1rem 3rem 1rem" }}>
           <Button
             onClick={() => (window.location.href = "/dashboard/my-posts")}
@@ -125,6 +145,7 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
               })
             }))
           }
+          proposals={pData!}
           endorser={canEndorse} 
           />
         </Row>

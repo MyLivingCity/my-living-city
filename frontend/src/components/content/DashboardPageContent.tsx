@@ -10,7 +10,7 @@ import { AdsSectionPage } from "src/pages/AdsSectionPage";
 import Notifications from "../partials/DashboardContent/Notifications";
 import SystemUpdates from "../partials/DashboardContent/SystemUpdates";
 import LoadingSpinner from "../ui/LoadingSpinner";
-import { useIdeasHomepage, useUserFollowedIdeas, useUserIdeas, useUserEndorsedIdeas } from "../../hooks/ideaHooks";
+import { useIdeasWithBreakdown, useIdeasHomepage, useUserFollowedIdeas, useUserIdeas, useUserEndorsedIdeas } from "../../hooks/ideaHooks";
 import { IUser } from "src/lib/types/data/user.type";
 import { FindBanDetails, FindUndismissedPostBans, FindUndismissedCommentBans } from "src/hooks/banHooks";
 import { useAllComments } from "src/hooks/commentHooks";
@@ -24,6 +24,13 @@ interface LandingPageContentProps {
 }
 
 const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) => {
+
+  const {
+    data: ideaData,
+    error: ideaError,
+    isLoading: ideaLoading,
+    isError: ideaIsError,
+  } = useIdeasWithBreakdown();
 
   const { 
     data: commentData,
@@ -94,11 +101,11 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
     user.userType === USER_TYPES.MUNICIPAL
   );
 
-  if (iLoading || uLoading || pLoading || userFollowedLoading || userEndorsedLoading || userBannedDataLoading || commentLoading || undismissedPostBansLoading || undismissedCommentBansLoading || quarantinePostNotificationsLoading) {
+  if ( ideaLoading || iLoading || uLoading || pLoading || userFollowedLoading || userEndorsedLoading || userBannedDataLoading || commentLoading || undismissedPostBansLoading || undismissedCommentBansLoading || quarantinePostNotificationsLoading) {
     return <LoadingSpinner />;
   }
 
-  if (iError || iIsError || uError || pError || userFollowedError || (canEndorse && userEndorsedError) || userBannedDataError || commentError || undismissedPostBansError || undismissedCommentBansError || quarantinePostNotificationsError) {
+  if (ideaError || iError || iIsError || uError || pError || userFollowedError || (canEndorse && userEndorsedError) || userBannedDataError || commentError || undismissedPostBansError || undismissedCommentBansError || quarantinePostNotificationsError) {
     return <div>Error when fetching necessary data</div>;
   }
 
@@ -139,11 +146,16 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
       <Row as="article" className="system-updates">
       <SystemUpdates userFollowedideas={
             // Concat userFollowedIdeaData and userEndorsedIdeaData w/o duplicates
-            userFollowedIdeaData!.concat(userEndorsedIdeaData!.filter((idea) => {
-              return !userFollowedIdeaData!.some((idea2) => {
-                return idea2.id === idea.id
-              })
-            }))
+            ideaData!.filter((idea) => {
+              return (
+                userFollowedIdeaData!.some((followedIdea) => {
+                  return followedIdea.id === idea.id;
+                }) ||
+                userEndorsedIdeaData!.some((endorsedIdea) => {
+                  return endorsedIdea.id === idea.id;
+                })
+              );
+            })
           }
           proposals={pData!}
           endorser={canEndorse} 

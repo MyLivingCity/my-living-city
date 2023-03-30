@@ -334,8 +334,18 @@ export const updateHomeSegmentDetails = async (userId: string | undefined, data:
       postalCode: data.postalCode
     }
   );
+
+  const res3 = await axios.patch(
+    `${API_BASE_URL}/user/updateCityNeighbourhood/${userId}`,
+    {
+      city: data.city,
+      neighbourhood: data.neighbourhood
+    }
+  );
+
   console.log("updateHomeSegmentDetails, part1", res1.data);
   console.log("updateHomeSegmentDetails, part2", res2.data);
+  console.log("updateHomeSegmentDetails, part3", res3.data);
   // Combine data from both responses
   return {...res1.data, ...res2.data};
 }

@@ -306,6 +306,18 @@ export const updateWorkSegmentDetails = async (userId: string | undefined, data:
     `${API_BASE_URL}/workDetails/update/${userId}`,
     data
   );
+
+  console.log("updateWorkSegmentDetails", res.data);
+
+  const res1 = await axios.patch(
+    `${API_BASE_URL}/workDetails/updateCityNeighbourhood/${userId}`,
+    {
+      city: data.city,
+      neighbourhood: data.neighbourhood
+    }
+  );
+  console.log("updateWorkSegmentDetails", res1.data);
+
   return res.data;
 }
 

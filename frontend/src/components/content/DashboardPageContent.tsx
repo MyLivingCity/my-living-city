@@ -118,7 +118,11 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
         <Notifications userIdeas={userIdeaData} userBanInfo={userBannedData} userComments={commentData} userPostBans={undismissedPostBansData} userCommentBans={undismissedCommentBansData} userQuarantineNotifications={quarantinePostNotifications}/>
       </Row>
       <Row as="article" className="new-and-trending">
-        <MyPosts userIdeas={userIdeaData!} numPosts={6} isDashboard={true} />
+        <MyPosts 
+          userIdeas={userIdeaData!} 
+          userProposals={pData!}
+          numPosts={6} 
+          isDashboard={true} />
         <div className="" style={{ margin: "0rem 1rem 3rem 1rem" }}>
           <Button
             onClick={() => (window.location.href = "/dashboard/my-posts")}
@@ -141,6 +145,7 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
               })
             }))
           }
+          proposals={pData!}
           endorser={canEndorse} 
           />
         </Row>

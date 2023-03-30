@@ -1,16 +1,20 @@
 import { Container, Row, Col, Breadcrumb, Carousel } from "react-bootstrap";
 import IdeaTile from "src/components/tiles/IdeaTile";
 import PlaceholderIdeaTile from "src/components/tiles/PlaceholderIdeaTile";
+import ProposalTile from "src/components/tiles/ProposalTile";
 import { IIdeaWithAggregations } from "src/lib/types/data/idea.type";
+import { IProposalWithAggregations } from "src/lib/types/data/proposal.type";
 
 interface MyPostsProps {
   userIdeas: IIdeaWithAggregations[];
+  userProposals?: IProposalWithAggregations[];
   numPosts: number;
   isDashboard: boolean;
 }
 
 const MyPosts: React.FC<MyPostsProps> = ({
   userIdeas,
+  userProposals,
   numPosts,
   isDashboard,
 }) => {
@@ -24,6 +28,9 @@ const MyPosts: React.FC<MyPostsProps> = ({
   if (userIdeas) {
     userIdeaPages = Math.ceil(userIdeas.length / 3)
   }
+
+  console.log("userIdeas", userIdeas)
+
   return (
     <Container
       className="container"
@@ -95,11 +102,28 @@ const MyPosts: React.FC<MyPostsProps> = ({
                     lg={4}
                     className="pt-3 align-items-stretch"
                   >
+                    {userProposals && idea.state === "PROPOSAL" ?
+                    userProposals.map((proposal) => {
+                      if (proposal.ideaId === idea.id) {
+                        return <ProposalTile
+                          proposalData={
+                            {
+                              id: proposal.id,
+                              ideaId: proposal.ideaId,
+                              idea: idea,
+                            }
+                          }
+                          showFooter={true}
+                          postType={idea.state === "IDEA" ? "Idea" : "Proposal"}
+                        />
+                      }
+                    })
+                    :
                     <IdeaTile
                       ideaData={idea}
                       showFooter={true}
                       postType={idea.state === "IDEA" ? "Idea" : "Proposal"}
-                    />
+                    />}
                   </Col>
                 ) : null})
               : [...Array(12)].map((x, i) => (

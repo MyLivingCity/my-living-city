@@ -89,6 +89,6 @@ export const useGetEndorsedUsersByIdea = (token: string|null, ideaId: string) =>
 }
 
 export const useCheckIdeaFlaggedByUser = (token: string|null, userId: string|null, ideaId: string|null) => {
-  return useQuery<any, IFetchError>("is-idea-flagged-by-user", () => 
+  return useQuery<Boolean, IFetchError>("is-idea-flagged-by-user", () => 
     isIdeaFlaggedByUser(token, userId, ideaId))
 }

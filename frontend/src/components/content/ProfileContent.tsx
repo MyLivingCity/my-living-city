@@ -875,7 +875,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
         >
 
         </SegmentInfo>
-        {workData &&
+        {workData ?
         <SegmentInfo 
         user={user!} 
         token={token!} 
@@ -903,7 +903,33 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
         >
           
         </SegmentInfo>
-  }
+   : <SegmentInfo 
+      user={user!} 
+      token={token!} 
+      title={"Business Segment"}
+      type={"work"}
+      segmentData={
+        {
+          displayFName: "Unknown",
+          displayLName: "Unknown",
+          street: "Unknown",
+          city: "Unknown",
+          postalCode: "Unknown",
+          neighborhood: "Unknown",
+        }
+      }
+      geoData={
+        {
+          lat: (geoData!.work_lat ? geoData!.work_lat : 0),
+          lon: (geoData!.work_lon ? geoData!.work_lon : 0),
+        }
+      }
+      segments={segments!}
+      deleteFunction={deleteWorkSegmentDetail}
+      updateFunction={updateWorkSegmentDetail}
+      >
+     
+   </SegmentInfo>}
   {schoolData &&
         <SegmentInfo 
         user={user!} 

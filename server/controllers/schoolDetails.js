@@ -79,7 +79,7 @@ schoolDetailsRouter.get(
     }
 )
 
-schoolDetailsRouter.patch(
+schoolDetailsRouter.put(
     '/update/:id',
     async (req, res) => {
         try {

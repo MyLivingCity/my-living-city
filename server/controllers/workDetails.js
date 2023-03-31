@@ -77,7 +77,7 @@ workDetailsRouter.get(
     }
 )
 
-workDetailsRouter.patch(
+workDetailsRouter.put(
     '/update/:id',
     async (req, res) => {
         try {

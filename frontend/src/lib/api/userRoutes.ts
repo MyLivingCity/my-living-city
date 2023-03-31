@@ -302,14 +302,14 @@ export const getWorkSegmentDetails = async (userId: string | undefined) => {
 }
 
 export const updateWorkSegmentDetails = async (userId: string | undefined, data: IWorkDetailsInput) => {
-  const res = await axios.patch(
+  const res = await axios.put(
     `${API_BASE_URL}/workDetails/update/${userId}`,
     data
   );
 
   console.log("updateWorkSegmentDetails", res.data);
 
-  const res1 = await axios.patch(
+  const res1 = await axios.put(
     `${API_BASE_URL}/workDetails/updateCityNeighbourhood/${userId}`,
     {
       city: data.city,
@@ -322,13 +322,13 @@ export const updateWorkSegmentDetails = async (userId: string | undefined, data:
 }
 
 export const updateSchoolSegmentDetails = async (userId: string | undefined, data: ISchoolDetailsInput) => {
-  const res = await axios.patch(
+  const res = await axios.put(
     `${API_BASE_URL}/schoolDetails/update/${userId}`,
     data
   );
   console.log("updateSchoolSegmentDetails", res.data);
 
-  const res1 = await axios.patch(
+  const res1 = await axios.put(
     `${API_BASE_URL}/schoolDetails/updateCityNeighbourhood/${userId}`,
     {
       city: data.city,

@@ -196,6 +196,13 @@ return (
             ) : 
             (
                 <>
+                { segmentData.displayFName == "Unknown" &&
+                segmentData.displayLName == "Unknown" &&
+                segmentData.street == "Unknown" &&
+                segmentData.city == "Unknown" &&
+                segmentData.postalCode == "Unknown" &&
+                segmentData.neighborhood == "Unknown" ?
+                <>
                     <ListGroup variant='flush'>
                         <ListGroupItem><strong>Display Name: </strong></ListGroupItem>
                         <ListGroupItem><strong>Street: </strong></ListGroupItem>
@@ -210,6 +217,8 @@ return (
                         <ListGroupItem>{segmentData.postalCode.toUpperCase()}</ListGroupItem>
                         <ListGroupItem>{capitalizeString(formNeighborhood)}</ListGroupItem>
                     </ListGroup>
+                  </>
+                : <>No details exist.</>}
                     <Col style={{maxWidth: "10rem"}}>
                     <Button 
                     variant='primary' 

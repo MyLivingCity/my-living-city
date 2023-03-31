@@ -1184,8 +1184,8 @@ ideaRouter.post(
         })
       }
 
-      const theUser = await prisma.user.findUnique({ where: { id: userId } });
-      const theIdea = await prisma.idea.findUnique({ where: { id: parseInt(ideaId) } });
+      const theUser = await prisma.user.findFirst({ where: { id: userId } });
+      const theIdea = await prisma.idea.findFirst({ where: { id: parseInt(ideaId) } });
 
       if (!theUser) {
         res.status(400).json({
@@ -1579,7 +1579,7 @@ ideaRouter.post(
 
       }
 
-      const theUser = await prisma.user.findMany({ where: { id: userId } });
+      const theUser = await prisma.user.findUnique ({ where: { id: userId } });
 
       if (!theUser) {
         res.status(400).json({
@@ -1592,7 +1592,7 @@ ideaRouter.post(
           isFlagged: false
         })
       }
-      console.log("ideaIdBEAR: ", ideaId)
+
       const theIdea = await prisma.idea.findFirst({ where: { id: parseInt(ideaId) } });
 
       if (!theIdea) {
@@ -1601,16 +1601,15 @@ ideaRouter.post(
         })
       }
 
-      const theUserIdeaFlag = await prisma.ideaFlag.findFirst({
+      const theUserIdeaFlag = await prisma.ideaFlag.findMany({
         where: {
           flaggerId: userId,
           ideaId: parseInt(ideaId)
         }
       })
-      const isFlagged = theUserIdeaFlag ? true : false;
-      res.status(200).json({
-        isFlagged: isFlagged
-      })
+
+      const isFlagged = theUserIdeaFlag.length > 0 ? true : false;
+      res.status(200).send(isFlagged);
     } catch (error) {
       console.log(error);
       res.status(400).json({

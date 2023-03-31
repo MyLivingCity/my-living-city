@@ -41,9 +41,10 @@ import {
   isIdeaEndorsedByUser, 
   unendorseIdeaByUser,
   getEndorsedUsersByIdea,
+  isIdeaFlaggedByUser,
 } from "src/lib/api/ideaRoutes";
 import CSS from "csstype"
-import { useCheckIdeaFollowedByUser, useCheckIdeaEndorsedByUser, useGetEndorsedUsersByIdea } from "src/hooks/ideaHooks";
+import { useCheckIdeaFollowedByUser, useCheckIdeaEndorsedByUser, useGetEndorsedUsersByIdea, useCheckIdeaFlaggedByUser } from "src/hooks/ideaHooks";
 
 import Modal from 'react-bootstrap/Modal';
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -137,6 +138,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
   const {data: proposal} = useSingleProposal("" + (supportedProposal ? supportedProposal!.id : ""));
   const {data: proposalIdea } = useSingleIdea("" + (supportedProposal ? supportedProposal!.ideaId : ""));
   const {data: flagBanData, isLoading: flagBanDataLoading} = useCheckFlagBan(token, (user ? user.id : ""));
+  const {data: isFlagged, isLoading: isFlaggedLoading} = useCheckIdeaFlaggedByUser(token, (user ? user.id : user), ideaId);
 
 
   const [showFlagButton, setShowFlagButton] = useState(true);
@@ -201,6 +203,14 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
     }
   }, [flagBanDataLoading, flagBanData])
 
+  useEffect(() => {
+    if (!isFlaggedLoading) {
+      if (isFlagged) {
+        handleHideFlagButton();
+      }
+    }
+  }, [isFlaggedLoading, isFlagged])
+
   const handleFollowUnfollow = async () => {
     let res;
     if (user && token) {
@@ -250,7 +260,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
 
 
-  if (isEndorsedUsersDataLoading || isEndorsingPostLoading || isFollowingPostLoading || flagBanDataLoading) {
+  if (isEndorsedUsersDataLoading || isEndorsingPostLoading || isFollowingPostLoading || flagBanDataLoading || isFlaggedLoading) {
     return <LoadingSpinner></LoadingSpinner>;
   }
 

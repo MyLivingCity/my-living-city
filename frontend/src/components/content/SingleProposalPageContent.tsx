@@ -415,7 +415,9 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
   useEffect(() => {
     if (!isFlaggedLoading) {
-      if (isFlagged == true) {
+      console.log("isFlagged", isFlagged?.valueOf());
+      if (isFlagged) {
+        console.log("isFlaggedRAWR", isFlagged?.valueOf());
         handleHideFlagButton();
       }
     }
@@ -479,7 +481,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     )
   }
 
-  if (isEndorsingPostLoading || isFollowingPostLoading || flagBanDataLoading) {
+  if (isEndorsingPostLoading || isFollowingPostLoading || flagBanDataLoading || isFlaggedLoading) {
     return <LoadingSpinner />;
   }
 

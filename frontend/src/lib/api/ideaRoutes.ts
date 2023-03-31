@@ -335,3 +335,17 @@ export const getEndorsedUsersByIdea = async (token: string | null, ideaId: strin
   })
   return res.data;
 }
+
+export const isIdeaFlaggedByUser = async (token: string | null, userId: string | null, ideaId: string | null) => {
+  const res = await axios({
+    method: "post",
+    url: `${API_BASE_URL}/idea/isFlagged`,
+    headers: {
+      "x-auth-token": token,
+      "Access-Control-Allow-Origin": "*",
+    },
+    data: { userId: userId, ideaId: ideaId },
+    withCredentials: true,
+  })
+  return res.data;
+}

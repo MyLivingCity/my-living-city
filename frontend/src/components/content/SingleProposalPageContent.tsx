@@ -56,7 +56,7 @@ import {
   unendorseIdeaByUser,
 } from "src/lib/api/ideaRoutes";
 import { incrementPostFlagCount } from 'src/lib/api/badPostingBehaviorRoutes';
-import { useCheckIdeaFollowedByUser, useCheckIdeaEndorsedByUser } from "src/hooks/ideaHooks";
+import { useCheckIdeaFollowedByUser, useCheckIdeaEndorsedByUser, useCheckIdeaFlaggedByUser } from "src/hooks/ideaHooks";
 import {
   postCreateCollabotator,
   postCreateVolunteer,
@@ -381,6 +381,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
   const {data: isFollowingPost, isLoading: isFollowingPostLoading} = useCheckIdeaFollowedByUser(token, (user ? user.id : user), ideaId);
   const {data: isEndorsingPost, isLoading: isEndorsingPostLoading} = useCheckIdeaEndorsedByUser(token, (user ? user.id : user), ideaId);
   const {data: flagBanData, isLoading: flagBanDataLoading} = useCheckFlagBan(token, (user ? user.id : ""));
+  const {data: isFlagged, isLoading: isFlaggedLoading} = useCheckIdeaFlaggedByUser(token, (user ? user.id : user), ideaId);
 
   const canEndorse = user?.userType == USER_TYPES.BUSINESS || user?.userType == USER_TYPES.COMMUNITY 
   || user?.userType == USER_TYPES.MUNICIPAL || user?.userType == USER_TYPES.MUNICIPAL_SEG_ADMIN; 
@@ -421,6 +422,16 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
       }
     }
   }, [flagBanDataLoading, flagBanData])
+
+  useEffect(() => {
+    if (!isFlaggedLoading) {
+      console.log("isFlagged", isFlagged?.valueOf());
+      if (isFlagged) {
+        console.log("isFlaggedRAWR", isFlagged?.valueOf());
+        handleHideFlagButton();
+      }
+    }
+  }, [isFlaggedLoading, isFlagged])
 
   const handleFollowUnfollow = async () => {
     let res;
@@ -480,7 +491,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     )
   }
 
-  if (isEndorsingPostLoading || isFollowingPostLoading || flagBanDataLoading) {
+  if (isEndorsingPostLoading || isFollowingPostLoading || flagBanDataLoading || isFlaggedLoading) {
     return <LoadingSpinner />;
   }
 

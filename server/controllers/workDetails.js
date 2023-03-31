@@ -120,7 +120,7 @@ workDetailsRouter.put(
     }
 )
 
-workDetailsRouter.patch(
+workDetailsRouter.put(
     '/updateCityNeighbourhood/:id',
     async (req, res) => {
         try {

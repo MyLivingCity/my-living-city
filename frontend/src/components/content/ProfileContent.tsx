@@ -930,7 +930,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
       >
      
    </SegmentInfo>}
-  {schoolData &&
+  {schoolData ?
         <SegmentInfo 
         user={user!} 
         token={token!} 
@@ -958,7 +958,33 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
         >
           
         </SegmentInfo>
+  : <SegmentInfo 
+  user={user!} 
+  token={token!} 
+  title={"School Segment"}
+  type={"school"}
+  segmentData={
+    {
+      displayFName: "Unknown",
+          displayLName: "Unknown",
+          street: "Unknown",
+          city: "Unknown",
+          postalCode: "Unknown",
+          neighborhood: "Unknown",
+    }
   }
+  geoData={
+    {
+      lat: (geoData!.school_lat ? geoData!.school_lat : 0),
+      lon: (geoData!.school_lon ? geoData!.school_lon : 0),
+    }
+  }
+  segments={segments!}
+  deleteFunction={deleteSchoolSegmentDetail}
+  updateFunction={updateSchoolSegmentDetail}
+  >
+    
+    </SegmentInfo>}
       </Row>
 
     </Container>

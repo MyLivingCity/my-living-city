@@ -196,12 +196,12 @@ return (
             ) : 
             (
                 <>
-                { segmentData.displayFName == "Unknown" &&
-                segmentData.displayLName == "Unknown" &&
-                segmentData.street == "Unknown" &&
-                segmentData.city == "Unknown" &&
-                segmentData.postalCode == "Unknown" &&
-                segmentData.neighborhood == "Unknown" ?
+                { segmentData.displayFName === "Unknown" &&
+                segmentData.displayLName === "Unknown" &&
+                segmentData.street === "Unknown" &&
+                segmentData.city === "Unknown" &&
+                segmentData.postalCode === "Unknown" &&
+                segmentData.neighborhood === "Unknown" ?
                 <>
                     <ListGroup variant='flush'>
                         <ListGroupItem><strong>Display Name: </strong></ListGroupItem>

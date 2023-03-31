@@ -124,7 +124,7 @@ schoolDetailsRouter.put(
     }
 )
 
-schoolDetailsRouter.patch(
+schoolDetailsRouter.put(
     '/updateCityNeighbourhood/:id',
     async (req, res) => {
         try {

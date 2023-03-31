@@ -1559,6 +1559,73 @@ ideaRouter.get(
   }
 )
 
+ideaRouter.post(
+  '/isFlagged',
+  // passport.authenticate('jwt', { session: false }),
+  async (req, res) => {
+    try {
+      if (isEmpty(req.body)) {
+        res.status(400).json({
+          message: "Request body is empty!"
+        })
+      }
+
+      const { userId, ideaId } = req.body;
+
+      if (!userId || !ideaId) {
+        res.status(200).json({
+          isFlagged: false
+        })
+
+      }
+
+      const theUser = await prisma.user.findMany({ where: { id: userId } });
+
+      if (!theUser) {
+        res.status(400).json({
+          message: `User with id ${userId} cannot be found or does not exists!`
+        })
+      }
+
+      if (!ideaId) {
+        res.status(200).json({
+          isFlagged: false
+        })
+      }
+      console.log("ideaIdBEAR: ", ideaId)
+      const theIdea = await prisma.idea.findFirst({ where: { id: parseInt(ideaId) } });
+
+      if (!theIdea) {
+        res.status(400).json({
+          message: `Idea with id ${ideaId} cannot be found or does not exists!`
+        })
+      }
+
+      const theUserIdeaFlag = await prisma.ideaFlag.findFirst({
+        where: {
+          flaggerId: userId,
+          ideaId: parseInt(ideaId)
+        }
+      })
+      const isFlagged = theUserIdeaFlag ? true : false;
+      res.status(200).json({
+        isFlagged: isFlagged
+      })
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({
+        details: {
+          errorMessage: error.message,
+          errorStack: error.stack,
+        }
+      });
+    } finally {
+      await prisma.$disconnect();
+    }
+  }
+)
+
+
 
 
 module.exports = ideaRouter;

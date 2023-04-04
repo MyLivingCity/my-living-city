@@ -65,7 +65,6 @@ export const BadPostingManagementContent: React.FC<BadPostingManagementContentPr
         userBadPostingData = users.map((user) => {
             const badPostingUser = badPostingUsers.find((badPostingUser) => badPostingUser.userId === user.id);
             console.log("badPostingUser: ", badPostingUser)
-            console.log("TURTLE User:", user)
             if(badPostingUser){
                 return {
                     id: user.id,

@@ -168,7 +168,6 @@ ideaFlagRouter.post(
                 flag_ban: true,
               },
             });result
-            console.log("TURTLE: ", )
           }
         });
 

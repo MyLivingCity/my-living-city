@@ -49,7 +49,6 @@ falseFlaggingBehavior.get(
                 flag_ban: true,
               },
             });
-            console.log("TURTLE: ", result)
           }
         });
         res.status(200).send('checkFalseFlaggingBehavior complete');

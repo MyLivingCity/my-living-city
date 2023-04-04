@@ -218,7 +218,7 @@ return (
                     >Edit
                     </Button> 
             
-                    {deleteFunction && <Button variant='danger' className='' onClick={handleDeleteShow}>Delete</Button>}
+                    {/* {deleteFunction && <Button variant='danger' className='' onClick={handleDeleteShow}>Delete</Button>} */}
                     </Col>
                 </>
 

@@ -4,4 +4,6 @@ export interface IWorkDetailsInput {
     streetAddress?: string;
     postalCode?: string;
     company?: string;
+    city?: string;
+    neighbourhood?: string;
 }

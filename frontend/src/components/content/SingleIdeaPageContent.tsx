@@ -41,9 +41,10 @@ import {
   isIdeaEndorsedByUser, 
   unendorseIdeaByUser,
   getEndorsedUsersByIdea,
+  isIdeaFlaggedByUser,
 } from "src/lib/api/ideaRoutes";
 import CSS from "csstype"
-import { useCheckIdeaFollowedByUser, useCheckIdeaEndorsedByUser, useGetEndorsedUsersByIdea } from "src/hooks/ideaHooks";
+import { useCheckIdeaFollowedByUser, useCheckIdeaEndorsedByUser, useGetEndorsedUsersByIdea, useCheckIdeaFlaggedByUser } from "src/hooks/ideaHooks";
 
 import Modal from 'react-bootstrap/Modal';
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -91,6 +92,24 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
   const parsedDate = new Date(createdAt);
 
+  let reducedTitle = title.substring(0, 75) + "...";
+
+  let reducedDescription = description.substring(0, 250) + "...";
+
+  const [ titleText, setTitleText ] = useState(reducedTitle);
+  const [ descriptionText, setDescriptionText ] = useState(reducedDescription);
+  const [ titleExpanded, setTitleExpanded ] = useState(false);
+  const [ descriptionExpanded, setDescriptionExpanded ] = useState(false);
+
+  const handleTitleExpand = () => {
+    setTitleExpanded(!titleExpanded);
+    setTitleText(titleExpanded ? reducedTitle : title)
+  }
+
+  const handleDescriptionExpand = () => {
+    setDescriptionExpanded(!descriptionExpanded);
+    setDescriptionText(descriptionExpanded ? reducedDescription : description)
+  }
   
 
   // Social Media share for this Idea page
@@ -137,6 +156,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
   const {data: proposal} = useSingleProposal("" + (supportedProposal ? supportedProposal!.id : ""));
   const {data: proposalIdea } = useSingleIdea("" + (supportedProposal ? supportedProposal!.ideaId : ""));
   const {data: flagBanData, isLoading: flagBanDataLoading} = useCheckFlagBan(token, (user ? user.id : ""));
+  const {data: isFlagged, isLoading: isFlaggedLoading} = useCheckIdeaFlaggedByUser(token, (user ? user.id : user), ideaId);
 
 
   const [showFlagButton, setShowFlagButton] = useState(true);
@@ -201,6 +221,14 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
     }
   }, [flagBanDataLoading, flagBanData])
 
+  useEffect(() => {
+    if (!isFlaggedLoading) {
+      if (isFlagged) {
+        handleHideFlagButton();
+      }
+    }
+  }, [isFlaggedLoading, isFlagged])
+
   const handleFollowUnfollow = async () => {
     let res;
     if (user && token) {
@@ -250,7 +278,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
 
 
-  if (isEndorsedUsersDataLoading || isEndorsingPostLoading || isFollowingPostLoading || flagBanDataLoading) {
+  if (isEndorsedUsersDataLoading || isEndorsingPostLoading || isFollowingPostLoading || flagBanDataLoading || isFlaggedLoading) {
     return <LoadingSpinner></LoadingSpinner>;
   }
 
@@ -267,7 +295,9 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
           <Col sm={12}>
             <Card.Header>
               <div className="d-flex">
-                <h1 className="h1 p-2 flex-grow-1">{capitalizeString(title)}</h1>
+                <h1 className="h1 p-2 flex-grow-1">{
+                  title && title.length > 75 ? title.substring(0, 75) + "..." : title
+                }</h1>
                 <div style={{display: "flex", minWidth: "16rem", justifyContent: "center", marginTop: "0.5rem"}}>
                   <div>
                   {/* <div id="flagButtonDiv" style={{display: showFlagButton ? 'block' : 'none'}}> */}
@@ -392,6 +422,26 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
             <Card.Body>
               <Row>
                 <Col>
+                <style>
+                 {
+                  `
+                  .canvasjs-chart-credit {
+                    display: none;
+                  }
+                  .mouse-pointer:hover {
+                    cursor: pointer;
+                  }
+                  b {
+                    color: grey;
+                  }
+                  b:hover {
+                    cursor: pointer;
+                    text-decoration:underline;
+                    color: grey;
+                  }
+                  `
+                 }
+                </style>
                   <h4 className="h5">Category: {capitalizeString(catTitle)}</h4>
                   {/* <h4 className='h5'>Posted by: {author?.fname}@{author?.address?.streetAddress}</h4> */}
                   {/* <h4 className='h5'>As: {userType}</h4> */}
@@ -432,12 +482,36 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                   <br />
                   {title ? (
                     <p>
-                      <strong>Idea title:</strong> {title}
+                      {
+                        title.length > 75 ?
+                        <>
+                          <strong>Idea Title: </strong>
+                          {titleExpanded ? title : reducedTitle}
+                          <br></br>
+                          <b onClick={handleTitleExpand}>{titleExpanded ? "Show Less" : "Show More"}</b>
+                        </>
+                        :
+                        <>
+                          <strong>Idea Title: </strong> {title}
+                        </>
+                      }
                     </p>
                   ) : null}
                   {description ? (
                     <p>
-                      <strong>Idea description:</strong> {description}
+                      {
+                        description.length > 250 ?
+                        <>
+                          <strong>Description: </strong>
+                          {descriptionExpanded ? description : reducedDescription}
+                          <br></br>
+                          <b onClick={handleDescriptionExpand}>{descriptionExpanded ? "Show Less" : "Show More"}</b>
+                        </>
+                        :
+                        <>
+                          <strong>Description: </strong> {description}
+                        </>
+                      }
                     </p>
                   ) : null}
                   {communityImpact ? (

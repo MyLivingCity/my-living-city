@@ -3,4 +3,6 @@ export interface IHomeDetailsInput {
     displayLName?: string;
     streetAddress?: string;
     postalCode?: string;
+    city?: string;
+    neighbourhood?: string;
 }

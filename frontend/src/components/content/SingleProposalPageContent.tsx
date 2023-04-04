@@ -56,7 +56,7 @@ import {
   unendorseIdeaByUser,
 } from "src/lib/api/ideaRoutes";
 import { incrementPostFlagCount } from 'src/lib/api/badPostingBehaviorRoutes';
-import { useCheckIdeaFollowedByUser, useCheckIdeaEndorsedByUser } from "src/hooks/ideaHooks";
+import { useCheckIdeaFollowedByUser, useCheckIdeaEndorsedByUser, useCheckIdeaFlaggedByUser } from "src/hooks/ideaHooks";
 import {
   postCreateCollabotator,
   postCreateVolunteer,
@@ -105,6 +105,9 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
   const parsedIdeaId = ideaId;
   // let descriptionText = description;
+
+  let reducedTitle = title.substring(0, 75) + "..."
+
   let reducedText = description.substring(0, 250) + "..."
 
   let reducedTextProposalGoal = requirements.substring(0, 250) + "..."
@@ -113,16 +116,23 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
   let reducedTextProposorInfo = proposal_role.substring(0, 250) + "..."
 
+  const [titleText, setTitleText] = useState(reducedTitle);
   const [descriptionText, setDescriptionText] = useState(reducedText);
   const [proposalText, setProposalText] = useState(reducedTextProposalGoal);
   const [benefitText, setBenefitsText] = useState(reducedTextBenefits);
   const [proposorText, setProposorText] = useState(reducedTextProposorInfo);
+  const [expandTitle, setExpandTitle] = useState(false);
   const [readMore, setReadmore] = useState('Read More');
   const [readLess, setReadLess] = useState('Read Less');
   const [expanded, setExpanded] = useState(false)
   const [expandedGoal, setExpandedGoal] = useState(false)
   const [expandedBenefits, setExpandedBenefits] = useState(false)
   const [expandedProposorInfo, setExpandedProposorInfo] = useState(false)
+
+  const handleExpandTitle = () => {
+    setExpandTitle(!expandTitle);
+    {expandTitle ? setTitleText(reducedTitle) : setTitleText(title)}
+  }
 
   const expandText = () => {
     setDescriptionText(description);
@@ -371,6 +381,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
   const {data: isFollowingPost, isLoading: isFollowingPostLoading} = useCheckIdeaFollowedByUser(token, (user ? user.id : user), ideaId);
   const {data: isEndorsingPost, isLoading: isEndorsingPostLoading} = useCheckIdeaEndorsedByUser(token, (user ? user.id : user), ideaId);
   const {data: flagBanData, isLoading: flagBanDataLoading} = useCheckFlagBan(token, (user ? user.id : ""));
+  const {data: isFlagged, isLoading: isFlaggedLoading} = useCheckIdeaFlaggedByUser(token, (user ? user.id : user), ideaId);
 
   const canEndorse = user?.userType == USER_TYPES.BUSINESS || user?.userType == USER_TYPES.COMMUNITY 
   || user?.userType == USER_TYPES.MUNICIPAL || user?.userType == USER_TYPES.MUNICIPAL_SEG_ADMIN; 
@@ -411,6 +422,16 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
       }
     }
   }, [flagBanDataLoading, flagBanData])
+
+  useEffect(() => {
+    if (!isFlaggedLoading) {
+      console.log("isFlagged", isFlagged?.valueOf());
+      if (isFlagged) {
+        console.log("isFlaggedRAWR", isFlagged?.valueOf());
+        handleHideFlagButton();
+      }
+    }
+  }, [isFlaggedLoading, isFlagged])
 
   const handleFollowUnfollow = async () => {
     let res;
@@ -470,7 +491,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     )
   }
 
-  if (isEndorsingPostLoading || isFollowingPostLoading || flagBanDataLoading) {
+  if (isEndorsingPostLoading || isFollowingPostLoading || flagBanDataLoading || isFlaggedLoading) {
     return <LoadingSpinner />;
   }
 
@@ -505,8 +526,13 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
           <Col sm={12}>
             <Card.Header>
               <div className="d-flex justify-content-between">
-                <h1 className="h1">{capitalizeString(title)}</h1>
-                <div className="p-2 justify-content-end">
+                <h1 className="h1">{
+                  title.length > 75 ?
+                  title.substring(0, 75) + "..." :
+                  title
+                }</h1>
+                <div style={{display: "flex", minWidth: "16rem", justifyContent: "center", marginTop: "0.5rem"}}>
+                  <div>
                 {showFlagButton ? (<ButtonGroup className="mr-2">
                   {!reviewed ? (
                         <DropdownButton id="dropdown-basic-button d-flex" style={{ fontSize: "16px", font: "16px sans-serif" }} title="Flag">
@@ -536,6 +562,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                       {endorsingPost ? "Unendorse" : "Endorse"}
                     </Button> : null}
                   </ButtonGroup>
+                </div>
                 </div>
               </div>
             </Card.Header>

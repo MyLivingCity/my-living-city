@@ -75,27 +75,27 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
     try {
       const metThreshhold = await checkUser(token, user!.id);
       try {
-          setError(null);
-          setIsLoading(true);
-          setTimeout(() => console.log("timeout"), 5000);
-          const banDetails = await getUserBanWithToken(token);
-          let banned = true;
-          if (!user!.banned || !banDetails || banDetails.banType === "WARNING") {
-            banned = false;
-          }
-          const res = await postCreateIdea(values, banned, token);
-          
-          setError(null);
-          history.push("/ideas/" + res.id);
-          formik.resetForm();
-        } catch (error) {
-          const genericMessage =
-            "An error occured while trying to create an Proposal.";
-          const errorObj = handlePotentialAxiosError(genericMessage, error);
-          setError(errorObj);
-        } finally {
-          setIsLoading(false);
+        setError(null);
+        setIsLoading(true);
+        setTimeout(() => console.log("timeout"), 5000);
+        const banDetails = await getUserBanWithToken(token);
+        let banned = true;
+        if (!user!.banned || !banDetails || banDetails.banType === "WARNING") {
+          banned = false;
         }
+        const res = await postCreateIdea(values, banned, token);
+
+        setError(null);
+        history.push("/ideas/" + res.id);
+        formik.resetForm();
+      } catch (error) {
+        const genericMessage =
+          "An error occured while trying to create an Proposal.";
+        const errorObj = handlePotentialAxiosError(genericMessage, error);
+        setError(errorObj);
+      } finally {
+        setIsLoading(false);
+      }
     } catch (error) {
       //print the error message attached to the error object
       const genericMessage =
@@ -111,7 +111,6 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
   const urlParams = new URLSearchParams(queryString);
   const supportedProposal = urlParams.get("supportedProposal");
   const parsedProposalId = parseInt(supportedProposal!);
-
 
   const formik = useFormik<ICreateIdeaInput>({
     initialValues: {
@@ -145,7 +144,7 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
       //supportingProposalId that is not null
       supportingProposalId: parsedProposalId,
     },
-    onSubmit: submitHandler, 
+    onSubmit: submitHandler,
   });
 
   useEffect(() => {
@@ -208,7 +207,9 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
                 onChange={formik.handleChange}
                 value={formik.values.title}
                 placeholder="Enter the title of your idea"
+                maxLength={63}
               />
+              <p>Character count: {formik.values.title.length}</p>
             </Form.Group>
             <Form.Group>
               <Form.Label>Describe your idea</Form.Label>
@@ -218,7 +219,9 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
                 name="description"
                 onChange={formik.handleChange}
                 value={formik.values.description}
+                maxLength={300}
               />
+              <p>Character count: {formik.values.description.length}</p>
             </Form.Group>
             <Form.Group>
               <Form.Label>Idea image</Form.Label>
@@ -228,7 +231,6 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
                 withPreview={true}
                 onChange={(picture) => {
                   formik.setFieldValue("imagePath", picture);
-                
                 }}
                 imgExtension={[".jpg", ".jpeg", ".png", ".webp"]}
                 buttonText="Select Idea Image"
@@ -362,7 +364,6 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
               disabled={isLoading ? true : false}
             >
               {isLoading ? "Saving..." : "Submit your idea!"}
-              
             </Button>
           </Form>
 

@@ -525,13 +525,13 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
         <Row>
           <Col sm={12}>
             <Card.Header>
-              <div className="d-flex justify-content-between">
+              <div className="d-flex flex-column justify-content-between">
                 <h1 className="h1">{
                   title.length > 75 ?
                   title.substring(0, 75) + "..." :
                   title
                 }</h1>
-                <div style={{display: "flex", minWidth: "16rem", justifyContent: "center", marginTop: "0.5rem"}}>
+                <div style={{display: "flex", minWidth: "16rem", justifyContent: "left", marginTop: "0.5rem"}}>
                   <div>
                 {showFlagButton ? (<ButtonGroup className="mr-2">
                   {!reviewed ? (

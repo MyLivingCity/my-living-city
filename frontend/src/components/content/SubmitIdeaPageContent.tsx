@@ -209,7 +209,9 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
                 placeholder="Enter the title of your idea"
                 maxLength={TEXT_INPUT_LIMIT.TITLE}
               />
-              <p>Character count: {formik.values.title.length}</p>
+              <p className="text-right">
+                {`${formik.values.title.length}/${TEXT_INPUT_LIMIT.TITLE}`}
+              </p>
             </Form.Group>
             <Form.Group>
               <Form.Label>Describe your idea</Form.Label>
@@ -221,7 +223,9 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
                 value={formik.values.description}
                 maxLength={TEXT_INPUT_LIMIT.DESCRIPTION}
               />
-              <p>Character count: {formik.values.description.length}</p>
+              <p className="text-right">
+                {`${formik.values.description.length}/${TEXT_INPUT_LIMIT.DESCRIPTION}`}
+              </p>
             </Form.Group>
             <Form.Group>
               <Form.Label>Idea image</Form.Label>
@@ -251,8 +255,8 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
                     placeholder="Community and Place"
                     maxLength={TEXT_INPUT_LIMIT.IMPACT_AREAS}
                   />
-                  <p>
-                    Character count: {formik.values.communityImpact?.length}
+                  <p className="text-right">
+                    {`${formik.values.communityImpact?.length}/${TEXT_INPUT_LIMIT.IMPACT_AREAS}`}
                   </p>
                 </Col>
                 <Col>
@@ -277,7 +281,9 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
                     placeholder="Nature and Food Security"
                     maxLength={TEXT_INPUT_LIMIT.IMPACT_AREAS}
                   />
-                  <p>Character count: {formik.values.natureImpact?.length}</p>
+                  <p className="text-right">
+                    {`${formik.values.natureImpact?.length}/${TEXT_INPUT_LIMIT.IMPACT_AREAS}`}
+                  </p>
                 </Col>
                 <Col>
                   <a href="javascript:void(0)">
@@ -301,7 +307,9 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
                     placeholder="Arts, Culture, and Education"
                     maxLength={TEXT_INPUT_LIMIT.IMPACT_AREAS}
                   />
-                  <p>Character count: {formik.values.artsImpact?.length}</p>
+                  <p className="text-right">
+                    {`${formik.values.artsImpact?.length}/${TEXT_INPUT_LIMIT.IMPACT_AREAS}`}
+                  </p>
                 </Col>
                 <Col>
                   <a href="javascript:void(0)">
@@ -325,7 +333,9 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
                     placeholder="Water and Energy"
                     maxLength={TEXT_INPUT_LIMIT.IMPACT_AREAS}
                   />
-                  <p>Character count: {formik.values.energyImpact?.length}</p>
+                  <p className="text-right">
+                    {`${formik.values.energyImpact?.length}/${TEXT_INPUT_LIMIT.IMPACT_AREAS}`}
+                  </p>
                 </Col>
                 <Col>
                   <a href="javascript:void(0)">
@@ -349,8 +359,8 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
                     placeholder="Manufacturing and Waste"
                     maxLength={TEXT_INPUT_LIMIT.IMPACT_AREAS}
                   />
-                  <p>
-                    Character count: {formik.values.manufacturingImpact?.length}
+                  <p className="text-right">
+                    {`${formik.values.manufacturingImpact?.length}/${TEXT_INPUT_LIMIT.IMPACT_AREAS}`}
                   </p>
                 </Col>
                 <Col>

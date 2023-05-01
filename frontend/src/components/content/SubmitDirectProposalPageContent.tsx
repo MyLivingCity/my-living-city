@@ -399,7 +399,9 @@ const SubmitDirectProposalPageContent: React.FC<
                 placeholder="Enter the title of your proposal"
                 maxLength={TEXT_INPUT_LIMIT.TITLE}
               />
-              <p>Character count: {formik.values.title.length}</p>
+              <p className="text-right">
+                {`${formik.values.title.length}/${TEXT_INPUT_LIMIT.TITLE}`}
+              </p>
             </Form.Group>
             {/* <Form.Group>
               <Form.Label>*Describe your proposal</Form.Label>
@@ -424,7 +426,9 @@ const SubmitDirectProposalPageContent: React.FC<
                 value={formik.values.proposal_role}
                 maxLength={TEXT_INPUT_LIMIT.DESCRIPTION}
               />
-              <p>Character count: {formik.values.proposal_role.length}</p>
+              <p className="text-right">
+                {`${formik.values.proposal_role.length}/${TEXT_INPUT_LIMIT.DESCRIPTION}`}
+              </p>
             </Form.Group>
             <Form.Group>
               <Form.Label>
@@ -439,7 +443,9 @@ const SubmitDirectProposalPageContent: React.FC<
                 value={formik.values.description}
                 maxLength={TEXT_INPUT_LIMIT.DESCRIPTION}
               />
-              <p>Character count: {formik.values.description.length}</p>
+              <p className="text-right">
+                {`${formik.values.description.length}/${TEXT_INPUT_LIMIT.DESCRIPTION}`}
+              </p>
             </Form.Group>
             <Form.Group>
               <Form.Label>
@@ -454,7 +460,9 @@ const SubmitDirectProposalPageContent: React.FC<
                 value={formik.values.proposal_benefits}
                 maxLength={TEXT_INPUT_LIMIT.DESCRIPTION}
               />
-              <p>Character count: {formik.values.proposal_benefits.length}</p>
+              <p className="text-right">
+                {`${formik.values.proposal_benefits.length}/${TEXT_INPUT_LIMIT.DESCRIPTION}`}
+              </p>
             </Form.Group>
             <Form.Group>
               <Form.Label>
@@ -470,7 +478,9 @@ const SubmitDirectProposalPageContent: React.FC<
                 value={formik.values.requirements}
                 maxLength={TEXT_INPUT_LIMIT.DESCRIPTION}
               />
-              <p>Character count: {formik.values.requirements.length}</p>
+              <p className="text-right">
+                {`${formik.values.requirements.length}/${TEXT_INPUT_LIMIT.DESCRIPTION}`}
+              </p>
             </Form.Group>
             <Form.Group>
               <Form.Label>Proposal image</Form.Label>
@@ -534,8 +544,8 @@ const SubmitDirectProposalPageContent: React.FC<
                     style={{ marginTop: "0rem" }}
                     maxLength={TEXT_INPUT_LIMIT.IMPACT_AREAS}
                   />
-                  <p>
-                    Character count: {formik.values.communityImpact?.length}
+                  <p className="text-right">
+                    {`${formik.values.communityImpact?.length}/${TEXT_INPUT_LIMIT.IMPACT_AREAS}`}
                   </p>
                 </Col>
                 <Col></Col>
@@ -579,7 +589,9 @@ const SubmitDirectProposalPageContent: React.FC<
                     style={{ marginTop: "0rem" }}
                     maxLength={TEXT_INPUT_LIMIT.IMPACT_AREAS}
                   />
-                  <p>Character count: {formik.values.natureImpact?.length}</p>
+                  <p className="text-right">
+                    {`${formik.values.natureImpact?.length}/${TEXT_INPUT_LIMIT.IMPACT_AREAS}`}
+                  </p>
                 </Col>
                 <Col></Col>
               </Row>
@@ -622,7 +634,9 @@ const SubmitDirectProposalPageContent: React.FC<
                     style={{ marginTop: "0rem" }}
                     maxLength={TEXT_INPUT_LIMIT.IMPACT_AREAS}
                   />
-                  <p>Character count: {formik.values.artsImpact?.length}</p>
+                  <p className="text-right">
+                    {`${formik.values.artsImpact?.length}/${TEXT_INPUT_LIMIT.IMPACT_AREAS}`}
+                  </p>
                 </Col>
                 <Col></Col>
               </Row>
@@ -665,7 +679,9 @@ const SubmitDirectProposalPageContent: React.FC<
                     style={{ marginTop: "0rem" }}
                     maxLength={TEXT_INPUT_LIMIT.IMPACT_AREAS}
                   />
-                  <p>Character count: {formik.values.energyImpact?.length}</p>
+                  <p className="text-right">
+                    {`${formik.values.energyImpact?.length}/${TEXT_INPUT_LIMIT.IMPACT_AREAS}`}
+                  </p>
                 </Col>
                 <Col></Col>
               </Row>

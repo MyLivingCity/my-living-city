@@ -294,11 +294,11 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
         <Row>
           <Col sm={12}>
             <Card.Header>
-              <div className="d-flex">
+              <div className="d-flex flex-column">
                 <h1 className="h1 p-2 flex-grow-1">{
                   title && title.length > 75 ? title.substring(0, 75) + "..." : title
                 }</h1>
-                <div style={{display: "flex", minWidth: "16rem", justifyContent: "center", marginTop: "0.5rem"}}>
+                <div style={{display: "flex", minWidth: "16rem", justifyContent: "left", marginTop: "0.5rem"}}>
                   <div>
                   {/* <div id="flagButtonDiv" style={{display: showFlagButton ? 'block' : 'none'}}> */}
                   {showFlagButton ? (<ButtonGroup className="mr-2">

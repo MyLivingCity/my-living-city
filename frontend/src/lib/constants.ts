@@ -95,4 +95,5 @@ export enum SOCIAL_MEDIA_TYPES {
 export const TEXT_INPUT_LIMIT = {
   TITLE: 63,
   DESCRIPTION: 300,
+  IMPACT_AREAS: 63,
 };

@@ -250,6 +250,7 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
                     onChange={formik.handleChange}
                     value={formik.values.communityImpact}
                     placeholder="Community and Place"
+                    maxLength={TEXT_INPUT_LIMIT.IMPACT_AREAS}
                   />
                 </Col>
                 <Col>
@@ -263,6 +264,7 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
                     />
                   </a>
                 </Col>
+                <p>Character count: {formik.values.communityImpact?.length}</p>
               </Row>
               <Row className="align-items-end">
                 <Col xs={11}>
@@ -273,6 +275,7 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
                     onChange={formik.handleChange}
                     value={formik.values.natureImpact}
                     placeholder="Nature and Food Security"
+                    maxLength={TEXT_INPUT_LIMIT.IMPACT_AREAS}
                   />
                 </Col>
                 <Col>
@@ -286,6 +289,7 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
                     />
                   </a>
                 </Col>
+                <p>Character count: {formik.values.natureImpact?.length}</p>
               </Row>
               <Row className="align-items-end">
                 <Col xs={11}>
@@ -296,6 +300,7 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
                     onChange={formik.handleChange}
                     value={formik.values.artsImpact}
                     placeholder="Arts, Culture, and Education"
+                    maxLength={TEXT_INPUT_LIMIT.IMPACT_AREAS}
                   />
                 </Col>
                 <Col>
@@ -309,6 +314,7 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
                     />
                   </a>
                 </Col>
+                <p>Character count: {formik.values.artsImpact?.length}</p>
               </Row>
               <Row className="align-items-end">
                 <Col xs={11}>
@@ -319,6 +325,7 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
                     onChange={formik.handleChange}
                     value={formik.values.energyImpact}
                     placeholder="Water and Energy"
+                    maxLength={TEXT_INPUT_LIMIT.IMPACT_AREAS}
                   />
                 </Col>
                 <Col>
@@ -332,6 +339,7 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
                     />
                   </a>
                 </Col>
+                <p>Character count: {formik.values.energyImpact?.length}</p>
               </Row>
               <Row className="align-items-end">
                 <Col xs={11}>
@@ -342,6 +350,7 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
                     onChange={formik.handleChange}
                     value={formik.values.manufacturingImpact}
                     placeholder="Manufacturing and Waste"
+                    maxLength={TEXT_INPUT_LIMIT.IMPACT_AREAS}
                   />
                 </Col>
                 <Col>
@@ -355,6 +364,9 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
                     />
                   </a>
                 </Col>
+                <p>
+                  Character count: {formik.values.manufacturingImpact?.length}
+                </p>
               </Row>
             </Form.Group>
             <Button

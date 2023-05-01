@@ -11,7 +11,7 @@ import {
 } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
 // import { getUserHomeSegmentInfo, getUserSchoolSegmentInfo, getUserWorkSegmentInfo } from 'src/lib/api/userSegmentRoutes';
-import { API_BASE_URL } from "src/lib/constants";
+import { API_BASE_URL, TEXT_INPUT_LIMIT } from "src/lib/constants";
 import {
   ISegment,
   ISegmentData,
@@ -207,7 +207,7 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
                 onChange={formik.handleChange}
                 value={formik.values.title}
                 placeholder="Enter the title of your idea"
-                maxLength={63}
+                maxLength={TEXT_INPUT_LIMIT.TITLE}
               />
               <p>Character count: {formik.values.title.length}</p>
             </Form.Group>
@@ -219,7 +219,7 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
                 name="description"
                 onChange={formik.handleChange}
                 value={formik.values.description}
-                maxLength={300}
+                maxLength={TEXT_INPUT_LIMIT.DESCRIPTION}
               />
               <p>Character count: {formik.values.description.length}</p>
             </Form.Group>

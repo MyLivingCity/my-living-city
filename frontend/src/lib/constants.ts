@@ -96,4 +96,5 @@ export const TEXT_INPUT_LIMIT = {
   TITLE: 63,
   DESCRIPTION: 300,
   IMPACT_AREAS: 63,
+  COMMENT: 280,
 };

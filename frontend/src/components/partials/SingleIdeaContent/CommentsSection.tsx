@@ -12,6 +12,9 @@ import IdeaCommentTile from "../../tiles/IdeaComment/IdeaCommentTile";
 import LoadingSpinner from "../../ui/LoadingSpinner";
 import CommentSubmitModal from "./CommentSubmitModal";
 import { createCommentFlagUnderIdea, updateFalseFlagComment, getAllCommentFlags} from "src/lib/api/flagRoutes";
+import { kMaxLength } from "buffer";
+import "../../../scss/content/textlimit.scss";
+
 const CommentsSection = (ideaIdProp: any) => {
   const { ideaId } = ideaIdProp;
 
@@ -101,9 +104,13 @@ if(ideaComments){
         ) : (
           ideaComments &&
           ideaComments.map((comment) => (
+            <div className="textlimit">
             <Row key={comment.id}>
-              <IdeaCommentTile commentData={comment} />
+              <IdeaCommentTile 
+                commentData={comment} 
+                />
             </Row>
+            </div>
           ))
         )}
       </div>

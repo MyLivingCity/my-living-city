@@ -11,7 +11,7 @@ import {
 } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
 // import { getUserHomeSegmentInfo, getUserSchoolSegmentInfo, getUserWorkSegmentInfo } from 'src/lib/api/userSegmentRoutes';
-import { API_BASE_URL } from "src/lib/constants";
+import { API_BASE_URL, TEXT_INPUT_LIMIT } from "src/lib/constants";
 import {
   ISegment,
   ISegmentData,
@@ -75,27 +75,27 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
     try {
       const metThreshhold = await checkUser(token, user!.id);
       try {
-          setError(null);
-          setIsLoading(true);
-          setTimeout(() => console.log("timeout"), 5000);
-          const banDetails = await getUserBanWithToken(token);
-          let banned = true;
-          if (!user!.banned || !banDetails || banDetails.banType === "WARNING") {
-            banned = false;
-          }
-          const res = await postCreateIdea(values, banned, token);
-          
-          setError(null);
-          history.push("/ideas/" + res.id);
-          formik.resetForm();
-        } catch (error) {
-          const genericMessage =
-            "An error occured while trying to create an Proposal.";
-          const errorObj = handlePotentialAxiosError(genericMessage, error);
-          setError(errorObj);
-        } finally {
-          setIsLoading(false);
+        setError(null);
+        setIsLoading(true);
+        setTimeout(() => console.log("timeout"), 5000);
+        const banDetails = await getUserBanWithToken(token);
+        let banned = true;
+        if (!user!.banned || !banDetails || banDetails.banType === "WARNING") {
+          banned = false;
         }
+        const res = await postCreateIdea(values, banned, token);
+
+        setError(null);
+        history.push("/ideas/" + res.id);
+        formik.resetForm();
+      } catch (error) {
+        const genericMessage =
+          "An error occured while trying to create an Proposal.";
+        const errorObj = handlePotentialAxiosError(genericMessage, error);
+        setError(errorObj);
+      } finally {
+        setIsLoading(false);
+      }
     } catch (error) {
       //print the error message attached to the error object
       const genericMessage =
@@ -111,7 +111,6 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
   const urlParams = new URLSearchParams(queryString);
   const supportedProposal = urlParams.get("supportedProposal");
   const parsedProposalId = parseInt(supportedProposal!);
-
 
   const formik = useFormik<ICreateIdeaInput>({
     initialValues: {
@@ -145,7 +144,7 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
       //supportingProposalId that is not null
       supportingProposalId: parsedProposalId,
     },
-    onSubmit: submitHandler, 
+    onSubmit: submitHandler,
   });
 
   useEffect(() => {
@@ -208,7 +207,11 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
                 onChange={formik.handleChange}
                 value={formik.values.title}
                 placeholder="Enter the title of your idea"
+                maxLength={TEXT_INPUT_LIMIT.TITLE}
               />
+              <p className="text-right">
+                {`${formik.values.title.length}/${TEXT_INPUT_LIMIT.TITLE}`}
+              </p>
             </Form.Group>
             <Form.Group>
               <Form.Label>Describe your idea</Form.Label>
@@ -218,7 +221,11 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
                 name="description"
                 onChange={formik.handleChange}
                 value={formik.values.description}
+                maxLength={TEXT_INPUT_LIMIT.DESCRIPTION}
               />
+              <p className="text-right">
+                {`${formik.values.description.length}/${TEXT_INPUT_LIMIT.DESCRIPTION}`}
+              </p>
             </Form.Group>
             <Form.Group>
               <Form.Label>Idea image</Form.Label>
@@ -228,7 +235,6 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
                 withPreview={true}
                 onChange={(picture) => {
                   formik.setFieldValue("imagePath", picture);
-                
                 }}
                 imgExtension={[".jpg", ".jpeg", ".png", ".webp"]}
                 buttonText="Select Idea Image"
@@ -239,16 +245,19 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
             </Form.Group>
             <Form.Group>
               <h3 className="border-bottom mb-3">Impact Areas</h3>
-              <Row className="align-items-end">
+              <Row className="align-items-start idea-impacts">
                 <Col xs={11}>
                   <Form.Control
-                    className="idea-impacts"
                     type="text"
                     name="communityImpact"
                     onChange={formik.handleChange}
                     value={formik.values.communityImpact}
                     placeholder="Community and Place"
+                    maxLength={TEXT_INPUT_LIMIT.IMPACT_AREAS}
                   />
+                  <p className="text-right">
+                    {`${formik.values.communityImpact?.length}/${TEXT_INPUT_LIMIT.IMPACT_AREAS}`}
+                  </p>
                 </Col>
                 <Col>
                   <a href="javascript:void(0)">
@@ -262,16 +271,19 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
                   </a>
                 </Col>
               </Row>
-              <Row className="align-items-end">
+              <Row className="align-items-start idea-impacts">
                 <Col xs={11}>
                   <Form.Control
-                    className="idea-impacts"
                     type="text"
                     name="natureImpact"
                     onChange={formik.handleChange}
                     value={formik.values.natureImpact}
                     placeholder="Nature and Food Security"
+                    maxLength={TEXT_INPUT_LIMIT.IMPACT_AREAS}
                   />
+                  <p className="text-right">
+                    {`${formik.values.natureImpact?.length}/${TEXT_INPUT_LIMIT.IMPACT_AREAS}`}
+                  </p>
                 </Col>
                 <Col>
                   <a href="javascript:void(0)">
@@ -285,16 +297,19 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
                   </a>
                 </Col>
               </Row>
-              <Row className="align-items-end">
+              <Row className="align-items-start idea-impacts">
                 <Col xs={11}>
                   <Form.Control
-                    className="idea-impacts"
                     type="text"
                     name="artsImpact"
                     onChange={formik.handleChange}
                     value={formik.values.artsImpact}
                     placeholder="Arts, Culture, and Education"
+                    maxLength={TEXT_INPUT_LIMIT.IMPACT_AREAS}
                   />
+                  <p className="text-right">
+                    {`${formik.values.artsImpact?.length}/${TEXT_INPUT_LIMIT.IMPACT_AREAS}`}
+                  </p>
                 </Col>
                 <Col>
                   <a href="javascript:void(0)">
@@ -308,16 +323,19 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
                   </a>
                 </Col>
               </Row>
-              <Row className="align-items-end">
+              <Row className="align-items-start idea-impacts">
                 <Col xs={11}>
                   <Form.Control
-                    className="idea-impacts"
                     type="text"
                     name="energyImpact"
                     onChange={formik.handleChange}
                     value={formik.values.energyImpact}
                     placeholder="Water and Energy"
+                    maxLength={TEXT_INPUT_LIMIT.IMPACT_AREAS}
                   />
+                  <p className="text-right">
+                    {`${formik.values.energyImpact?.length}/${TEXT_INPUT_LIMIT.IMPACT_AREAS}`}
+                  </p>
                 </Col>
                 <Col>
                   <a href="javascript:void(0)">
@@ -331,16 +349,19 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
                   </a>
                 </Col>
               </Row>
-              <Row className="align-items-end">
+              <Row className="align-items-start idea-impacts">
                 <Col xs={11}>
                   <Form.Control
-                    className="idea-impacts"
                     type="text"
                     name="manufacturingImpact"
                     onChange={formik.handleChange}
                     value={formik.values.manufacturingImpact}
                     placeholder="Manufacturing and Waste"
+                    maxLength={TEXT_INPUT_LIMIT.IMPACT_AREAS}
                   />
+                  <p className="text-right">
+                    {`${formik.values.manufacturingImpact?.length}/${TEXT_INPUT_LIMIT.IMPACT_AREAS}`}
+                  </p>
                 </Col>
                 <Col>
                   <a href="javascript:void(0)">
@@ -362,7 +383,6 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
               disabled={isLoading ? true : false}
             >
               {isLoading ? "Saving..." : "Submit your idea!"}
-              
             </Button>
           </Form>
 

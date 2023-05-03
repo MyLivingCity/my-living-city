@@ -9,7 +9,6 @@ export const UTIL_FUNCTIONS = {
 export const STRIPE_PUBLIC_KEY = String(process.env.REACT_APP_STRIPE_KEY);
 export const STRIPE_PRODUCT_40 = "price_1KyU20Dabqllr9PHxIInGgjr";
 
-
 // Basic styles
 export const MLC_COLOUR_THEME = {
   mainDark: "#549762",
@@ -92,3 +91,17 @@ export enum SOCIAL_MEDIA_TYPES {
   EMAIL = "EMAIL",
   OTHER = "OTHER",
 }
+
+export const TEXT_INPUT_LIMIT = {
+  TITLE: 100,
+  DESCRIPTION: 400,
+  IMPACT_AREAS: 100,
+  COMMENT: 280,
+  MISSION_STATEMENT: 100,
+  LOCATION: 46,
+  MIN_AD_TITLE: 2,
+  MAX_AD_TITLE: 50,
+  EXTERNAL_LINK: 2000,
+  NAME: 50,
+  STREET_NAME: 28,
+};

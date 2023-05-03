@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
-import { Button, Container, Form, Modal, Row } from 'react-bootstrap';
-import IdeaCommentTile from 'src/components/tiles/IdeaComment/IdeaCommentTile';
+import React, { useState } from "react";
+import { Button, Container, Form, Modal, Row } from "react-bootstrap";
+import IdeaCommentTile from "src/components/tiles/IdeaComment/IdeaCommentTile";
 import { getUserBanWithToken } from "../../../lib/api/banRoutes";
-import { ICreateCommentInput } from 'src/lib/types/input/createComment.input';
-import { IComment } from '../../../lib/types/data/comment.type';
+import { ICreateCommentInput } from "src/lib/types/input/createComment.input";
+import { IComment } from "../../../lib/types/data/comment.type";
+import { TEXT_INPUT_LIMIT } from "src/lib/constants";
 
 interface CommentSubmitModalProps {
   setShow: React.Dispatch<React.SetStateAction<boolean>>;
@@ -26,34 +27,32 @@ const CommentSubmitModal = ({
   show,
   comments,
   banned,
-  token
+  token,
 }: CommentSubmitModalProps) => {
   const handleClose = () => setShow(false);
-  const [commentText, setCommentText] = useState('');
+  const [commentText, setCommentText] = useState("");
   const [error, setError] = useState<string | null>(null);
   const submitHandler = async (values: ICreateCommentInput) => {
-   
     const banDetails = await getUserBanWithToken(token);
     let isBanned = true;
     if (!banned || !banDetails || banDetails.banType === "WARNING") {
       isBanned = false;
     }
     setError(null);
-    try{
-      if(isBanned === true){
+    try {
+      if (isBanned === true) {
         setShowCommentSubmitError(true);
-        setError('You are banned');
+        setError("You are banned");
         alert("You are banned!");
         throw error;
       }
       submitComment(values);
-      setCommentText('');
-    }catch(error){
+      setCommentText("");
+    } catch (error) {
       console.log(error);
-    }finally{
+    } finally {
       handleClose();
     }
-
   };
 
   return (
@@ -61,41 +60,46 @@ const CommentSubmitModal = ({
       show={show}
       onHide={handleClose}
       centered
-      size='lg'
+      size="lg"
       animation={false}
     >
       <Modal.Header closeButton>
         <Container>
-          <Row className='justify-content-center'>
+          <Row className="justify-content-center">
             <Modal.Title>Top 10 Feedbacks</Modal.Title>
           </Row>
-          <Row className='text-center'>
-            <p>Please take a look at top 10 feedbacks. Do you see your opinion there? Why not encourage participation instead by liking it?</p>
+          <Row className="text-center">
+            <p>
+              Please take a look at top 10 feedbacks. Do you see your opinion
+              there? Why not encourage participation instead by liking it?
+            </p>
           </Row>
-
         </Container>
       </Modal.Header>
       <Modal.Body>
-        {comments && (comments.length <= 0) ? (
-          <p className='text-center'>There are no Feedback Comments for this idea yet. Try posting one!</p>
+        {comments && comments.length <= 0 ? (
+          <p className="text-center">
+            There are no Feedback Comments for this idea yet. Try posting one!
+          </p>
         ) : null}
-        {comments && comments?.map(comment => (
-          <div key={comment.id}><IdeaCommentTile commentData={comment} /></div>
-        ))}
+        {comments &&
+          comments?.map((comment) => (
+            <div key={comment.id}>
+              <IdeaCommentTile commentData={comment} />
+            </div>
+          ))}
       </Modal.Body>
-      <Modal.Footer className='d-flex flex-column'>
+      <Modal.Footer className="d-flex flex-column">
         <textarea
-          className='w-100'
+          className="w-100"
           rows={3}
           value={commentText}
-          onChange={e => setCommentText(e.target.value)}
+          onChange={(e) => setCommentText(e.target.value)}
+          maxLength={TEXT_INPUT_LIMIT.COMMENT}
         />
-        <div className='w-100 d-flex justify-content-end'>
-          <Button
-            className='mr-3'
-            variant="secondary"
-            onClick={handleClose}
-          >
+        <p className="align-self-end">{`${commentText.length}/${TEXT_INPUT_LIMIT.COMMENT}`}</p>
+        <div className="w-100 d-flex justify-content-end">
+          <Button className="mr-3" variant="secondary" onClick={handleClose}>
             Close
           </Button>
           <Button
@@ -109,6 +113,6 @@ const CommentSubmitModal = ({
       </Modal.Footer>
     </Modal>
   );
-}
+};
 
-export default CommentSubmitModal
+export default CommentSubmitModal;

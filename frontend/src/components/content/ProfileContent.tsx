@@ -605,6 +605,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                   // Updates the link in the links array
                                   updateLink(e.target.value, link);
                                 }}
+                                maxLength={TEXT_INPUT_LIMIT.EXTERNAL_LINK}
                               />
                             </td>
                             <td>

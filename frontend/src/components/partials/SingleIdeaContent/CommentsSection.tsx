@@ -104,7 +104,7 @@ if(ideaComments){
         ) : (
           ideaComments &&
           ideaComments.map((comment) => (
-            <div className="textlimit & textlimit:hover">
+            <div className="textlimit">
             <Row key={comment.id}>
               <IdeaCommentTile 
                 commentData={comment} 

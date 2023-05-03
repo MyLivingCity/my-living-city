@@ -106,78 +106,11 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
   const parsedIdeaId = ideaId;
   // let descriptionText = description;
 
-  let reducedTitle = title.substring(0, 75) + "..."
-
-  let reducedText = description.substring(0, 250) + "..."
-
-  let reducedTextProposalGoal = requirements.substring(0, 250) + "..."
-
-  let reducedTextBenefits = proposal_benefits.substring(0, 250) + "..."
-
-  let reducedTextProposorInfo = proposal_role.substring(0, 250) + "..."
-
-  const [titleText, setTitleText] = useState(reducedTitle);
-  const [descriptionText, setDescriptionText] = useState(reducedText);
-  const [proposalText, setProposalText] = useState(reducedTextProposalGoal);
-  const [benefitText, setBenefitsText] = useState(reducedTextBenefits);
-  const [proposorText, setProposorText] = useState(reducedTextProposorInfo);
-  const [expandTitle, setExpandTitle] = useState(false);
-  const [readMore, setReadmore] = useState('Read More');
-  const [readLess, setReadLess] = useState('Read Less');
-  const [expanded, setExpanded] = useState(false)
-  const [expandedGoal, setExpandedGoal] = useState(false)
-  const [expandedBenefits, setExpandedBenefits] = useState(false)
-  const [expandedProposorInfo, setExpandedProposorInfo] = useState(false)
-
-  const handleExpandTitle = () => {
-    setExpandTitle(!expandTitle);
-    {expandTitle ? setTitleText(reducedTitle) : setTitleText(title)}
-  }
-
-  const expandText = () => {
-    setDescriptionText(description);
-    setExpanded(true);
-  }
-
-  const reduceText = () => {
-    setDescriptionText(reducedText);
-    setExpanded(false);
-
-  }
-
-  const expandTextGoal = () => {
-    setProposalText(requirements);
-    setExpandedGoal(true);
-  }
-
-  const reduceTextGoal = () => {
-    setProposalText(reducedTextProposalGoal);
-    setExpandedGoal(false);
-
-  }
-
-  const expandTextBenefits = () => {
-    setBenefitsText(proposal_benefits);
-    setExpandedBenefits(true);
-  }
-
-  const reduceTextBenefits = () => {
-    setBenefitsText(reducedTextBenefits);
-    setExpandedBenefits(false);
-
-  }
-
-  const expandTextProposor = () => {
-    setProposorText(proposal_role);
-    setExpandedProposorInfo(true);
-  }
-
-  const reduceTextProposor = () => {
-    setProposorText(reducedTextProposorInfo);
-    setExpandedProposorInfo(false);
-
-  }
-
+  const [titleText, setTitleText] = useState(title);
+  const [descriptionText, setDescriptionText] = useState(description);
+  const [proposalText, setProposalText] = useState(requirements);
+  const [benefitText, setBenefitsText] = useState(proposal_benefits);
+  const [proposorText, setProposorText] = useState(proposal_role);
 
   const {
     id: proposalId,
@@ -527,9 +460,9 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
             <Card.Header>
               <div className="d-flex justify-content-between">
                 <h1 className="h1">{
-                  title.length > 75 ?
-                  title.substring(0, 75) + "..." :
-                  title
+                  titleText.length > 75 ?
+                  titleText.substring(0, 75) + "..." :
+                  titleText
                 }</h1>
                 <div style={{display: "flex", minWidth: "16rem", justifyContent: "center", marginTop: "0.5rem"}}>
                   <div>
@@ -666,76 +599,35 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                   ) : null}
 
                   <br />
-                  {proposal_role.length > 100 && !expandedProposorInfo ? (
                     <p>
                       <strong>Proposer Info:</strong> {proposorText}<br />
-                      {<b onClick={expandTextProposor}>{readMore}</b>}
                     </p>
-                  ) : <p>
-                    <strong>Proposer Info:</strong> {proposal_role}<br />
-                    {expandedProposorInfo && <b onClick={reduceTextProposor}>{readLess}</b>}
-                  </p>}
-                  {description.length > 100 && !expanded ? (
                     <p>
                       <strong>Description:</strong> {descriptionText}<br />
-                      {<b onClick={expandText}>{readMore}</b>}
                     </p>
-
-                  ) : <p>
-                    <strong>Description:</strong> {description} <br />
-                    {expanded && <b onClick={reduceText}>{readLess}</b>}
-                  </p>}
-                  {proposal_benefits.length > 100 && !expandedBenefits ? (
                     <p>
                       <strong>Community Benefits:</strong> {benefitText}<br />
-                      <b onClick={expandTextBenefits}>{readMore}</b>
                     </p>
-                  ) : <p>
-                    <strong>Community Benefits:</strong> {proposal_benefits}<br />
-                    {expandedBenefits && <b onClick={reduceTextBenefits}>{readLess}</b>}
-                  </p>}
 
-                  {requirements.length > 100 && !expandedGoal ? (
                     <p>
-                      <strong>Requirements:</strong> {reducedTextProposalGoal}<br />
-                      <b id="more-text" onClick={expandTextGoal}>{readMore}</b>
+                      <strong>Requirements:</strong> {proposalText}<br />
                     </p>
-
-                  ) : <p>
-                    <strong>Requirements:</strong> {requirements} <br />
-                    {expandedGoal && <b id="more-text" onClick={reduceTextGoal}>{readLess}</b>}
-                  </p>}
-
-                  {communityImpact ? (
                     <p>
                       <strong>Community and Place:</strong> {communityImpact}
                     </p>
-                  ) : null}
-                  {natureImpact ? (
                     <p>
                       <strong>Nature and Food Security:</strong> {natureImpact}
                     </p>
-                  ) : null}
-                  {artsImpact ? (
                     <p>
-                      <strong>Arts, Culture, and Education:</strong>{" "}
-                      {artsImpact}
+                      <strong>Arts, Culture, and Education:</strong> {artsImpact}
                     </p>
-                  ) : null}
-                  {energyImpact ? (
                     <p>
                       <strong>Water and Energy:</strong> {energyImpact}
                     </p>
-                  ) : null}
-                  {manufacturingImpact ? (
                     <p>
-                      <strong>Manufacturing and Waste:</strong>{" "}
-                      {manufacturingImpact
-                        ? capitalizeString(manufacturingImpact)
-                        : ""}
+                      <strong>Manufacturing and Waste:</strong> 
+                      {manufacturingImpact ? capitalizeString(manufacturingImpact) : ""}
                     </p>
-                  ) : null}
-
                 </Col>
               </Row>
             </Card.Body>

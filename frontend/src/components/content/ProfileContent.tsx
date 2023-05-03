@@ -549,6 +549,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                     id="formPublicAddress"
                     placeholder="Public Address"
                     defaultValue={communityBusinessProfile.address}
+                    maxLength={TEXT_INPUT_LIMIT.LOCATION}
                   />
                 </Form.Group>
                 <Form.Group
@@ -1060,6 +1061,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                             id="formStandardFirstName"
                             placeholder="First Name"
                             defaultValue={fname}
+                            maxLength={TEXT_INPUT_LIMIT.NAME}
                           />
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="lastName">
@@ -1071,6 +1073,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                             id="formStandardLastName"
                             placeholder="Last Name"
                             defaultValue={lname}
+                            maxLength={TEXT_INPUT_LIMIT.NAME}
                           />
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="email">

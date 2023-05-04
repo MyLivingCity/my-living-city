@@ -11,4 +11,8 @@ const prisma = new PrismaClient({
   errorFormat: 'pretty',
 });
 
+prisma.$on('query', (event) => {
+  console.log(`Query Execution Time: ${event.duration}ms\n`);
+});
+
 module.exports = prisma;

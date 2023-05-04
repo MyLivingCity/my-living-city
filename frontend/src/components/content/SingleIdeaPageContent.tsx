@@ -91,27 +91,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
   const { title: catTitle } = category!;
 
   const parsedDate = new Date(createdAt);
-
-  let reducedTitle = title.substring(0, 75) + "...";
-
-  let reducedDescription = description.substring(0, 250) + "...";
-
-  const [ titleText, setTitleText ] = useState(reducedTitle);
-  const [ descriptionText, setDescriptionText ] = useState(reducedDescription);
-  const [ titleExpanded, setTitleExpanded ] = useState(false);
-  const [ descriptionExpanded, setDescriptionExpanded ] = useState(false);
-
-  const handleTitleExpand = () => {
-    setTitleExpanded(!titleExpanded);
-    setTitleText(titleExpanded ? reducedTitle : title)
-  }
-
-  const handleDescriptionExpand = () => {
-    setDescriptionExpanded(!descriptionExpanded);
-    setDescriptionText(descriptionExpanded ? reducedDescription : description)
-  }
   
-
   // Social Media share for this Idea page
   // const shareUrl = 'http://github.com';
   // const shareUrl = 'https://app.mylivingcity.org'
@@ -482,36 +462,12 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                   <br />
                   {title ? (
                     <p>
-                      {
-                        title.length > 75 ?
-                        <>
-                          <strong>Idea Title: </strong>
-                          {titleExpanded ? title : reducedTitle}
-                          <br></br>
-                          <b onClick={handleTitleExpand}>{titleExpanded ? "Show Less" : "Show More"}</b>
-                        </>
-                        :
-                        <>
-                          <strong>Idea Title: </strong> {title}
-                        </>
-                      }
+                      <strong>Idea Title: </strong> {title}
                     </p>
                   ) : null}
                   {description ? (
                     <p>
-                      {
-                        description.length > 250 ?
-                        <>
-                          <strong>Description: </strong>
-                          {descriptionExpanded ? description : reducedDescription}
-                          <br></br>
-                          <b onClick={handleDescriptionExpand}>{descriptionExpanded ? "Show Less" : "Show More"}</b>
-                        </>
-                        :
-                        <>
-                          <strong>Description: </strong> {description}
-                        </>
-                      }
+                      <strong>Description: </strong> {description}
                     </p>
                   ) : null}
                   {communityImpact ? (

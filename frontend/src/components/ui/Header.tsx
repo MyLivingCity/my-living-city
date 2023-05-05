@@ -1,36 +1,23 @@
-import { useContext, useEffect, useState } from "react";
+import { memo, useContext, useEffect, useState } from "react";
 import CSS from "csstype";
 import {
   NavDropdown,
   Nav,
   Navbar,
-  Form,
-  FormControl,
-  Button,
-  Modal,
-  Row,
-  Col,
 } from "react-bootstrap";
-import NavbarCollapse from "react-bootstrap/esm/NavbarCollapse";
 import { useUserWithJwtVerbose } from "src/hooks/userHooks";
 import { UserProfileContext } from "../../contexts/UserProfile.Context";
-import { searchForLocation } from 'src/lib/api/googleMapQuery';
-//import { useGoogleMapSearchLocation } from "src/hooks/googleMapHooks";
-import { useSingleSegmentByName } from "src/hooks/segmentHooks";
-import { findSegmentByName } from "src/lib/api/segmentRoutes";
 import {
-  useAllUserSegments,
   useAllUserSegmentsRefined,
 } from "src/hooks/userSegmentHooks";
 import { getUserSubscriptionStatus } from 'src/lib/api/userRoutes'
-import LoadingSpinner from "./LoadingSpinner";
 import { BanMessageModal } from "../modal/BanMessageModal";
 import { FindBanDetailsWithToken } from "src/hooks/banHooks";
 import { FindBadPostingBehaviorDetails } from "src/hooks/badPostingBehaviorHooks";
 import { WarningMessageModal } from "../modal/WarningMessageModal";
 import {useBadPostingThreshhold } from 'src/hooks/threshholdHooks';
 
-export default function Header() {
+function Header() {
   const [stripeStatus, setStripeStatus] = useState("");
   const { logout, user, token } = useContext(UserProfileContext);
   const { data } = useUserWithJwtVerbose({
@@ -38,7 +25,8 @@ export default function Header() {
     shouldTrigger: token != null,
   });
   // const { data: googleQuery, isLoading: googleQueryLoading } = useGoogleMapSearchLocation({ lat: data?.geo?.lat, lon: data?.geo?.lon }, (data != null && data.geo != null));
-  const { data: segData, isLoading: segQueryLoading } = useAllUserSegmentsRefined(token, user?.id || null);
+
+  // const { data: segData, isLoading: segQueryLoading } = useAllUserSegmentsRefined(token, user?.id || null);
   const { data: banData, isLoading: banQueryLoading} = FindBanDetailsWithToken(token);
   const { data: badPostingBehaviorData, isLoading: badPostLoading } = FindBadPostingBehaviorDetails(token);
   const {data: badPostingThreshholdData, isLoading: badPostingThreshholdLoading} = useBadPostingThreshhold(token);
@@ -258,3 +246,5 @@ export default function Header() {
     </div>
   );
 }
+
+export default memo(Header);

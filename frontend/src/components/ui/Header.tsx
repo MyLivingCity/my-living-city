@@ -18,6 +18,7 @@ import { WarningMessageModal } from "../modal/WarningMessageModal";
 import {useBadPostingThreshhold } from 'src/hooks/threshholdHooks';
 
 function Header() {
+  console.log("Header component rendered");
   const [stripeStatus, setStripeStatus] = useState("");
   const { logout, user, token } = useContext(UserProfileContext);
   const { data } = useUserWithJwtVerbose({
@@ -25,7 +26,8 @@ function Header() {
     shouldTrigger: token != null,
   });
   // const { data: googleQuery, isLoading: googleQueryLoading } = useGoogleMapSearchLocation({ lat: data?.geo?.lat, lon: data?.geo?.lon }, (data != null && data.geo != null));
-  const { data: segData, isLoading: segQueryLoading } = useAllUserSegmentsRefined(token, user?.id || null);
+
+  // const { data: segData, isLoading: segQueryLoading } = useAllUserSegmentsRefined(token, user?.id || null);
   const { data: banData, isLoading: banQueryLoading} = FindBanDetailsWithToken(token);
   const { data: badPostingBehaviorData, isLoading: badPostLoading } = FindBadPostingBehaviorDetails(token);
   const {data: badPostingThreshholdData, isLoading: badPostingThreshholdLoading} = useBadPostingThreshhold(token);

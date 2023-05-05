@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { memo, useContext, useEffect, useState } from "react";
 import CSS from "csstype";
 import {
   NavDropdown,
@@ -30,7 +30,7 @@ import { FindBadPostingBehaviorDetails } from "src/hooks/badPostingBehaviorHooks
 import { WarningMessageModal } from "../modal/WarningMessageModal";
 import {useBadPostingThreshhold } from 'src/hooks/threshholdHooks';
 
-export default function Header() {
+function Header() {
   const [stripeStatus, setStripeStatus] = useState("");
   const { logout, user, token } = useContext(UserProfileContext);
   const { data } = useUserWithJwtVerbose({
@@ -258,3 +258,5 @@ export default function Header() {
     </div>
   );
 }
+
+export default memo(Header);

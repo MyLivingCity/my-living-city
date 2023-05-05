@@ -18,7 +18,6 @@ import { WarningMessageModal } from "../modal/WarningMessageModal";
 import {useBadPostingThreshhold } from 'src/hooks/threshholdHooks';
 
 function Header() {
-  console.log("Header component rendered");
   const [stripeStatus, setStripeStatus] = useState("");
   const { logout, user, token } = useContext(UserProfileContext);
   const { data } = useUserWithJwtVerbose({

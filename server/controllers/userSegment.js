@@ -698,7 +698,7 @@ userSegmentRouter.get(
             })
 
             if(!result){
-                res.status(404).json("user segment not found!");
+                return res.status(404).json("user segment not found!");
             }
 
             if(result.homeSegmentId){

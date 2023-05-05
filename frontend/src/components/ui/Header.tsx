@@ -4,26 +4,13 @@ import {
   NavDropdown,
   Nav,
   Navbar,
-  Form,
-  FormControl,
-  Button,
-  Modal,
-  Row,
-  Col,
 } from "react-bootstrap";
-import NavbarCollapse from "react-bootstrap/esm/NavbarCollapse";
 import { useUserWithJwtVerbose } from "src/hooks/userHooks";
 import { UserProfileContext } from "../../contexts/UserProfile.Context";
-import { searchForLocation } from 'src/lib/api/googleMapQuery';
-//import { useGoogleMapSearchLocation } from "src/hooks/googleMapHooks";
-import { useSingleSegmentByName } from "src/hooks/segmentHooks";
-import { findSegmentByName } from "src/lib/api/segmentRoutes";
 import {
-  useAllUserSegments,
   useAllUserSegmentsRefined,
 } from "src/hooks/userSegmentHooks";
 import { getUserSubscriptionStatus } from 'src/lib/api/userRoutes'
-import LoadingSpinner from "./LoadingSpinner";
 import { BanMessageModal } from "../modal/BanMessageModal";
 import { FindBanDetailsWithToken } from "src/hooks/banHooks";
 import { FindBadPostingBehaviorDetails } from "src/hooks/badPostingBehaviorHooks";

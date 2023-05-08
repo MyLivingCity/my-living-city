@@ -56,7 +56,7 @@ import {
   unendorseIdeaByUser,
 } from "src/lib/api/ideaRoutes";
 import { incrementPostFlagCount } from 'src/lib/api/badPostingBehaviorRoutes';
-import { useCheckIdeaFollowedByUser, useCheckIdeaEndorsedByUser, useCheckIdeaFlaggedByUser } from "src/hooks/ideaHooks";
+import { useCheckIdeaFollowedByUser, useCheckIdeaEndorsedByUser, useCheckIdeaFlaggedByUser, useGetEndorsedUsersByIdea } from "src/hooks/ideaHooks";
 import {
   postCreateCollabotator,
   postCreateVolunteer,
@@ -310,12 +310,15 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
   const [followingPost, setFollowingPost] = useState(false);
   const [endorsingPost, setEndorsingPost] = useState(false);
-
+  const [endorsedUsers, setEndorsedUsers] = useState<any[]>([]);
+  const [endorsedUsersLoading, setEndorsedUsersLoading] = useState(true);
+  
   const {data: isFollowingPost, isLoading: isFollowingPostLoading} = useCheckIdeaFollowedByUser(token, (user ? user.id : user), ideaId);
   const {data: isEndorsingPost, isLoading: isEndorsingPostLoading} = useCheckIdeaEndorsedByUser(token, (user ? user.id : user), ideaId);
   const {data: flagBanData, isLoading: flagBanDataLoading} = useCheckFlagBan(token, (user ? user.id : ""));
   const {data: isFlagged, isLoading: isFlaggedLoading} = useCheckIdeaFlaggedByUser(token, (user ? user.id : user), ideaId);
-
+  const {data: endorsedUsersData, isLoading: isEndorsedUsersDataLoading} = useGetEndorsedUsersByIdea(token, ideaId);
+  
   const canEndorse = user?.userType == USER_TYPES.BUSINESS || user?.userType == USER_TYPES.COMMUNITY 
   || user?.userType == USER_TYPES.MUNICIPAL || user?.userType == USER_TYPES.MUNICIPAL_SEG_ADMIN; 
   const [showEndorseButton, setShowEndorseButton] = useState(false);
@@ -338,6 +341,13 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
       setEndorsingPost(!endorsingPost);
     }
   }
+
+  useEffect(() => {
+    if (!isEndorsedUsersDataLoading) {
+      setEndorsedUsers(endorsedUsersData);
+      setEndorsedUsersLoading(false);
+    }
+  }, [isEndorsedUsersDataLoading, endorsedUsersData])
 
   const [showFollowButton, setShowFollowButton] = useState(false);
   useEffect(() => {
@@ -1357,6 +1367,33 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
           </Card>
         </div>
       )}
+
+      {endorsedUsersData && endorsedUsersData.length > 0 && (
+        <div style={{ marginTop: "2rem" }}>
+          <Card>
+            <Card.Header>
+              <div className="d-flex">
+                <h4 className="h4 p-2 flex-grow-1">Endorse List</h4>
+              </div>
+            </Card.Header>
+            <Card.Body>
+              <Table style={{margin: "0rem"}}>
+                <tbody>
+                  {endorsedUsers.map((user) => (
+                    <tr key={user.id}>
+                      <td>
+                        {user.organizationName}
+                      </td>
+                    </tr>
+                  ))
+                  }
+                </tbody>
+              </Table>
+            </Card.Body>
+          </Card>   
+        </div>
+        ) 
+      }
 
       <Row>
         <RatingsSection ideaId={parsedIdeaId} />

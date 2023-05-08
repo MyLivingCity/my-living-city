@@ -9,7 +9,7 @@ import {
   capitalizeString,
 } from "../../lib/utilityFunctions";
 import CommentsSection from "../partials/SingleIdeaContent/CommentsSection";
-import RatingsSection from "../partials/SingleIdeaContent/RatingsSection";
+import RatingsSection from "../partials/SingleIdeaContent/RatingsSection1";
 import {
   FacebookShareButton,
   FacebookIcon,
@@ -53,15 +53,20 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
 import Form from 'react-bootstrap/Form';
 import { Hidden } from "@mui/material";
 import { useCheckFlagBan } from "src/hooks/flagHooks";
+import { IRating } from "src/lib/types/data/rating.type";
+import { IFetchError } from "src/lib/types/types";
+import { UseQueryResult } from "react-query";
 
 interface SingleIdeaPageContentProps {
   ideaData: IIdeaWithRelationship;
   ideaId: string;
+  useAllRatingsUnderIdeaProps: UseQueryResult<IRating[], IFetchError>;
 }
 
 const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
   ideaData,
   ideaId,
+  useAllRatingsUnderIdeaProps,
 }) => {
   const {
     id,
@@ -654,7 +659,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
 
       <Row>
-        <RatingsSection ideaId={ideaId} />
+        <RatingsSection ideaId={ideaId} useAllRatingsUnderIdeaProps={useAllRatingsUnderIdeaProps} />
       </Row>
       <Row>
         <CommentsSection ideaId={ideaId} />

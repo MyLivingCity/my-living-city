@@ -1,11 +1,5 @@
 import React from "react";
-import { useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
-import {
-  useSingleSegmentBySegmentId,
-  useSingleSubSegmentBySubSegmentId,
-} from "src/hooks/segmentHooks";
-import { IIdeaWithRelationship } from "src/lib/types/data/idea.type";
 import SingleIdeaPageContent from "../components/content/SingleIdeaPageContent";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 import { useSingleIdea } from "../hooks/ideaHooks";
@@ -28,18 +22,8 @@ const SingleIdeaPage: React.FC<SingleIdeaPageProps> = (props) => {
     },
   } = props;
 
-  const { data, error, isLoading, isError } = useSingleIdea(ideaId);
-  // const segmentData = useSingleSegmentBySegmentId(data?.segmentId!);
-
-  // const [subSegmentId, setSubSegmentId] = useState(data?.subSegmentId);
-
-  // if (subSegmentId) {
-  //   const subSegmentData = useSingleSubSegmentBySubSegmentId(subSegmentId);
-  // } else {
-
-  // }
-  // const subSegmentData = useSingleSubSegmentBySubSegmentId(data?.subSegmentId!);
-
+  const { data, isLoading, isError } = useSingleIdea(ideaId);
+ 
   if (isError) {
    
     return (

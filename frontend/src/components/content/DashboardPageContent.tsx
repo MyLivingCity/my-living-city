@@ -139,10 +139,8 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
           </Button>
         </div>
       </Row>
-      <Row as="article" className="new-and-trending">
-        <NewAndTrendingSection topIdeas={topIdeasData!} isDashboard={true} />
-      </Row>
-      <br/><br/>
+
+     
       <Row as="article" className="system-updates">
       <SystemUpdates userFollowedideas={
             // Concat userFollowedIdeaData and userEndorsedIdeaData w/o duplicates
@@ -161,6 +159,10 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
           endorser={canEndorse} 
           />
         </Row>
+        <br/><br/>
+        <Row as="article" className="new-and-trending">
+        <NewAndTrendingSection topIdeas={topIdeasData!} isDashboard={true} />
+      </Row>
     </Container>
   );
 };

@@ -64,6 +64,7 @@ import {
 } from "src/lib/api/communityRoutes";
 import { createFlagUnderIdea, updateFalseFlagIdea, compareIdeaFlagsWithThreshold } from "src/lib/api/flagRoutes";
 import { useCheckFlagBan } from 'src/hooks/flagHooks';
+import EndorsedUsersSection from '../partials/SingleIdeaContent/EndorsedUsersSection';
 
 interface SingleIdeaPageContentProps {
   ideaData: IIdeaWithRelationship;
@@ -311,7 +312,6 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
   const [followingPost, setFollowingPost] = useState(false);
   const [endorsingPost, setEndorsingPost] = useState(false);
   const [endorsedUsers, setEndorsedUsers] = useState<any[]>([]);
-  const [endorsedUsersLoading, setEndorsedUsersLoading] = useState(true);
   
   const {data: isFollowingPost, isLoading: isFollowingPostLoading} = useCheckIdeaFollowedByUser(token, (user ? user.id : user), ideaId);
   const {data: isEndorsingPost, isLoading: isEndorsingPostLoading} = useCheckIdeaEndorsedByUser(token, (user ? user.id : user), ideaId);
@@ -323,6 +323,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
   || user?.userType == USER_TYPES.MUNICIPAL || user?.userType == USER_TYPES.MUNICIPAL_SEG_ADMIN; 
   const [showEndorseButton, setShowEndorseButton] = useState(false);
   const handleHideEndorseButton = () => setShowEndorseButton(false);
+
   useEffect(() => {
     if (!isEndorsingPostLoading) {
       setEndorsingPost(isEndorsingPost.isEndorsed);
@@ -335,8 +336,12 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     if (user && token) {
       if (endorsingPost) {
         res = await unendorseIdeaByUser(token, user.id, ideaId);
+        const newEndorsedUsers = endorsedUsers.filter(u => u.id !== user.id)
+        setEndorsedUsers(newEndorsedUsers);
       } else {
         res = await endorseIdeaByUser(token, user.id, ideaId);
+        const newEndorsedUsers = [...endorsedUsers, user];
+        setEndorsedUsers(newEndorsedUsers);
       }
       setEndorsingPost(!endorsingPost);
     }
@@ -345,9 +350,8 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
   useEffect(() => {
     if (!isEndorsedUsersDataLoading) {
       setEndorsedUsers(endorsedUsersData);
-      setEndorsedUsersLoading(false);
     }
-  }, [isEndorsedUsersDataLoading, endorsedUsersData])
+  }, [isEndorsedUsersDataLoading])
 
   const [showFollowButton, setShowFollowButton] = useState(false);
   useEffect(() => {
@@ -1361,37 +1365,13 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                     </Card.Body>
                   </Card>
                   ) : null}
-
-            
             </Card.Body>
           </Card>
         </div>
       )}
 
-      {endorsedUsersData && endorsedUsersData.length > 0 && (
-        <div style={{ marginTop: "2rem" }}>
-          <Card>
-            <Card.Header>
-              <div className="d-flex">
-                <h4 className="h4 p-2 flex-grow-1">Endorse List</h4>
-              </div>
-            </Card.Header>
-            <Card.Body>
-              <Table style={{margin: "0rem"}}>
-                <tbody>
-                  {endorsedUsers.map((user) => (
-                    <tr key={user.id}>
-                      <td>
-                        {user.organizationName}
-                      </td>
-                    </tr>
-                  ))
-                  }
-                </tbody>
-              </Table>
-            </Card.Body>
-          </Card>   
-        </div>
+      {endorsedUsers && endorsedUsers.length > 0 && (
+        <EndorsedUsersSection endorsedUsers={endorsedUsers}/>
         ) 
       }
 

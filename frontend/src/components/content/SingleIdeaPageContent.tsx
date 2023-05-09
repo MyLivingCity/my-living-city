@@ -1,7 +1,6 @@
 import {Button, Card, Col, Row, Image, ButtonGroup, Table} from "react-bootstrap";
 import { IIdeaWithRelationship } from "../../lib/types/data/idea.type";
 import { incrementPostFlagCount } from "src/lib/api/badPostingBehaviorRoutes";
-import ProposalTile from "../tiles/ProposalTile";
 import { useSingleProposal } from "src/hooks/proposalHooks";
 import { useSingleIdea } from "src/hooks/ideaHooks";
 import {
@@ -25,25 +24,18 @@ import {
   WhatsappIcon,
 } from "react-share";
 import ChampionSubmit from "../partials/SingleIdeaContent/ChampionSubmit";
-import { useSingleSegmentBySegmentId } from "src/hooks/segmentHooks";
 import LoadingSpinner from "../ui/LoadingSpinner";
-import { ISegment } from "src/lib/types/data/segment.type";
 import React, { useContext, useEffect, useState } from "react";
 import { API_BASE_URL, USER_TYPES } from "src/lib/constants";
 import { UserProfileContext } from "src/contexts/UserProfile.Context";
-import { createFlagUnderIdea, updateFalseFlagIdea, compareIdeaFlagsWithThreshold } from "src/lib/api/flagRoutes";
+import { createFlagUnderIdea, compareIdeaFlagsWithThreshold } from "src/lib/api/flagRoutes";
 import { 
   followIdeaByUser, 
-  isIdeaFollowedByUser, 
   unfollowIdeaByUser, 
   updateIdeaStatus, 
   endorseIdeaByUser, 
-  isIdeaEndorsedByUser, 
   unendorseIdeaByUser,
-  getEndorsedUsersByIdea,
-  isIdeaFlaggedByUser,
 } from "src/lib/api/ideaRoutes";
-import CSS from "csstype"
 import { useCheckIdeaFollowedByUser, useCheckIdeaEndorsedByUser, useGetEndorsedUsersByIdea, useCheckIdeaFlaggedByUser } from "src/hooks/ideaHooks";
 
 import Modal from 'react-bootstrap/Modal';
@@ -51,7 +43,6 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 
 import Form from 'react-bootstrap/Form';
-import { Hidden } from "@mui/material";
 import { useCheckFlagBan } from "src/hooks/flagHooks";
 
 interface SingleIdeaPageContentProps {
@@ -64,7 +55,6 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
   ideaId,
 }) => {
   const {
-    id,
     title,
     description,
     imagePath,
@@ -157,10 +147,9 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
   const handleCloseOther = () => setShowOther(false);
   const handleShowOther = () => setShowOther(true);
 
-  const canEndorse = user?.userType == USER_TYPES.BUSINESS || user?.userType == USER_TYPES.COMMUNITY 
-  || user?.userType == USER_TYPES.MUNICIPAL || user?.userType == USER_TYPES.MUNICIPAL_SEG_ADMIN; 
-  const [showEndorseButton, setShowEndorseButton] = useState(true);
-  const handleHideEndorseButton = () => setShowEndorseButton(false);
+  const canEndorse = user?.userType === USER_TYPES.BUSINESS || user?.userType === USER_TYPES.COMMUNITY 
+  || user?.userType === USER_TYPES.MUNICIPAL || user?.userType === USER_TYPES.MUNICIPAL_SEG_ADMIN; 
+
   useEffect(() => {
     if (!isEndorsingPostLoading) {
       setEndorsingPost(isEndorsingPost.isEndorsed);
@@ -168,12 +157,11 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
   }, [isEndorsingPostLoading, isEndorsingPost])
 
   const handleEndorseUnendorse = async () => {
-    let res;
     if (user && token) {
       if (endorsingPost) {
-        res = await unendorseIdeaByUser(token, user.id, ideaId);
+        await unendorseIdeaByUser(token, user.id, ideaId);
       } else {
-        res = await endorseIdeaByUser(token, user.id, ideaId);
+        await endorseIdeaByUser(token, user.id, ideaId);
       }
       setEndorsingPost(!endorsingPost);
     }
@@ -195,11 +183,11 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
   useEffect(() => {
     if (!flagBanDataLoading) {
-      if (flagBanData?.flag_ban || showFlagButton == false) {
+      if (flagBanData?.flag_ban || showFlagButton === false) {
         handleHideFlagButton();
       }
     }
-  }, [flagBanDataLoading, flagBanData])
+  }, [flagBanDataLoading, flagBanData, showFlagButton])
 
   useEffect(() => {
     if (!isFlaggedLoading) {
@@ -210,12 +198,11 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
   }, [isFlaggedLoading, isFlagged])
 
   const handleFollowUnfollow = async () => {
-    let res;
     if (user && token) {
       if (followingPost) {
-        res = await unfollowIdeaByUser(token, user.id, ideaId);
+        await unfollowIdeaByUser(token, user.id, ideaId);
       } else {
-        res = await followIdeaByUser(token, user.id, ideaId);
+        await followIdeaByUser(token, user.id, ideaId);
       }
       setFollowingPost(!followingPost);
     }

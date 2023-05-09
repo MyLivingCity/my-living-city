@@ -9,7 +9,6 @@ import {
   Form,
   Modal,
   Alert,
-  Accordion,
   Table, ButtonGroup,
 } from "react-bootstrap";
 import { IIdeaWithRelationship } from "../../lib/types/data/idea.type";
@@ -38,21 +37,16 @@ import {
 import ChampionSubmit from "../partials/SingleIdeaContent/ChampionSubmit";
 import React, { useContext, useEffect, useState } from "react";
 import { API_BASE_URL, USER_TYPES } from "src/lib/constants";
-import Popup from "../content/Popup";
 import { UserProfileContext } from "../../contexts/UserProfile.Context";
 import { IFetchError } from "../../lib/types/types";
 import { useFormik } from "formik";
-import { useHistory } from "react-router-dom";
 import "react-image-crop/dist/ReactCrop.css";
 import { handlePotentialAxiosError } from "../../lib/utilityFunctions";
 import { 
-  postCreateIdea, 
   followIdeaByUser, 
-  isIdeaFollowedByUser, 
   unfollowIdeaByUser, 
   updateIdeaStatus, 
   endorseIdeaByUser, 
-  isIdeaEndorsedByUser, 
   unendorseIdeaByUser,
 } from "src/lib/api/ideaRoutes";
 import { incrementPostFlagCount } from 'src/lib/api/badPostingBehaviorRoutes';
@@ -62,7 +56,7 @@ import {
   postCreateVolunteer,
   postCreateDonor,
 } from "src/lib/api/communityRoutes";
-import { createFlagUnderIdea, updateFalseFlagIdea, compareIdeaFlagsWithThreshold } from "src/lib/api/flagRoutes";
+import { createFlagUnderIdea, compareIdeaFlagsWithThreshold } from "src/lib/api/flagRoutes";
 import { useCheckFlagBan } from 'src/hooks/flagHooks';
 import EndorsedUsersSection from '../partials/SingleIdeaContent/EndorsedUsersSection';
 
@@ -78,11 +72,11 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
   ideaId,
 }) => {
   const {
-    title,
-    description,
-    requirements,
-    proposal_role,
-    proposal_benefits,
+    title: titleText,
+    description: descriptionText,
+    requirements: proposalText,
+    proposal_role: proposorText,
+    proposal_benefits: benefitText,
     imagePath,
     userType,
     communityImpact,
@@ -105,13 +99,6 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
   } = ideaData;
 
   const parsedIdeaId = ideaId;
-  // let descriptionText = description;
-
-  const [titleText, setTitleText] = useState(title);
-  const [descriptionText, setDescriptionText] = useState(description);
-  const [proposalText, setProposalText] = useState(requirements);
-  const [benefitText, setBenefitsText] = useState(proposal_benefits);
-  const [proposorText, setProposorText] = useState(proposal_role);
 
   const {
     id: proposalId,
@@ -122,7 +109,6 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     needCollaborators,
     needVolunteers,
     needDonations,
-    needFeedback,
     needSuggestions,
     location,
     feedback1,
@@ -148,16 +134,8 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
   // const shareUrl = 'http://github.com';
   // const shareUrl = 'https://app.mylivingcity.org'
   const shareUrl = window.location.href;
-  const shareTitle = `My Living City Idea! ${title}`;
+  const shareTitle = `My Living City Idea! ${titleText}`;
 
-  /**
-   * Checks to see if the Idea's state is of Proposal and if the proposal information
-   * needed to render is available in an object.
-   * @returns { boolean } Proposal information and state is valid
-   */
-  const confirmProposalState = (): boolean => {
-    return state === "PROPOSAL";
-  };
 
   /**
    * Checks to see if the Idea's state is of Project and if the project information
@@ -209,7 +187,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
       setError(null);
       setIsLoading(true);
       setTimeout(() => console.log("timeout"), 5000);
-      const res = await postCreateCollabotator(
+      await postCreateCollabotator(
         proposalId,
         values,
         user!.banned,
@@ -236,7 +214,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
       setError(null);
       setIsLoading(true);
       setTimeout(() => console.log("timeout"), 5000);
-      const res = await postCreateVolunteer(
+      await postCreateVolunteer(
         proposalId,
         values,
         user!.banned,
@@ -262,7 +240,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
       setError(null);
       setIsLoading(true);
       setTimeout(() => console.log("timeout"), 5000);
-      const res = await postCreateDonor(
+      await postCreateDonor(
         proposalId,
         values,
         user!.banned,
@@ -363,11 +341,11 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
   useEffect(() => {
     if (!flagBanDataLoading) {
-      if (flagBanData?.flag_ban || showFlagButton == false) {
+      if (flagBanData?.flag_ban || showFlagButton === false) {
         handleHideFlagButton();
       }
     }
-  }, [flagBanDataLoading, flagBanData])
+  }, [flagBanDataLoading, flagBanData, showFlagButton])
 
   useEffect(() => {
     if (!isFlaggedLoading) {
@@ -380,12 +358,11 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
   }, [isFlaggedLoading, isFlagged])
 
   const handleFollowUnfollow = async () => {
-    let res;
     if (user && token) {
       if (followingPost) {
-        res = await unfollowIdeaByUser(token, user.id, ideaId);
+        await unfollowIdeaByUser(token, user.id, ideaId);
       } else {
-        res = await followIdeaByUser(token, user.id, ideaId);
+        await followIdeaByUser(token, user.id, ideaId);
       }
       setFollowingPost(!followingPost);
     }

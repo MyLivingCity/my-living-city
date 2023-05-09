@@ -332,14 +332,13 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
   }, [isEndorsingPostLoading, isEndorsingPost])
 
   const handleEndorseUnendorse = async () => {
-    let res;
     if (user && token) {
       if (endorsingPost) {
-        res = await unendorseIdeaByUser(token, user.id, ideaId);
+        await unendorseIdeaByUser(token, user.id, ideaId);
         const newEndorsedUsers = endorsedUsers.filter(u => u.id !== user.id)
         setEndorsedUsers(newEndorsedUsers);
       } else {
-        res = await endorseIdeaByUser(token, user.id, ideaId);
+        await endorseIdeaByUser(token, user.id, ideaId);
         const newEndorsedUsers = [...endorsedUsers, user];
         setEndorsedUsers(newEndorsedUsers);
       }
@@ -1370,9 +1369,8 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
         </div>
       )}
 
-      {endorsedUsers && endorsedUsers.length > 0 && (
+      {endorsedUsers && endorsedUsers.length > 0 && 
         <EndorsedUsersSection endorsedUsers={endorsedUsers}/>
-        ) 
       }
 
       <Row>

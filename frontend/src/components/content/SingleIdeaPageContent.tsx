@@ -116,7 +116,6 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
   const [endorsingPost, setEndorsingPost] = useState(false);
 
   const [endorsedUsers, setEndorsedUsers] = useState<any[]>([]);
-  const [endorsedUsersLoading, setEndorsedUsersLoading] = useState(true);
 
 
   const {user, token} = useContext(UserProfileContext);
@@ -170,7 +169,6 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
   useEffect(() => {
     if (!isEndorsedUsersDataLoading) {
       setEndorsedUsers(endorsedUsersData);
-      setEndorsedUsersLoading(false);
     }
   }, [isEndorsedUsersDataLoading, endorsedUsersData])
 

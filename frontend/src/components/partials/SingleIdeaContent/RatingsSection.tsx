@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Container, Row } from "react-bootstrap";
-import { useParams } from "react-router-dom";
 import { useCommentAggregateUnderIdea } from "src/hooks/commentHooks";
 import { UserProfileContext } from "../../../contexts/UserProfile.Context";
 import { useAllRatingsUnderIdea } from "../../../hooks/ratingHooks";

@@ -1,4 +1,4 @@
-import { Container, Row, Col, Breadcrumb, Carousel } from "react-bootstrap";
+import { Container, Col, Breadcrumb, Carousel } from "react-bootstrap";
 import IdeaTile from "src/components/tiles/IdeaTile";
 import PlaceholderIdeaTile from "src/components/tiles/PlaceholderIdeaTile";
 import ProposalTile from "src/components/tiles/ProposalTile";

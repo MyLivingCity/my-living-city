@@ -1,8 +1,7 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import {
   Card,
-  Row,
-  Table, ButtonGroup,
+  Table, 
 } from "react-bootstrap";
 
 interface EndorsedUsersSectionProps {

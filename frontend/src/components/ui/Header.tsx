@@ -7,9 +7,6 @@ import {
 } from "react-bootstrap";
 import { useUserWithJwtVerbose } from "src/hooks/userHooks";
 import { UserProfileContext } from "../../contexts/UserProfile.Context";
-import {
-  useAllUserSegmentsRefined,
-} from "src/hooks/userSegmentHooks";
 import { getUserSubscriptionStatus } from 'src/lib/api/userRoutes'
 import { BanMessageModal } from "../modal/BanMessageModal";
 import { FindBanDetailsWithToken } from "src/hooks/banHooks";

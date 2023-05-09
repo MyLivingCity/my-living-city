@@ -1,6 +1,4 @@
-import React,  { useEffect, useState } from "react";
-import { Card, Col, Container, Row } from "react-bootstrap";
-import { CanvasJSChart } from "src/lib/canvasjs";
+import {  Container, Row } from "react-bootstrap";
 import { IFeedbackRatingScaleAggregateSummary,
      IFeedbackRatingYesNoAggregateSummary }
       from "src/lib/types/data/feedbackRating.type";

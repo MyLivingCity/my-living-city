@@ -4,7 +4,6 @@ import {ISegmentAggregateInfo, ISegment} from "./../../lib/types/data/segment.ty
 import { Col, Container, Row, Card, ListGroup, DropdownButton, Dropdown, } from 'react-bootstrap';
 import { capitalizeFirstLetterEachWord } from "./../../lib/utilityFunctions";
 import { IIdeaWithAggregations } from "src/lib/types/data/idea.type";
-import DropdownItem from "react-bootstrap/esm/DropdownItem";
 import { IUser } from "src/lib/types/data/user.type";
 import SpecifiedCommunitySection from "../partials/CommunityDashboardContent/SpecifiedCommunitySection";
 

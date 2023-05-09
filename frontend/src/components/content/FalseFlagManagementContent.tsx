@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import { Card, Table, Dropdown, Container, Button, Form, NavDropdown } from 'react-bootstrap';
-import { updateUser, getUserBanHistory, removeFlagQuarantine, removePostCommentQuarantine } from 'src/lib/api/userRoutes';
+import { Table, Dropdown, Container, Button, Form, NavDropdown } from 'react-bootstrap';
+import { updateUser, getUserBanHistory, removeFlagQuarantine } from 'src/lib/api/userRoutes';
 import { USER_TYPES } from 'src/lib/constants';
 import { IComment } from 'src/lib/types/data/comment.type';
 import { ICommentFlag, IFalseFlagBehavior, IFlag } from 'src/lib/types/data/flag.type';
@@ -11,10 +11,8 @@ import UserFlagsModal from '../partials/SingleIdeaContent/UserFlagsModal';
 import { UserSegmentInfoCard } from '../partials/UserSegmentInfoCard';
 import { UserManagementBanModal } from '../modal/UserManagementBanModal';
 import { UserManagementUnbanModal } from '../modal/UserManagementUnbanModal';
-import { UserManagementModifyWarningModal } from '../modal/UserManagementModifyWarningModal';
 import { UserManagementBanHistoryModal } from '../modal/UserManagementBanHistoryModal';
 import { IBanUser } from 'src/lib/types/data/banUser.type';
-import { format } from 'path';
 
 
 interface FalseFlagManagementContentProps {

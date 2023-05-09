@@ -13,7 +13,6 @@ import {
   NavDropdown,
   Dropdown,
   Alert,
-  ButtonGroup,
 } from "react-bootstrap";
 import { postUserSegmentRequest } from "src/lib/api/userSegmentRequestRoutes";
 import { API_BASE_URL, TEXT_INPUT_LIMIT, USER_TYPES } from "src/lib/constants";
@@ -28,7 +27,6 @@ import {
 } from "src/lib/api/userRoutes";
 import {
   LinkType,
-  Link,
   PublicStandardProfile,
   PublicCommunityBusinessProfile,
   PublicMunicipalProfile,

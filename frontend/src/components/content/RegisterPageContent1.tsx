@@ -1,38 +1,20 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useState } from "react";
 import { Form, Button, Alert, Card } from "react-bootstrap";
 import {
-  useFormik,
   Formik,
   FormikConfig,
   FormikValues,
   Field,
-  FormikHandlers,
 } from "formik";
 import { UserProfileContext } from "../../contexts/UserProfile.Context";
 import { IFetchError } from "../../lib/types/types";
 import {
   capitalizeString,
-  handlePotentialAxiosError,
-  storeTokenExpiryInLocalStorage,
-  storeUserAndTokenInLocalStorage,
-  wipeLocalStorage,
 } from "../../lib/utilityFunctions";
-import { IRegisterInput } from "../../lib/types/input/register.input";
 import { IUserRole } from "../../lib/types/data/userRole.type";
-import { postRegisterUser } from "../../lib/api/userRoutes";
 import SimpleMap from "../map/SimpleMap";
-import { postAvatarImage } from "../../lib/api/avatarRoutes";
 import { ISegment, ISubSegment } from "src/lib/types/data/segment.type";
 //import SelectSegmentPage from 'src/pages/SelectSegmentPage';
-import { searchForLocation } from "src/lib/api/googleMapQuery";
-import { useAllSubSegmentsWithId } from "src/hooks/segmentHooks";
-import {
-  findSegmentByName,
-  findSubsegmentsBySegmentId,
-} from "src/lib/api/segmentRoutes";
-import { RequestSegmentModal } from "../partials/RequestSegmentModal";
-import { Modal } from "react-bootstrap";
-import { object } from "yup";
 import { TEXT_INPUT_LIMIT } from "src/lib/constants";
 
 interface SegmentsDropdownProps {

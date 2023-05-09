@@ -3,11 +3,8 @@ import { Container, Row, Table, Button } from "react-bootstrap";
 import { IAdvertisement } from "src/lib/types/data/advertisement.type";
 import moment from "moment";
 import { API_BASE_URL } from "../../lib/constants";
-
-// import '../../../../server/uploads'
 import {
   deleteAdvertisement,
-  getAdvertisementById,
 } from "src/lib/api/advertisementRoutes";
 import { timeDifference } from "src/lib/utilityFunctions";
 interface AllAdsPageContentProps {

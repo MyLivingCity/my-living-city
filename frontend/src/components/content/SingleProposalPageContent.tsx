@@ -50,7 +50,7 @@ import {
   unendorseIdeaByUser,
 } from "src/lib/api/ideaRoutes";
 import { incrementPostFlagCount } from 'src/lib/api/badPostingBehaviorRoutes';
-import { useCheckIdeaFollowedByUser, useCheckIdeaEndorsedByUser, useCheckIdeaFlaggedByUser } from "src/hooks/ideaHooks";
+import { useCheckIdeaFollowedByUser, useCheckIdeaEndorsedByUser, useCheckIdeaFlaggedByUser, useGetEndorsedUsersByIdea } from "src/hooks/ideaHooks";
 import {
   postCreateCollabotator,
   postCreateVolunteer,
@@ -58,6 +58,7 @@ import {
 } from "src/lib/api/communityRoutes";
 import { createFlagUnderIdea, compareIdeaFlagsWithThreshold } from "src/lib/api/flagRoutes";
 import { useCheckFlagBan } from 'src/hooks/flagHooks';
+import EndorsedUsersSection from '../partials/SingleIdeaContent/EndorsedUsersSection';
 
 interface SingleIdeaPageContentProps {
   ideaData: IIdeaWithRelationship;
@@ -288,15 +289,19 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
   const [followingPost, setFollowingPost] = useState(false);
   const [endorsingPost, setEndorsingPost] = useState(false);
-
+  const [endorsedUsers, setEndorsedUsers] = useState<any[]>([]);
+  
   const {data: isFollowingPost, isLoading: isFollowingPostLoading} = useCheckIdeaFollowedByUser(token, (user ? user.id : user), ideaId);
   const {data: isEndorsingPost, isLoading: isEndorsingPostLoading} = useCheckIdeaEndorsedByUser(token, (user ? user.id : user), ideaId);
   const {data: flagBanData, isLoading: flagBanDataLoading} = useCheckFlagBan(token, (user ? user.id : ""));
   const {data: isFlagged, isLoading: isFlaggedLoading} = useCheckIdeaFlaggedByUser(token, (user ? user.id : user), ideaId);
-
-  const canEndorse = user?.userType === USER_TYPES.BUSINESS || user?.userType === USER_TYPES.COMMUNITY 
-  || user?.userType === USER_TYPES.MUNICIPAL || user?.userType === USER_TYPES.MUNICIPAL_SEG_ADMIN; 
+  const {data: endorsedUsersData, isLoading: isEndorsedUsersDataLoading} = useGetEndorsedUsersByIdea(token, ideaId);
+  
+  const canEndorse = user?.userType == USER_TYPES.BUSINESS || user?.userType == USER_TYPES.COMMUNITY 
+  || user?.userType == USER_TYPES.MUNICIPAL || user?.userType == USER_TYPES.MUNICIPAL_SEG_ADMIN; 
   const [showEndorseButton, setShowEndorseButton] = useState(false);
+  const handleHideEndorseButton = () => setShowEndorseButton(false);
+
   useEffect(() => {
     if (!isEndorsingPostLoading) {
       setEndorsingPost(isEndorsingPost.isEndorsed);
@@ -308,12 +313,22 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     if (user && token) {
       if (endorsingPost) {
         await unendorseIdeaByUser(token, user.id, ideaId);
+        const newEndorsedUsers = endorsedUsers.filter(u => u.id !== user.id)
+        setEndorsedUsers(newEndorsedUsers);
       } else {
         await endorseIdeaByUser(token, user.id, ideaId);
+        const newEndorsedUsers = [...endorsedUsers, user];
+        setEndorsedUsers(newEndorsedUsers);
       }
       setEndorsingPost(!endorsingPost);
     }
   }
+
+  useEffect(() => {
+    if (!isEndorsedUsersDataLoading) {
+      setEndorsedUsers(endorsedUsersData);
+    }
+  }, [isEndorsedUsersDataLoading])
 
   const [showFollowButton, setShowFollowButton] = useState(false);
   useEffect(() => {
@@ -1326,12 +1341,14 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                     </Card.Body>
                   </Card>
                   ) : null}
-
-            
             </Card.Body>
           </Card>
         </div>
       )}
+
+      {endorsedUsers && endorsedUsers.length > 0 && 
+        <EndorsedUsersSection endorsedUsers={endorsedUsers}/>
+      }
 
       <Row>
         <RatingsSection ideaId={parsedIdeaId} />

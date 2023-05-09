@@ -44,6 +44,7 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
 
 import Form from 'react-bootstrap/Form';
 import { useCheckFlagBan } from "src/hooks/flagHooks";
+import EndorsedUsersSection from '../partials/SingleIdeaContent/EndorsedUsersSection';
 
 interface SingleIdeaPageContentProps {
   ideaData: IIdeaWithRelationship;
@@ -159,8 +160,12 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
     if (user && token) {
       if (endorsingPost) {
         await unendorseIdeaByUser(token, user.id, ideaId);
+        const newEndorsedUsers = endorsedUsers.filter(u => u.id !== user.id)
+        setEndorsedUsers(newEndorsedUsers);
       } else {
         await endorseIdeaByUser(token, user.id, ideaId);
+        const newEndorsedUsers = [...endorsedUsers, user];
+        setEndorsedUsers(newEndorsedUsers);
       }
       setEndorsingPost(!endorsingPost);
     }
@@ -609,35 +614,10 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
       </div>
       }
 
-      {(endorsedUsersData && endorsedUsersData.length > 0) ? (
-        <div style={{ marginTop: "2rem" }}>
-        <Card>
-          <Card.Header>
-            <div className="d-flex">
-              <h4 className="h4 p-2 flex-grow-1">Endorse List</h4>
-            </div>
-          </Card.Header>
-          <Card.Body>
-            <Table style={{margin: "0rem"}}>
-              <tbody>
-                {endorsedUsers.map((user) => (
-                  <tr key={user.id}>
-                    <td>
-                      {user.organizationName}
-                    </td>
-                  </tr>
-                ))
-                }
-              </tbody>
-            </Table>
-           </Card.Body>
-        </Card>   
-      </div>
-      ) : null
+      {endorsedUsers && endorsedUsers.length > 0 && 
+        <EndorsedUsersSection endorsedUsers={endorsedUsers}/>
       }
       
-
-
       <Row>
         <RatingsSection ideaId={ideaId} />
       </Row>

@@ -37,7 +37,8 @@ import {
   unendorseIdeaByUser,
 } from "src/lib/api/ideaRoutes";
 import { useCheckIdeaFollowedByUser, useCheckIdeaEndorsedByUser, useGetEndorsedUsersByIdea, useCheckIdeaFlaggedByUser } from "src/hooks/ideaHooks";
-
+import { useAllRatingsUnderIdea } from "src/hooks/ratingHooks";
+import { useCommentAggregateUnderIdea } from "src/hooks/commentHooks";
 import Modal from 'react-bootstrap/Modal';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
@@ -118,7 +119,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
   const [endorsedUsers, setEndorsedUsers] = useState<any[]>([]);
 
-
+  // API hooks for this component
   const {user, token} = useContext(UserProfileContext);
   const {data: isFollowingPost, isLoading: isFollowingPostLoading} = useCheckIdeaFollowedByUser(token, (user ? user.id : user), ideaId);
   const {data: isEndorsingPost, isLoading: isEndorsingPostLoading} = useCheckIdeaEndorsedByUser(token, (user ? user.id : user), ideaId);
@@ -127,7 +128,9 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
   const {data: proposalIdea } = useSingleIdea("" + (supportedProposal ? supportedProposal!.ideaId : ""));
   const {data: flagBanData, isLoading: flagBanDataLoading} = useCheckFlagBan(token, (user ? user.id : ""));
   const {data: isFlagged, isLoading: isFlaggedLoading} = useCheckIdeaFlaggedByUser(token, (user ? user.id : user), ideaId);
-
+  // API hooks for children components
+  const allRatingsUnderIdea = useAllRatingsUnderIdea(ideaId);
+  const commentAggregateUnderIdea = useCommentAggregateUnderIdea(ideaId);
 
   const [showFlagButton, setShowFlagButton] = useState(true);
   const [show, setShow] = useState(false);
@@ -619,7 +622,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
       }
       
       <Row>
-        <RatingsSection ideaId={ideaId} />
+        <RatingsSection ideaId={ideaId} allRatingsUnderIdea={allRatingsUnderIdea} commentAggregateUnderIdea={commentAggregateUnderIdea}/>
       </Row>
       <Row>
         <CommentsSection ideaId={ideaId} />

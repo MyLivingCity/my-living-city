@@ -3,13 +3,12 @@ import { useAllSegmentRequests, useAllSegments } from 'src/hooks/segmentHooks';
 import { UserProfileContext } from '../contexts/UserProfile.Context';
 import SegmentManagementContent from '../components/content/SegmentManagementContent';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
-import {useUserWithJwtVerbose} from 'src/hooks/userHooks';
 
 
 export default function SegmentManagementPage() {
 
     const { data, isLoading } = useAllSegments();
-    const { token,user } = useContext(UserProfileContext);
+    const { token, user } = useContext(UserProfileContext);
    
     const segReq = useAllSegmentRequests(token);
     

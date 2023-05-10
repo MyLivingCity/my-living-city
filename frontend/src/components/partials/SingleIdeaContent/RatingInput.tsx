@@ -102,27 +102,6 @@ const RatingInput = ({
       </style>
       <h2 className="text-center">Submit Your Rating:</h2>
       <Row>
-        {/* <Col xs={12} className="text-center">
-          <Ratings
-            rating={-1 * ratingValue}
-            widgetRatedColors="gold"
-            widgetHoverColors="gold"
-            changeRating={parseNegativeRatingValue}
-          >
-            <Ratings.Widget />
-            <Ratings.Widget />
-          </Ratings>
-          <Ratings
-            rating={ratingValue < 0 ? 0 : ratingValue + 1}
-            widgetRatedColors="gold"
-            widgetHoverColors="gold"
-            changeRating={parsePositiveRatingValue}
-          >
-            <Ratings.Widget widgetHoverColor="gold" widgetRatedColor="gold" />
-            <Ratings.Widget />
-            <Ratings.Widget />
-          </Ratings>
-        </Col> */}
         <Col>
           <div>
             <FormControl

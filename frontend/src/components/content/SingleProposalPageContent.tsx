@@ -58,7 +58,7 @@ import {
 import { incrementPostFlagCount } from 'src/lib/api/badPostingBehaviorRoutes';
 import { useCheckIdeaFollowedByUser, useCheckIdeaEndorsedByUser, useCheckIdeaFlaggedByUser, useGetEndorsedUsersByIdea } from "src/hooks/ideaHooks";
 import { useAllRatingsUnderIdea } from "src/hooks/ratingHooks";
-import { useCommentAggregateUnderIdea } from "src/hooks/commentHooks";
+import { useCommentAggregateUnderIdea, useAllCommentsUnderIdea } from "src/hooks/commentHooks";
 import {
   postCreateCollabotator,
   postCreateVolunteer,
@@ -105,9 +105,6 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
     projectInfo,
   } = ideaData;
-
-  const parsedIdeaId = ideaId;
-  // let descriptionText = description;
 
   const [titleText, setTitleText] = useState(title);
   const [descriptionText, setDescriptionText] = useState(description);
@@ -324,7 +321,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
   // API hooks for children components
   const allRatingsUnderIdea = useAllRatingsUnderIdea(ideaId);
   const commentAggregateUnderIdea = useCommentAggregateUnderIdea(ideaId);
-
+  const allCommentsUnderIdea = useAllCommentsUnderIdea(ideaId, token);
 
   const canEndorse = user?.userType == USER_TYPES.BUSINESS || user?.userType == USER_TYPES.COMMUNITY 
   || user?.userType == USER_TYPES.MUNICIPAL || user?.userType == USER_TYPES.MUNICIPAL_SEG_ADMIN; 
@@ -1384,7 +1381,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
       <RatingsSection ideaId={ideaId} allRatingsUnderIdea={allRatingsUnderIdea} commentAggregateUnderIdea={commentAggregateUnderIdea}/>
       </Row>
       <Row>
-        <CommentsSection ideaId={parsedIdeaId} />
+        <CommentsSection ideaId={ideaId} allCommentsUnderIdea={allCommentsUnderIdea}/>
       </Row>
     </div>
   );

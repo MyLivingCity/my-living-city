@@ -54,7 +54,7 @@ const RatingsSection: React.FC<RatingsSectionProps> = ({ ideaId, allRatingsUnder
   }, [ratings]);
 
   if ((error && isError) || (aggregateIsError && aggregateError)) {
-    return <p>An error occured while fetching comments</p>;
+    return <p>An error occured while fetching ratings.</p>;
   }
 
   if (isLoading || aggregateIsLoading) {

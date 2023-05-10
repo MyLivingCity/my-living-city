@@ -38,7 +38,7 @@ import {
 } from "src/lib/api/ideaRoutes";
 import { useCheckIdeaFollowedByUser, useCheckIdeaEndorsedByUser, useGetEndorsedUsersByIdea, useCheckIdeaFlaggedByUser } from "src/hooks/ideaHooks";
 import { useAllRatingsUnderIdea } from "src/hooks/ratingHooks";
-import { useCommentAggregateUnderIdea } from "src/hooks/commentHooks";
+import { useAllCommentsUnderIdea, useCommentAggregateUnderIdea } from "src/hooks/commentHooks";
 import Modal from 'react-bootstrap/Modal';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
@@ -131,6 +131,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
   // API hooks for children components
   const allRatingsUnderIdea = useAllRatingsUnderIdea(ideaId);
   const commentAggregateUnderIdea = useCommentAggregateUnderIdea(ideaId);
+  const allCommentsUnderIdea = useAllCommentsUnderIdea(ideaId, token);
 
   const [showFlagButton, setShowFlagButton] = useState(true);
   const [show, setShow] = useState(false);
@@ -625,7 +626,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
         <RatingsSection ideaId={ideaId} allRatingsUnderIdea={allRatingsUnderIdea} commentAggregateUnderIdea={commentAggregateUnderIdea}/>
       </Row>
       <Row>
-        <CommentsSection ideaId={ideaId} />
+        <CommentsSection ideaId={ideaId} allCommentsUnderIdea={allCommentsUnderIdea}/>
       </Row>
     </div>
   );

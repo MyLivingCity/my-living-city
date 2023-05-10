@@ -10,6 +10,15 @@
     height: 100px;
   }
 }
+
+.loading-spinner-inline {
+  display: inline-block;
+  margin-right: 10px;
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+}
+
 .stepper div div div div{
   a {
     line-height: 1.8 !important;

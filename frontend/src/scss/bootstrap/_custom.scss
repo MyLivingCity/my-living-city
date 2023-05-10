@@ -1,0 +1,18 @@
+$theme-colors: (
+  primary: $mlc-main-dark,
+  // primary: #446DF6,
+  secondary: #524948,
+  // secondary: #364958,
+  success: #42CAFD,
+  // success: $mlc-main-dark,
+  danger: #FF686B,
+  warning: #FFB563,
+  next: #98cc74,
+  info: #85C7F2,
+  // info: #B4E1FF,
+  dark: #1E1E24,
+  "mlc-main-dark": $mlc-main-dark,
+  "mlc-main-light": $mlc-main-light,
+  "mlc-shade-grey": $mlc-shade-grey,
+  "mlc-shade-light-grey": $mlc-shade-light-grey,
+);

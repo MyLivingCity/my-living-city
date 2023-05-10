@@ -1,0 +1,12 @@
+.login-page-content {
+  max-width: 600px;
+  margin: 10rem auto;
+
+  .login-form-group {
+    padding-top: 1.5rem;
+
+    .error-alert {
+      margin-top: 1rem;
+    }
+  }
+}

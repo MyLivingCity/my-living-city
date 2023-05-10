@@ -1,0 +1,13 @@
+// Resets
+@import "resets";
+
+// Variables and constants
+@import "./constants";
+
+@import "bootstrap/config";
+
+// UI Partial components styles
+@import "./ui/master-ui.scss";
+
+// Page and Content Styles
+@import "./content/master-content.scss"

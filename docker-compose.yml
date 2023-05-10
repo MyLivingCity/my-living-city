@@ -1,0 +1,37 @@
+version: '3'
+services:
+  server:
+    container_name: server
+    build: ./server
+    ports:
+      - 3001:3001
+    depends_on: 
+      - postgres
+    links:
+      - postgres
+    volumes:
+      - ./server/config:/usr/src/app/server/config
+      - ./server/controllers:/usr/src/app/server/controllers
+      - ./server/db:/usr/src/app/server/db
+      - ./server/server.js:/usr/src/app/server/server.js
+  postgres:
+    image: postgres:12
+    container_name: postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - ./postgres/data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=mlc
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+  frontend:
+    container_name: frontend
+    build: ./frontend
+    ports:
+      - 3000:3000
+    volumes:
+      - ./frontend/src:/usr/src/app/frontend/src
+      - ./frontend/public:/usr/src/app/frontend/public
+    stdin_open: true

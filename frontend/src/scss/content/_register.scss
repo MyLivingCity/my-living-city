@@ -1,0 +1,16 @@
+.register-page-content {
+	margin-top: 10rem;
+
+	.card {
+		max-width: 800px;
+		margin: 0 auto;
+
+		&-body {
+			margin: 2rem 0;
+		}
+	}
+
+	.error-alert {
+    margin-top: 1rem;
+	}
+}

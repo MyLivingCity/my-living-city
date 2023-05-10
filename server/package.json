@@ -4,39 +4,48 @@
   "description": "backend for mylivingcity",
   "main": "server.js",
   "scripts": {
+    "ts-node": "ts-node --compiler-options '{\"module\":\"CommonJS\"}'",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "migrate": "pushd db && npx sequelize-cli db:migrate && popd"
+    "prisma:migrate": "npx prisma migrate dev --preview-feature",
+    "prisma:generate": "npx prisma generate",
+    "db:seed": "npx prisma db seed --preview-feature",
+    "db:seed:undo": "echo no command yet",
+    "dev": "nodemon server.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/MyLivingCity/my-living-city.git"
   },
-  "author": "Paul Sajna, Chris Eddy, Chelsea Birch",
+  "author": "My Living City",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/MyLivingCity/my-living-city/issues"
   },
   "homepage": "https://github.com/MyLivingCity/my-living-city#readme",
   "dependencies": {
-    "aws-sdk": "^2.468.0",
-    "bcrypt": "^3.0.4",
-    "body-parser": "^1.18.3",
-    "cookie-parser": "^1.4.4",
+    "@prisma/client": "^2.30.3",
+    "@types/nodemailer": "^6.4.1",
+    "argon2": "^0.27.1",
+    "axios": "^0.21.1",
     "cors": "^2.8.5",
-    "express": "^4.16.4",
-    "express-jwt": "^5.3.1",
-    "express-session": "^1.16.1",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
-    "lodash": "^4.17.11",
-    "multer": "^1.4.1",
-    "mysql2": "^1.6.5",
-    "passport": "^0.4.0",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.1",
+    "multer": "^1.4.2",
+    "nodemailer": "^6.6.1",
+    "passport": "^0.4.1",
+    "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
-    "pg": "^7.8.0",
-    "pg-hstore": "^2.3.2",
-    "sequelize": "^4.42.0",
-    "sequelize-auto-migrations": "^1.0.3",
-    "sequelize-cli": "^5.5.0"
+    "pg": "^8.5.1",
+    "pg-hstore": "^2.3.3",
+    "swagger-jsdoc": "5.0.1",
+    "swagger-ui-express": "^4.1.6"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7",
+    "prisma": "^2.30.3"
   }
 }

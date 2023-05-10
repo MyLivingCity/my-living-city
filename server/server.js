@@ -1,77 +1,102 @@
+require('dotenv').config();
 const express = require('express');
-var cors = require('cors');
-const bodyParser = require('body-parser');
-const app = express();
-const cookieParser = require('cookie-parser');
-var multer = require('multer');
-multer = multer({storage: multer.memoryStorage()});
-app.use(cookieParser());
-app.use(cors());
-const port = 3000;
+const cors = require('cors');
+const path = require('path');
+const swaggerUi = require('swagger-ui-express');
+const swaggerJSDoc = require('swagger-jsdoc');
+const { swaggerSpec } = require('./lib/swaggerConfig');
+// TODO: May be reason why logout not working
 
-const db = require('./db/models/index');
-const sequelize = db.sequelize;
-sequelize.sync();
-
-require('./config/passport');
-const passport = require('passport');
-const auth = require ('./controllers/auth');
-var session = require("express-session");
-app.use(session({
-  secret: "?Jmapv57ueVK!#6@WZJ-VMs7W#@?&!RX",
-  cookie: {maxAge: 30 * 60 * 60 * 24 * 1000} // 30 days in milliseconds
-}));
-app.use(passport.initialize());
-app.use(passport.session());
+// Constants
+const {
+	__prod__,
+	PORT,
+	CORS_ORIGIN
+} = require('./lib/constants');
 
 
-passport.serializeUser(function(user, done) {
-  done(null, user.id);
+const main = async () => {
+	// Initialize dependencies
+	const app = express();
+	// Apply middleware
+	app.use(express.json());
+	app.use(
+		cors({
+			credentials: true,
+			origin: CORS_ORIGIN
+		})
+	);
+
+
+	app.use('/uploads/AdImage', express.static(path.join(__dirname, 'uploads/AdImage')));
+	app.use('/uploads/ideaImage', express.static(path.join(__dirname, 'uploads/ideaImage')));
+	app.use('/uploads/avatarImages', express.static(path.join(__dirname, 'uploads/avatarImages')));
+	// Swagger config
+	app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+	require('./auth/auth');
+
+	app.get('/', (req, res) => res.send('Welcome the My Living City API V2'));
+	//app.use(express.static('/ads', express.static('uploads')));
+	// Routing .js
+	const userRouter = require('./controllers/user');
+	const roleRouter = require('./controllers/role');
+	const reportRouter = require('./controllers/report');
+	const commentRouter = require('./controllers/comment');
+	const blogRouter = require('./controllers/blog');
+	const ideaRouter = require('./controllers/idea');
+	const imageRouter = require('./controllers/image');
+	const categoryRouter = require('./controllers/category');
+	const ideaRatingRouter = require('./controllers/rating');
+	const commentInteractRouter = require('./controllers/commentInteract');
+	const championRouter = require('./controllers/champion');
+	const advertisementRouter = require('./controllers/advertisement');
+	const avatarRouter = require('./controllers/avatar');
+	const sendEmailRouter = require('./controllers/sendEmailReset');
+	const segmentRouter = require('./controllers/segment');
+	const subSegmentRouter = require('./controllers/subSegment');
+	const googleLocationAPI = require('./controllers/googleMap');
+	const userSegmentRequestRouter = require('./controllers/userSegmentRequest');
+	const superSegmentRouter = require('./controllers/superSegment');
+	const userSegmentRouter = require('./controllers/userSegment');
+	const proposalRouter = require('./controllers/proposal');
+	const communityRouter = require('./controllers/community');
+	const dashboardRouter = require('./controllers/dashboard');
+
+
+	const apiRouter = express.Router();
+	app.use('/', apiRouter);
+	apiRouter.use('/user', userRouter);
+	apiRouter.use('/role', roleRouter);
+	apiRouter.use('/report', reportRouter);
+	apiRouter.use('/comment', commentRouter);
+	apiRouter.use('/blog', blogRouter);
+	apiRouter.use('/idea', ideaRouter);
+	apiRouter.use('/image', imageRouter);
+	apiRouter.use('/category', categoryRouter);
+	apiRouter.use('/rating', ideaRatingRouter);
+	apiRouter.use('/interact/comment', commentInteractRouter);
+	apiRouter.use('/champion', championRouter);
+	apiRouter.use('/advertisement', advertisementRouter);
+	apiRouter.use('/avatar', avatarRouter);
+	apiRouter.use('/sendEmail', sendEmailRouter);
+	apiRouter.use('/reset-password', userRouter);
+	apiRouter.use('/segment', segmentRouter);
+	apiRouter.use('/subSegment', subSegmentRouter);
+	apiRouter.use('/location', googleLocationAPI);
+	apiRouter.use('/userSegment', userSegmentRouter);
+	apiRouter.use('/userSegmentRequest', userSegmentRequestRouter);
+	apiRouter.use('/superSegment', superSegmentRouter);
+	apiRouter.use('/proposal', proposalRouter);
+	apiRouter.use('/community', communityRouter);
+	apiRouter.use('/dashboard', dashboardRouter);
+
+
+	// Listen to server
+	app.listen(PORT, console.log(`Server running on PORT:${PORT}\n\n`));
+};
+
+
+main().catch((error) => {
+	console.log(error);
 });
-
-passport.deserializeUser(function(id, done) {
-  db.User.findByPk(id, function(err, user) {
-    done(err, user);
-  });
-});
-
-const ideaController = require('./controllers/idea');
-const userController = require('./controllers/user');
-const blogController = require('./controllers/blog');
-const commentController = require('./controllers/comment');
-const imageController = require('./controllers/image');
-
-app.get('/', auth.optional, (req, res) => res.send('Welcome to My Living City!'));
-
-app.get('/ideas/:sort/:offset', auth.optional, ideaController.getIdeas);
-app.get('/idea/:id', auth.optional, ideaController.getSingleIdea);
-app.delete('/idea/:id', auth.required, ideaController.deleteIdea);
-app.put('/idea/:id', auth.required, bodyParser.json(), ideaController.editIdea);
-app.post('/idea', auth.required, bodyParser.json(), ideaController.postIdea);
-app.post('/idea/:id/upvote', auth.required, ideaController.upvote);
-app.post('/idea/:id/downvote', auth.required, ideaController.downvote);
-app.put('/idea/:id/developer', auth.required, bodyParser.json(), ideaController.assignDeveloper);
-
-app.post('/user/register', auth.optional, bodyParser.json(), userController.register);
-app.post('/user/login', auth.optional, bodyParser.json(), userController.login);
-app.post('/user/logout', auth.required, userController.logout);
-app.get('/user/me', auth.required, userController.getCurrentUser);
-
-
-app.get('/blogs', auth.optional, blogController.getBlogs);
-app.get('/blog/:id', auth.optional, blogController.getBlog);
-app.post('/blog', auth.required, bodyParser.json(), blogController.postBlog);
-app.put('/blog/:id', auth.required, bodyParser.json(), blogController.editBlog);
-app.delete('/blog/:id', auth.required, blogController.deleteBlog);
-
-app.get('/:type/:id/comments', auth.optional, commentController.getComments);
-app.post('/:type/:id/comment', auth.required, bodyParser.json(), commentController.addComment);
-app.put('/comment/:id', auth.required, bodyParser.json(), commentController.editComment);
-app.delete('/comment/:id', auth.required, commentController.deleteComment);
-
-
-app.get('/image/:filename', auth.optional, imageController.getImage);
-app.get('/:type/:id/images', auth.optional, imageController.getImageUrls);
-app.post('/:type/:id/images', auth.required, multer.array('file'), imageController.postImage);
-
-app.listen(port, () => console.log(`My Living City listening on port ${port}!`));

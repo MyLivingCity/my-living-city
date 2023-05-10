@@ -1,0 +1,205 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Report {
+  id          Int    @id @default(autoincrement())
+  email       String
+  description String
+
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map(name: "updated_at")
+
+  // Model Overwrites
+  @@map(name: "report")
+}
+
+model User {
+  // Keys
+  id String @id @default(cuid())
+
+  // Fields
+  email         String   @unique
+  password      String
+  fname         String?  @map("f_name")
+  lname         String?  @map("l_name")
+  streetAddress String?  @map("street_address")
+  postalCode    String?  @map("postal_code")
+  city          String?
+  latitude      Decimal?
+  longitude     Decimal?
+  createdAt     DateTime @default(now()) @map(name: "created_at")
+  updatedAt     DateTime @default(now()) @updatedAt @map(name: "updated_at")
+
+  // relations
+  role             Role              @default(USER)
+  ideas            Idea[]
+  ideaRatings      IdeaRating[]
+  ideaComments     IdeaComment[]
+  ideaCommentLikes IdeaCommentLike[]
+
+
+  // Model overwrites
+  @@map(name: "user")
+}
+
+model Category {
+  // keys
+  id Int @id @default(autoincrement())
+
+  // Fields
+  title       String
+  description String?
+  createdAt   DateTime @default(now()) @map(name: "created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map(name: "updated_at")
+
+  // relations
+  ideas Idea[]
+
+  @@map(name: "category")
+}
+
+model Idea {
+  // Keys
+  id         Int    @id @default(autoincrement())
+  authorId   String
+  categoryId Int    @map("category_id")
+
+  // Values
+  title               String
+  description         String
+  communityImpact     String?   @map("community_impact")
+  natureImpact        String?   @map("nature_impact")
+  artsImpact          String?   @map("arts_impact")
+  energyImpact        String?   @map("energy_impact")
+  manufacturingImpact String?   @map("manufacturing_impact")
+  state               IdeaState @default(IDEA)
+  active              Boolean   @default(true)
+  createdAt           DateTime  @default(now()) @map(name: "created_at")
+  updatedAt           DateTime  @default(now()) @updatedAt @map(name: "updated_at")
+
+  // relations
+  comments     IdeaComment[]
+  ratings      IdeaRating[]
+  proposalInfo Proposal?
+  projectInfo  Project?
+
+  author   User     @relation(fields: [authorId], references: [id])
+  category Category @relation(fields: [categoryId], references: [id])
+
+  @@map(name: "idea")
+}
+
+model Proposal {
+  // Keys
+  id     Int @id @default(autoincrement())
+  ideaId Int @map("idea_id")
+
+  // Fields
+  // TODO: Add fields that would be in Proposal state
+  description String?
+  createdAt   DateTime @default(now()) @map(name: "created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map(name: "updated_at")
+
+  // Relations
+  idea Idea @relation(fields: [ideaId], references: [id])
+
+  @@map(name: "proposal")
+}
+
+model Project {
+  // keys
+  id     Int @id @default(autoincrement())
+  ideaId Int @map("idea_id")
+
+  // fields
+  // TODO: Add fields that would be in Project state
+  description String?
+  createdAt   DateTime @default(now()) @map(name: "created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map(name: "updated_at")
+
+  // relations
+  idea Idea @relation(fields: [ideaId], references: [id])
+
+  @@map(name: "project")
+}
+
+model IdeaRating {
+  // Keys
+  id     Int @id @default(autoincrement())
+  ideaId Int
+
+  // Fields
+  authorId          String
+  rating            Int      @default(0)
+  ratingExplanation String?  @map("rating_explanation")
+  createdAt         DateTime @default(now()) @map(name: "created_at")
+  updatedAt         DateTime @default(now()) @updatedAt @map(name: "updated_at")
+
+  // relations
+  author User @relation(fields: [authorId], references: [id])
+  idea   Idea @relation(fields: [ideaId], references: [id])
+
+  @@map(name: "idea_rating")
+}
+
+model IdeaComment {
+  // keys
+  id     Int @id @default(autoincrement())
+  ideaId Int
+
+  // Fields
+  authorId  String
+  content   String
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map(name: "updated_at")
+
+  // relations
+  author User              @relation(fields: [authorId], references: [id])
+  idea   Idea              @relation(fields: [ideaId], references: [id])
+  likes  IdeaCommentLike[]
+
+  @@map(name: "idea_comment")
+}
+
+model IdeaCommentLike {
+  // keys
+  id            Int    @id @default(autoincrement())
+  authorId      String
+  ideaCommentId Int
+
+  // fields
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map(name: "updated_at")
+
+  // relations
+  author      User        @relation(fields: [authorId], references: [id])
+  ideaComment IdeaComment @relation(fields: [ideaCommentId], references: [id])
+
+  @@map(name: "idea_comment_like")
+}
+
+enum IdeaState {
+  IDEA
+  PROPOSAL
+  PROJECT
+}
+
+enum Role {
+  RESIDENT
+  WORKER
+  GUEST
+  USER
+  ASSOCIATE
+  ADMIN
+}

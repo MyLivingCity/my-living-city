@@ -1,0 +1,1216 @@
+commit 8286ba67038c245e8ee4bb2226a27cb6cef155aa
+Author: Josh Sivertson <joshsiv@shaw.ca>
+Date:   Sun Jun 14 21:09:47 2020 -0700
+
+    fully functional rating
+
+commit 44934336600ed4c2a7aab7617eedfd4746467720
+Author: Josh Sivertson <joshsiv@shaw.ca>
+Date:   Sat Jun 13 22:07:59 2020 -0700
+
+    view-only-ratings
+
+commit 0d67d255e88d173e095dbc81d6e27c1cea296164
+Author: Jason Park <qkrckdtls1120@gmail.com>
+Date:   Fri Jun 12 19:07:42 2020 -0700
+
+    fix cards
+
+commit 5215c0107f9dd6111ec7097368ca7160cc0e86f8
+Author: Jason Park <qkrckdtls1120@gmail.com>
+Date:   Fri Jun 12 12:55:18 2020 -0700
+
+    little graphical changes & some notes
+
+commit 4cdaae012feda68d37a5eab0602b5efc522706ee
+Author: Jason Park <qkrckdtls1120@gmail.com>
+Date:   Thu Jun 11 15:19:50 2020 -0700
+
+    add graphic about category
+
+commit df4cecafeaf7bbd16ca7fb6ba4089e47a1e32aac
+Author: Josh Sivertson <joshsiv@shaw.ca>
+Date:   Thu Jun 11 13:24:37 2020 -0700
+
+    added comment votes
+
+commit 24b82ee13dce60fe345d8babedb1096cecf14c0b
+Author: Jason Park <qkrckdtls1120@gmail.com>
+Date:   Tue Jun 9 19:55:53 2020 -0700
+
+    update admin, update ideas table structure & update submition
+
+commit 91bb555829e8dfcc50bea3ac0cd3d1ce5f45ee45
+Author: Jason Park <qkrckdtls1120@gmail.com>
+Date:   Mon Jun 8 23:46:19 2020 -0700
+
+    add category property on submit
+
+commit e34f9a573035efeb983d33edef0b937107cfacdf
+Author: Josh Sivertson <joshsiv@shaw.ca>
+Date:   Mon Jun 8 17:26:17 2020 -0700
+
+    admin page display ideas
+
+commit 3acacf4eaf55c3dc93388d02a6e2379eb8159194
+Author: Josh Sivertson <joshsiv@shaw.ca>
+Date:   Mon Jun 8 16:41:51 2020 -0700
+
+    admin page display users
+
+commit 5514c6cfee29e937ef4421ba5ccc3380fa91d6a3
+Author: Josh Sivertson <joshsiv@shaw.ca>
+Date:   Sun Jun 7 21:25:27 2020 -0700
+
+    added admin page
+
+commit 98acc6232eea5029c2c69cd22a4c538cb4dcb639
+Author: Jennifer Tang-Tran <phuongtangtran@gmail.com>
+Date:   Sun Jun 7 09:49:45 2020 -0700
+
+    Added a privacy policy checkbox
+
+commit 4f8332d8248d859f3888b0f3bdf04d12d8320895
+Author: Jason Park <qkrckdtls1120@gmail.com>
+Date:   Sat Jun 6 23:11:35 2020 -0700
+
+    complete registration
+
+commit 4de6a7ecc6cefe28979683ab2778f19be3dac3a7
+Author: Jason Park <qkrckdtls1120@gmail.com>
+Date:   Sat Jun 6 18:50:53 2020 -0700
+
+    complete registration form
+
+commit 4089db0beab9fcf87877f5376dbf764cf76a4565
+Author: Jason Park <qkrckdtls1120@gmail.com>
+Date:   Sat Jun 6 17:58:26 2020 -0700
+
+    test register
+
+commit 9e94d2553485b8d14c0c72a6db4c5c2ccd4684f2
+Author: Jason Park <qkrckdtls1120@gmail.com>
+Date:   Sat Jun 6 17:30:25 2020 -0700
+
+    update User Table
+
+commit 7bce9ecaafac60dc4ca49d3cadfce1850ccbe1e1
+Author: Josh Sivertson <joshsiv@shaw.ca>
+Date:   Sat Jun 6 15:07:26 2020 -0700
+
+    updated icon
+
+commit c2ac64767beb5b331d8aaf396b602909389bb6ae
+Author: Josh Sivertson <joshsiv@shaw.ca>
+Date:   Fri Jun 5 23:25:59 2020 -0700
+
+    register-user-roles
+
+commit f32925ae04bd9969e95869a4cf87e1f6a913904b
+Author: Josh Sivertson <joshsiv@shaw.ca>
+Date:   Fri Jun 5 22:08:23 2020 -0700
+
+    replaced petals
+
+commit ac88fad5445e2cd462c15d3d62c53cf7bf5a6bec
+Author: Josh Sivertson <joshsiv@shaw.ca>
+Date:   Fri Jun 5 20:30:10 2020 -0700
+
+    renumbered migrations
+
+commit fd52698e4f354be86cb0c29a7bf74e8aa09b5075
+Author: Jennifer Tang-Tran <phuongtangtran@gmail.com>
+Date:   Thu Jun 4 14:29:48 2020 -0700
+
+    Updated the MyLivingCity's logo
+
+commit dd746b0443d2f9a640756628807aafca958f044e
+Author: Jennifer Tang-Tran <phuongtangtran@gmail.com>
+Date:   Thu Jun 4 14:21:07 2020 -0700
+
+    Updated logo with the new MyLivingCity's logo
+
+commit aa93ee93168144cc3d86eca78491e815cedb9904
+Author: Jennifer Tang-Tran <phuongtangtran@gmail.com>
+Date:   Thu Jun 4 14:18:56 2020 -0700
+
+    Updated the graphics of the MyLivingCity's logo
+
+commit 189c00ba30712679042d5e0b0a6e9ec2b8dd9e8d
+Author: Jennifer Tang-Tran <phuongtangtran@gmail.com>
+Date:   Wed Jun 3 20:48:50 2020 -0700
+
+    Updated the README.md file
+
+commit 2c3eb9d3e1bfd69c590c24e864b20f28977608a5
+Author: Jennifer Tang-Tran <phuongtangtran@gmail.com>
+Date:   Wed Jun 3 20:35:57 2020 -0700
+
+    Updated the README.md file
+
+commit d02aa9ad79d765c679af47103bf17d12b5b10a0c
+Author: Jason Park <qkrckdtls1120@gmail.com>
+Date:   Wed Jun 3 10:23:31 2020 -0700
+
+    v1.0.0
+
+commit 84d9256ef42129bfda7bbedaf4f24ebbea4a37a8
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Mon Jun 17 08:20:33 2019 -0700
+
+    try to fix logout betterer
+
+commit 07376074a4541c928c2d806602331311c807a924
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Mon Jun 17 08:14:27 2019 -0700
+
+    fix logout even more maybe
+
+commit 70f5165d4326add0c2a558a40220fddc60f437e6
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Mon Jun 17 08:05:24 2019 -0700
+
+    try to fix logout some more
+
+commit 3aceccda0f1ccf4b7d928340f237ce8aa3e79de5
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Sat Jun 15 11:47:18 2019 -0700
+
+    add ideas the user created to interacted
+
+commit 3c9f84c2a3bb96d5ee958b97a2cc63492a88d1ef
+Merge: d630e93 62209bb
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Sat Jun 15 11:23:16 2019 -0700
+
+    Merge branch 'master' of github.com:MyLivingCity/my-living-city
+
+commit d630e93f2796884d8f27f6de5451db6780662b22
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Sat Jun 15 11:23:01 2019 -0700
+
+    interacted ideas api
+
+commit 62209bb83d476d9a651ca08dcdf4ce7ec0f9f730
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Fri Jun 14 18:12:44 2019 -0700
+
+    redo frontpage + fixes
+
+commit 8b5dc06dde13b6093546b8ba2fb4fca3e6b54bac
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Fri Jun 14 14:48:17 2019 -0700
+
+    active nav links
+
+commit 275361f63ef3b938ca40576e70eb4ccfd8cd80ac
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Fri Jun 14 14:27:36 2019 -0700
+
+    fix likes reload
+
+commit 47cfef911098711a8aeb40b3b4d37435047dffee
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Fri Jun 14 14:26:22 2019 -0700
+
+    fix UX on ideaSubmit
+
+commit 49383316e0391d940f59b9a42f34afef8e36e294
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Fri Jun 14 01:42:52 2019 -0700
+
+    reload after likes/dislikes, UX on submitIdea
+
+commit 0464fc9a32b8ec4b295e410aa257e0b8a1e5e3de
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Fri Jun 14 01:25:21 2019 -0700
+
+    blog share
+
+commit ad6fbc68850c85cd18959246002e924bd5efa49d
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Fri Jun 14 01:16:30 2019 -0700
+
+    update packages, audit fix
+
+commit 5c7fa7a4a4d637cb228d3cf69d384d9ddb74f6c3
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Fri Jun 14 01:12:23 2019 -0700
+
+    sorting convos
+
+commit 518fcbfa41e66ad4b1f59e4df7f804e8a189cf7f
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Fri Jun 14 01:02:17 2019 -0700
+
+    fix warnings
+
+commit d507bbe1d2a4895e000a215dbdea79611e7d1e35
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Fri Jun 14 00:57:03 2019 -0700
+
+    share buttons
+
+commit 35d4eb7cfb6524a64e7c0b59ea580c9e680087be
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Thu Jun 13 23:59:59 2019 -0700
+
+    tune up about page
+
+commit 2873b8541d0bc77830487b72868b12b421120d9b
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Thu Jun 13 23:29:14 2019 -0700
+
+    add empty convos text
+
+commit 81e09db9b3c37c40330df700fecbe4c822d0400c
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Thu Jun 13 23:11:39 2019 -0700
+
+    fix logout
+
+commit 1396e680e9e96fe3b4bc8ee26a7e0f78575c11ec
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Thu Jun 13 23:08:02 2019 -0700
+
+    fix idea petals
+
+commit 19c7c49058c6e0074b4a31608c90b9f68b82438a
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Thu Jun 13 22:33:05 2019 -0700
+
+    fix idea css for long petals
+
+commit 76cd96e3a69a17da33b9a1bc1fd4c41dad77aacc
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Thu Jun 13 19:11:34 2019 -0700
+
+    add grouping by category
+
+commit ec9caace2f65444654f086003ea05931ac3bef46
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Wed Jun 12 15:23:13 2019 -0700
+
+    collaboration and developer api
+
+commit 5547a7b9b99efbca7ebd1b739ed33a44edb562e0
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Mon Jun 10 15:58:54 2019 -0700
+
+    fix proposal transition
+
+commit 44e215eebec2b947a43504a7c81da75313a95894
+Merge: 5623354 8431416
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Mon Jun 10 14:54:12 2019 -0700
+
+    Merge branch 'master' of github.com:MyLivingCity/my-living-city
+
+commit 5623354f47758146f5f70eea1aea2d73d0940f95
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Mon Jun 10 14:53:53 2019 -0700
+
+    proposal state transition
+
+commit 8431416030e2c926b1a046aac8da6de186dbd1a9
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Sun Jun 9 18:15:36 2019 -0700
+
+    reload after logout
+
+commit ac8cf9a04b1417faa20ebf5c38c1fda15bdb87d6
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Sun Jun 9 18:15:00 2019 -0700
+
+    logout
+
+commit 67efb04a82ad87d5f2e7bc133164820695a4792f
+Merge: 0b68864 88db3de
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Sun Jun 9 18:02:40 2019 -0700
+
+    Merge remote-tracking branch 'origin/master'
+
+commit 0b68864754139a87059020dc1439907b5efbafb2
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Sun Jun 9 18:02:37 2019 -0700
+
+    short description
+
+commit 88db3de3ded88be5bb34d613d47905485ca67fe4
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Sun Jun 9 17:51:06 2019 -0700
+
+    fix images some more
+
+commit ed68d8d5cfbcff4074fbb4ce98063c29ed2816b4
+Merge: 61ee496 e0ac211
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Sun Jun 9 17:46:31 2019 -0700
+
+    Merge branch 'master' of github.com:MyLivingCity/my-living-city
+
+commit 61ee496f368259f9a2e2ac760910edd8570139d8
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Sun Jun 9 17:46:25 2019 -0700
+
+    fix image backend
+
+commit e0ac211407f41b750e38368daef7b6adb825dcbd
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Sun Jun 9 17:42:57 2019 -0700
+
+    fix <p> DOM thing
+
+commit f3f5ce1c7303ca3a726f9fd21d4b7629ea85753f
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Sun Jun 9 17:41:18 2019 -0700
+
+    blog image fix
+
+commit 5f4c2bc775f417573d60e61b43063f7bc0d77aff
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Sun Jun 9 17:40:34 2019 -0700
+
+    fix markdown in blog cards
+
+commit 82d578cab408101c23b726774dd5dfb6c07a8cf5
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Sun Jun 9 17:38:32 2019 -0700
+
+    fix picture blog
+
+commit 37bc57c4a4aad5e407ac84d2bc2c866f330da165
+Merge: 705b76d 846ae89
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Sun Jun 9 17:34:41 2019 -0700
+
+    Merge remote-tracking branch 'origin/master'
+
+commit 705b76dab1bd2ea39115b4232831091d758eac4e
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Sun Jun 9 17:34:37 2019 -0700
+
+    post blog image
+
+commit 846ae89fbd3e284ca3386ab94591fc67040043ba
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Sun Jun 9 17:13:28 2019 -0700
+
+    increase blog char limit to 20k
+
+commit 5b31989ab53b59ad0e91b12dfca80bcfa5610d41
+Merge: 5a91683 e3e4d94
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Sun Jun 9 17:04:17 2019 -0700
+
+    Merge remote-tracking branch 'origin/master'
+
+commit 5a91683cdb91de136ebc75922c86b982d0060ba0
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Sun Jun 9 17:04:13 2019 -0700
+
+    view blog page
+
+commit e3e4d9486ea2df624434f86eef0d1ba54feaeeaa
+Merge: 3a7f60d 47a9a45
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Thu Jun 6 15:08:23 2019 -0700
+
+    Merge branch 'master' of github.com:MyLivingCity/my-living-city
+
+commit 3a7f60d68e88752dbfaf29e4b01ad58753b868a4
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Thu Jun 6 15:08:09 2019 -0700
+
+    add sorting to getIdeas
+
+commit 47a9a4552fc71199c26ce4de9a58f8b4957a7cc5
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Tue Jun 4 23:11:34 2019 -0700
+
+    no warnings
+
+commit af5fd118e6a6f3b7f254f513cd4d61f55bf465d2
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Tue Jun 4 23:09:53 2019 -0700
+
+    validate idea submit
+
+commit da4c5261eebe8328e31e923c6324f6239349d4c7
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Tue Jun 4 22:54:07 2019 -0700
+
+    fix name
+
+commit f11d203c2449effb59eaa5fe701565e46f6d8cee
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Tue Jun 4 22:08:54 2019 -0700
+
+    try to fix image upload with new endpoint
+
+commit d191bdf350205addf38dae83e6482e6bcc4b4808
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Tue Jun 4 21:53:25 2019 -0700
+
+    move the endpoints and pray nothing breaks
+
+commit 8d99dc1584e32ba5034f25e459a69b2c1d05d8dc
+Merge: 63cb333 9c9e26a
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Tue Jun 4 21:30:29 2019 -0700
+
+    Merge branch 'master' of github.com:MyLivingCity/my-living-city
+
+commit 63cb333bc6e487c9e8f2584043cbcd6c7aac44bc
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Tue Jun 4 21:30:17 2019 -0700
+
+    add image table
+
+commit 9c9e26a2d34aaa74b001374906c96d6e20b86a0b
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Tue Jun 4 20:52:43 2019 -0700
+
+    fix image uplaod
+
+commit 1f113228d5ff0d082706dc630972cc199a25db2d
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Tue Jun 4 20:42:10 2019 -0700
+
+    fix image upload
+
+commit a87e71d22d48cd04e84c1a953e4759038bb3a9ae
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Tue Jun 4 20:33:21 2019 -0700
+
+    image
+
+commit 7218d02734a9f29d5665b7899f3b2fd54f88830c
+Merge: 6a5d286 a89ff44
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Tue Jun 4 20:12:05 2019 -0700
+
+    Merge remote-tracking branch 'origin/master'
+
+commit 6a5d286809af4bf3a7fd7a0b4ad08c2d70d052d1
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Tue Jun 4 20:11:58 2019 -0700
+
+    new pic
+
+commit a89ff4483a9f60c8a5c9da449e512459235bb933
+Merge: 378cb93 bbaa804
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Tue Jun 4 20:11:12 2019 -0700
+
+    Merge branch 'master' of github.com:MyLivingCity/my-living-city
+
+commit 378cb935a22436fc607c76f392c21eebcae89c39
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Tue Jun 4 20:10:53 2019 -0700
+
+    image upload and retrieval
+
+commit bbaa804c11146636ca1e611e887f279b97e24806
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Tue Jun 4 19:27:15 2019 -0700
+
+    frontpage hax
+
+commit bba636e66534b9f6c140f548cff28734b1cab6c8
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Tue Jun 4 18:54:00 2019 -0700
+
+    add time to convoCards
+
+commit 1ae514952c98d3b6c3957a13fc567ac2d12d61fc
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Tue Jun 4 18:50:42 2019 -0700
+
+    add time and user to idea post
+
+commit 2dffc518f27f213911f00f03bdb5dbba59060f1a
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Tue Jun 4 17:01:27 2019 -0700
+
+    fix blog delete
+
+commit 1da45200ca92d337518512d7a55d5aafce09bf31
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Tue Jun 4 16:46:27 2019 -0700
+
+    fix long descriptions
+
+commit a4805441ab4d1ef2ecd0315a6498383adba53031
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Tue Jun 4 11:09:45 2019 -0700
+
+    blogs
+
+commit 2daf79e28a35e2e7b55525c75a878f2051550c24
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Mon Jun 3 23:36:51 2019 -0700
+
+    remove log
+
+commit 270738a8cd0f46fb8bc05cc850123ed2c6c4a5ac
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Mon Jun 3 23:35:40 2019 -0700
+
+    fix scroll
+
+commit c842633359a0c482f8521b75f002e388f8b40068
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Mon Jun 3 23:27:44 2019 -0700
+
+    async fix
+
+commit e1c9b5f67b75d7b33d68013f57c3d24c566d63d6
+Merge: 249aa1a af619ae
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Mon Jun 3 23:27:11 2019 -0700
+
+    Merge remote-tracking branch 'origin/master'
+
+commit 249aa1aed2b69f8eb273625b4eb80f007c9cd7ca
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Mon Jun 3 23:26:12 2019 -0700
+
+    auto scroll swag
+
+commit af619ae51c485884db2d8925e05de919653cfb40
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Mon Jun 3 21:41:53 2019 -0700
+
+    fix fetch
+
+commit accd7386cb19f152819c575d345e4cd285a5cd8a
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Mon Jun 3 21:38:46 2019 -0700
+
+    add user name to comments
+
+commit 51adde6dfda076bcf3a3672a770231124e83bbc9
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Mon Jun 3 21:24:31 2019 -0700
+
+    limit blogs and ideas returned from api (fo' realz)
+
+commit 8393f0309bce6d36522acbb1d6c8504e2e0cef72
+Merge: de23cb9 2486d63
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Mon Jun 3 21:14:09 2019 -0700
+
+    Merge branch 'master' of github.com:MyLivingCity/my-living-city
+
+commit de23cb91ab4d5f9e4302f77adbe5bd8ad09dd72b
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Mon Jun 3 21:13:53 2019 -0700
+
+    limit blogs and ideas returned from api
+
+commit 2486d63bf79bd933b15398af9df297457402c170
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Mon Jun 3 21:06:32 2019 -0700
+
+    update about page
+
+commit 2946637e57e33d191236a89f6ee0f6df7b9f5922
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Mon Jun 3 21:00:35 2019 -0700
+
+    remove bad function call
+
+commit 056a97645a6df30433795bced97268767af0edb0
+Merge: 0c915d9 4c7329d
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Mon Jun 3 20:56:41 2019 -0700
+
+    Merge remote-tracking branch 'origin/master'
+
+commit 0c915d990f21fbe489a7254a5d2ba7af853d14f3
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Mon Jun 3 20:56:36 2019 -0700
+
+    polish register and login
+
+commit 4c7329d923df88a570aa80d2a21097f3f8516559
+Author: Paul <sajattack@gmail.com>
+Date:   Mon Jun 3 18:42:07 2019 -0700
+
+    fix ci
+
+commit 51ab703532c5268665cdd2cc557b9124c69586c7
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Mon Jun 3 18:41:52 2019 -0700
+
+    fix build
+
+commit fc1565b93890e63ba133a15f0c5064e178afd4ec
+Merge: 4d8c9e6 aedb10f
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Mon Jun 3 18:38:52 2019 -0700
+
+    Merge remote-tracking branch 'origin/master'
+
+commit 4d8c9e658d4116331f405009461dc0acd5769803
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Mon Jun 3 18:38:48 2019 -0700
+
+    editBlog
+
+commit aedb10f465e2277d06e68a09a90c817d3bcbcbc9
+Author: Chris Eddy <chris.eddy.dev@gmail.com>
+Date:   Mon Jun 3 18:14:18 2019 -0700
+
+    Update lol.md
+
+commit bbcd2f3a76a2cde3321e0f2377946492f3f06249
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Mon Jun 3 18:12:16 2019 -0700
+
+    markdown folder
+
+commit 785df40e4411e65580589c401e239b1d7b9729f8
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Mon Jun 3 18:04:14 2019 -0700
+
+    fix comments again
+
+commit b4ee0e0969e8fa6629efa00fab24a09cf8fdafd7
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Mon Jun 3 17:52:45 2019 -0700
+
+    fix comments
+
+commit 7f099049b6775a63322b37d497f778029783604c
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Mon Jun 3 17:44:19 2019 -0700
+
+    idea page
+
+commit f3d03955412cbc82c2e0141f15fb118a49f2ec9c
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Fri May 31 23:23:11 2019 -0700
+
+    delete and edit idea
+
+commit d62429ebf5a16306fa18f1d3fb38857e5788c91b
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Fri May 31 22:29:27 2019 -0700
+
+    add idea states (idea/proposal/collab)
+
+commit 291aacf1f5633c77fc88c02f08cf45e12c416ba6
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Fri May 31 22:10:59 2019 -0700
+
+    cards work
+
+commit 3590a96b823e3f645a1d69b12ef451eef6148e35
+Author: Chris <chris.eddy.dev@gmail.com>
+Date:   Fri May 31 21:53:29 2019 -0700
+
+    convo cards
+
+commit 17e9b1c642c9b4379ffe18d76f04b0eafe8efbe9
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Fri May 31 20:45:56 2019 -0700
+
+    comment api and other fixes
+
+commit 65a3b51b0465f2fb0eab272c4943eb12af1e0a9f
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Fri May 31 18:57:08 2019 -0700
+
+    add logout
+
+commit 214b1ca2fd444819550a89b11856922cb85e077a
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Fri May 31 18:47:09 2019 -0700
+
+    fix session timeout
+
+commit 0011cf461dbb784211f02567d7002cfc8b1c95f3
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Thu May 30 16:08:19 2019 -0700
+
+    Merge conflict resolution
+
+commit 7590d744d88c45e70f4f1602cb4b648e4696645a
+Merge: e0213ad 3f0fe91
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Thu May 30 16:06:36 2019 -0700
+
+    Merge branch 'master' of github.com:MyLivingCity/my-living-city
+
+commit e0213ad5c54be50e3ff9e1db20aff3e2b0f51356
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Thu May 30 16:06:11 2019 -0700
+
+    add users to ideas and blogs, add votes to ideas
+
+commit 3f0fe91c87c46e086754246be071dcd35d6e80f0
+Author: chelsea <chels.birch@gmail.com>
+Date:   Thu May 30 14:42:45 2019 -0700
+
+    fix comment box and button
+
+commit 74ff34e0d02591070bca460828c0e7b0c990bf2d
+Merge: f81c079 42b9dce
+Author: chelsea <chels.birch@gmail.com>
+Date:   Thu May 30 14:37:19 2019 -0700
+
+    Merge branch 'master' of https://github.com/MyLivingCity/my-living-city
+
+commit f81c079b79cb0a33fa3b792f9765b891d9e1455a
+Author: chelsea <chels.birch@gmail.com>
+Date:   Thu May 30 14:26:02 2019 -0700
+
+    add comment box
+
+commit 42b9dcebb14011cf3bd472b37a73bf7090147772
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Thu May 30 13:50:00 2019 -0700
+
+    add upvote/downvote counts to idea api
+
+commit 28f69d0f5d46265d0efc5290b063ea16486be4e9
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Thu May 30 12:51:04 2019 -0700
+
+    votes api
+
+commit 0099d65419858cbe6d86a209b4739066125852ae
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Sun May 26 19:14:55 2019 -0700
+
+    finish up blogs api
+
+commit 7435b857b329412c95126f6dc9130bfabd9ba0bd
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Sun May 26 18:54:00 2019 -0700
+
+    remove the test
+
+commit 97974adc205c288d98fb77559e77cab7cfbd648a
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Sun May 26 18:46:16 2019 -0700
+
+    rename test to checkauth so npm doesn't try to run it on npm test
+
+commit 91aaf4f1effc51cb172b31c92ea26d3647f182f5
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Sun May 26 18:37:34 2019 -0700
+
+    blog api and cookie test
+
+commit f4ed06b992f9e36b46f2903f4f2245237b70ae2f
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Sat May 25 00:06:55 2019 -0700
+
+    fix travis better
+
+commit c25a60871a071f4af0e627bce2df84860a92cbb3
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Sat May 25 00:00:21 2019 -0700
+
+    fix travis hopefully
+
+commit 4fb51ce096618cb8922dabf9f0164b12f65ff2c6
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Fri May 24 23:47:33 2019 -0700
+
+    refactor user system to use passport, split api into multiple files
+
+commit 592c22a9369134925129206a4140ff033b9660cf
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Fri May 24 01:16:17 2019 -0700
+
+    maybe don't log passwords
+
+commit e34818fc7f171dcea511b485ff8c2e382c17c665
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Fri May 24 00:20:46 2019 -0700
+
+    attempt 1 to fix build
+
+commit 132c6d6d06a263ea0c2e59f062fd01426f105f42
+Merge: 7f5c0a3 368dea8
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Fri May 24 00:02:54 2019 -0700
+
+    Merge branch 'master' of github.com:MyLivingCity/my-living-city
+
+commit 7f5c0a3718436ec53c328287fdf669e5b92eb931
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Fri May 24 00:02:47 2019 -0700
+
+    database overhaul
+
+commit 368dea8cdd3481895ec38115baee0a6b74280ddb
+Author: Chris Eddy <ceddy.zen@gmail.com>
+Date:   Wed Feb 27 11:49:29 2019 -0800
+
+    about us basic frontend
+
+commit c2e1b19f341aca1e016d7669c774cc093cc782f9
+Author: Chris Eddy <ceddy.zen@gmail.com>
+Date:   Wed Feb 27 11:40:09 2019 -0800
+
+    blogs basic frontend
+
+commit 7d3ca87953e7d7deaead3838450d88b25d77834f
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Mon Feb 25 20:22:08 2019 -0800
+
+    re-enable synctables
+
+commit 2ea96bde4a10274a886612681dc41451f6dc3648
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Mon Feb 25 20:14:33 2019 -0800
+
+    fixup 'match up model some more'
+
+commit 8ac3469833ec20c6f7cf633db4274305b930d0c7
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Mon Feb 25 20:11:27 2019 -0800
+
+    match up model some more
+
+commit 83d3efd6e3d4fa84a3c64c453020029643d8fe67
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Mon Feb 25 19:56:24 2019 -0800
+
+    disable synctables
+
+commit 114b7ef412d827e6e086982012281d0c2a94b5b6
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Mon Feb 25 19:46:33 2019 -0800
+
+    match models and disable baselineOnMigrate
+
+commit c4e281959769db4cf0fe31cd5854de5f283b49fd
+Author: Chris Eddy <ceddy.zen@gmail.com>
+Date:   Mon Feb 25 19:33:30 2019 -0800
+
+    fix bad conflict
+
+commit 1925af0239491d4b3124f09229dc009a587c59a2
+Author: Chris Eddy <ceddy.zen@gmail.com>
+Date:   Mon Feb 25 19:32:22 2019 -0800
+
+    Auto stash before merge of "master" and "origin/master"
+
+commit 2efb9c3b218f142d3183d271ea101ca54e47119e
+Merge: d40ae9a 2514133
+Author: Chris Eddy <ceddy.zen@gmail.com>
+Date:   Mon Feb 25 19:31:45 2019 -0800
+
+    Merge remote-tracking branch 'origin/master'
+
+commit d40ae9a6556b1d65ad09d91826d7725390471d09
+Author: Chris Eddy <ceddy.zen@gmail.com>
+Date:   Mon Feb 25 19:31:41 2019 -0800
+
+    register functionality
+
+commit 2514133892a5794bb9692f8b25088e93bf8846e5
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Mon Feb 25 19:18:14 2019 -0800
+
+    fix flyway
+
+commit 1e21faa0dfe5dab912a41134f9bac4eba79c1312
+Merge: 95dd31c 0dec387
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Mon Feb 25 19:14:05 2019 -0800
+
+    Merge branch 'master' of github.com:MyLivingCity/my-living-city
+
+commit 95dd31ce1bd9b35a4d7a9233df149bf77978b206
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Mon Feb 25 19:13:53 2019 -0800
+
+    basic idea page, styling TODO
+
+commit 0dec3871df231e54d8503654c735ade87862305b
+Author: Chris Eddy <ceddy.zen@gmail.com>
+Date:   Mon Feb 25 18:55:43 2019 -0800
+
+    register functionality
+
+commit 9cae7ca5ce59063957bef73c4c68c2b899129403
+Author: Chris Eddy <ceddy.zen@gmail.com>
+Date:   Mon Feb 25 18:04:56 2019 -0800
+
+    fix idea post, make create tables a function
+
+commit 277d5c5e2786b753309ce6b07fc4e2f07ddd3e4a
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Sun Feb 24 20:55:20 2019 -0800
+
+    switch API_URL automatically
+
+commit abd05b4f59e4fc313653f36a6878305a4689c965
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Sun Feb 24 20:06:07 2019 -0800
+
+    make choice of database connection automatic
+
+commit 2608cb950c8a26fad97e459f089b237c54fda0c3
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Sun Feb 24 19:43:01 2019 -0800
+
+    try changing fetch to full url rather than localhost
+
+commit eb447289ceadd4f905d4dc3a66951b76955a474c
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Sun Feb 24 19:40:35 2019 -0800
+
+    turn flyway back on (hope nothing breaks)
+
+commit bbe87df07a74385b80eab0fd92099deb14a81944
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Sun Feb 24 19:38:22 2019 -0800
+
+    Revert "attempt to fix cors"
+    
+    This reverts commit 42ec3f6c9c61f2ac019f97c58958a554fa46fea7.
+
+commit c95216b8821a4ce09168a5bcdc2f7b7950095261
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Sun Feb 24 19:33:24 2019 -0800
+
+    attempt to fix fetch
+
+commit 42ec3f6c9c61f2ac019f97c58958a554fa46fea7
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Sun Feb 24 19:18:33 2019 -0800
+
+    attempt to fix cors
+
+commit 13c41e66c772cb9ce01977be83b807342a0c9a92
+Author: Chris Eddy <ceddy.zen@gmail.com>
+Date:   Sun Feb 24 19:10:10 2019 -0800
+
+    reset fetch points
+
+commit 5d4774756cbb08f9eb0a98a8e5b7a7056fe3c988
+Author: Chris Eddy <ceddy.zen@gmail.com>
+Date:   Sat Feb 23 20:11:47 2019 -0800
+
+    fix fetch
+
+commit bac22e8ed29256fe2a3eaf808786825777010e32
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Sat Feb 23 19:52:51 2019 -0800
+
+    attempt to fix 404
+
+commit 140fd461169adb487f7b694ddd5b81ee0314eca2
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Sat Feb 23 18:48:35 2019 -0800
+
+    fix security warning
+
+commit 634005a8eb40437a1b1a954244685a8b6f914c8e
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Sat Feb 23 15:45:54 2019 -0800
+
+    update api endpoints in frontend
+
+commit 64d1d468b26ebdaef89d23a9fc232e974839de67
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Sat Feb 23 15:43:59 2019 -0800
+
+    add route for get by id
+
+commit fa47cfa57207a83c73d4f2a314a6fe35da2b6c26
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Sat Feb 23 15:38:12 2019 -0800
+
+    disable flyway
+
+commit 369d6ccd38a9bd542492c9a8817f44cc4c771828
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Sat Feb 23 15:37:29 2019 -0800
+
+    create an Idea model
+
+commit 35c0ea6100156f52e574bd24538516822bde4ecc
+Author: Chris Eddy <ceddy.zen@gmail.com>
+Date:   Sat Feb 23 00:12:13 2019 -0800
+
+    get_ideas, frontend convoCards
+
+commit 6cd4db1a68ec32a0a4dbe435cf3d8b705c6257e5
+Author: Chris Eddy <ceddy.zen@gmail.com>
+Date:   Fri Feb 22 22:35:40 2019 -0800
+
+    post_idea backend, DB + frontend basics
+
+commit 17004c6e6c29d01b7b5856a550eec1679bd0fa06
+Author: Paul <sajattack@gmail.com>
+Date:   Fri Feb 22 17:38:56 2019 -0800
+
+    Update .travis.yml
+
+commit 4ebea39e338c3884c6cc14a12a4a7b57cdf2737c
+Author: Paul <sajattack@gmail.com>
+Date:   Fri Feb 22 14:39:45 2019 -0800
+
+    Update .travis.yml
+
+commit f14c7605be623d5ecef609e0c7091df4eabda618
+Author: Paul <sajattack@gmail.com>
+Date:   Fri Feb 22 00:47:53 2019 -0800
+
+    fix path name
+
+commit d9e6b54a66f8e0483ac6965bc4650207d98c0d8b
+Author: Paul <sajattack@gmail.com>
+Date:   Fri Feb 22 00:43:30 2019 -0800
+
+    run database migration on ec2
+    
+    because the database can't be accessed outside ec2
+
+commit 019b9b6263c56cd7c440d4eec24b033fb31c16b5
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Fri Feb 22 00:22:56 2019 -0800
+
+    change DB_PASS
+
+commit 4f59fe4665aa4dba22d5a2a105d5fd5680bdff8f
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Fri Feb 22 00:12:14 2019 -0800
+
+    try again
+
+commit c8c154c5db66746281e39b69a64e81c54b975dea
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Fri Feb 22 00:07:11 2019 -0800
+
+    add encrypted database password as env var
+
+commit 5c88810dd24bc6f4df9e5d40e4653b1b7fc866b4
+Author: Chris Eddy <ceddy.zen@gmail.com>
+Date:   Thu Feb 21 23:54:23 2019 -0800
+
+    add flyway to CI
+
+commit d15a0503f1a78c6419c65266e33f2f84c781cbe3
+Author: Chris Eddy <ceddy.zen@gmail.com>
+Date:   Thu Feb 21 23:44:27 2019 -0800
+
+    create database migration system, flyway
+
+commit de73cce64f7ed444d2c50c8d919965caced2f19c
+Author: Chris Eddy <ceddy.zen@gmail.com>
+Date:   Thu Feb 21 16:15:40 2019 -0800
+
+    template submit idea
+
+commit 68f1c23f3d8acd284e7ee5b79a919ea39623b2d2
+Author: Chris Eddy <ceddy.zen@gmail.com>
+Date:   Thu Feb 21 15:39:46 2019 -0800
+
+    template login/register modals/buttons/forms
+
+commit aaf58d34a13eef0bd9c37bb688ef1e5482853b18
+Author: Chris Eddy <ceddy.zen@gmail.com>
+Date:   Thu Feb 21 15:11:26 2019 -0800
+
+    template conversations page UI
+
+commit 72c910d7a7327f499133a7d2588747a6fc15910b
+Author: Chris Eddy <ceddy.zen@gmail.com>
+Date:   Thu Feb 21 14:54:42 2019 -0800
+
+    add App.js back to fix test
+
+commit e3770c9b9fd45bd507a61e6a31c4fff33f444162
+Author: Chris Eddy <ceddy.zen@gmail.com>
+Date:   Thu Feb 21 14:51:37 2019 -0800
+
+    implement routing
+
+commit fa6896ae492ca8693c308bc893f580c8c9b26311
+Author: Chris Eddy <ceddy.zen@gmail.com>
+Date:   Mon Jan 28 10:51:02 2019 -0800
+
+    basic frontpage/navbar
+
+commit febb8b067cb8ed5742cfa9aac2db355bac43dcee
+Author: Chris Eddy <ceddy.zen@gmail.com>
+Date:   Sun Jan 27 22:52:13 2019 -0800
+
+    add cors to package.json
+
+commit 30262b9f67733145e04e5f998a915e62feee5d4c
+Author: Chris Eddy <ceddy.zen@gmail.com>
+Date:   Sun Jan 27 22:51:19 2019 -0800
+
+    add cors to express
+
+commit de5b2d4161ac43ecd62b78018961360457722735
+Author: Chris Eddy <ceddy.zen@gmail.com>
+Date:   Sun Jan 27 22:46:43 2019 -0800
+
+    test react button for DB fetch
+
+commit 5b16ad85518d5a188d42494ea37442d086bd0ea8
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Sun Jan 27 15:19:55 2019 -0800
+
+    make travis do an npm install on the server
+
+commit f06c28b95befaaee6bafa66c9e05be977b2db8a4
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Sun Jan 27 15:14:56 2019 -0800
+
+    finish up dbtest
+
+commit c723bda09a3c0cc0efe195be715a1ecea9c36333
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Sun Jan 27 14:44:10 2019 -0800
+
+    fixup dbtest route
+
+commit f10d51eae2dff8862acc19b1080ee53bd09d8b02
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Sun Jan 27 14:31:24 2019 -0800
+
+    database test route
+
+commit b7f32c0fd9ddbeb416b225ea28477995ba4876c1
+Author: Paul Sajna <sajattack@gmail.com>
+Date:   Sat Jan 19 20:01:16 2019 -0800
+
+    set up travis
+
+commit a6a998bab8abf97139e45ac5238e18419b9ce63a
+Author: Chris Eddy <ceddy.zen@gmail.com>
+Date:   Sat Jan 19 19:17:32 2019 -0800
+
+    template project codebase
+
+commit 9d9cc6e471cb0b43dfb3f2ff6b55aa7b359d886a
+Author: Chris Eddy <chris.eddy.dev@gmail.com>
+Date:   Thu Jan 17 15:47:48 2019 -0800
+
+    Update README.md
+
+commit da702f2f9c7bb3909a46a90c07296e41dc8c3d64
+Author: Paul <sajattack@gmail.com>
+Date:   Thu Jan 17 15:44:16 2019 -0800
+
+    Add some stuff from the website to the README
+
+commit f4eea7e163a2e32b7f079108dd38a23f80d17f08
+Author: Chris Eddy <chris.eddy.dev@gmail.com>
+Date:   Sun Jan 13 15:54:56 2019 -0800
+
+    Initial commit

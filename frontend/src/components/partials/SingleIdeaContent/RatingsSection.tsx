@@ -3,7 +3,7 @@ import { Container, Row } from "react-bootstrap";
 import { useCommentAggregateUnderIdea } from "src/hooks/commentHooks";
 import { UserProfileContext } from "../../../contexts/UserProfile.Context";
 import { useAllRatingsUnderIdea } from "../../../hooks/ratingHooks";
-import { IRatingAggregateSummary } from "../../../lib/types/data/rating.type";
+import { IRating, IRatingAggregateSummary } from "../../../lib/types/data/rating.type";
 import {
   checkIfUserHasRated,
   findUserRatingSubmission,
@@ -12,12 +12,17 @@ import {
 import LoadingSpinner from "../../ui/LoadingSpinner";
 import RatingDisplay from "./RatingDisplay";
 import RatingInput from "./RatingInput";
+import { UseQueryResult } from "react-query";
+import { IFetchError } from "src/lib/types/types";
+import { ICommentAggregateCount } from "src/lib/types/data/comment.type";
 
 interface RatingsSectionProps {
   ideaId: string;
+  allRatingsUnderIdea: UseQueryResult<IRating[], IFetchError>;
+  commentAggregateUnderIdea: UseQueryResult<ICommentAggregateCount, IFetchError>;
 }
 
-const RatingsSection: React.FC<RatingsSectionProps> = ({ ideaId }) => {
+const RatingsSection: React.FC<RatingsSectionProps> = ({ ideaId, allRatingsUnderIdea, commentAggregateUnderIdea }) => {
   const { user } = useContext(UserProfileContext);
  
   const {
@@ -25,13 +30,13 @@ const RatingsSection: React.FC<RatingsSectionProps> = ({ ideaId }) => {
     isLoading,
     isError,
     error,
-  } = useAllRatingsUnderIdea(ideaId);
+  } = allRatingsUnderIdea;
   const {
     data: commentAggregate,
     isLoading: aggregateIsLoading,
     isError: aggregateIsError,
     error: aggregateError,
-  } = useCommentAggregateUnderIdea(ideaId);
+  } = commentAggregateUnderIdea;
   const [userHasRated, setUserHasRated] = useState<boolean>(
     checkIfUserHasRated(ratings, user?.id)
   );
@@ -49,7 +54,7 @@ const RatingsSection: React.FC<RatingsSectionProps> = ({ ideaId }) => {
   }, [ratings]);
 
   if ((error && isError) || (aggregateIsError && aggregateError)) {
-    return <p>An error occured while fetching comments</p>;
+    return <p>An error occured while fetching ratings.</p>;
   }
 
   if (isLoading || aggregateIsLoading) {

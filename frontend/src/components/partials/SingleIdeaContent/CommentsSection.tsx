@@ -1,19 +1,21 @@
 import { useContext, useEffect, useState } from "react";
 import { Alert, Button, Container, Row } from "react-bootstrap";
 import { UserProfileContext } from "../../../contexts/UserProfile.Context";
-import {
-  useAllCommentsUnderIdea,
-  useCreateCommentMutation,
-} from "../../../hooks/commentHooks";
+import { useCreateCommentMutation } from "../../../hooks/commentHooks";
 import IdeaCommentTile from "../../tiles/IdeaComment/IdeaCommentTile";
 import LoadingSpinner from "../../ui/LoadingSpinner";
 import CommentSubmitModal from "./CommentSubmitModal";
 import "../../../scss/content/textlimit.scss";
+import { UseQueryResult } from "react-query";
+import { IFetchError } from "src/lib/types/types";
+import { IComment } from "src/lib/types/data/comment.type";
 
-const CommentsSection = (ideaIdProp: any) => {
-  const { ideaId } = ideaIdProp;
+interface CommentsSectionProps {
+  ideaId: string;
+  allCommentsUnderIdea: UseQueryResult<IComment[], IFetchError>;
+}
 
-
+const CommentsSection: React.FC<CommentsSectionProps> = ({ideaId, allCommentsUnderIdea}) => {
   const { token, user, isUserAuthenticated } = useContext(UserProfileContext);
   const [showModal, setShowModal] = useState<boolean>(false);
 
@@ -23,7 +25,7 @@ const CommentsSection = (ideaIdProp: any) => {
     isLoading,
     isError,
     error,
-  } = useAllCommentsUnderIdea(ideaId, token);
+  } = allCommentsUnderIdea;
 
 // ===================== REMOVING DEACTIVATED COMMENTS ========================
 if(ideaComments){

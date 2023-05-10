@@ -25,6 +25,7 @@ import {
 } from "react-share";
 import ChampionSubmit from "../partials/SingleIdeaContent/ChampionSubmit";
 import LoadingSpinner from "../ui/LoadingSpinner";
+import LoadingSpinnerInline from "../ui/LoadingSpinnerInline";
 import React, { useContext, useEffect, useState } from "react";
 import { API_BASE_URL, USER_TYPES } from "src/lib/constants";
 import { UserProfileContext } from "src/contexts/UserProfile.Context";
@@ -37,7 +38,8 @@ import {
   unendorseIdeaByUser,
 } from "src/lib/api/ideaRoutes";
 import { useCheckIdeaFollowedByUser, useCheckIdeaEndorsedByUser, useGetEndorsedUsersByIdea, useCheckIdeaFlaggedByUser } from "src/hooks/ideaHooks";
-
+import { useAllRatingsUnderIdea } from "src/hooks/ratingHooks";
+import { useAllCommentsUnderIdea, useCommentAggregateUnderIdea } from "src/hooks/commentHooks";
 import Modal from 'react-bootstrap/Modal';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
@@ -118,7 +120,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
   const [endorsedUsers, setEndorsedUsers] = useState<any[]>([]);
 
-
+  // API hooks for this component
   const {user, token} = useContext(UserProfileContext);
   const {data: isFollowingPost, isLoading: isFollowingPostLoading} = useCheckIdeaFollowedByUser(token, (user ? user.id : user), ideaId);
   const {data: isEndorsingPost, isLoading: isEndorsingPostLoading} = useCheckIdeaEndorsedByUser(token, (user ? user.id : user), ideaId);
@@ -127,7 +129,10 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
   const {data: proposalIdea } = useSingleIdea("" + (supportedProposal ? supportedProposal!.ideaId : ""));
   const {data: flagBanData, isLoading: flagBanDataLoading} = useCheckFlagBan(token, (user ? user.id : ""));
   const {data: isFlagged, isLoading: isFlaggedLoading} = useCheckIdeaFlaggedByUser(token, (user ? user.id : user), ideaId);
-
+  // API hooks for children components
+  const allRatingsUnderIdea = useAllRatingsUnderIdea(ideaId);
+  const commentAggregateUnderIdea = useCommentAggregateUnderIdea(ideaId);
+  const allCommentsUnderIdea = useAllCommentsUnderIdea(ideaId, token);
 
   const [showFlagButton, setShowFlagButton] = useState(true);
   const [show, setShow] = useState(false);
@@ -248,10 +253,6 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
 
 
-  if (isEndorsedUsersDataLoading || isEndorsingPostLoading || isFollowingPostLoading || flagBanDataLoading || isFlaggedLoading) {
-    return <LoadingSpinner></LoadingSpinner>;
-  }
-
   return (
     <div className="single-idea-content pt-5">
       <Card>
@@ -265,42 +266,113 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
           <Col sm={12}>
             <Card.Header>
               <div className="d-flex flex-column">
-                <h1 className="h1 p-2 flex-grow-1">{
-                  title && title.length > 75 ? title.substring(0, 75) + "..." : title
-                }</h1>
-                <div style={{display: "flex", minWidth: "16rem", justifyContent: "left", marginTop: "0.5rem"}}>
+                <h1 className="h1 p-2 flex-grow-1">
+                  {title && title.length > 75
+                    ? title.substring(0, 75) + "..."
+                    : title}
+                </h1>
+                <div
+                  style={{
+                    display: "flex",
+                    minWidth: "16rem",
+                    justifyContent: "left",
+                    marginTop: "0.5rem",
+                  }}
+                >
                   <div>
-                  {/* <div id="flagButtonDiv" style={{display: showFlagButton ? 'block' : 'none'}}> */}
-                  {showFlagButton ? (<ButtonGroup className="mr-2">
-                  {!reviewed ? (
-                    <DropdownButton id="dropdown-basic-button d-flex" style={{ fontSize: "16px", font: "16px sans-serif" }} title="Flag">
-                      <Dropdown.Item eventKey= "Abusive or Inappropriate Language" onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Abusive or Inappropriate Language</Dropdown.Item>
-                      <Dropdown.Item eventKey= "Submission in Wrong Community" onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Submission in Wrong Community</Dropdown.Item>
-                      <Dropdown.Item eventKey= "Spam/Unsolicited Advertisement" onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Spam/Unsolicited Advertisement</Dropdown.Item>
-                      <Dropdown.Item eventKey= "Unrelated to Discussion (Off Topic)" onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Unrelated to Discussion (Off Topic)</Dropdown.Item>
-                      <Dropdown.Item eventKey= "Incomplete Submission (Requires Additional Details)" onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Incomplete Submission (Requires Additional Details)</Dropdown.Item>
-                      <Dropdown.Item eventKey= "Other" onSelect={(eventKey) => selectOtherReasonHandler(eventKey!)}>Other</Dropdown.Item>
-                    </DropdownButton>
+                    {/* <div id="flagButtonDiv" style={{display: showFlagButton ? 'block' : 'none'}}> */}
+                    {showFlagButton ? (
+                      <ButtonGroup className="mr-2">
+                        {!reviewed ? (
+                          <DropdownButton
+                            id="dropdown-basic-button d-flex"
+                            style={{
+                              fontSize: "16px",
+                              font: "16px sans-serif",
+                            }}
+                            title="Flag"
+                          >
+                            <Dropdown.Item
+                              eventKey="Abusive or Inappropriate Language"
+                              onSelect={(eventKey) =>
+                                selectReasonHandler(eventKey!)
+                              }
+                            >
+                              Abusive or Inappropriate Language
+                            </Dropdown.Item>
+                            <Dropdown.Item
+                              eventKey="Submission in Wrong Community"
+                              onSelect={(eventKey) =>
+                                selectReasonHandler(eventKey!)
+                              }
+                            >
+                              Submission in Wrong Community
+                            </Dropdown.Item>
+                            <Dropdown.Item
+                              eventKey="Spam/Unsolicited Advertisement"
+                              onSelect={(eventKey) =>
+                                selectReasonHandler(eventKey!)
+                              }
+                            >
+                              Spam/Unsolicited Advertisement
+                            </Dropdown.Item>
+                            <Dropdown.Item
+                              eventKey="Unrelated to Discussion (Off Topic)"
+                              onSelect={(eventKey) =>
+                                selectReasonHandler(eventKey!)
+                              }
+                            >
+                              Unrelated to Discussion (Off Topic)
+                            </Dropdown.Item>
+                            <Dropdown.Item
+                              eventKey="Incomplete Submission (Requires Additional Details)"
+                              onSelect={(eventKey) =>
+                                selectReasonHandler(eventKey!)
+                              }
+                            >
+                              Incomplete Submission (Requires Additional
+                              Details)
+                            </Dropdown.Item>
+                            <Dropdown.Item
+                              eventKey="Other"
+                              onSelect={(eventKey) =>
+                                selectOtherReasonHandler(eventKey!)
+                              }
+                            >
+                              Other
+                            </Dropdown.Item>
+                          </DropdownButton>
+                        ) : null}
+                      </ButtonGroup>
                     ) : null}
-                  </ButtonGroup>
-                  ) : null}
-                  {/* </div> */}
-                  
-                    <ButtonGroup className="mr-2">
-                    {user && token ? <Button
-                      onClick={async () => await handleFollowUnfollow()}
-                    >
-                      {followingPost ? "Unfollow" : "Follow"}
-                    </Button> : null}
-                  </ButtonGroup>
-                  <ButtonGroup className="mr-2">
-                   {(user && canEndorse) ? <Button 
-                      onClick={async () => await handleEndorseUnendorse()}
-                      >
-                      {endorsingPost ? "Unendorse" : "Endorse"}
-                    </Button> : null}
-                  </ButtonGroup>
-                    
+                    {/* </div> */}
+
+                    {isFollowingPostLoading ? (
+                      <LoadingSpinnerInline />
+                    ) : (
+                      <ButtonGroup className="mr-2">
+                        {user && token ? (
+                          <Button
+                            onClick={async () => await handleFollowUnfollow()}
+                          >
+                            {followingPost ? "Unfollow" : "Follow"}
+                          </Button>
+                        ) : null}
+                      </ButtonGroup>
+                    )}
+                    {isEndorsingPostLoading ? (
+                      <LoadingSpinnerInline />
+                    ) : (
+                      <ButtonGroup className="mr-2">
+                        {user && canEndorse ? (
+                          <Button
+                            onClick={async () => await handleEndorseUnendorse()}
+                          >
+                            {endorsingPost ? "Unendorse" : "Endorse"}
+                          </Button>
+                        ) : null}
+                      </ButtonGroup>
+                    )}
                   </div>
                 </div>
               </div>
@@ -312,10 +384,21 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
               </Modal.Header>
               <Modal.Body>Are you sure about flagging this post?</Modal.Body>
               <Modal.Footer>
-                <Button style={{background: 'red'}} variant="primary"  onClick={
-                    () => {submitFlagReasonHandler(parseInt(ideaId), token!, user!.id, ideaData.active, new Date());
-                    incrementPostFlagCount(token, ideaId);}
-                }>Flag
+                <Button
+                  style={{ background: "red" }}
+                  variant="primary"
+                  onClick={() => {
+                    submitFlagReasonHandler(
+                      parseInt(ideaId),
+                      token!,
+                      user!.id,
+                      ideaData.active,
+                      new Date()
+                    );
+                    incrementPostFlagCount(token, ideaId);
+                  }}
+                >
+                  Flag
                 </Button>
                 <Button variant="secondary" onClick={handleClose}>
                   Cancel
@@ -328,29 +411,43 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                 <Modal.Title>Flag Confirmation</Modal.Title>
               </Modal.Header>
               <Modal.Body>
-              <Form>
-              <Form.Group
-              className="mb-3"
-              controlId="exampleForm.ControlTextarea1"
-            >
-              <Form.Label>Please provide a short note of your reason for flagging this post:</Form.Label>
-              <Form.Control 
-              className="otherFlagReason"
-              placeholder="Why do you want to flag this post?"
-              onChange={getOtherFlagReason} 
-              as="textarea" 
-              rows={3} />
-
-            </Form.Group>
-          </Form>
-                Are you sure about flagging this post?</Modal.Body>
+                <Form>
+                  <Form.Group
+                    className="mb-3"
+                    controlId="exampleForm.ControlTextarea1"
+                  >
+                    <Form.Label>
+                      Please provide a short note of your reason for flagging
+                      this post:
+                    </Form.Label>
+                    <Form.Control
+                      className="otherFlagReason"
+                      placeholder="Why do you want to flag this post?"
+                      onChange={getOtherFlagReason}
+                      as="textarea"
+                      rows={3}
+                    />
+                  </Form.Group>
+                </Form>
+                Are you sure about flagging this post?
+              </Modal.Body>
               <Modal.Footer>
                 <Button variant="secondary" onClick={handleCloseOther}>
                   Cancel
                 </Button>
-                <Button style={{background: 'red'}} variant="primary"  onClick={
-                  () => submitOtherFlagReasonHandler(parseInt(ideaId), token!, user!.id, ideaData.active, new Date())
-                }>
+                <Button
+                  style={{ background: "red" }}
+                  variant="primary"
+                  onClick={() =>
+                    submitOtherFlagReasonHandler(
+                      parseInt(ideaId),
+                      token!,
+                      user!.id,
+                      ideaData.active,
+                      new Date()
+                    )
+                  }
+                >
                   Flag
                 </Button>
               </Modal.Footer>
@@ -361,29 +458,43 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                 <Modal.Title>Flag Confirmation</Modal.Title>
               </Modal.Header>
               <Modal.Body>
-              <Form>
-              <Form.Group
-              className="mb-3"
-              controlId="exampleForm.ControlTextarea1"
-            >
-              <Form.Label>Please provide a short note of your reason for flagging this post:</Form.Label>
-              <Form.Control 
-              className="otherFlagReason"
-              placeholder="Why do you want to flag this post?"
-              onChange={getOtherFlagReason} 
-              as="textarea" 
-              rows={3} />
-
-            </Form.Group>
-          </Form>
-                Are you sure about flagging this post?</Modal.Body>
+                <Form>
+                  <Form.Group
+                    className="mb-3"
+                    controlId="exampleForm.ControlTextarea1"
+                  >
+                    <Form.Label>
+                      Please provide a short note of your reason for flagging
+                      this post:
+                    </Form.Label>
+                    <Form.Control
+                      className="otherFlagReason"
+                      placeholder="Why do you want to flag this post?"
+                      onChange={getOtherFlagReason}
+                      as="textarea"
+                      rows={3}
+                    />
+                  </Form.Group>
+                </Form>
+                Are you sure about flagging this post?
+              </Modal.Body>
               <Modal.Footer>
                 <Button variant="secondary" onClick={handleCloseOther}>
                   Cancel
                 </Button>
-                <Button style={{background: 'red'}} variant="primary"  onClick={
-                  () => submitOtherFlagReasonHandler(parseInt(ideaId), token!, user!.id, ideaData.active, new Date())
-                }>
+                <Button
+                  style={{ background: "red" }}
+                  variant="primary"
+                  onClick={() =>
+                    submitOtherFlagReasonHandler(
+                      parseInt(ideaId),
+                      token!,
+                      user!.id,
+                      ideaData.active,
+                      new Date()
+                    )
+                  }
+                >
                   Flag
                 </Button>
               </Modal.Footer>
@@ -392,9 +503,8 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
             <Card.Body>
               <Row>
                 <Col>
-                <style>
-                 {
-                  `
+                  <style>
+                    {`
                   .canvasjs-chart-credit {
                     display: none;
                   }
@@ -409,9 +519,8 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                     text-decoration:underline;
                     color: grey;
                   }
-                  `
-                 }
-                </style>
+                  `}
+                  </style>
                   <h4 className="h5">Category: {capitalizeString(catTitle)}</h4>
                   {/* <h4 className='h5'>Posted by: {author?.fname}@{author?.address?.streetAddress}</h4> */}
                   {/* <h4 className='h5'>As: {userType}</h4> */}
@@ -494,25 +603,25 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
             </Card.Body>
           </Col>
 
-              {/* Proposal State and Conditional Rendering */}
-              {(confirmProposalState() || confirmProjectState()) && (
-                <Col sm={12} className="my-3">
-                  <h2>Proposal Information</h2>
-                  <p>
-                    {"Proposal has been initialized. Please describe the proposal!"}
-                  </p>
-                </Col>
-              )}
+          {/* Proposal State and Conditional Rendering */}
+          {(confirmProposalState() || confirmProjectState()) && (
+            <Col sm={12} className="my-3">
+              <h2>Proposal Information</h2>
+              <p>
+                {"Proposal has been initialized. Please describe the proposal!"}
+              </p>
+            </Col>
+          )}
 
-              {/* Project State and Conditional Rendering */}
-              {confirmProjectState() && (
-                <Col sm={12} className="my-3">
-                  <h2>Project Information:</h2>
-                  <p>
-                    {projectInfo?.description ||
-                      "Project has been initialized. Please describe the project!"}
-                  </p>
-                </Col>
+          {/* Project State and Conditional Rendering */}
+          {confirmProjectState() && (
+            <Col sm={12} className="my-3">
+              <h2>Project Information:</h2>
+              <p>
+                {projectInfo?.description ||
+                  "Project has been initialized. Please describe the project!"}
+              </p>
+            </Col>
           )}
 
           {shouldDisplayChampionButton() && (
@@ -578,51 +687,65 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
         </Row>
       </Card>
 
-      {proposal && proposalIdea &&
-      <div style={{ marginTop: "2rem" }}>
-        <Card>
+      {proposal && proposalIdea && (
+        <div style={{ marginTop: "2rem" }}>
+          <Card>
             <Card.Header>
               <div className="d-flex">
                 <h4 className="h4 p-2 flex-grow-1">Originating Proposal</h4>
-                <div className="p-2" style={{marginLeft: 'auto', height: '3rem', minWidth: 150}}>
-                </div>
+                <div
+                  className="p-2"
+                  style={{ marginLeft: "auto", height: "3rem", minWidth: 150 }}
+                ></div>
               </div>
             </Card.Header>
             <Card.Body>
-              <Table style={{margin: "0rem"}} hover>
+              <Table style={{ margin: "0rem" }} hover>
                 <thead>
-                <tr>
-                  <th>Author</th>
-                  <th>Proposal</th>
-                </tr>
+                  <tr>
+                    <th>Author</th>
+                    <th>Proposal</th>
+                  </tr>
                 </thead>
                 <tbody>
-                <tr>
-                  <td>
-                    {proposalIdea!.author!.fname} {proposalIdea!.author!.lname}
-                  </td>
-                  <td>
-                    <a href={"/proposals/" + proposal!.id}>
-                      {proposalIdea!.title}
-                    </a>
-                  </td>
-                </tr>
+                  <tr>
+                    <td>
+                      {proposalIdea!.author!.fname}{" "}
+                      {proposalIdea!.author!.lname}
+                    </td>
+                    <td>
+                      <a href={"/proposals/" + proposal!.id}>
+                        {proposalIdea!.title}
+                      </a>
+                    </td>
+                  </tr>
                 </tbody>
               </Table>
             </Card.Body>
-        </Card>
-      </div>
-      }
+          </Card>
+        </div>
+      )}
+      {isEndorsedUsersDataLoading ? (
+        <LoadingSpinner />
+      ) : (
+        endorsedUsers &&
+        endorsedUsers.length > 0 && (
+          <EndorsedUsersSection endorsedUsers={endorsedUsers} />
+        )
+      )}
 
-      {endorsedUsers && endorsedUsers.length > 0 && 
-        <EndorsedUsersSection endorsedUsers={endorsedUsers}/>
-      }
-      
       <Row>
-        <RatingsSection ideaId={ideaId} />
+        <RatingsSection
+          ideaId={ideaId}
+          allRatingsUnderIdea={allRatingsUnderIdea}
+          commentAggregateUnderIdea={commentAggregateUnderIdea}
+        />
       </Row>
       <Row>
-        <CommentsSection ideaId={ideaId} />
+        <CommentsSection
+          ideaId={ideaId}
+          allCommentsUnderIdea={allCommentsUnderIdea}
+        />
       </Row>
     </div>
   );

@@ -16,7 +16,7 @@ import {
   capitalizeFirstLetterEachWord,
   capitalizeString,
 } from "../../lib/utilityFunctions";
-import LoadingSpinner from '../ui/LoadingSpinner';
+import LoadingSpinnerInline from '../ui/LoadingSpinnerInline';
 import CommentsSection from "../partials/SingleIdeaContent/CommentsSection";
 import RatingsSection from "../partials/SingleIdeaContent/RatingsSection";
 import { FeedbackRatingScaleSection, FeedbackRatingYesNoSection } from "../partials/SingleIdeaContent/FeedbackRatingSection";
@@ -51,6 +51,8 @@ import {
 } from "src/lib/api/ideaRoutes";
 import { incrementPostFlagCount } from 'src/lib/api/badPostingBehaviorRoutes';
 import { useCheckIdeaFollowedByUser, useCheckIdeaEndorsedByUser, useCheckIdeaFlaggedByUser, useGetEndorsedUsersByIdea } from "src/hooks/ideaHooks";
+import { useAllRatingsUnderIdea } from "src/hooks/ratingHooks";
+import { useCommentAggregateUnderIdea, useAllCommentsUnderIdea } from "src/hooks/commentHooks";
 import {
   postCreateCollabotator,
   postCreateVolunteer,
@@ -97,8 +99,6 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
     projectInfo,
   } = ideaData;
-
-  const parsedIdeaId = ideaId;
 
   const {
     id: proposalId,
@@ -291,16 +291,20 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
   const [endorsingPost, setEndorsingPost] = useState(false);
   const [endorsedUsers, setEndorsedUsers] = useState<any[]>([]);
   
+  // API hooks for this component
   const {data: isFollowingPost, isLoading: isFollowingPostLoading} = useCheckIdeaFollowedByUser(token, (user ? user.id : user), ideaId);
   const {data: isEndorsingPost, isLoading: isEndorsingPostLoading} = useCheckIdeaEndorsedByUser(token, (user ? user.id : user), ideaId);
   const {data: flagBanData, isLoading: flagBanDataLoading} = useCheckFlagBan(token, (user ? user.id : ""));
   const {data: isFlagged, isLoading: isFlaggedLoading} = useCheckIdeaFlaggedByUser(token, (user ? user.id : user), ideaId);
   const {data: endorsedUsersData, isLoading: isEndorsedUsersDataLoading} = useGetEndorsedUsersByIdea(token, ideaId);
-  
-  const canEndorse = user?.userType == USER_TYPES.BUSINESS || user?.userType == USER_TYPES.COMMUNITY 
-  || user?.userType == USER_TYPES.MUNICIPAL || user?.userType == USER_TYPES.MUNICIPAL_SEG_ADMIN; 
+  // API hooks for children components
+  const allRatingsUnderIdea = useAllRatingsUnderIdea(ideaId);
+  const commentAggregateUnderIdea = useCommentAggregateUnderIdea(ideaId);
+  const allCommentsUnderIdea = useAllCommentsUnderIdea(ideaId, token);
+
+  const canEndorse = user?.userType === USER_TYPES.BUSINESS || user?.userType === USER_TYPES.COMMUNITY 
+  || user?.userType === USER_TYPES.MUNICIPAL || user?.userType === USER_TYPES.MUNICIPAL_SEG_ADMIN; 
   const [showEndorseButton, setShowEndorseButton] = useState(false);
-  const handleHideEndorseButton = () => setShowEndorseButton(false);
 
   useEffect(() => {
     if (!isEndorsingPostLoading) {
@@ -328,7 +332,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     if (!isEndorsedUsersDataLoading) {
       setEndorsedUsers(endorsedUsersData);
     }
-  }, [isEndorsedUsersDataLoading])
+  }, [isEndorsedUsersDataLoading, endorsedUsersData])
 
   const [showFollowButton, setShowFollowButton] = useState(false);
   useEffect(() => {
@@ -414,10 +418,6 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     )
   }
 
-  if (isEndorsingPostLoading || isFollowingPostLoading || flagBanDataLoading || isFlaggedLoading) {
-    return <LoadingSpinner />;
-  }
-
   return (
     <div className="single-idea-content pt-5">
       <style>
@@ -456,7 +456,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                 }</h1>
                 <div style={{display: "flex", minWidth: "16rem", justifyContent: "left", marginTop: "0.5rem"}}>
                   <div>
-                {showFlagButton ? (<ButtonGroup className="mr-2">
+                {flagBanDataLoading ? <LoadingSpinnerInline/> : showFlagButton ? (<ButtonGroup className="mr-2">
                   {!reviewed ? (
                         <DropdownButton id="dropdown-basic-button d-flex" style={{ fontSize: "16px", font: "16px sans-serif" }} title="Flag">
                         <Dropdown.Item eventKey= "Abusive or Inappropriate Language" onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Abusive or Inappropriate Language</Dropdown.Item>
@@ -471,19 +471,17 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                   ) : null}
                   <ButtonGroup className="mr-2">
                     {user && token && showFollowButton ? <Button
-                      // style={{ height: "3rem"}}
                       onClick={async () => await handleFollowUnfollow()}
                     >
                       {followingPost ? "Unfollow" : "Follow"}
-                    </Button> : null}
+                    </Button> : <LoadingSpinnerInline/>}
                   </ButtonGroup>
                   <ButtonGroup className="mr-2">
                     {user && token && showEndorseButton && canEndorse ? <Button
-                      // style={{ height: "3rem"}}
                       onClick={async () => await handleEndorseUnendorse()}
                     >
                       {endorsingPost ? "Unendorse" : "Endorse"}
-                    </Button> : null}
+                    </Button> : <LoadingSpinnerInline/>}
                   </ButtonGroup>
                 </div>
                 </div>
@@ -1351,10 +1349,10 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
       }
 
       <Row>
-        <RatingsSection ideaId={parsedIdeaId} />
+      <RatingsSection ideaId={ideaId} allRatingsUnderIdea={allRatingsUnderIdea} commentAggregateUnderIdea={commentAggregateUnderIdea}/>
       </Row>
       <Row>
-        <CommentsSection ideaId={parsedIdeaId} />
+        <CommentsSection ideaId={ideaId} allCommentsUnderIdea={allCommentsUnderIdea}/>
       </Row>
     </div>
   );

@@ -47,21 +47,6 @@ const RatingInput = ({
     submitRatingMutation(payload);
   };
 
-  // =================== UTILITY FUNCTIONS FOR UI/AGGREGATIONS ==========================
-  // const parseNegativeRatingValue = (val: number): void => {
-  //   if (userHasRated) return;
-
-  //   let parsedVal = -1 * val;
-  //   setRatingValue(parsedVal);
-  // };
-
-  // const parsePositiveRatingValue = (val: number): void => {
-  //   if (userHasRated) return;
-
-  //   let parsedVal = val - 1;
-  //   setRatingValue(parsedVal);
-  // };
-
   // Loads user submitted rating
   useEffect(() => {
     setRatingValue(userSubmittedRating ?? 0);

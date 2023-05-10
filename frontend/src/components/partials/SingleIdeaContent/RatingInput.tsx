@@ -47,21 +47,6 @@ const RatingInput = ({
     submitRatingMutation(payload);
   };
 
-  // =================== UTILITY FUNCTIONS FOR UI/AGGREGATIONS ==========================
-  // const parseNegativeRatingValue = (val: number): void => {
-  //   if (userHasRated) return;
-
-  //   let parsedVal = -1 * val;
-  //   setRatingValue(parsedVal);
-  // };
-
-  // const parsePositiveRatingValue = (val: number): void => {
-  //   if (userHasRated) return;
-
-  //   let parsedVal = val - 1;
-  //   setRatingValue(parsedVal);
-  // };
-
   // Loads user submitted rating
   useEffect(() => {
     setRatingValue(userSubmittedRating ?? 0);
@@ -92,6 +77,8 @@ const RatingInput = ({
   };
 
   return (
+    <div>
+    {userHasRated ? (<h2 className="text-center" >You have already rated this idea</h2>): (
     <Container className="">
       <style>
         {`
@@ -102,27 +89,6 @@ const RatingInput = ({
       </style>
       <h2 className="text-center">Submit Your Rating:</h2>
       <Row>
-        {/* <Col xs={12} className="text-center">
-          <Ratings
-            rating={-1 * ratingValue}
-            widgetRatedColors="gold"
-            widgetHoverColors="gold"
-            changeRating={parseNegativeRatingValue}
-          >
-            <Ratings.Widget />
-            <Ratings.Widget />
-          </Ratings>
-          <Ratings
-            rating={ratingValue < 0 ? 0 : ratingValue + 1}
-            widgetRatedColors="gold"
-            widgetHoverColors="gold"
-            changeRating={parsePositiveRatingValue}
-          >
-            <Ratings.Widget widgetHoverColor="gold" widgetRatedColor="gold" />
-            <Ratings.Widget />
-            <Ratings.Widget />
-          </Ratings>
-        </Col> */}
         <Col>
           <div>
             <FormControl
@@ -200,6 +166,8 @@ const RatingInput = ({
         </Col>
       </Row>
     </Container>
+    )}
+    </div>
   );
 };
 

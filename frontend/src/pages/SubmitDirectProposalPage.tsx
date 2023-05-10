@@ -6,7 +6,6 @@ import LoadingSpinner from "../components/ui/LoadingSpinner";
 import { useCategories } from "../hooks/categoryHooks";
 // import { getUserHomeSegmentInfo } from 'src/lib/api/userSegmentRoutes';
 import {
-  useAllUserSegments,
   useAllUserSegmentsRefined,
 } from "src/hooks/userSegmentHooks";
 

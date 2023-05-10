@@ -1,9 +1,6 @@
-import React, { useEffect, useState } from "react";
 import { Card, Col, Container, Row } from "react-bootstrap";
-import { useQueryClient } from "react-query";
 import { CanvasJSChart } from "../../../lib/canvasjs";
 import {
-  IComment,
   ICommentAggregateCount,
 } from "../../../lib/types/data/comment.type";
 import {

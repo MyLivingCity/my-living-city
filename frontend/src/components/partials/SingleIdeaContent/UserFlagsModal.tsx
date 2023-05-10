@@ -1,11 +1,9 @@
 import React, { useState } from 'react'
-import { Button, Card, Container, Form, Modal, Row, Table } from 'react-bootstrap';
-import IdeaCommentTile from 'src/components/tiles/IdeaComment/IdeaCommentTile';
+import { Button, Card, Container, Modal, Row, Table } from 'react-bootstrap';
 import { ICommentFlag, IFlag } from 'src/lib/types/data/flag.type';
 import { IIdeaWithAggregations } from 'src/lib/types/data/idea.type';
 import { IProposalWithAggregations } from 'src/lib/types/data/proposal.type';
 import { IUser } from 'src/lib/types/data/user.type';
-import { ICreateCommentInput } from 'src/lib/types/input/createComment.input';
 import { IComment } from '../../../lib/types/data/comment.type';
 
 interface FlagModalProps {

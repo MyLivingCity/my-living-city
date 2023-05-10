@@ -2,12 +2,8 @@ import React, { useState } from 'react'
 import { Card, Table, Dropdown, Container, Button, Form, NavDropdown } from 'react-bootstrap';
 import { updateUser } from 'src/lib/api/userRoutes';
 import { USER_TYPES } from 'src/lib/constants';
-import { IComment } from 'src/lib/types/data/comment.type';
 import { ICommentFlag, IFlag } from 'src/lib/types/data/flag.type';
-import { IIdeaWithAggregations } from 'src/lib/types/data/idea.type';
-import { IProposalWithAggregations } from 'src/lib/types/data/proposal.type';
 import { IUser } from 'src/lib/types/data/user.type';
-import UserFlagsModal from '../partials/SingleIdeaContent/UserFlagsModal';
 import { UserSegmentInfoCard } from '../partials/UserSegmentInfoCard';
 
 

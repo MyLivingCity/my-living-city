@@ -1,6 +1,5 @@
 import { useContext, useEffect, useState } from "react";
 import { Button, Col, Container, Row, Alert } from "react-bootstrap";
-import { useParams } from "react-router";
 import { UserProfileContext } from "../../../contexts/UserProfile.Context";
 // https://github.com/microsoft/TypeScript/issues/22217
 // https://github.com/ekeric13/react-ratings-declarative

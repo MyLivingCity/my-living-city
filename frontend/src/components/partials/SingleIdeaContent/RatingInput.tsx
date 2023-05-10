@@ -77,6 +77,8 @@ const RatingInput = ({
   };
 
   return (
+    <div>
+    {userHasRated ? (<h2 className="text-center" >You have already rated this idea</h2>): (
     <Container className="">
       <style>
         {`
@@ -164,6 +166,8 @@ const RatingInput = ({
         </Col>
       </Row>
     </Container>
+    )}
+    </div>
   );
 };
 

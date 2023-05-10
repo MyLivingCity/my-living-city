@@ -13,10 +13,7 @@ import React, { useContext, useEffect, useState } from "react";
 import SimpleMap from "../map/SimpleMap";
 import {
   capitalizeFirstLetterEachWord,
-  capitalizeString,
   refactorStateArray,
-  storeTokenExpiryInLocalStorage,
-  storeUserAndTokenInLocalStorage,
   wipeLocalStorage,
 } from "src/lib/utilityFunctions";
 import {

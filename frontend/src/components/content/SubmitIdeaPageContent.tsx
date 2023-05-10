@@ -7,15 +7,11 @@ import {
   Form,
   Button,
   Alert,
-  Image,
 } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
-// import { getUserHomeSegmentInfo, getUserSchoolSegmentInfo, getUserWorkSegmentInfo } from 'src/lib/api/userSegmentRoutes';
-import { API_BASE_URL, TEXT_INPUT_LIMIT } from "src/lib/constants";
+import { TEXT_INPUT_LIMIT } from "src/lib/constants";
 import {
-  ISegment,
   ISegmentData,
-  ISubSegment,
 } from "src/lib/types/data/segment.type";
 import { UserProfileContext } from "../../contexts/UserProfile.Context";
 import { postCreateIdea } from "../../lib/api/ideaRoutes";
@@ -25,14 +21,11 @@ import { ICategory } from "../../lib/types/data/category.type";
 import { ICreateIdeaInput } from "../../lib/types/input/createIdea.input";
 import { IFetchError } from "../../lib/types/types";
 import {
-  capitalizeFirstLetterEachWord,
   capitalizeString,
   handlePotentialAxiosError,
 } from "../../lib/utilityFunctions";
 import { CONTENT, Toastie } from "../partials/LandingContent/CategoriesSection";
 import ImageUploader from "react-images-upload";
-import ReactCrop from "react-image-crop";
-import "react-image-crop/dist/ReactCrop.css";
 interface SubmitIdeaPageContentProps {
   categories: ICategory[] | undefined;
   segData: ISegmentData[];

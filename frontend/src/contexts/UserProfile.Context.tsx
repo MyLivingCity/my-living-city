@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import React, { createContext, useEffect, useState } from 'react'
 import { useUserWithJwt } from '../hooks/userHooks';
 import { IUser } from '../lib/types/data/user.type';
 import { ILoginWithEmailAndPass } from '../lib/types/input/loginWithEmailAndPass.input';

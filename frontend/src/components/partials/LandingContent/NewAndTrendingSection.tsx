@@ -1,19 +1,16 @@
-import { Container, Row, Col, Carousel, Modal, Collapse, Accordion } from "react-bootstrap";
+import { Container, Col, Carousel, Modal, Collapse} from "react-bootstrap";
 import PlaceholderIdeaTile from "src/components/tiles/PlaceholderIdeaTile";
 import { IIdeaWithAggregations } from "../../../lib/types/data/idea.type";
 import IdeaTile from "../../tiles/IdeaTile";
 import {BsFilter} from "react-icons/bs";
 import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
 import CSS from "csstype";
-import { Button } from "react-bootstrap";
 import React, { useState } from "react";
-import { ICategory } from "src/lib/types/data/category.type";
 import { useCategories} from "src/hooks/categoryHooks";
 import {useAllProposals} from "src/hooks/proposalHooks";
 import { capitalizeFirstLetterEachWord } from "./../../../lib/utilityFunctions";
 import { useAllSuperSegments, useAllSegments } from "./../../../hooks/segmentHooks";
 import ProposalTile from "../../tiles/ProposalTile";
-import {IProposalWithAggregations} from "../../../lib/types/data/proposal.type";
 
 
 interface NewAndTrendingProps {

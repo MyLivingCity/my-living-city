@@ -52,7 +52,7 @@ const Notifications: React.FC<NotificationPageContentProps> = ({
  `
   const [isDismissed, setIsDismissed] = useState(false);
   const { user, token } = useContext(UserProfileContext);
-
+  console.log(isLoading)
   if (isLoading) {
     return (<Container
       className="system"
@@ -226,9 +226,9 @@ const Notifications: React.FC<NotificationPageContentProps> = ({
         {!isDismissed && (
           <Table>
             <tbody key={Math.random()}>
-              {isLoading ? notifications.map((notification, index) => {
+              {notifications.map((notification, index) => {
                 return <>{notification}</>;
-              }) : <LoadingSpinnerInline/>}
+              })}
             </tbody>
           </Table>
         )}

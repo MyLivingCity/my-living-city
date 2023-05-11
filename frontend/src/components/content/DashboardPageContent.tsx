@@ -131,7 +131,7 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
         <div className="" style={{ margin: "0rem 1rem 3rem 1rem" }}>
           <Button
             onClick={() => (window.location.href = "/dashboard/my-posts")}
-            size="lg"
+            size="lg" disabled={pLoading || uLoading}
           >
             See More
           </Button>

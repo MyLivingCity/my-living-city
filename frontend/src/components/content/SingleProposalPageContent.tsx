@@ -474,14 +474,14 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                       onClick={async () => await handleFollowUnfollow()}
                     >
                       {followingPost ? "Unfollow" : "Follow"}
-                    </Button> : <LoadingSpinnerInline/>}
+                    </Button> : null}
                   </ButtonGroup>
                   <ButtonGroup className="mr-2">
                     {user && token && showEndorseButton && canEndorse ? <Button
                       onClick={async () => await handleEndorseUnendorse()}
                     >
                       {endorsingPost ? "Unendorse" : "Endorse"}
-                    </Button> : <LoadingSpinnerInline/>}
+                    </Button> : null}
                   </ButtonGroup>
                 </div>
                 </div>

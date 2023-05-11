@@ -1,15 +1,9 @@
 import React from "react";
-import { Container, Row, Spinner, Button, Carousel } from "react-bootstrap";
-import { IIdeaWithAggregations } from "../../lib/types/data/idea.type";
-import { IFetchError } from "../../lib/types/types";
+import { Container, Row, Button} from "react-bootstrap";
 import NewAndTrendingSection from "../partials/LandingContent/NewAndTrendingSection";
 import MyPosts from "../partials/DashboardContent/MyPosts";
-
-import AdsSection from "../partials/LandingContent/AdsSection"; //
-import { AdsSectionPage } from "src/pages/AdsSectionPage";
 import Notifications from "../partials/DashboardContent/Notifications";
 import SystemUpdates from "../partials/DashboardContent/SystemUpdates";
-import LoadingSpinner from "../ui/LoadingSpinner";
 import { useIdeasWithBreakdown, useIdeasHomepage, useUserFollowedIdeas, useUserIdeas, useUserEndorsedIdeas } from "../../hooks/ideaHooks";
 import { IUser } from "src/lib/types/data/user.type";
 import { FindBanDetails, FindUndismissedPostBans, FindUndismissedCommentBans } from "src/hooks/banHooks";
@@ -101,66 +95,78 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
     user.userType === USER_TYPES.MUNICIPAL
   );
 
-  if ( ideaLoading || iLoading || uLoading || pLoading || userFollowedLoading || userEndorsedLoading || userBannedDataLoading || commentLoading || undismissedPostBansLoading || undismissedCommentBansLoading || quarantinePostNotificationsLoading) {
-    return <LoadingSpinner />;
-  }
-
   if (ideaError || iError || iIsError || uError || pError || userFollowedError || (canEndorse && userEndorsedError) || userBannedDataError || commentError || undismissedPostBansError || undismissedCommentBansError || quarantinePostNotificationsError) {
     return <div>Error when fetching necessary data</div>;
   }
-
-
-  const userIdeasWithoutProposals = userIdeaData!?.filter((idea) => {
-    return !pData?.some((proposal) => {
-      return proposal.ideaId === idea.id
-    })
-  })
-
-  console.log(userIdeaData!);
   
   return (
     <Container className="landing-page-content">
       <Row as="article" className="featured"></Row>
       <Row as="article" className="system-messages">
-        <Notifications userIdeas={userIdeaData} userBanInfo={userBannedData} userComments={commentData} userPostBans={undismissedPostBansData} userCommentBans={undismissedCommentBansData} userQuarantineNotifications={quarantinePostNotifications}/>
+        <Notifications
+          isLoading={
+            uLoading ||
+            userBannedDataLoading ||
+            commentLoading ||
+            undismissedPostBansLoading ||
+            undismissedCommentBansLoading ||
+            quarantinePostNotificationsLoading
+          }
+          userIdeas={userIdeaData}
+          userBanInfo={userBannedData}
+          userComments={commentData}
+          userPostBans={undismissedPostBansData}
+          userCommentBans={undismissedCommentBansData}
+          userQuarantineNotifications={quarantinePostNotifications}
+        />
       </Row>
       <Row as="article" className="new-and-trending">
-        <MyPosts 
-          userIdeas={userIdeaData!} 
-          userProposals={pData!}
-          numPosts={6} 
-          isDashboard={true} />
+        <MyPosts
+          isLoading={pLoading || uLoading}
+          userIdeas={userIdeaData}
+          userProposals={pData}
+          numPosts={6}
+          isDashboard={true}
+        />
         <div className="" style={{ margin: "0rem 1rem 3rem 1rem" }}>
           <Button
             onClick={() => (window.location.href = "/dashboard/my-posts")}
-            size="lg"
+            size="lg" disabled={pLoading || uLoading}
           >
             See More
           </Button>
         </div>
       </Row>
-      <Row as="article" className="new-and-trending">
-        <NewAndTrendingSection topIdeas={topIdeasData!} isDashboard={true} />
-      </Row>
-      <br/><br/>
+
       <Row as="article" className="system-updates">
-      <SystemUpdates userFollowedideas={
+        <SystemUpdates
+          userFollowedideas={
             // Concat userFollowedIdeaData and userEndorsedIdeaData w/o duplicates
-            ideaData!.filter((idea) => {
+            (ideaData ?? []).filter((idea) => {
               return (
-                userFollowedIdeaData!.some((followedIdea) => {
+                (userFollowedIdeaData ?? []).some((followedIdea) => {
                   return followedIdea.id === idea.id;
                 }) ||
-                userEndorsedIdeaData!.some((endorsedIdea) => {
+                (userEndorsedIdeaData ?? []).some((endorsedIdea) => {
                   return endorsedIdea.id === idea.id;
                 })
               );
             })
           }
           proposals={pData!}
-          endorser={canEndorse} 
-          />
-        </Row>
+          endorser={canEndorse}
+          isLoading={ideaLoading || pLoading || userFollowedLoading || userEndorsedLoading}
+        />
+      </Row>
+      <br />
+      <br />
+      <Row as="article" className="new-and-trending">
+        <NewAndTrendingSection
+          topIdeas={topIdeasData!}
+          isDashboard={true}
+          isLoading={iLoading}
+        />
+      </Row>
     </Container>
   );
 };

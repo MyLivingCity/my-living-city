@@ -2,10 +2,8 @@ import React, { useState } from 'react'
 import { Button, Container, Card, Modal, Row } from 'react-bootstrap';
 import { IUser } from 'src/lib/types/data/user.type';
 import { FindBanDetailsWithStaleTime } from 'src/hooks/banHooks';
-import { getMostRecentUserBan, updateUserBan } from 'src/lib/api/banRoutes';
+import { updateUserBan } from 'src/lib/api/banRoutes';
 import { updateUser } from 'src/lib/api/userRoutes';
-import { date } from 'yup';
-import { IBanUser } from 'src/lib/types/data/banUser.type';
 
 interface UnbanModalProps {
     setShow: React.Dispatch<React.SetStateAction<boolean>>;

@@ -1,12 +1,10 @@
 import React, { useState } from 'react'
 import { Button, Container, Form, Modal, Row, Col } from 'react-bootstrap';
 import { IComment } from 'src/lib/types/data/comment.type';
-import { IUser } from 'src/lib/types/data/user.type';
 import { useFormik } from "formik";
 import { IBanCommentInput } from 'src/lib/types/input/banComment.input';
 import { postCreateCommentBan } from 'src/lib/api/banRoutes';
 import { updateCommentStatus } from 'src/lib/api/commentRoutes';
-import { string } from 'yup';
 
 interface BanModalProps {
     setShow: React.Dispatch<React.SetStateAction<boolean>>;

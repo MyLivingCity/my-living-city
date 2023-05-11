@@ -4,11 +4,9 @@ import { UserManagementContent } from 'src/components/content/UserManagementCont
 import { UserProfileContext } from '../contexts/UserProfile.Context';
 import { useAllUsers } from 'src/hooks/userHooks';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
-import { useCategories } from '../hooks/categoryHooks';
 import { useAllCommentFlags, useAllFlags } from 'src/hooks/flagHooks';
 import { IUser } from 'src/lib/types/data/user.type';
 import { ICommentFlag, IFlag } from 'src/lib/types/data/flag.type';
-import { UserManagementContentLegacy } from 'src/components/content/UserManagementContentLegacy';
 import { useIdeasWithBreakdown } from 'src/hooks/ideaHooks';
 import { useProposalsWithBreakdown } from 'src/hooks/proposalHooks';
 import { useAllComments } from 'src/hooks/commentHooks';

@@ -9,7 +9,6 @@ import {
   Form,
   Modal,
   Alert,
-  Accordion,
   Table, ButtonGroup,
 } from "react-bootstrap";
 import { IIdeaWithRelationship } from "../../lib/types/data/idea.type";
@@ -17,7 +16,7 @@ import {
   capitalizeFirstLetterEachWord,
   capitalizeString,
 } from "../../lib/utilityFunctions";
-import LoadingSpinner from '../ui/LoadingSpinner';
+import LoadingSpinnerInline from '../ui/LoadingSpinnerInline';
 import CommentsSection from "../partials/SingleIdeaContent/CommentsSection";
 import RatingsSection from "../partials/SingleIdeaContent/RatingsSection";
 import { FeedbackRatingScaleSection, FeedbackRatingYesNoSection } from "../partials/SingleIdeaContent/FeedbackRatingSection";
@@ -38,32 +37,30 @@ import {
 import ChampionSubmit from "../partials/SingleIdeaContent/ChampionSubmit";
 import React, { useContext, useEffect, useState } from "react";
 import { API_BASE_URL, USER_TYPES } from "src/lib/constants";
-import Popup from "../content/Popup";
 import { UserProfileContext } from "../../contexts/UserProfile.Context";
 import { IFetchError } from "../../lib/types/types";
 import { useFormik } from "formik";
-import { useHistory } from "react-router-dom";
 import "react-image-crop/dist/ReactCrop.css";
 import { handlePotentialAxiosError } from "../../lib/utilityFunctions";
 import { 
-  postCreateIdea, 
   followIdeaByUser, 
-  isIdeaFollowedByUser, 
   unfollowIdeaByUser, 
   updateIdeaStatus, 
   endorseIdeaByUser, 
-  isIdeaEndorsedByUser, 
   unendorseIdeaByUser,
 } from "src/lib/api/ideaRoutes";
 import { incrementPostFlagCount } from 'src/lib/api/badPostingBehaviorRoutes';
-import { useCheckIdeaFollowedByUser, useCheckIdeaEndorsedByUser, useCheckIdeaFlaggedByUser } from "src/hooks/ideaHooks";
+import { useCheckIdeaFollowedByUser, useCheckIdeaEndorsedByUser, useCheckIdeaFlaggedByUser, useGetEndorsedUsersByIdea } from "src/hooks/ideaHooks";
+import { useAllRatingsUnderIdea } from "src/hooks/ratingHooks";
+import { useCommentAggregateUnderIdea, useAllCommentsUnderIdea } from "src/hooks/commentHooks";
 import {
   postCreateCollabotator,
   postCreateVolunteer,
   postCreateDonor,
 } from "src/lib/api/communityRoutes";
-import { createFlagUnderIdea, updateFalseFlagIdea, compareIdeaFlagsWithThreshold } from "src/lib/api/flagRoutes";
+import { createFlagUnderIdea, compareIdeaFlagsWithThreshold } from "src/lib/api/flagRoutes";
 import { useCheckFlagBan } from 'src/hooks/flagHooks';
+import EndorsedUsersSection from '../partials/SingleIdeaContent/EndorsedUsersSection';
 
 interface SingleIdeaPageContentProps {
   ideaData: IIdeaWithRelationship;
@@ -77,11 +74,11 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
   ideaId,
 }) => {
   const {
-    title,
-    description,
-    requirements,
-    proposal_role,
-    proposal_benefits,
+    title: titleText,
+    description: descriptionText,
+    requirements: proposalText,
+    proposal_role: proposorText,
+    proposal_benefits: benefitText,
     imagePath,
     userType,
     communityImpact,
@@ -103,82 +100,6 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     projectInfo,
   } = ideaData;
 
-  const parsedIdeaId = ideaId;
-  // let descriptionText = description;
-
-  let reducedTitle = title.substring(0, 75) + "..."
-
-  let reducedText = description.substring(0, 250) + "..."
-
-  let reducedTextProposalGoal = requirements.substring(0, 250) + "..."
-
-  let reducedTextBenefits = proposal_benefits.substring(0, 250) + "..."
-
-  let reducedTextProposorInfo = proposal_role.substring(0, 250) + "..."
-
-  const [titleText, setTitleText] = useState(reducedTitle);
-  const [descriptionText, setDescriptionText] = useState(reducedText);
-  const [proposalText, setProposalText] = useState(reducedTextProposalGoal);
-  const [benefitText, setBenefitsText] = useState(reducedTextBenefits);
-  const [proposorText, setProposorText] = useState(reducedTextProposorInfo);
-  const [expandTitle, setExpandTitle] = useState(false);
-  const [readMore, setReadmore] = useState('Read More');
-  const [readLess, setReadLess] = useState('Read Less');
-  const [expanded, setExpanded] = useState(false)
-  const [expandedGoal, setExpandedGoal] = useState(false)
-  const [expandedBenefits, setExpandedBenefits] = useState(false)
-  const [expandedProposorInfo, setExpandedProposorInfo] = useState(false)
-
-  const handleExpandTitle = () => {
-    setExpandTitle(!expandTitle);
-    {expandTitle ? setTitleText(reducedTitle) : setTitleText(title)}
-  }
-
-  const expandText = () => {
-    setDescriptionText(description);
-    setExpanded(true);
-  }
-
-  const reduceText = () => {
-    setDescriptionText(reducedText);
-    setExpanded(false);
-
-  }
-
-  const expandTextGoal = () => {
-    setProposalText(requirements);
-    setExpandedGoal(true);
-  }
-
-  const reduceTextGoal = () => {
-    setProposalText(reducedTextProposalGoal);
-    setExpandedGoal(false);
-
-  }
-
-  const expandTextBenefits = () => {
-    setBenefitsText(proposal_benefits);
-    setExpandedBenefits(true);
-  }
-
-  const reduceTextBenefits = () => {
-    setBenefitsText(reducedTextBenefits);
-    setExpandedBenefits(false);
-
-  }
-
-  const expandTextProposor = () => {
-    setProposorText(proposal_role);
-    setExpandedProposorInfo(true);
-  }
-
-  const reduceTextProposor = () => {
-    setProposorText(reducedTextProposorInfo);
-    setExpandedProposorInfo(false);
-
-  }
-
-
   const {
     id: proposalId,
     suggestedIdeas,
@@ -188,7 +109,6 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     needCollaborators,
     needVolunteers,
     needDonations,
-    needFeedback,
     needSuggestions,
     location,
     feedback1,
@@ -214,16 +134,8 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
   // const shareUrl = 'http://github.com';
   // const shareUrl = 'https://app.mylivingcity.org'
   const shareUrl = window.location.href;
-  const shareTitle = `My Living City Idea! ${title}`;
+  const shareTitle = `My Living City Idea! ${titleText}`;
 
-  /**
-   * Checks to see if the Idea's state is of Proposal and if the proposal information
-   * needed to render is available in an object.
-   * @returns { boolean } Proposal information and state is valid
-   */
-  const confirmProposalState = (): boolean => {
-    return state === "PROPOSAL";
-  };
 
   /**
    * Checks to see if the Idea's state is of Project and if the project information
@@ -275,7 +187,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
       setError(null);
       setIsLoading(true);
       setTimeout(() => console.log("timeout"), 5000);
-      const res = await postCreateCollabotator(
+      await postCreateCollabotator(
         proposalId,
         values,
         user!.banned,
@@ -302,7 +214,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
       setError(null);
       setIsLoading(true);
       setTimeout(() => console.log("timeout"), 5000);
-      const res = await postCreateVolunteer(
+      await postCreateVolunteer(
         proposalId,
         values,
         user!.banned,
@@ -328,7 +240,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
       setError(null);
       setIsLoading(true);
       setTimeout(() => console.log("timeout"), 5000);
-      const res = await postCreateDonor(
+      await postCreateDonor(
         proposalId,
         values,
         user!.banned,
@@ -377,16 +289,23 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
   const [followingPost, setFollowingPost] = useState(false);
   const [endorsingPost, setEndorsingPost] = useState(false);
-
+  const [endorsedUsers, setEndorsedUsers] = useState<any[]>([]);
+  
+  // API hooks for this component
   const {data: isFollowingPost, isLoading: isFollowingPostLoading} = useCheckIdeaFollowedByUser(token, (user ? user.id : user), ideaId);
   const {data: isEndorsingPost, isLoading: isEndorsingPostLoading} = useCheckIdeaEndorsedByUser(token, (user ? user.id : user), ideaId);
   const {data: flagBanData, isLoading: flagBanDataLoading} = useCheckFlagBan(token, (user ? user.id : ""));
   const {data: isFlagged, isLoading: isFlaggedLoading} = useCheckIdeaFlaggedByUser(token, (user ? user.id : user), ideaId);
+  const {data: endorsedUsersData, isLoading: isEndorsedUsersDataLoading} = useGetEndorsedUsersByIdea(token, ideaId);
+  // API hooks for children components
+  const allRatingsUnderIdea = useAllRatingsUnderIdea(ideaId);
+  const commentAggregateUnderIdea = useCommentAggregateUnderIdea(ideaId);
+  const allCommentsUnderIdea = useAllCommentsUnderIdea(ideaId, token);
 
-  const canEndorse = user?.userType == USER_TYPES.BUSINESS || user?.userType == USER_TYPES.COMMUNITY 
-  || user?.userType == USER_TYPES.MUNICIPAL || user?.userType == USER_TYPES.MUNICIPAL_SEG_ADMIN; 
+  const canEndorse = user?.userType === USER_TYPES.BUSINESS || user?.userType === USER_TYPES.COMMUNITY 
+  || user?.userType === USER_TYPES.MUNICIPAL || user?.userType === USER_TYPES.MUNICIPAL_SEG_ADMIN; 
   const [showEndorseButton, setShowEndorseButton] = useState(false);
-  const handleHideEndorseButton = () => setShowEndorseButton(false);
+
   useEffect(() => {
     if (!isEndorsingPostLoading) {
       setEndorsingPost(isEndorsingPost.isEndorsed);
@@ -395,16 +314,25 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
   }, [isEndorsingPostLoading, isEndorsingPost])
 
   const handleEndorseUnendorse = async () => {
-    let res;
     if (user && token) {
       if (endorsingPost) {
-        res = await unendorseIdeaByUser(token, user.id, ideaId);
+        await unendorseIdeaByUser(token, user.id, ideaId);
+        const newEndorsedUsers = endorsedUsers.filter(u => u.id !== user.id)
+        setEndorsedUsers(newEndorsedUsers);
       } else {
-        res = await endorseIdeaByUser(token, user.id, ideaId);
+        await endorseIdeaByUser(token, user.id, ideaId);
+        const newEndorsedUsers = [...endorsedUsers, user];
+        setEndorsedUsers(newEndorsedUsers);
       }
       setEndorsingPost(!endorsingPost);
     }
   }
+
+  useEffect(() => {
+    if (!isEndorsedUsersDataLoading) {
+      setEndorsedUsers(endorsedUsersData);
+    }
+  }, [isEndorsedUsersDataLoading, endorsedUsersData])
 
   const [showFollowButton, setShowFollowButton] = useState(false);
   useEffect(() => {
@@ -417,11 +345,11 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
   useEffect(() => {
     if (!flagBanDataLoading) {
-      if (flagBanData?.flag_ban || showFlagButton == false) {
+      if (flagBanData?.flag_ban || showFlagButton === false) {
         handleHideFlagButton();
       }
     }
-  }, [flagBanDataLoading, flagBanData])
+  }, [flagBanDataLoading, flagBanData, showFlagButton])
 
   useEffect(() => {
     if (!isFlaggedLoading) {
@@ -434,12 +362,11 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
   }, [isFlaggedLoading, isFlagged])
 
   const handleFollowUnfollow = async () => {
-    let res;
     if (user && token) {
       if (followingPost) {
-        res = await unfollowIdeaByUser(token, user.id, ideaId);
+        await unfollowIdeaByUser(token, user.id, ideaId);
       } else {
-        res = await followIdeaByUser(token, user.id, ideaId);
+        await followIdeaByUser(token, user.id, ideaId);
       }
       setFollowingPost(!followingPost);
     }
@@ -491,10 +418,6 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     )
   }
 
-  if (isEndorsingPostLoading || isFollowingPostLoading || flagBanDataLoading || isFlaggedLoading) {
-    return <LoadingSpinner />;
-  }
-
   return (
     <div className="single-idea-content pt-5">
       <style>
@@ -525,15 +448,15 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
         <Row>
           <Col sm={12}>
             <Card.Header>
-              <div className="d-flex justify-content-between">
+              <div className="d-flex flex-column justify-content-between">
                 <h1 className="h1">{
-                  title.length > 75 ?
-                  title.substring(0, 75) + "..." :
-                  title
+                  titleText.length > 75 ?
+                  titleText.substring(0, 75) + "..." :
+                  titleText
                 }</h1>
-                <div style={{display: "flex", minWidth: "16rem", justifyContent: "center", marginTop: "0.5rem"}}>
+                <div style={{display: "flex", minWidth: "16rem", justifyContent: "left", marginTop: "0.5rem"}}>
                   <div>
-                {showFlagButton ? (<ButtonGroup className="mr-2">
+                {flagBanDataLoading ? <LoadingSpinnerInline/> : showFlagButton ? (<ButtonGroup className="mr-2">
                   {!reviewed ? (
                         <DropdownButton id="dropdown-basic-button d-flex" style={{ fontSize: "16px", font: "16px sans-serif" }} title="Flag">
                         <Dropdown.Item eventKey= "Abusive or Inappropriate Language" onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Abusive or Inappropriate Language</Dropdown.Item>
@@ -548,7 +471,6 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                   ) : null}
                   <ButtonGroup className="mr-2">
                     {user && token && showFollowButton ? <Button
-                      // style={{ height: "3rem"}}
                       onClick={async () => await handleFollowUnfollow()}
                     >
                       {followingPost ? "Unfollow" : "Follow"}
@@ -556,7 +478,6 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                   </ButtonGroup>
                   <ButtonGroup className="mr-2">
                     {user && token && showEndorseButton && canEndorse ? <Button
-                      // style={{ height: "3rem"}}
                       onClick={async () => await handleEndorseUnendorse()}
                     >
                       {endorsingPost ? "Unendorse" : "Endorse"}
@@ -666,76 +587,35 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                   ) : null}
 
                   <br />
-                  {proposal_role.length > 100 && !expandedProposorInfo ? (
                     <p>
                       <strong>Proposer Info:</strong> {proposorText}<br />
-                      {<b onClick={expandTextProposor}>{readMore}</b>}
                     </p>
-                  ) : <p>
-                    <strong>Proposer Info:</strong> {proposal_role}<br />
-                    {expandedProposorInfo && <b onClick={reduceTextProposor}>{readLess}</b>}
-                  </p>}
-                  {description.length > 100 && !expanded ? (
                     <p>
                       <strong>Description:</strong> {descriptionText}<br />
-                      {<b onClick={expandText}>{readMore}</b>}
                     </p>
-
-                  ) : <p>
-                    <strong>Description:</strong> {description} <br />
-                    {expanded && <b onClick={reduceText}>{readLess}</b>}
-                  </p>}
-                  {proposal_benefits.length > 100 && !expandedBenefits ? (
                     <p>
                       <strong>Community Benefits:</strong> {benefitText}<br />
-                      <b onClick={expandTextBenefits}>{readMore}</b>
                     </p>
-                  ) : <p>
-                    <strong>Community Benefits:</strong> {proposal_benefits}<br />
-                    {expandedBenefits && <b onClick={reduceTextBenefits}>{readLess}</b>}
-                  </p>}
 
-                  {requirements.length > 100 && !expandedGoal ? (
                     <p>
-                      <strong>Requirements:</strong> {reducedTextProposalGoal}<br />
-                      <b id="more-text" onClick={expandTextGoal}>{readMore}</b>
+                      <strong>Requirements:</strong> {proposalText}<br />
                     </p>
-
-                  ) : <p>
-                    <strong>Requirements:</strong> {requirements} <br />
-                    {expandedGoal && <b id="more-text" onClick={reduceTextGoal}>{readLess}</b>}
-                  </p>}
-
-                  {communityImpact ? (
                     <p>
                       <strong>Community and Place:</strong> {communityImpact}
                     </p>
-                  ) : null}
-                  {natureImpact ? (
                     <p>
                       <strong>Nature and Food Security:</strong> {natureImpact}
                     </p>
-                  ) : null}
-                  {artsImpact ? (
                     <p>
-                      <strong>Arts, Culture, and Education:</strong>{" "}
-                      {artsImpact}
+                      <strong>Arts, Culture, and Education:</strong> {artsImpact}
                     </p>
-                  ) : null}
-                  {energyImpact ? (
                     <p>
                       <strong>Water and Energy:</strong> {energyImpact}
                     </p>
-                  ) : null}
-                  {manufacturingImpact ? (
                     <p>
-                      <strong>Manufacturing and Waste:</strong>{" "}
-                      {manufacturingImpact
-                        ? capitalizeString(manufacturingImpact)
-                        : ""}
+                      <strong>Manufacturing and Waste:</strong> 
+                      {manufacturingImpact ? capitalizeString(manufacturingImpact) : ""}
                     </p>
-                  ) : null}
-
                 </Col>
               </Row>
             </Card.Body>
@@ -1459,18 +1339,20 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                     </Card.Body>
                   </Card>
                   ) : null}
-
-            
             </Card.Body>
           </Card>
         </div>
       )}
 
+      {endorsedUsers && endorsedUsers.length > 0 && 
+        <EndorsedUsersSection endorsedUsers={endorsedUsers}/>
+      }
+
       <Row>
-        <RatingsSection ideaId={parsedIdeaId} />
+      <RatingsSection ideaId={ideaId} allRatingsUnderIdea={allRatingsUnderIdea} commentAggregateUnderIdea={commentAggregateUnderIdea}/>
       </Row>
       <Row>
-        <CommentsSection ideaId={parsedIdeaId} />
+        <CommentsSection ideaId={ideaId} allCommentsUnderIdea={allCommentsUnderIdea}/>
       </Row>
     </div>
   );

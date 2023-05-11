@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { Button, Col, Container, Row, Alert } from "react-bootstrap";
+import { Button, Container, Row, Alert } from "react-bootstrap";
 import { UserProfileContext } from "src/contexts/UserProfile.Context";
 import { useCreateFeedbackRatingMutation } from "src/hooks/feedbackRatingHooks";
 import {

@@ -1,7 +1,6 @@
 import { Button, Card } from "react-bootstrap";
 import { IProposalWithAggregations } from "../../lib/types/data/proposal.type";
 import {
-  capitalizeFirstLetterEachWord,
   timeDifference,
   truncateString,
 } from "../../lib/utilityFunctions";

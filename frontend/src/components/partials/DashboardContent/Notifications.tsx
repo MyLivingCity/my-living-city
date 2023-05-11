@@ -16,7 +16,7 @@ import { ICommentAggregations } from "src/lib/types/data/comment.type";
 import { updateCommentNotificationStatus } from "src/lib/api/commentRoutes";
 import { IQuarantineNotification } from "src/lib/types/data/quarantinePostNotification.type";
 import { dismissQuarantineNotification } from "src/lib/api/quarantinePostNotificationRoutes";
-import LoadingSpinnerInline from "src/components/ui/LoadingSpinnerInline";
+import LoadingSpinner from "src/components/ui/LoadingSpinner";
 
 interface NotificationPageContentProps {
   userIdeas: IIdeaWithAggregations[] | undefined;
@@ -54,31 +54,31 @@ const Notifications: React.FC<NotificationPageContentProps> = ({
   const { user, token } = useContext(UserProfileContext);
   console.log(isLoading)
   if (isLoading) {
-    return (<Container
-      className="system"
-      id="hanging-icons"
-      style={{ padding: "3rem 1rem 0rem 1rem", margin: "0 auto" }}
-    >
-      <style>
-        {styling}
-      </style>
-      <div className="d-flex justify-content-between border-bottom display-6">
-        <div className="col-example text-left">
-          <h2 className="display-6">Notifications</h2>
+    return (
+      <Container
+        className="system"
+        id="hanging-icons"
+        style={{ padding: "3rem 1rem 0rem 1rem", margin: "0 auto" }}
+      >
+        <style>{styling}</style>
+        <div className="d-flex justify-content-between border-bottom display-6">
+          <div className="col-example text-left">
+            <h2 className="display-6">Notifications</h2>
+          </div>
+          <div className="col-example text-left">
+            <Button disabled>Dismiss All</Button>
+          </div>
         </div>
-        <div className="col-example text-left">
-          <Button disabled>Dismiss All</Button>
-        </div>
-      </div>
 
-      <div style={{ marginTop: "1rem" }}>
+        <div style={{ marginTop: "1rem" }}>
           <Table>
-            <tbody key={Math.random()}>
-              <LoadingSpinnerInline/>
+            <tbody className="wrapper" key={Math.random()}>
+              <LoadingSpinner />
             </tbody>
           </Table>
-      </div>
-    </Container>)
+        </div>
+      </Container>
+    );
   }
   
   const dismissAll = async () => {

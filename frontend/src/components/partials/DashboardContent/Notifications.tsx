@@ -25,7 +25,7 @@ interface NotificationPageContentProps {
   userPostBans: IBanPost[] | undefined;
   userCommentBans: IBanComment[] | undefined;
   userQuarantineNotifications: IQuarantineNotification[] | undefined;
-  isLoading: boolean | undefined;
+  isLoading?: boolean;
 }
 
 const Notifications: React.FC<NotificationPageContentProps> = ({

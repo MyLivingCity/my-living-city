@@ -127,8 +127,9 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
       </Row>
       <Row as="article" className="new-and-trending">
         <MyPosts
-          userIdeas={userIdeaData!}
-          userProposals={pData!}
+          isLoading={pLoading || uLoading}
+          userIdeas={userIdeaData}
+          userProposals={pData}
           numPosts={6}
           isDashboard={true}
         />

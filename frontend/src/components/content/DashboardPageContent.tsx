@@ -96,7 +96,7 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
     user.userType === USER_TYPES.MUNICIPAL
   );
 
-  if (iLoading || uLoading || pLoading || userFollowedLoading || userEndorsedLoading || userBannedDataLoading || commentLoading || undismissedPostBansLoading || undismissedCommentBansLoading || quarantinePostNotificationsLoading) {
+  if (uLoading || pLoading || userFollowedLoading || userEndorsedLoading || userBannedDataLoading || commentLoading || undismissedPostBansLoading || undismissedCommentBansLoading || quarantinePostNotificationsLoading) {
     return <LoadingSpinner />;
   }
 
@@ -148,7 +148,7 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
         </Row>
         <br/><br/>
         <Row as="article" className="new-and-trending">
-        <NewAndTrendingSection topIdeas={topIdeasData!} isDashboard={true} />
+        <NewAndTrendingSection topIdeas={topIdeasData!} isDashboard={true} isLoading={iLoading}/>
       </Row>
     </Container>
   );

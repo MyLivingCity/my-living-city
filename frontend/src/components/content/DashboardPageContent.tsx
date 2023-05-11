@@ -96,22 +96,13 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
     user.userType === USER_TYPES.MUNICIPAL
   );
 
-  if ( ideaLoading || iLoading || uLoading || pLoading || userFollowedLoading || userEndorsedLoading || userBannedDataLoading || commentLoading || undismissedPostBansLoading || undismissedCommentBansLoading || quarantinePostNotificationsLoading) {
+  if (iLoading || uLoading || pLoading || userFollowedLoading || userEndorsedLoading || userBannedDataLoading || commentLoading || undismissedPostBansLoading || undismissedCommentBansLoading || quarantinePostNotificationsLoading) {
     return <LoadingSpinner />;
   }
 
   if (ideaError || iError || iIsError || uError || pError || userFollowedError || (canEndorse && userEndorsedError) || userBannedDataError || commentError || undismissedPostBansError || undismissedCommentBansError || quarantinePostNotificationsError) {
     return <div>Error when fetching necessary data</div>;
   }
-
-
-  const userIdeasWithoutProposals = userIdeaData!?.filter((idea) => {
-    return !pData?.some((proposal) => {
-      return proposal.ideaId === idea.id
-    })
-  })
-
-  console.log(userIdeaData!);
   
   return (
     <Container className="landing-page-content">
@@ -151,7 +142,8 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
             })
           }
           proposals={pData!}
-          endorser={canEndorse} 
+          endorser={canEndorse}
+          ideaLoading={ideaLoading} 
           />
         </Row>
         <br/><br/>

@@ -16,6 +16,7 @@ import { ICommentAggregations } from "src/lib/types/data/comment.type";
 import { updateCommentNotificationStatus } from "src/lib/api/commentRoutes";
 import { IQuarantineNotification } from "src/lib/types/data/quarantinePostNotification.type";
 import { dismissQuarantineNotification } from "src/lib/api/quarantinePostNotificationRoutes";
+import LoadingSpinnerInline from "src/components/ui/LoadingSpinnerInline";
 
 interface NotificationPageContentProps {
   userIdeas: IIdeaWithAggregations[] | undefined;
@@ -24,6 +25,7 @@ interface NotificationPageContentProps {
   userPostBans: IBanPost[] | undefined;
   userCommentBans: IBanComment[] | undefined;
   userQuarantineNotifications: IQuarantineNotification[] | undefined;
+  isLoading: boolean | undefined;
 }
 
 const Notifications: React.FC<NotificationPageContentProps> = ({
@@ -33,6 +35,7 @@ const Notifications: React.FC<NotificationPageContentProps> = ({
   userPostBans,
   userCommentBans,
   userQuarantineNotifications,
+  isLoading
 }) => {
   const [isDismissed, setIsDismissed] = useState(false);
   const { user, token } = useContext(UserProfileContext);
@@ -195,9 +198,9 @@ const Notifications: React.FC<NotificationPageContentProps> = ({
         {!isDismissed && (
           <Table>
             <tbody key={Math.random()}>
-              {notifications.map((notification, index) => {
+              {isLoading ? notifications.map((notification, index) => {
                 return <>{notification}</>;
-              })}
+              }) : <LoadingSpinnerInline/>}
             </tbody>
           </Table>
         )}

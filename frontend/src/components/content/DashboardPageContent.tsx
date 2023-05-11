@@ -96,7 +96,7 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
     user.userType === USER_TYPES.MUNICIPAL
   );
 
-  if (uLoading || pLoading || userFollowedLoading || userEndorsedLoading || userBannedDataLoading || commentLoading || undismissedPostBansLoading || undismissedCommentBansLoading || quarantinePostNotificationsLoading) {
+  if (pLoading || userFollowedLoading || userEndorsedLoading) {
     return <LoadingSpinner />;
   }
 
@@ -108,14 +108,30 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
     <Container className="landing-page-content">
       <Row as="article" className="featured"></Row>
       <Row as="article" className="system-messages">
-        <Notifications userIdeas={userIdeaData} userBanInfo={userBannedData} userComments={commentData} userPostBans={undismissedPostBansData} userCommentBans={undismissedCommentBansData} userQuarantineNotifications={quarantinePostNotifications}/>
+        <Notifications
+          isLoading={
+            uLoading ||
+            userBannedDataLoading ||
+            commentLoading ||
+            undismissedPostBansLoading ||
+            undismissedCommentBansLoading ||
+            quarantinePostNotificationsLoading
+          }
+          userIdeas={userIdeaData}
+          userBanInfo={userBannedData}
+          userComments={commentData}
+          userPostBans={undismissedPostBansData}
+          userCommentBans={undismissedCommentBansData}
+          userQuarantineNotifications={quarantinePostNotifications}
+        />
       </Row>
       <Row as="article" className="new-and-trending">
-        <MyPosts 
-          userIdeas={userIdeaData!} 
+        <MyPosts
+          userIdeas={userIdeaData!}
           userProposals={pData!}
-          numPosts={6} 
-          isDashboard={true} />
+          numPosts={6}
+          isDashboard={true}
+        />
         <div className="" style={{ margin: "0rem 1rem 3rem 1rem" }}>
           <Button
             onClick={() => (window.location.href = "/dashboard/my-posts")}
@@ -126,9 +142,9 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
         </div>
       </Row>
 
-     
       <Row as="article" className="system-updates">
-      <SystemUpdates userFollowedideas={
+        <SystemUpdates
+          userFollowedideas={
             // Concat userFollowedIdeaData and userEndorsedIdeaData w/o duplicates
             ideaData!.filter((idea) => {
               return (
@@ -143,12 +159,17 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
           }
           proposals={pData!}
           endorser={canEndorse}
-          isLoading={ideaLoading} 
-          />
-        </Row>
-        <br/><br/>
-        <Row as="article" className="new-and-trending">
-        <NewAndTrendingSection topIdeas={topIdeasData!} isDashboard={true} isLoading={iLoading}/>
+          isLoading={ideaLoading}
+        />
+      </Row>
+      <br />
+      <br />
+      <Row as="article" className="new-and-trending">
+        <NewAndTrendingSection
+          topIdeas={topIdeasData!}
+          isDashboard={true}
+          isLoading={iLoading}
+        />
       </Row>
     </Container>
   );

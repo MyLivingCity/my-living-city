@@ -2,21 +2,24 @@ import { Container, Col, Breadcrumb, Carousel } from "react-bootstrap";
 import IdeaTile from "src/components/tiles/IdeaTile";
 import PlaceholderIdeaTile from "src/components/tiles/PlaceholderIdeaTile";
 import ProposalTile from "src/components/tiles/ProposalTile";
+import LoadingSpinner from "src/components/ui/LoadingSpinner";
 import { IIdeaWithAggregations } from "src/lib/types/data/idea.type";
 import { IProposalWithAggregations } from "src/lib/types/data/proposal.type";
 
 interface MyPostsProps {
-  userIdeas: IIdeaWithAggregations[];
+  userIdeas?: IIdeaWithAggregations[];
   userProposals?: IProposalWithAggregations[];
   numPosts: number;
   isDashboard: boolean;
+  isLoading?: boolean;
 }
 
 const MyPosts: React.FC<MyPostsProps> = ({
-  userIdeas,
-  userProposals,
+  userIdeas = [],
+  userProposals = [],
   numPosts,
   isDashboard,
+  isLoading
 }) => {
  
   let parsedPosts = userIdeas;
@@ -89,7 +92,7 @@ const MyPosts: React.FC<MyPostsProps> = ({
 
       <h2 className="pb-1 border-bottom display-6">My Posts</h2>
       
-      {userIdeas && userIdeas.length > 0 ? (<Carousel controls={true} interval={null} slide={true} fade={false}>
+      {isLoading ? <LoadingSpinner/> : userIdeas && userIdeas.length > 0 ? (<Carousel controls={true} interval={null} slide={true} fade={false}>
         {[...Array(userIdeaPages)].map((x, i) => (
           <Carousel.Item key={i} id='slick'>
             {userIdeas

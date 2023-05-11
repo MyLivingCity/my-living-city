@@ -10,14 +10,14 @@ interface SystemUpdatesProps {
   proposals?: IProposalWithAggregations[];
   endorser: boolean;
   postType?: string;
-  ideaLoading: boolean;
+  isLoading: boolean;
 }
 
 const SystemUpdates: React.FC<SystemUpdatesProps> = ({
   userFollowedideas,
   proposals,
   endorser,
-  ideaLoading
+  isLoading
 }) => {
   
   console.log("userFollowedideas", userFollowedideas)
@@ -57,7 +57,7 @@ const SystemUpdates: React.FC<SystemUpdatesProps> = ({
         <h2 className="pb-1 border-bottom display-6">Followed Ideas</h2>
       )}
 
-      {ideaLoading ? (
+      {isLoading ? (
         <LoadingSpinner />
       ) : (
         <>

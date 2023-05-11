@@ -143,7 +143,7 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
           }
           proposals={pData!}
           endorser={canEndorse}
-          ideaLoading={ideaLoading} 
+          isLoading={ideaLoading} 
           />
         </Row>
         <br/><br/>

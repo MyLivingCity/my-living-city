@@ -4,7 +4,6 @@ import NewAndTrendingSection from "../partials/LandingContent/NewAndTrendingSect
 import MyPosts from "../partials/DashboardContent/MyPosts";
 import Notifications from "../partials/DashboardContent/Notifications";
 import SystemUpdates from "../partials/DashboardContent/SystemUpdates";
-import LoadingSpinner from "../ui/LoadingSpinner";
 import { useIdeasWithBreakdown, useIdeasHomepage, useUserFollowedIdeas, useUserIdeas, useUserEndorsedIdeas } from "../../hooks/ideaHooks";
 import { IUser } from "src/lib/types/data/user.type";
 import { FindBanDetails, FindUndismissedPostBans, FindUndismissedCommentBans } from "src/hooks/banHooks";
@@ -96,10 +95,6 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
     user.userType === USER_TYPES.MUNICIPAL
   );
 
-  if (pLoading || userFollowedLoading || userEndorsedLoading) {
-    return <LoadingSpinner />;
-  }
-
   if (ideaError || iError || iIsError || uError || pError || userFollowedError || (canEndorse && userEndorsedError) || userBannedDataError || commentError || undismissedPostBansError || undismissedCommentBansError || quarantinePostNotificationsError) {
     return <div>Error when fetching necessary data</div>;
   }
@@ -147,12 +142,12 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
         <SystemUpdates
           userFollowedideas={
             // Concat userFollowedIdeaData and userEndorsedIdeaData w/o duplicates
-            ideaData!.filter((idea) => {
+            (ideaData ?? []).filter((idea) => {
               return (
-                userFollowedIdeaData!.some((followedIdea) => {
+                (userFollowedIdeaData ?? []).some((followedIdea) => {
                   return followedIdea.id === idea.id;
                 }) ||
-                userEndorsedIdeaData!.some((endorsedIdea) => {
+                (userEndorsedIdeaData ?? []).some((endorsedIdea) => {
                   return endorsedIdea.id === idea.id;
                 })
               );
@@ -160,7 +155,7 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
           }
           proposals={pData!}
           endorser={canEndorse}
-          isLoading={ideaLoading}
+          isLoading={ideaLoading || pLoading || userFollowedLoading || userEndorsedLoading}
         />
       </Row>
       <br />

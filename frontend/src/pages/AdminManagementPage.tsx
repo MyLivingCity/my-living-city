@@ -8,6 +8,10 @@ import { IUser } from 'src/lib/types/data/user.type';
 import { useAllBanDetails } from 'src/hooks/banHooks';
 import { useAllSuperSegments } from 'src/hooks/segmentHooks';
 import { ISuperSegment } from 'src/lib/types/data/segment.type';
+import { ISegment } from 'src/lib/types/data/segment.type';
+import { useAllSegments } from 'src/hooks/segmentHooks';
+import { IUserSegment } from 'src/lib/types/data/segment.type';
+import { useAllUserSegments } from 'src/hooks/userSegmentHooks';
 
 
 // Extends Route component props with idea title route param
@@ -17,6 +21,8 @@ interface AdminManagementPropsLegacy extends RouteComponentProps<{}> {
   token: string | null; 
   user: IUser | null;
   segs: ISuperSegment[];
+  subSeg: ISegment;
+  userSegement: IUserSegment[];
 
 }
 
@@ -26,9 +32,11 @@ const AdminManagementPage: React.FC<AdminManagementPropsLegacy> = ({}) => {
   const { data: userData, isLoading: userLoading} = useAllUsers(token);
   const { data: banData, isLoading: banLoading} = useAllBanDetails();
   const { data: segData = [], isLoading: segLoading} = useAllSuperSegments();
+  const { data: subSegData = [], isLoading: subSegLoading} = useAllSegments();
+  const { data: userSegementData = [], isLoading: userSegementLoading} = useAllUserSegments(null, null);
  
 
-  if (userLoading || banLoading || segLoading) {
+  if (userLoading || banLoading || segLoading || subSegLoading) {
     return(
       <div className="wrapper">
       <LoadingSpinner />
@@ -40,7 +48,7 @@ const AdminManagementPage: React.FC<AdminManagementPropsLegacy> = ({}) => {
 
   return (
     <div className="wrapper">
-      <AdminManagementContent  users={userData!}token={token} user={user}  bans={banData} segs={segData} />
+      <AdminManagementContent  users={userData!}token={token} user={user}  bans={banData} segs={segData} subSeg={subSegData}/>
     </div>
   );
 }

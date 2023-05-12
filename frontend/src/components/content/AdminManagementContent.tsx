@@ -2,16 +2,14 @@ import React, { useState } from 'react'
 import { Table, Dropdown, Container, Button, Form, NavDropdown } from 'react-bootstrap';
 import { updateUser, getUserBanHistory } from 'src/lib/api/userRoutes';
 import { USER_TYPES } from 'src/lib/constants';
-
 import { IUser } from 'src/lib/types/data/user.type';
-
 import { UserSegmentInfoCard } from '../partials/UserSegmentInfoCard';
 import { UserManagementBanModal } from '../modal/UserManagementBanModal';
 import { UserManagementUnbanModal } from '../modal/UserManagementUnbanModal';
 import { UserManagementBanHistoryModal } from '../modal/UserManagementBanHistoryModal';
 import { IBanUser } from 'src/lib/types/data/banUser.type';
 import { ISuperSegment } from 'src/lib/types/data/segment.type';
-
+import { ISegment } from 'src/lib/types/data/segment.type';
 
 interface AdminManagementContentProps {
     users: IUser[] | undefined;
@@ -19,11 +17,11 @@ interface AdminManagementContentProps {
     user: IUser | null;
     bans: IBanUser[] | undefined;
     segs: ISuperSegment[];
-
+    subSeg: ISegment[];
 
 }
 
-export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({ users, token, user, segs,  bans }) => {
+export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({ users, token, user, segs, bans, subSeg }) => {
     const [hideControls, setHideControls] = useState('');
     const [showUserSegmentCard, setShowUserSegmentCard] = useState(false);
     const [email, setEmail] = useState('');
@@ -41,13 +39,18 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({ 
         setEmail(email);
         setId(id);
     }
+    const [selectedRegion, setSelectedRegion] = useState("");
+    const handleRegionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedRegionName = event.target.value;
 
 
-    const toggleCreateAccountForm = () => {
-      setShowCreateAccountForm(!showCreateAccountForm);
-      setButtonText(showCreateAccountForm ? "Admin Creation Wizard" : "Hide Creation Wizard");
+        setSelectedRegion(selectedRegionName);
     };
-  
+    const toggleCreateAccountForm = () => {
+        setShowCreateAccountForm(!showCreateAccountForm);
+        setButtonText(showCreateAccountForm ? "Admin Creation Wizard" : "Hide Creation Wizard");
+    };
+
 
 
     function formatBanHistory(banhistory: any) {
@@ -89,12 +92,12 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({ 
         return banHistory;
     }
 
-    
-    
+  
+
     const userTypes = Object.keys(USER_TYPES);
     return (
         <Container style={{ maxWidth: '80%', marginLeft: 50 }}>
-          
+
             {showUserBanModal ?
                 <UserManagementBanModal show={showUserBanModal} setShow={setShowUserBanModal} modalUser={modalUser!} currentUser={user!} token={token} />
                 : null
@@ -107,68 +110,80 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({ 
                 <UserManagementBanHistoryModal show={showUserBanHistoryModal} setShow={setShowUserBanHistoryModal} modalUser={modalUser!} currentUser={user!} token={token} data={banHistory!} />
                 : null
             }
-{console.log(segs)}
+
             <Form>
                 <div className="d-flex justify-content-between">
                     <h2 className="mb-4 mt-4">Admin Management</h2>
-                    <Button variant="primary"  className="mb-4 mt-4" onClick={() => toggleCreateAccountForm()}>{buttonText}</Button>
+                    <Button variant="primary" className="mb-4 mt-4" onClick={() => toggleCreateAccountForm()}>{buttonText}</Button>
                 </div>
                 {showCreateAccountForm && (
-                    
-
-<form>
-<div className="form-row">
-<div className="form-group col-md-12">
-<label htmlFor="inputState">User Type</label>
-  <Form.Control as="select" required>
-    <option value="">Select User Type</option>
-    {userTypes.filter(item => item === 'ADMIN' || item === 'MUNICIPAL_SEG_ADMIN' || item === 'SEG_ADMIN').map(item => <option key={item}>{item}</option>)}
-  </Form.Control>
-  </div>
-  </div>
-  <div className="form-row">
-<div className="form-group col-md-6">
-  <label htmlFor="inputAddress">First Name</label>
-  <input type="text" className="form-control" id="inputAddress" placeholder="John" required />
-</div>
-<div className="form-group col-md-6">
-  <label htmlFor="inputAddress">Last Name</label>
-  <input type="text" className="form-control" id="inputAddress" placeholder="Doe" required/>
-</div>
-</div>
-<div className="form-row">
-  <div className="form-group col-md-6">
-    <label htmlFor="inputEmail4">Email</label>
-    <input type="email" className="form-control" id="inputEmail4" placeholder="Email"  required/>
-  </div>
-  <div className="form-group col-md-6">
-    <label htmlFor="inputPassword4">Password</label>
-    <input type="password" className="form-control" id="inputPassword4" placeholder="Password" required/>
-  </div>
-</div>
-
-<div className="form-row">
-
-<div className="form-group col-md-6">
-  <label htmlFor="inputAddress">Region</label>
- 
-<Form.Control as="select" required>
-  <option value="">Select Region</option>
-  {segs.map(seg => <option key={seg.superSegId} value={seg.superSegId}>{seg.name}</option>)}
-</Form.Control>
-</div>
-<div className="form-group col-md-6">
-  <label htmlFor="inputAddress">Community</label>
-  <input type="text" className="form-control" id="inputAddress" placeholder="Victoria" />
-</div>
-
-</div>
 
 
-<button type="submit" className="btn btn-primary mr-2 mb-2">Submit</button>
-</form>
-    )}
-          
+                    <form>
+                        <div className="form-row">
+                            <div className="form-group col-md-12">
+                                <label htmlFor="inputState">User Type</label>
+                                <Form.Control as="select" required>
+                                    <option value="">Select User Type</option>
+                                    {userTypes.filter(item => item === 'ADMIN' || item === 'MUNICIPAL_SEG_ADMIN' || item === 'SEG_ADMIN').map(item => <option key={item}>{item}</option>)}
+                                </Form.Control>
+                            </div>
+                        </div>
+                        <div className="form-row">
+                            <div className="form-group col-md-6">
+                                <label htmlFor="inputFirst">First Name</label>
+                                <input type="text" className="form-control" id="inputFirst" placeholder="John" required />
+                            </div>
+                            <div className="form-group col-md-6">
+                                <label htmlFor="inputLast">Last Name</label>
+                                <input type="text" className="form-control" id="inputLast" placeholder="Doe" required />
+                            </div>
+                        </div>
+                        <div className="form-row">
+                            <div className="form-group col-md-6">
+                                <label htmlFor="inputEmail">Email</label>
+                                <input type="email" className="form-control" id="inputEmail" placeholder="Email" required />
+                            </div>
+                            <div className="form-group col-md-6">
+                                <label htmlFor="inputPassword">Password</label>
+                                <input type="password" className="form-control" id="inputPassword" placeholder="Password" required />
+                            </div>
+                        </div>
+
+                        <div className="form-row">
+
+                            <div className="form-group col-md-6">
+                                <label htmlFor="inputRegion">Region</label>
+
+                                <Form.Control as="select" required value={selectedRegion} onChange={handleRegionChange}>
+                                    <option value="">Select Region</option>
+                                    {segs.map(seg => (
+                                        <option key={seg.superSegId} value={seg.name}>
+                                            {seg.name}
+                                        </option>
+                                    ))}
+                                </Form.Control>
+                            </div>
+                            <div className="form-group col-md-6">
+                                <label htmlFor="inputCommunity">Community</label>
+                                <Form.Control as="select" required>
+                                    <option value="">Select Community</option>
+                                    {subSeg
+                                        .filter(seg => seg.superSegName?.toUpperCase() === selectedRegion.toUpperCase())
+                                        .map(seg => (
+                                            <option key={seg.superSegId} value={seg.name}>
+                                                {seg.name}
+                                            </option>
+                                        ))}
+                                </Form.Control>
+                            </div>
+                        </div>
+
+
+                        <button type="submit" className="btn btn-primary mr-2 mb-2">Submit</button>
+                    </form>
+                )}
+
                 <Table bordered hover size="sm">
                     <thead className="table-active" >
                         <tr>

@@ -2,6 +2,7 @@ const passport = require('passport');
 const express = require('express');
 const advertisementRouter = express.Router();
 const prisma = require('../lib/prismaClient');
+const { imagePathsToS3Url } = require('../lib/utilityFunctions');
 
 const fs = require('fs');
 
@@ -258,6 +259,7 @@ advertisementRouter.get(
     async (req, res) => {
         try {
             const allAd = await prisma.advertisements.findMany({});
+            await imagePathsToS3Url(allAd, "advertisement");
             if (allAd) {
                 return res.status(200).json(allAd);
             } else {
@@ -296,6 +298,7 @@ advertisementRouter.get(
                 }
             });
             if (allAd) {
+                await imagePathsToS3Url(allAd, "advertisement");
                 return res.status(200).json(allAd);
             } else {
                 return res.status(404).send("there's no advertisement belongs to you!");
@@ -331,6 +334,7 @@ advertisementRouter.get(
                 res.status(204).json("adsId not found!");
             }
             if (result) {
+                await imagePathsToS3Url(result, "advertisement");
                 res.status(200).json(result);
             }
         } catch (err) {
@@ -362,6 +366,7 @@ advertisementRouter.get(
                 res.status(204).json("adsId not found!");
             }
             if (result) {
+                await imagePathsToS3Url([result], "advertisement");
                 res.status(200).json(result);
             }
         } catch (err) {
@@ -389,6 +394,7 @@ advertisementRouter.get(
             const result = await prisma.advertisements.findMany({
                 where: { ownerId: ownerId }
             })
+            await imagePathsToS3Url(result, "advertisement");
             res.status(200).json(result);
         } catch (err) {
             console.log(err);

@@ -9,6 +9,14 @@ async function uploadImage() {
 }
 
 const IMG_EXPIRY_TIME = 60; // in seconds
+/**
+ * Requests a signed URL for an image from the AWS S3 bucket. The URL expires
+ * within a specified amonut of time.
+ * 
+ * @param { string } imageFolder    The folder path the image resides in
+ * @param { string } imageKey       The name of the image
+ * @returns { string }              The pre-signed url
+ */
 async function accessImage(imageFolder, imageKey) {
     const command = new GetObjectCommand({
         Bucket: AWS_S3_BUCKET_NAME,

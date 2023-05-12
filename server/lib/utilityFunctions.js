@@ -1,4 +1,5 @@
 const argon2 = require('argon2');
+const { accessImage } = require('./imageBucket');
 
 /**
  * Hashes a plain text string using argon2 hashing algorithm.
@@ -32,7 +33,16 @@ const argon2ConfirmHash = async (string, hash) => {
   }
 }
 
+const imagePathsToS3Url = async (items, itemType) => {
+  await Promise.all(items.map(async (item) => {
+    if (item.imagePath) {
+      item.imagePath = await accessImage(itemType, item.imagePath);
+    }
+  }));
+}
+
 module.exports = {
   argon2Hash,
   argon2ConfirmHash,
+  imagePathsToS3Url
 }

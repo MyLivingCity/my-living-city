@@ -4,6 +4,7 @@ const express = require('express');
 const ideaRouter = express.Router();
 const prisma = require('../lib/prismaClient');
 const { checkIdeaThresholds } = require('../lib/prismaFunctions');
+const { imagePathsToS3Url } = require('../lib/utilityFunctions');
 const { isInteger, isEmpty } = require('lodash');
 
 const fs = require('fs');
@@ -319,7 +320,7 @@ ideaRouter.get(
           updatedAt: 'desc'
         }
       });
-      console.log(allIdeas)
+      await imagePathsToS3Url(allIdeas, "idea-proposal");
       res.status(200).json(allIdeas);
     } catch (error) {
       res.status(400).json({
@@ -340,8 +341,8 @@ ideaRouter.post(
   '/getall/with-sort',
   async (req, res, next) => {
     try {
-      console.log(req.body);
       const allIdeas = await prisma.idea.findMany(req.body);
+      await imagePathsToS3Url(allIdeas, "idea-proposal");
 
       res.status(200).json(allIdeas);
     } catch (error) {
@@ -653,6 +654,7 @@ ideaRouter.get(
           message: `The idea with that listed ID (${parsedIdeaId}) does not exist.`,
         });
       }
+      await imagePathsToS3Url([foundIdea], "idea-proposal");
 
       const result = { ...foundIdea, isChampionable };
       delete result.author.password;
@@ -690,7 +692,7 @@ ideaRouter.get(
         });
       }
 
-      const foundIdea = await prisma.idea.findMany({
+      const foundIdeas = await prisma.idea.findMany({
         where: {
           supportingProposalId: parsedSupportingProposalId
         },
@@ -712,13 +714,14 @@ ideaRouter.get(
         }
       });
 
-      if (!foundIdea) {
+      if (!foundIdeas) {
         return res.status(400).json({
           message: `The idea with that listed ID (${parsedSupportingProposalId}) does not exist.`,
         });
       }
+      await imagePathsToS3Url(foundIdeas, "idea-proposal");
 
-      res.status(200).json(foundIdea);
+      res.status(200).json(foundIdeas);
     } catch (error) {
       console.error(error);
       res.status(400).json({
@@ -1495,6 +1498,7 @@ ideaRouter.get(
       let ideas = [];
       for await (const endorse of userIdeaEndorses) {
         const idea = await prisma.idea.findUnique({ where: { id: endorse.ideaId } });
+        await imagePathsToS3Url([idea]);
         ideas.push(idea);
       }
       res.status(200).json(ideas);

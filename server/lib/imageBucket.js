@@ -8,7 +8,7 @@ async function uploadImage() {
     // todo
 }
 
-const IMG_EXPIRY_TIME = 10;
+const IMG_EXPIRY_TIME = 60; // in seconds
 async function accessImage(imageFolder, imageKey) {
     const command = new GetObjectCommand({
         Bucket: AWS_S3_BUCKET_NAME,

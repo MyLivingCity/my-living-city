@@ -55,9 +55,7 @@ const Notifications: React.FC<NotificationPageContentProps> = ({
  `
   const [isDismissed, setIsDismissed] = useState(false);
   const { user, token } = useContext(UserProfileContext);
-  if (isError) {
 
-  }
   if (isLoading) {
     return (
       <Container
@@ -76,7 +74,35 @@ const Notifications: React.FC<NotificationPageContentProps> = ({
         </div>
 
         <div style={{ marginTop: "1rem" }}>
-          <ErrorMessage message="There was an error loading notifications."/>
+          <Table>
+            <tbody className="wrapper" key={Math.random()}>
+              <LoadingSpinner />
+            </tbody>
+          </Table>
+        </div>
+      </Container>
+    );
+  }
+  
+  if (isError) {
+    return (
+      <Container
+        className="system"
+        id="hanging-icons"
+        style={{ padding: "3rem 1rem 0rem 1rem", margin: "0 auto" }}
+      >
+        <style>{styling}</style>
+        <div className="d-flex justify-content-between border-bottom display-6">
+          <div className="col-example text-left">
+            <h2 className="display-6">Notifications</h2>
+          </div>
+          <div className="col-example text-left">
+            <Button disabled>Dismiss All</Button>
+          </div>
+        </div>
+
+        <div style={{ marginTop: "1rem" }}>
+          <ErrorMessage message="There was an error loading notifications." />
         </div>
       </Container>
     );

@@ -4,6 +4,7 @@ import { updateUser, getUserBanHistory } from 'src/lib/api/userRoutes';
 import { USER_TYPES } from 'src/lib/constants';
 import { IUser } from 'src/lib/types/data/user.type';
 import { UserSegmentInfoCard } from '../partials/UserSegmentInfoCard';
+import { UserSegPlainText } from '../partials/UserSegPlainText';
 import { UserManagementBanModal } from '../modal/UserManagementBanModal';
 import { UserManagementUnbanModal } from '../modal/UserManagementUnbanModal';
 import { UserManagementBanHistoryModal } from '../modal/UserManagementBanHistoryModal';
@@ -39,6 +40,8 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({ 
         setEmail(email);
         setId(id);
     }
+
+    
     const [selectedRegion, setSelectedRegion] = useState("");
     const handleRegionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedRegionName = event.target.value;
@@ -52,6 +55,9 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({ 
     };
 
 
+    const capitalizeString = (s: string) => {
+        return s.charAt(0).toUpperCase() + s.slice(1);
+    };
 
     function formatBanHistory(banhistory: any) {
         // iterate through ban history and format it
@@ -171,8 +177,8 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({ 
                                     {subSeg
                                         .filter(seg => seg.superSegName?.toUpperCase() === selectedRegion.toUpperCase())
                                         .map(seg => (
-                                            <option key={seg.superSegId} value={seg.name}>
-                                                {seg.name}
+                                            <option key={seg.superSegId} value={capitalizeString(seg.name)}>
+                                                {capitalizeString(seg.name)}
                                             </option>
                                         ))}
                                 </Form.Control>
@@ -208,7 +214,7 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({ 
                                             <td className="text-left align-middle">{req.fname}</td>
                                             <td className="text-left align-middle">{req.lname}</td>
                                             <td className="text-center align-middle">{req.userType}</td>
-                                            <td className="text-center align-middle">NOT FOUND</td>
+                                            <td className="text-center align-middle"><UserSegPlainText email={req.email} id={req.id} token={token} /></td>
 
                                             <td className="text-center align-middle">{req.banned ? "Yes" : "No"}</td>
                                             <td className="text-center align-middle">{req.reviewed ? "Yes" : "No"}</td>

@@ -99,6 +99,8 @@ const CommunityDashboardPage: React.FC<CommunityDashboardPageProps> = (props) =>
         return filteredTopIdeas;
     }
 
+    // console.log("AGGREGATE: ", segmentAggregatData)
+
     return (
         <>
             <div className="wrapper">

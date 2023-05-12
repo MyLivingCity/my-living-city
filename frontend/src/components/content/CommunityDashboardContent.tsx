@@ -19,8 +19,10 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({us
 
     // Filter only the segmentIds that have a segType of 'Segment'
     // Then map it to {id: id, name: name}
-    const segmentIdsFiltered = segmentIds.filter((segId: any) => segId.segType === 'Segment').map((segId: any) => ({id: segId.id, name: segId.name}));
-    console.log('segmentIdsFiltered', segmentIdsFiltered);
+    // TODO: segmentIds needs investigation
+    // const segmentIdsFiltered = segmentIds.filter((segId: any) => segId.segType === 'Segment').map((segId: any) => ({id: segId.id, name: segId.name}));
+    // console.log('segmentIdsFiltered', segmentIdsFiltered);
+    const segmentIdsFiltered = segmentIds
 
     const [currCommunityName, setCurrCommunityName] = useState(segmenData.name);
     const [currCommunityPosts, setCurrCommunityPosts] = useState(topIdeas);
@@ -82,9 +84,9 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({us
                 <h1 className="pb-2 pt-2 display-6">Community: {capitalizeFirstLetterEachWord(segmenData.name)}</h1>
                 <DropdownButton className='pt-3 ml-2 display-6' title="Available Communities">
                     {/* Use segmentIdsFiltered to dynamically add segments */}
-                    {segmentIdsFiltered.map((segId: any) => (
+                    {/*segmentIdsFiltered.map((segId: any) => (
                         <Dropdown.Item href={`/community-dashboard/${segId.id}`}>{capitalizeFirstLetterEachWord(segId.name)}</Dropdown.Item>
-                    ))}
+                    ))*/}
                 </DropdownButton>
             </Row>
             <Row>

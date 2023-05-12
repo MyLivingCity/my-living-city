@@ -134,9 +134,8 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
       </Row>
       <Row as="article" className="new-and-trending">
         <MyPosts
-          isLoading={
-            pLoading || uLoading || userBannedIsError || commentIsError
-          }
+          isLoading={pLoading || uLoading}
+          isError={pIsError || uIsError}
           userIdeas={userIdeaData}
           userProposals={pData}
           numPosts={6}

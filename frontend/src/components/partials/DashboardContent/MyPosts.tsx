@@ -1,7 +1,9 @@
 import { Container, Col, Breadcrumb, Carousel } from "react-bootstrap";
+import { isError } from "react-query";
 import IdeaTile from "src/components/tiles/IdeaTile";
 import PlaceholderIdeaTile from "src/components/tiles/PlaceholderIdeaTile";
 import ProposalTile from "src/components/tiles/ProposalTile";
+import ErrorMessage from "src/components/ui/ErrorMessage";
 import LoadingSpinner from "src/components/ui/LoadingSpinner";
 import { IIdeaWithAggregations } from "src/lib/types/data/idea.type";
 import { IProposalWithAggregations } from "src/lib/types/data/proposal.type";
@@ -12,6 +14,7 @@ interface MyPostsProps {
   numPosts: number;
   isDashboard: boolean;
   isLoading?: boolean;
+  isError?: boolean;
 }
 
 const MyPosts: React.FC<MyPostsProps> = ({
@@ -19,7 +22,8 @@ const MyPosts: React.FC<MyPostsProps> = ({
   userProposals = [],
   numPosts,
   isDashboard,
-  isLoading
+  isLoading,
+  isError
 }) => {
  
   let parsedPosts = userIdeas;
@@ -91,8 +95,9 @@ const MyPosts: React.FC<MyPostsProps> = ({
       )}
 
       <h2 className="pb-1 border-bottom display-6">My Posts</h2>
-      
-      {isLoading ? <LoadingSpinner/> : userIdeas && userIdeas.length > 0 ? (<Carousel controls={true} interval={null} slide={true} fade={false}>
+      {isLoading && <LoadingSpinner/>}
+      {isError && <ErrorMessage message="There was an error loading your posts."/>}
+      {!isLoading && !isError && userIdeas && userIdeas.length > 0 ? (<Carousel controls={true} interval={null} slide={true} fade={false}>
         {[...Array(userIdeaPages)].map((x, i) => (
           <Carousel.Item key={i} id='slick'>
             {userIdeas

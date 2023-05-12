@@ -17,6 +17,7 @@ import { updateCommentNotificationStatus } from "src/lib/api/commentRoutes";
 import { IQuarantineNotification } from "src/lib/types/data/quarantinePostNotification.type";
 import { dismissQuarantineNotification } from "src/lib/api/quarantinePostNotificationRoutes";
 import LoadingSpinner from "src/components/ui/LoadingSpinner";
+import ErrorMessage from "src/components/ui/ErrorMessage";
 
 interface NotificationPageContentProps {
   userIdeas: IIdeaWithAggregations[] | undefined;
@@ -26,6 +27,7 @@ interface NotificationPageContentProps {
   userCommentBans: IBanComment[] | undefined;
   userQuarantineNotifications: IQuarantineNotification[] | undefined;
   isLoading?: boolean;
+  isError?: boolean;
 }
 
 const Notifications: React.FC<NotificationPageContentProps> = ({
@@ -35,7 +37,8 @@ const Notifications: React.FC<NotificationPageContentProps> = ({
   userPostBans,
   userCommentBans,
   userQuarantineNotifications,
-  isLoading
+  isLoading,
+  isError
 }) => {
   const styling = `
   td {
@@ -52,7 +55,9 @@ const Notifications: React.FC<NotificationPageContentProps> = ({
  `
   const [isDismissed, setIsDismissed] = useState(false);
   const { user, token } = useContext(UserProfileContext);
-  console.log(isLoading)
+  if (isError) {
+
+  }
   if (isLoading) {
     return (
       <Container
@@ -71,11 +76,7 @@ const Notifications: React.FC<NotificationPageContentProps> = ({
         </div>
 
         <div style={{ marginTop: "1rem" }}>
-          <Table>
-            <tbody className="wrapper" key={Math.random()}>
-              <LoadingSpinner />
-            </tbody>
-          </Table>
+          <ErrorMessage message="There was an error loading notifications."/>
         </div>
       </Container>
     );

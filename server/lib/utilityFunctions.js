@@ -41,7 +41,7 @@ const argon2ConfirmHash = async (string, hash) => {
  * @param { string } itemType The item type we want to process
  */
 const imagePathsToS3Url = async (items, itemType) => {
-  const validPaths = Set(["advertisement", "idea-proposal", "avatar"]);
+  const validPaths = new Set(["advertisement", "idea-proposal", "avatar"]);
   if (!validPaths.has(itemType)) {
     console.log("Invalid item type for image path conversion.");
     return;

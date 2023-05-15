@@ -28,7 +28,7 @@ const LandingPageContent: React.FC<LandingPageContentProps> = ({
       <Row as="article" className="featured"></Row>
 
       <Row as="article" className="new-and-trending">
-        <NewAndTrendingSection topIdeas={topIdeas!} isDashboard={false} />
+        <NewAndTrendingSection topIdeas={topIdeas!} isDashboard={false} isLoading={ideasLoading} isError={ideasIsError}/>
       </Row>
 
       <Row as="article" className="categories">

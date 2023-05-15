@@ -29,7 +29,8 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
   const { 
     data: commentData,
     isLoading: commentLoading,
-    error: commentError
+    error: commentError,
+    isError: commentIsError
   } = useAllComments();
 
   const {
@@ -43,6 +44,7 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
     data: userIdeaData,
     error: uError,
     isLoading: uLoading,
+    isError: uIsError,
   } = useUserIdeas(user.id);
 
   const {
@@ -56,36 +58,40 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
     data: undismissedPostBansData,
     error: undismissedPostBansError,
     isLoading: undismissedPostBansLoading,
+    isError: undismissedPostBansIsError
   } = FindUndismissedPostBans(user.id);
 
   const {
     data: undismissedCommentBansData,
-    isError: undismissedCommentBansError,
-    isLoading: undismissedCommentBansLoading
+    isLoading: undismissedCommentBansLoading,
+    isError: undismissedCommentBansIsError
   } = FindUndismissedCommentBans(user.id);
 
   const {
     data: userFollowedIdeaData,
     error: userFollowedError,
-    isLoading: userFollowedLoading,
+    isLoading: userFollowedIsLoading,
+    isError: userFollowedIsError
   } = useUserFollowedIdeas(user.id)
 
   const {
     data: userEndorsedIdeaData,
     error: userEndorsedError,
     isLoading: userEndorsedLoading,
+    isError: userEndorsedIsError
   } = useUserEndorsedIdeas(user.id)
 
   const {
       data: userBannedData,
-      isError: userBannedDataError,
-      isLoading: userBannedDataLoading
+      isLoading: userBannedIsLoading,
+      isError: userBannedIsError
     } = FindBanDetails(user.id);
     
   const {
     data: quarantinePostNotifications,
     error: quarantinePostNotificationsError,
-    isLoading: quarantinePostNotificationsLoading
+    isLoading: quarantinePostNotificationsLoading,
+    isError: quarantinePostNotificationsIsError
   } = useQuarantinePostNotifications();
 
   const canEndorse = (
@@ -94,10 +100,6 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
     user.userType === USER_TYPES.BUSINESS ||
     user.userType === USER_TYPES.MUNICIPAL
   );
-
-  if (ideaError || iError || iIsError || uError || pError || userFollowedError || (canEndorse && userEndorsedError) || userBannedDataError || commentError || undismissedPostBansError || undismissedCommentBansError || quarantinePostNotificationsError) {
-    return <div>Error when fetching necessary data</div>;
-  }
   
   return (
     <Container className="landing-page-content">
@@ -106,11 +108,19 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
         <Notifications
           isLoading={
             uLoading ||
-            userBannedDataLoading ||
+            userBannedIsLoading ||
             commentLoading ||
             undismissedPostBansLoading ||
             undismissedCommentBansLoading ||
             quarantinePostNotificationsLoading
+          }
+          isError={
+            uIsError ||
+            userBannedIsError ||
+            commentIsError ||
+            undismissedPostBansIsError ||
+            undismissedCommentBansIsError ||
+            quarantinePostNotificationsIsError
           }
           userIdeas={userIdeaData}
           userBanInfo={userBannedData}
@@ -123,6 +133,7 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
       <Row as="article" className="new-and-trending">
         <MyPosts
           isLoading={pLoading || uLoading}
+          isError={pIsError || uIsError}
           userIdeas={userIdeaData}
           userProposals={pData}
           numPosts={6}
@@ -131,7 +142,8 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
         <div className="" style={{ margin: "0rem 1rem 3rem 1rem" }}>
           <Button
             onClick={() => (window.location.href = "/dashboard/my-posts")}
-            size="lg" disabled={pLoading || uLoading}
+            size="lg"
+            disabled={pLoading || uLoading}
           >
             See More
           </Button>
@@ -155,7 +167,18 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
           }
           proposals={pData!}
           endorser={canEndorse}
-          isLoading={ideaLoading || pLoading || userFollowedLoading || userEndorsedLoading}
+          isLoading={
+            ideaLoading ||
+            pLoading ||
+            userFollowedIsLoading ||
+            userEndorsedLoading
+          }
+          isError={
+            ideaIsError ||
+            pIsError ||
+            userFollowedIsError ||
+            userEndorsedIsError
+          }
         />
       </Row>
       <br />
@@ -165,6 +188,7 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
           topIdeas={topIdeasData!}
           isDashboard={true}
           isLoading={iLoading}
+          isError={iIsError}
         />
       </Row>
     </Container>

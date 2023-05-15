@@ -19,8 +19,7 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({us
 
     // Filter only the segmentIds that have a segType of 'Segment'
     // Then map it to {id: id, name: name}
-    const segmentIdsFiltered = segmentIds.filter((segId: any) => segId.segType === 'Segment').map((segId: any) => ({id: segId.id, name: segId.name}));
-    console.log('segmentIdsFiltered', segmentIdsFiltered);
+    const segmentIdsFiltered = ([segmentIds]).filter((segId: any) => segId.segType === 'Segment').map((segId: any) => ({id: segId.id, name: segId.name}));
 
     const [currCommunityName, setCurrCommunityName] = useState(segmenData.name);
     const [currCommunityPosts, setCurrCommunityPosts] = useState(topIdeas);

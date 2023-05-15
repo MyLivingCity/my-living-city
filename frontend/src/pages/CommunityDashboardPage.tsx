@@ -22,11 +22,6 @@ const CommunityDashboardPage: React.FC<CommunityDashboardPageProps> = (props) =>
     const { user, token } = useContext(UserProfileContext);
 
     const {
-        data: userSegments,
-        isLoading: isUserSegmentsLoading,
-        isError: isUserSegmentsError
-    } = useAllUserSegments(token, user?.id || null);
-    const {
       data: segmentAggregateData,
       isLoading: isAggregateLoading,
       isError: isAggregateError,
@@ -41,19 +36,11 @@ const CommunityDashboardPage: React.FC<CommunityDashboardPageProps> = (props) =>
       isLoading: iIsLoading,
       isError: iIsError,
     } = useIdeasHomepage();
+    const allUserSegmentsQueryResult = useAllUserSegments(token, user?.id || null);
 
-    // if segId == 0 then use userSegments to set segId to the home segment
-    if (parseInt(segId, 10) === 0 && userSegments) {
-      let home_segment_id = 0;
-      if (Array.isArray(userSegments)) {
-        home_segment_id = userSegments.filter(
-          (seg: any) => seg.segType === "Segment" && seg.userType === "Resident"
-        )[0].homeSegmentId;
-      } else {
-        home_segment_id = userSegments.homeSegmentId;
-      }
-
-      props.history.push(`/community-dashboard/${home_segment_id}`);
+    // if segId == 0 then use segmentIds to set segId to the home segment
+    if (parseInt(segId) === 0 && allUserSegmentsQueryResult.data?.homeSegmentId) {
+      props.history.push(`/community-dashboard/${allUserSegmentsQueryResult.data.homeSegmentId}`);
       window.location.reload();
     }
 
@@ -66,7 +53,7 @@ const CommunityDashboardPage: React.FC<CommunityDashboardPageProps> = (props) =>
     }
 
 
-    if (isAggregateError || isSegmentInfoError || iIsError || isUserSegmentsError) {
+    if (isAggregateError || isSegmentInfoError || iIsError) {
         return (
           <div className="wrapper">
             <p>
@@ -76,7 +63,7 @@ const CommunityDashboardPage: React.FC<CommunityDashboardPageProps> = (props) =>
         );
     }
 
-    if (isAggregateLoading || isSegmentInfoLoading || iIsLoading || isUserSegmentsLoading) {
+    if (isAggregateLoading || isSegmentInfoLoading || iIsLoading) {
         return (
           <div className="wrapper">
             <LoadingSpinner />
@@ -99,7 +86,7 @@ const CommunityDashboardPage: React.FC<CommunityDashboardPageProps> = (props) =>
     return (
         <>
             <div className="wrapper">
-                <CommunityDashboardContent topIdeas={filteredTopIdeas()} data={segmentAggregateData!} segmentData={segmentInfoData!} segmentIds={userSegments} />
+                <CommunityDashboardContent topIdeas={filteredTopIdeas()} data={segmentAggregateData!} segmentData={segmentInfoData!} allUserSegmentsQueryResult={allUserSegmentsQueryResult} />
             </div>
         </>
     );

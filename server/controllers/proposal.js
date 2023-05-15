@@ -6,6 +6,7 @@ const prisma = require('../lib/prismaClient');
 
 const fs = require('fs');
 const { collaborator } = require('../lib/prismaClient');
+const { deleteImage } = require('../lib/imageBucket');
 
 // post request to create a proposal
 proposalRouter.post(
@@ -524,7 +525,7 @@ proposalRouter.delete(
             const foundProposal = await prisma.idea.findUnique({ where: { id: parsedProposalId } });
             if (!foundProposal) {
                 return res.status(400).json({
-                    message: `The idea with that listed ID (${ideaId}) does not exist.`,
+                    message: `The idea with that listed ID (${parsedProposalId}) does not exist.`,
                 });
             }
 
@@ -540,10 +541,12 @@ proposalRouter.delete(
                 await deleteImage("idea-proposal", foundProposal.imagePath);
             }
 
-            const deleteComment = await prisma.ideaComment.deleteMany({ where: { ideaId: foundProposal.id } });
-            const deleteRating = await prisma.ideaRating.deleteMany({ where: { ideaId: foundProposal.id } });
-            const deletedGeo = await prisma.ideaGeo.deleteMany({ where: { ideaId: foundProposal.id } });
-            const deleteAddress = await prisma.ideaAddress.deleteMany({ where: { ideaId: foundProposal.id } });
+            await prisma.ideaComment.deleteMany({ where: { ideaId: foundProposal.id } });
+            await prisma.ideaRating.deleteMany({ where: { ideaId: foundProposal.id } });
+            await prisma.ideaGeo.deleteMany({ where: { ideaId: foundProposal.id } });
+            await prisma.ideaAddress.deleteMany({ where: { ideaId: foundProposal.id } });
+            await prisma.userIdeaEndorse.deleteMany({ where: { ideaId: foundProposal.id } });
+            await prisma.proposal.deleteMany({ where: { ideaId: foundProposal.id } });
             const deletedProposal = await prisma.idea.delete({ where: { id: parsedProposalId } });
 
             res.status(200).json({

@@ -5,23 +5,23 @@ import { IIdeaWithAggregations } from "src/lib/types/data/idea.type";
 import ProposalTile from "src/components/tiles/ProposalTile";
 import { IProposalWithAggregations } from "src/lib/types/data/proposal.type";
 import LoadingSpinner from "src/components/ui/LoadingSpinner";
+import ErrorMessage from "src/components/ui/ErrorMessage";
 interface SystemUpdatesProps {
   userFollowedideas: IIdeaWithAggregations[];
   proposals?: IProposalWithAggregations[];
   endorser: boolean;
   postType?: string;
-  isLoading: boolean;
+  isLoading?: boolean;
+  isError?: boolean;
 }
 
 const SystemUpdates: React.FC<SystemUpdatesProps> = ({
   userFollowedideas,
   proposals,
   endorser,
-  isLoading
+  isLoading,
+  isError
 }) => {
-  
-  console.log("userFollowedideas", userFollowedideas)
-
 
   return (
     <Container className="system" id="hanging-icons">
@@ -56,10 +56,9 @@ const SystemUpdates: React.FC<SystemUpdatesProps> = ({
       ) : (
         <h2 className="pb-1 border-bottom display-6">Followed Ideas</h2>
       )}
-
-      {isLoading ? (
-        <LoadingSpinner />
-      ) : (
+      {isLoading && <LoadingSpinner />}
+      {!isLoading && isError && <ErrorMessage message="There was an error loading system updates."/>}
+      {!isLoading && !isError && (
         <>
           <Carousel controls={true} interval={null} slide={true} fade={false}>
             {[...Array(4)].map((x, i) => (

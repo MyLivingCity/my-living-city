@@ -12,6 +12,7 @@ import { capitalizeFirstLetterEachWord } from "./../../../lib/utilityFunctions";
 import { useAllSuperSegments, useAllSegments } from "./../../../hooks/segmentHooks";
 import ProposalTile from "../../tiles/ProposalTile";
 import LoadingSpinner from "src/components/ui/LoadingSpinner";
+import ErrorMessage from "src/components/ui/ErrorMessage";
 
 interface NewAndTrendingProps {
   topIdeas: IIdeaWithAggregations[];
@@ -19,6 +20,7 @@ interface NewAndTrendingProps {
   isDashboard?: boolean;
   showCustomFilter?: boolean;
   isLoading?: boolean;
+  isError?: boolean;
 }
 
 const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
@@ -26,7 +28,8 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
   postType,
   isDashboard,
   showCustomFilter,
-  isLoading
+  isLoading: sectionIsLoading,
+  isError: sectionIsError
 }) => {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [filterConfig, setFilterConfig] = useState<any>({
@@ -49,7 +52,7 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
   const [isPostStatusOpen, setPostStatusOpen] = useState<boolean>(false);
 
   const handleModalCancel = () => {setShowModal(false)};
-  const { data: categories, isLoading: categoriesLoading, error, isError } = useCategories();
+  const { data: categories, isLoading: categoriesLoading, error, isError: categoriesIsError } = useCategories();
   const { data: allSegments } = useAllSegments();
   const { data: allSuperSegments } = useAllSuperSegments();
   const { data: allProposals } = useAllProposals();
@@ -148,6 +151,9 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
     return true;
   }
 
+  const isLoading = sectionIsLoading || categoriesLoading
+  const isError = sectionIsError || categoriesIsError
+  
   const titleStyle: CSS.Properties = {
     display: "inline",
   }
@@ -224,9 +230,9 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
           )}
         </div>
       )}
-      {isLoading ? (
-        <LoadingSpinner />
-      ) : (
+      {isLoading && <LoadingSpinner/>}
+      {!isLoading && isError && <ErrorMessage message="There was an error loading the new and trending section."/>}
+      {!isLoading && !isError && (
         <>
           <Carousel controls={true} interval={null} slide={true} fade={false}>
             {[...Array(topIdeasPages)].map((x, i) => (

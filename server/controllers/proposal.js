@@ -537,14 +537,11 @@ proposalRouter.delete(
             }
 
             if (foundProposal.imagePath) {
-                if (fs.existsSync(foundProposal.imagePath)) {
-                    fs.unlinkSync(foundProposal.imagePath);
-                }
+                await deleteImage("idea-proposal", foundProposal.imagePath);
             }
 
             const deleteComment = await prisma.ideaComment.deleteMany({ where: { ideaId: foundProposal.id } });
             const deleteRating = await prisma.ideaRating.deleteMany({ where: { ideaId: foundProposal.id } });
-
             const deletedGeo = await prisma.ideaGeo.deleteMany({ where: { ideaId: foundProposal.id } });
             const deleteAddress = await prisma.ideaAddress.deleteMany({ where: { ideaId: foundProposal.id } });
             const deletedProposal = await prisma.idea.delete({ where: { id: parsedProposalId } });

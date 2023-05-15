@@ -48,29 +48,30 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
       ) {
         segmentsArray.push({
           id: segmentIdsObj.homeSegmentId,
-          name: segmentIdsObj.homeSegmentName,
+          name: "🏠" + segmentIdsObj.homeSegmentName,
         });
       }
     
       if (
         segmentIdsObj.workSegmentId !== undefined &&
         segmentIdsObj.workSegmentName !== undefined &&
-        segmentIdsObj.workSegmentName !== segmentIdsObj.homeSegmentName
+        segmentIdsObj.workSegmentId !== segmentIdsObj.homeSegmentId
       ) {
         segmentsArray.push({
           id: segmentIdsObj.workSegmentId,
-          name: segmentIdsObj.workSegmentName,
+          name: "🏢" + segmentIdsObj.workSegmentName,
         });
       }
     
       if (
         segmentIdsObj.schoolSegmentId !== undefined &&
         segmentIdsObj.schoolSegmentName !== undefined &&
-        segmentIdsObj.schoolSegmentName !== segmentIdsObj.homeSegmentName
+        segmentIdsObj.schoolSegmentId !== segmentIdsObj.homeSegmentId &&
+        segmentIdsObj.schoolSegmentId !== segmentIdsObj.workSegmentId
       ) {
         segmentsArray.push({
           id: segmentIdsObj.schoolSegmentId,
-          name: segmentIdsObj.schoolSegmentName,
+          name: "🏫" + segmentIdsObj.schoolSegmentName,
         });
       }
   }

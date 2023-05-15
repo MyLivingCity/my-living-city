@@ -26,21 +26,6 @@ const CommunityDashboardPage: React.FC<CommunityDashboardPageProps> = (props) =>
         isLoading: isUserSegmentsLoading,
         isError: isUserSegmentsError
     } = useAllUserSegments(token, user?.id || null);
-
-    // if segId == 0 then use userSegments to set segId to the home segment
-    if (parseInt(segId, 10) === 0 && userSegments) {
-        let home_segment_id = 0
-        if (Array.isArray(userSegments)) {
-            home_segment_id = (userSegments).filter((seg: any) => seg.segType === "Segment" && seg.userType === "Resident")[0].homeSegmentId;
-        } else {
-            home_segment_id = userSegments.homeSegmentId
-        }
-
-        props.history.push(`/community-dashboard/${home_segment_id}`);
-        window.location.reload();
-    }
-
-
     const {
       data: segmentAggregateData,
       isLoading: isAggregateLoading,
@@ -51,12 +36,26 @@ const CommunityDashboardPage: React.FC<CommunityDashboardPageProps> = (props) =>
       isLoading: isSegmentInfoLoading,
       isError: isSegmentInfoError,
     } = useSingleSegmentBySegmentId(parseInt(segId));
-
     const {
       data: iData,
       isLoading: iIsLoading,
       isError: iIsError,
     } = useIdeasHomepage();
+
+    // if segId == 0 then use userSegments to set segId to the home segment
+    if (parseInt(segId, 10) === 0 && userSegments) {
+      let home_segment_id = 0;
+      if (Array.isArray(userSegments)) {
+        home_segment_id = userSegments.filter(
+          (seg: any) => seg.segType === "Segment" && seg.userType === "Resident"
+        )[0].homeSegmentId;
+      } else {
+        home_segment_id = userSegments.homeSegmentId;
+      }
+
+      props.history.push(`/community-dashboard/${home_segment_id}`);
+      window.location.reload();
+    }
 
     if (segId === "0") {
         return (

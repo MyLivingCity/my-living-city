@@ -100,10 +100,6 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
     user.userType === USER_TYPES.BUSINESS ||
     user.userType === USER_TYPES.MUNICIPAL
   );
-
-  // if (ideaError || iError || iIsError || uError || pError || userFollowedError || (canEndorse && userEndorsedError) || userBannedIsError || commentError || undismissedPostBansError || undismissedCommentBansIsError || quarantinePostNotificationsError) {
-  //   return <div>Error when fetching necessary data</div>;
-  // }
   
   return (
     <Container className="landing-page-content">

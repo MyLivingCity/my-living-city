@@ -970,10 +970,12 @@ ideaRouter.delete(
         await deleteImage("idea-proposal", foundIdea.imagePath);
       }
 
-      const deleteComment = await prisma.ideaComment.deleteMany({ where: { ideaId: foundIdea.id } });
-      const deleteRating = await prisma.ideaRating.deleteMany({ where: { ideaId: foundIdea.id } });
-      const deletedGeo = await prisma.ideaGeo.deleteMany({ where: { ideaId: foundIdea.id } });
-      const deleteAddress = await prisma.ideaAddress.deleteMany({ where: { ideaId: foundIdea.id } });
+      await prisma.ideaComment.deleteMany({ where: { ideaId: foundIdea.id } });
+      await prisma.ideaRating.deleteMany({ where: { ideaId: foundIdea.id } });
+      await prisma.ideaGeo.deleteMany({ where: { ideaId: foundIdea.id } });
+      await prisma.ideaAddress.deleteMany({ where: { ideaId: foundIdea.id } });
+      await prisma.userIdeaEndorse.deleteMany({ where: { ideaId: foundIdea.id } });
+      await prisma.proposal.deleteMany({ where: { ideaId: foundIdea.id } });
       const deletedIdea = await prisma.idea.delete({ where: { id: parsedIdeaId } });
 
       res.status(200).json({

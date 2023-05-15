@@ -34,7 +34,7 @@ const CommunityDashboardPage: React.FC<CommunityDashboardPageProps> = (props) =>
 
     // if segId == 0 then use userSegments to set segId to the home segment
     if (parseInt(segId, 10) === 0 && userSegments) {
-        let home_segment_id = (userSegments || []).filter((seg: any) => seg.segType === "Segment" && seg.userType == "Resident")[0].id;
+        let home_segment_id = userSegments.filter((seg: any) => seg.segType === "Segment" && seg.userType == "Resident")[0].id;
 
         console.log("home_segment_id: ", home_segment_id);
         props.history.push(`/community-dashboard/${home_segment_id}`);

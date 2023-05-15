@@ -70,13 +70,15 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
   const {
     data: userFollowedIdeaData,
     error: userFollowedError,
-    isLoading: userFollowedLoading,
+    isLoading: userFollowedIsLoading,
+    isError: userFollowedIsError
   } = useUserFollowedIdeas(user.id)
 
   const {
     data: userEndorsedIdeaData,
     error: userEndorsedError,
     isLoading: userEndorsedLoading,
+    isError: userEndorsedIsError
   } = useUserEndorsedIdeas(user.id)
 
   const {
@@ -172,8 +174,14 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
           isLoading={
             ideaLoading ||
             pLoading ||
-            userFollowedLoading ||
+            userFollowedIsLoading ||
             userEndorsedLoading
+          }
+          isError={
+            ideaIsError ||
+            pIsError ||
+            userFollowedIsError ||
+            userEndorsedIsError
           }
         />
       </Row>
@@ -184,6 +192,7 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
           topIdeas={topIdeasData!}
           isDashboard={true}
           isLoading={iLoading}
+          isError={iIsError}
         />
       </Row>
     </Container>

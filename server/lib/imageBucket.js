@@ -1,5 +1,3 @@
-//required modules for uploading image to s3 bucket
-
 const multer = require('multer');
 const multerS3 = require('multer-s3');
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");

@@ -3,8 +3,7 @@ const express = require('express');
 const advertisementRouter = express.Router();
 const prisma = require('../lib/prismaClient');
 const { imagePathsToS3Url } = require('../lib/utilityFunctions');
-const {uploadImage, makeUpload} = require('../lib/imageBucket');
-const fs = require('fs');
+const {uploadImage, makeUpload, deleteImage} = require('../lib/imageBucket');
 const { isEmpty } = require('lodash');
 
 require('dotenv').config();
@@ -58,7 +57,7 @@ advertisementRouter.post(
                     const theBasicAd = await prisma.advertisements.findFirst({ where: { ownerId: id, adType: 'BASIC' } });
 
                     if (theBasicAd) {
-                        await uploadImage(folderName, fileName, fileContent);
+                        await deleteImage("advertisement", imagePath);
                         return res.status(400).json({ message: `You already created a basic advertisement, if you want to create more, please select type "EXTRA"; you can edit or delete the current basic advertisement.` });
                     }
                 }
@@ -137,10 +136,8 @@ advertisementRouter.post(
 
                 //If there's error in error holder
                 if (error && errorMessage && errorStack) {
-                    //multer is a kind of middleware, if file is valid, multer will add it to upload folder. Following code are responsible for deleting files if error happened.
-                    if (fs.existsSync(imagePath)) {
-                        fs.unlinkSync(imagePath);
-                    }
+                    await deleteImage("advertisement", imagePath); // delet image if it already exists
+
                     let tempError = error;
                     let tempErrorMessage = errorMessage;
                     let tempErrorStack = errorStack;
@@ -481,11 +478,8 @@ advertisementRouter.put(
 
                 //If there's error in error holder
                 if (error && errorMessage && errorStack) {
-                    //multer is a kind of middleware, if file is valid, multer will add it to upload folder. Following code are responsible for deleting files if error happened.
                     if (req.file) {
-                        if (fs.existsSync(req.file.path)) {
-                            fs.unlinkSync(req.file.path);
-                        }
+                        await deleteImage("advertisement", req.file.path); // delete image if creation process errored
                     }
                     let tempError = error;
                     let tempErrorMessage = errorMessage;
@@ -511,9 +505,7 @@ advertisementRouter.put(
                 }
                 let newImagePath;
                 if (req.file) {
-                    if (fs.existsSync(theAdvertisement.imagePath)) {
-                        fs.unlinkSync(theAdvertisement.imagePath);
-                    }
+                    await deleteImage("advertisement", theAdvertisement.imagePath);
                     newImagePath = req.file.path;
                 }
 
@@ -584,11 +576,8 @@ advertisementRouter.delete(
                     res.status(404).send("Advertisement which needs to be deleted not found!");
                 } else {
                     if (theAdvertisement.ownerId === loggedInUserId) {
-
-                        if (fs.existsSync(theAdvertisement.imagePath)) {
-                            fs.unlinkSync(theAdvertisement.imagePath);
-                        };
-
+                        await deleteImage("advertisement", theAdvertisement.imagePath);
+                        
                         await prisma.advertisements.delete({
                             where: {
                                 id: parsedAdvertisementId

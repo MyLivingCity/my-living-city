@@ -8,14 +8,13 @@ import { IUser } from "src/lib/types/data/user.type";
 import SpecifiedCommunitySection from "../partials/CommunityDashboardContent/SpecifiedCommunitySection";
 
 interface CommunityDashboardContentProps {
-    userData: IUser
     data: ISegmentAggregateInfo,
     segmenData: ISegment,
     topIdeas: IIdeaWithAggregations[]
     segmentIds: any[]
 }
 
-const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({userData, data, segmenData, topIdeas, segmentIds} : CommunityDashboardContentProps) => {
+const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({ data, segmenData, topIdeas, segmentIds} : CommunityDashboardContentProps) => {
 
     // Filter only the segmentIds that have a segType of 'Segment'
     // Then map it to {id: id, name: name}

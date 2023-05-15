@@ -63,10 +63,7 @@ avatarRouter.get(
             }
           });
 
-          if(fs.existsSync(originalPath)){
-            fs.unlinkSync(originalPath);
-          }
-
+          await deleteImage("avatar", originalPath);
           res.status(200).json(result);
     
         } catch (error) {

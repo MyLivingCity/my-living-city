@@ -42,7 +42,7 @@ const CommunityDashboardPage: React.FC<CommunityDashboardPageProps> = (props) =>
 
 
     const {
-      data: segmentAggregatData,
+      data: segmentAggregateData,
       isLoading: isAggregateLoading,
       isError: isAggregateError,
     } = useSegmentInfoAggregate(parseInt(segId));
@@ -54,8 +54,7 @@ const CommunityDashboardPage: React.FC<CommunityDashboardPageProps> = (props) =>
 
     const {
       data: iData,
-      error: iError,
-      isLoading: iLoading,
+      isLoading: iIsLoading,
       isError: iIsError,
     } = useIdeasHomepage();
 
@@ -68,7 +67,7 @@ const CommunityDashboardPage: React.FC<CommunityDashboardPageProps> = (props) =>
     }
 
 
-    if (isAggregateError || isSegmentInfoError || iError || isUserSegmentsError) {
+    if (isAggregateError || isSegmentInfoError || iIsError || isUserSegmentsError) {
         return (
           <div className="wrapper">
             <p>
@@ -78,7 +77,7 @@ const CommunityDashboardPage: React.FC<CommunityDashboardPageProps> = (props) =>
         );
     }
 
-    if (isAggregateLoading || isSegmentInfoLoading || iLoading || isUserSegmentsLoading) {
+    if (isAggregateLoading || isSegmentInfoLoading || iIsLoading || isUserSegmentsLoading) {
         return (
           <div className="wrapper">
             <LoadingSpinner />
@@ -101,7 +100,7 @@ const CommunityDashboardPage: React.FC<CommunityDashboardPageProps> = (props) =>
     return (
         <>
             <div className="wrapper">
-                <CommunityDashboardContent topIdeas={filteredTopIdeas()} data={segmentAggregatData!} segmenData={segmentInfoData!} segmentIds={userSegments} />
+                <CommunityDashboardContent topIdeas={filteredTopIdeas()} data={segmentAggregateData!} segmentData={segmentInfoData!} segmentIds={userSegments} />
             </div>
         </>
     );

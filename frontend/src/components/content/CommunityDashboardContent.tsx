@@ -4,23 +4,22 @@ import {ISegmentAggregateInfo, ISegment} from "./../../lib/types/data/segment.ty
 import { Col, Container, Row, Card, ListGroup, DropdownButton, Dropdown, } from 'react-bootstrap';
 import { capitalizeFirstLetterEachWord } from "./../../lib/utilityFunctions";
 import { IIdeaWithAggregations } from "src/lib/types/data/idea.type";
-import { IUser } from "src/lib/types/data/user.type";
 import SpecifiedCommunitySection from "../partials/CommunityDashboardContent/SpecifiedCommunitySection";
 
 interface CommunityDashboardContentProps {
     data: ISegmentAggregateInfo,
-    segmenData: ISegment,
+    segmentData: ISegment,
     topIdeas: IIdeaWithAggregations[]
     segmentIds: any[]
 }
 
-const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({ data, segmenData, topIdeas, segmentIds} : CommunityDashboardContentProps) => {
+const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({ data, segmentData, topIdeas, segmentIds} : CommunityDashboardContentProps) => {
 
     // Filter only the segmentIds that have a segType of 'Segment'
     // Then map it to {id: id, name: name}
     const segmentIdsFiltered = ([segmentIds]).filter((segId: any) => segId.segType === 'Segment').map((segId: any) => ({id: segId.id, name: segId.name}));
 
-    const [currCommunityName, setCurrCommunityName] = useState(segmenData.name);
+    const [currCommunityName, setCurrCommunityName] = useState(segmentData.name);
     const [currCommunityPosts, setCurrCommunityPosts] = useState(topIdeas);
 
     const handleCommunityChange = (communityName: string, type: string) => {
@@ -77,7 +76,7 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({ d
     return (
         <Container className="user-profile-content w-100">
             <Row className='mb-4 mt-4 justify-content-left'>
-                <h1 className="pb-2 pt-2 display-6">Community: {capitalizeFirstLetterEachWord(segmenData.name)}</h1>
+                <h1 className="pb-2 pt-2 display-6">Community: {capitalizeFirstLetterEachWord(segmentData.name)}</h1>
                 <DropdownButton className='pt-3 ml-2 display-6' title="Available Communities">
                     {/* Use segmentIdsFiltered to dynamically add segments */}
                     {segmentIdsFiltered.map((segId: any) => (
@@ -158,9 +157,9 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({ d
                             <ListGroup.Item 
                             action 
                             active
-                            onClick={() => handleCommunityChange(segmenData.name, "Segment")}
+                            onClick={() => handleCommunityChange(segmentData.name, "Segment")}
                             >
-                                {capitalizeFirstLetterEachWord(segmenData.name)}
+                                {capitalizeFirstLetterEachWord(segmentData.name)}
                             </ListGroup.Item>
                         </ListGroup>
                     </Card>

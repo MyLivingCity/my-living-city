@@ -152,36 +152,60 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
 
       <Row as="article" className="system-updates">
         <SystemUpdates
-          userFollowedideas={
-            // Concat userFollowedIdeaData and userEndorsedIdeaData w/o duplicates
+          header="Followed Posts"
+          userIdeas={
             (ideaData ?? []).filter((idea) => {
               return (
                 (userFollowedIdeaData ?? []).some((followedIdea) => {
                   return followedIdea.id === idea.id;
-                }) ||
-                (userEndorsedIdeaData ?? []).some((endorsedIdea) => {
-                  return endorsedIdea.id === idea.id;
                 })
               );
             })
           }
           proposals={pData!}
-          endorser={canEndorse}
           isLoading={
             ideaLoading ||
             pLoading ||
-            userFollowedIsLoading ||
-            userEndorsedLoading
+            userFollowedIsLoading
           }
           isError={
             ideaIsError ||
             pIsError ||
-            userFollowedIsError ||
-            userEndorsedIsError
+            userFollowedIsError
           }
         />
       </Row>
-      <br />
+      
+      {canEndorse && 
+        <>
+          <br />
+          <Row as="article" className="system-updates">
+            <SystemUpdates
+              header="Endorsed Posts"
+              userIdeas={
+                (ideaData ?? []).filter((idea) => {
+                  return (
+                    (userEndorsedIdeaData ?? []).some((endorsedIdea) => {
+                      return endorsedIdea.id === idea.id;
+                    })
+                  );
+                })
+              }
+              proposals={pData!}
+              isLoading={
+                ideaLoading ||
+                pLoading ||
+                userEndorsedLoading
+              }
+              isError={
+                ideaIsError ||
+                pIsError ||
+                userEndorsedIsError
+              }
+            />
+          </Row>    
+        </>
+      }
       <br />
       <Row as="article" className="new-and-trending">
         <NewAndTrendingSection

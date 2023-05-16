@@ -4,7 +4,6 @@ import LoadingSpinner from "../components/ui/LoadingSpinner";
 import { useSegmentInfoAggregate, useSingleSegmentBySegmentId } from "./../hooks/segmentHooks";
 import { useIdeasHomepage } from "src/hooks/ideaHooks";
 import { IIdeaWithAggregations } from "src/lib/types/data/idea.type";
-import { useUserWithJwtVerbose } from "src/hooks/userHooks";
 import { useContext } from "react";
 import { UserProfileContext } from "src/contexts/UserProfile.Context";
 import { useAllUserSegments } from "src/hooks/userSegmentHooks";
@@ -20,50 +19,30 @@ const CommunityDashboardPage: React.FC<CommunityDashboardPageProps> = (props) =>
         },
     } = props;
 
-    const { logout, user, token } = useContext(UserProfileContext);
-    const { data: userData } = useUserWithJwtVerbose({
-      jwtAuthToken: token!,
-      shouldTrigger: token != null,
-    });
+    const { user, token } = useContext(UserProfileContext);
 
     const {
-        data: userSegments,
-        isLoading: isUserSegmentsLoading,
-        isError: isUserSegmentsError
-    } = useAllUserSegments(token, user?.id || null);
-
-    // if segId == 0 then use userSegments to set segId to the home segment
-    if (parseInt(segId, 10) === 0 && userSegments) {
-        let home_segment_id = 0
-        if (Array.isArray(userSegments)) {
-            home_segment_id = (userSegments).filter((seg: any) => seg.segType === "Segment" && seg.userType === "Resident")[0].homeSegmentId;
-        } else {
-            home_segment_id = userSegments.homeSegmentId
-        }
-
-        props.history.push(`/community-dashboard/${home_segment_id}`);
-        // segId = home_segment_id.toString();
-        window.location.reload();
+      data: segmentAggregateData,
+      isLoading: isAggregateLoading,
+      isError: isAggregateError,
+    } = useSegmentInfoAggregate(parseInt(segId));
+    const {
+      data: segmentInfoData,
+      isLoading: isSegmentInfoLoading,
+      isError: isSegmentInfoError,
+    } = useSingleSegmentBySegmentId(parseInt(segId));
+    const {
+      data: iData,
+      isLoading: iIsLoading,
+      isError: iIsError,
+    } = useIdeasHomepage();
+    const allUserSegmentsQueryResult = useAllUserSegments(token, user?.id || null);
+    // const segmentInfoAggregateQueryResult = useSegmentInfoAggregate(parseInt(segId));
+    // if segId == 0 then use segmentIds to set segId to the home segment
+    if (parseInt(segId) === 0 && allUserSegmentsQueryResult.data?.homeSegmentId) {
+      props.history.push(`/community-dashboard/${allUserSegmentsQueryResult.data.homeSegmentId}`);
+      window.location.reload();
     }
-
-
-    const {data: segmentAggregatData,
-            error, 
-            isLoading: isAggregateLoading, 
-            isError: isAggregateError
-        } = useSegmentInfoAggregate(parseInt(segId));
-    const {data: segmentInfoData,
-        error: segmentInfoError,
-        isLoading: isSegmentInfoLoading,
-        isError: isSegmentInfoError,
-        } = useSingleSegmentBySegmentId(parseInt(segId));
-
-    const {
-        data: iData,
-        error: iError,
-        isLoading: iLoading,
-        isError: iIsError,
-        } = useIdeasHomepage();
 
     if (segId === "0") {
         return (
@@ -74,7 +53,7 @@ const CommunityDashboardPage: React.FC<CommunityDashboardPageProps> = (props) =>
     }
 
 
-    if (isAggregateError || isSegmentInfoError || iError || isUserSegmentsError) {
+    if (isAggregateError || isSegmentInfoError || iIsError) {
         return (
           <div className="wrapper">
             <p>
@@ -84,7 +63,7 @@ const CommunityDashboardPage: React.FC<CommunityDashboardPageProps> = (props) =>
         );
     }
 
-    if (isAggregateLoading || isSegmentInfoLoading || iLoading || userData === null || userData === undefined || isUserSegmentsLoading) {
+    if (isAggregateLoading || isSegmentInfoLoading || iIsLoading) {
         return (
           <div className="wrapper">
             <LoadingSpinner />
@@ -105,11 +84,17 @@ const CommunityDashboardPage: React.FC<CommunityDashboardPageProps> = (props) =>
     }
 
     return (
-        <>
-            <div className="wrapper">
-                <CommunityDashboardContent userData ={userData!} topIdeas={filteredTopIdeas()} data={segmentAggregatData!} segmenData={segmentInfoData!} segmentIds={userSegments} />
-            </div>
-        </>
+      <>
+        <div className="wrapper">
+          <CommunityDashboardContent
+            topIdeas={filteredTopIdeas()}
+            data={segmentAggregateData!}
+            segmentData={segmentInfoData!}
+            allUserSegmentsQueryResult={allUserSegmentsQueryResult}
+            // segmentInfoAggregateQueryResult={segmentInfoAggregateQueryResult}
+          />
+        </div>
+      </>
     );
 }
 

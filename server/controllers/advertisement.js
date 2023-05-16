@@ -4,83 +4,62 @@ const advertisementRouter = express.Router();
 const prisma = require('../lib/prismaClient');
 const { imagePathsToS3Url } = require('../lib/utilityFunctions');
 
+const {uploadImage, makeUpload} = require('../lib/imageBucket');
 const fs = require('fs');
 
 const { isEmpty } = require('lodash');
 const { UserType } = require('@prisma/client');
 
-const multer = require('multer');
+require('dotenv').config();
+const AWS = require('aws-sdk');
+const { limits } = require('argon2');
 
-//multer storage policy, including file destination and file naming policy
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, './uploads/adImage');
-    },
-    filename: function (req, file, cb) {
-        cb(null, Date.now() + '-' + file.originalname);
-    }
-});
+const { AWS_CONFIG, AWS_S3_BUCKET_NAME } = require("../lib/constants");
 
-//file filter policy, only accept image file
-const theFileFilter = (req, file, cb) => {
-    console.log(file);
-    if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'image/tiff' || file.mimetype === 'image/webp' || file.mimetype === 'image/jpg') {
-        cb(null, true);
-    } else {
-        cb(new Error('file format not supported'), false);
-    }
-}
-//const variable for 10MB max file size in bytes
+const s3 = new AWS.S3();
 const maxFileSize = 10485760;
-//multer upload project, setting receiving mode and which key components to use
-const upload = multer({ storage: storage, limits: { fileSize: maxFileSize }, fileFilter: theFileFilter }).single('imagePath');
+const upload = makeUpload("advertisement");
+
 //Error information holder
 let error = '';
 let errorMessage = '';
 let errorStack = '';
+
 //For handling post request
 advertisementRouter.post(
     '/create',
-    passport.authenticate('jwt', { session: false }),
+    [passport.authenticate('jwt', { session: false }),upload],
     async (req, res) => {
-        //multer error handling method
-        upload(req, res, function (err) {
-            if (err) {
-                console.log(err);
-                error += err + ' ';
-                errorMessage += err + ' ';
-                errorStack += err + ' ';
-            }
-        });
+
         try {
+            let imagePath = req.file.key.substring(req.file.key.indexOf("/")+1);;
             //get email and user id from request
             const { email, id } = req.user;
+            
             //find the requesting user in the database
             const theUser = await prisma.user.findUnique({
                 where: { id: id },
                 select: { userType: true }
             });
 
+            console.log("usertype:", theUser.userType=="BUSINESS");
             //test to see if the user is an admin or business user
-            if (theUser.userType == "ADMIN" || theUser.userType == "BUSINESS" || theUser.userType == "COMMUNITY") {
+            if (
+                theUser.userType == "ADMIN" || 
+                theUser.userType == "BUSINESS" || 
+                theUser.userType == "COMMUNITY"
+                ) {
 
                 //if there's no object in the request body
                 if (isEmpty(req.body)) {
                     return res.status(400).json({
+                        
                         message: 'The objects in the request body are missing',
                         details: {
                             errorMessage: 'Creating an advertisement must supply necessary fields explicitly.',
                             errorStack: 'necessary fields must be provided in the body with a valid id found in the database.',
                         }
                     })
-                }
-
-                //Image path holder
-                let imagePath = '';
-                //if there's req.file been parsed by multer
-                if (req.file) {
-                    //console.log(req.file);
-                    imagePath = req.file.path;
                 }
 
                 //decompose necessary fields from request body
@@ -90,9 +69,7 @@ advertisementRouter.post(
                     const theBasicAd = await prisma.advertisements.findFirst({ where: { ownerId: id, adType: 'BASIC' } });
 
                     if (theBasicAd) {
-                        if (fs.existsSync(imagePath)) {
-                            fs.unlinkSync(imagePath);
-                        }
+                        await uploadImage(folderName, fileName, fileContent);
                         return res.status(400).json({ message: `You already created a basic advertisement, if you want to create more, please select type "EXTRA"; you can edit or delete the current basic advertisement.` });
                     }
                 }
@@ -127,14 +104,13 @@ advertisementRouter.post(
                     }
                 }
 
-                //console.log(adTitle.length);
-
                 //if there's no published field in the reqeust body or published field is not valid
                 if (!published) {
                     error += 'An published filed must be provided. ';
                     errorMessage += 'Creating an advertisement must explicitly supply a published field. ';
                     errorStack += 'Published must be defined in the body with a valid value. ';
                 }
+
                 //published value container variable
                 let thePublished = false;
                 //Transfer the published variable into boolean value, if value can't be transfered into boolean, push error into error stack.
@@ -193,6 +169,7 @@ advertisementRouter.post(
                 }
 
                 let createAnAdvertisement;
+                console.log("imagePath:",imagePath);
 
                 //if advertisement type is extra, create one with duration date; if not, create one without duration.
                 if (adType == 'EXTRA') {
@@ -239,7 +216,8 @@ advertisementRouter.post(
                     }
                 });
             }
-        } catch (error) {
+        }
+        catch (error) {
             console.log(error);
             res.status(400).json({
                 message: "An error occured while trying to create an Advertisement.",

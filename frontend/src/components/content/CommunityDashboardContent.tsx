@@ -141,19 +141,23 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
   return (
     <Container className="user-profile-content w-100">
       <Row className="mb-4 mt-4 justify-content-left">
-        <h1 className="pb-2 pt-2 display-6">
-          Community:
-        </h1>
-        {isSegmentIdsLoading && <LoadingSpinnerInline/>}
-        {isSegmentIdsError && <ErrorMessage message="Error loading available communities."/>}
+        <h1 className="pb-2 pt-2 display-6">Community:</h1>
+        {isSegmentIdsLoading && <LoadingSpinnerInline />}
+        {isSegmentIdsError && (
+          <ErrorMessage message="Error loading available communities." />
+        )}
         {!isSegmentIdsLoading && !isSegmentIdsError && (
           <DropdownButton
-            className="pt-3 ml-2 display-6"
+            className="pt-2 ml-2 display-6 custom-dropdown-button"
             title={capitalizeFirstLetterEachWord(segmentData.name)}
           >
-            {/* Use segmentIdsFiltered to dynamically add segments */}
             {segmentsArray.map((segment: any) => (
-              <Dropdown.Item className="text-center" href={`/community-dashboard/${segment.id}`} disabled={segment.id === currentSegmentId}>
+              <Dropdown.Item
+                key={segment.id}
+                className="text-center"
+                href={`/community-dashboard/${segment.id}`}
+                disabled={segment.id === currentSegmentId}
+              >
                 {capitalizeFirstLetterEachWord(segment.name)}
               </Dropdown.Item>
             ))}

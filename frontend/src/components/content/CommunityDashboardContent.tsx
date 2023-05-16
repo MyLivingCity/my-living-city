@@ -23,10 +23,10 @@ import ErrorMessage from "../ui/ErrorMessage";
 import { useParams } from "react-router-dom";
 
 interface CommunityDashboardContentProps {
-  segmentData: ISegment;
   topIdeas: IIdeaWithAggregations[];
   allUserSegmentsQueryResult: UseQueryResult<any, IFetchError>;
-  segmentInfoAggregateQueryResult: UseQueryResult<ISegmentAggregateInfo, IFetchError>
+  segmentInfoAggregateQueryResult: UseQueryResult<ISegmentAggregateInfo, IFetchError>;
+  singleSegmentBySegmentIdQueryResult: UseQueryResult<ISegment, IFetchError>;
 }
 
 interface RouteParams {
@@ -34,10 +34,10 @@ interface RouteParams {
 }
 
 const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
-  segmentData,
   topIdeas,
   allUserSegmentsQueryResult,
-  segmentInfoAggregateQueryResult
+  segmentInfoAggregateQueryResult,
+  singleSegmentBySegmentIdQueryResult
 }: CommunityDashboardContentProps) => {
     const {segId} = useParams<RouteParams>();
     const currentSegmentId = parseInt(segId)
@@ -52,6 +52,11 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
     isLoading: isSegmentInfoAggregateLoading,
     isError: isSegmentInfoAggregateError,
   } = segmentInfoAggregateQueryResult
+  const {
+    data: segmentData,
+    isLoading: isSegmentDataLoading,
+    isError: isSegmentDataError,
+  } = singleSegmentBySegmentIdQueryResult
   // Get segments as array of objects with id and name, but not super- or sub-segments.
   const segmentsArray = [];
   if (!isSegmentIdsLoading && !isSegmentIdsError) {
@@ -89,7 +94,7 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
       }
   }
   
-    const [currCommunityName, setCurrCommunityName] = useState(segmentData.name);
+    const [currCommunityName, setCurrCommunityName] = useState(segmentData?.name || "");
     const [currCommunityPosts, setCurrCommunityPosts] = useState(topIdeas);
 
     const handleCommunityChange = (communityName: string, type: string) => {
@@ -147,27 +152,30 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
     <Container className="user-profile-content w-100">
       <Row className="mb-4 mt-4 justify-content-left">
         <h1 className="pb-2 pt-2 display-6">Community:</h1>
-        {isSegmentIdsLoading && <LoadingSpinnerInline />}
-        {isSegmentIdsError && (
+        {(isSegmentIdsLoading || isSegmentDataLoading) && (
+          <LoadingSpinnerInline />
+        )}
+        {(isSegmentIdsError || isSegmentDataError) && (
           <ErrorMessage message="Error loading available communities." />
         )}
-        {!isSegmentIdsLoading && !isSegmentIdsError && (
-          <DropdownButton
-            className="pt-2 ml-2 display-6 custom-dropdown-button"
-            title={capitalizeFirstLetterEachWord(segmentData.name)}
-          >
-            {segmentsArray.map((segment: any) => (
-              <Dropdown.Item
-                key={segment.id}
-                className="text-center"
-                href={`/community-dashboard/${segment.id}`}
-                disabled={segment.id === currentSegmentId}
-              >
-                {capitalizeFirstLetterEachWord(segment.name)}
-              </Dropdown.Item>
-            ))}
-          </DropdownButton>
-        )}
+        {!(isSegmentIdsLoading || isSegmentDataLoading) &&
+          !(isSegmentIdsError || isSegmentDataError) && (
+            <DropdownButton
+              className="pt-2 ml-2 display-6 custom-dropdown-button"
+              title={capitalizeFirstLetterEachWord(segmentData!.name)}
+            >
+              {segmentsArray.map((segment: any) => (
+                <Dropdown.Item
+                  key={segment.id}
+                  className="text-center"
+                  href={`/community-dashboard/${segment.id}`}
+                  disabled={segment.id === currentSegmentId}
+                >
+                  {capitalizeFirstLetterEachWord(segment.name)}
+                </Dropdown.Item>
+              ))}
+            </DropdownButton>
+          )}
       </Row>
       <Row>
         <Col>
@@ -301,22 +309,25 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
               defaultActiveKey="#link1"
               id="municipality-list"
             >
-              {isSegmentInfoAggregateLoading && <LoadingSpinnerInline />}
-              {!isSegmentInfoAggregateLoading &&
-                isSegmentInfoAggregateError && (
+              {(isSegmentInfoAggregateLoading || isSegmentDataLoading) && (
+                <LoadingSpinnerInline />
+              )}
+              {!(isSegmentInfoAggregateLoading || isSegmentDataLoading) &&
+                (isSegmentInfoAggregateError || isSegmentDataError) && (
                   <ErrorMessage message="Unable to load municipality." />
                 )}
-              {!isSegmentInfoAggregateLoading &&
-                !isSegmentInfoAggregateError && (
-              <ListGroup.Item
-                action
-                active
-                onClick={() =>
-                  handleCommunityChange(segmentData.name, "Segment")
-                }
-              >
-                {capitalizeFirstLetterEachWord(segmentData.name)}
-              </ListGroup.Item>)}
+              {!(isSegmentInfoAggregateLoading || isSegmentDataLoading) &&
+                !(isSegmentInfoAggregateError || isSegmentDataError) && (
+                  <ListGroup.Item
+                    action
+                    active
+                    onClick={() =>
+                      handleCommunityChange(segmentData!.name, "Segment")
+                    }
+                  >
+                    {capitalizeFirstLetterEachWord(segmentData!.name)}
+                  </ListGroup.Item>
+                )}
             </ListGroup>
           </Card>
         </Col>
@@ -326,13 +337,13 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
               <h4>Neighbourhood</h4>
             </Card.Header>
             <ListGroup variant="flush" id="neighbourhood-list">
-            {isSegmentInfoAggregateLoading && <LoadingSpinnerInline />}
+              {isSegmentInfoAggregateLoading && <LoadingSpinnerInline />}
               {!isSegmentInfoAggregateLoading &&
                 isSegmentInfoAggregateError && (
                   <ErrorMessage message="Unable to load region." />
                 )}
               {!isSegmentInfoAggregateLoading &&
-                !isSegmentInfoAggregateError && 
+              !isSegmentInfoAggregateError &&
               segmentInfoAggregateData!.subSegments.length > 0 ? (
                 segmentInfoAggregateData!.subSegments.map((subSeg) => (
                   <ListGroup.Item

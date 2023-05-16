@@ -21,17 +21,13 @@ const CommunityDashboardPage: React.FC<CommunityDashboardPageProps> = (props) =>
 
     const { user, token } = useContext(UserProfileContext);
     const {
-      data: segmentInfoData,
-      isLoading: isSegmentInfoLoading,
-      isError: isSegmentInfoError,
-    } = useSingleSegmentBySegmentId(parseInt(segId));
-    const {
       data: iData,
       isLoading: iIsLoading,
       isError: iIsError,
     } = useIdeasHomepage();
     const allUserSegmentsQueryResult = useAllUserSegments(token, user?.id || null);
     const segmentInfoAggregateQueryResult = useSegmentInfoAggregate(parseInt(segId));
+    const singleSegmentBySegmentIdQueryResult = useSingleSegmentBySegmentId(parseInt(segId));
     // if segId == 0 then use segmentIds to set segId to the home segment
     if (parseInt(segId) === 0 && allUserSegmentsQueryResult.data?.homeSegmentId) {
       props.history.push(`/community-dashboard/${allUserSegmentsQueryResult.data.homeSegmentId}`);
@@ -47,7 +43,7 @@ const CommunityDashboardPage: React.FC<CommunityDashboardPageProps> = (props) =>
     }
 
 
-    if (isSegmentInfoError || iIsError) {
+    if (iIsError) {
         return (
           <div className="wrapper">
             <p>
@@ -57,7 +53,7 @@ const CommunityDashboardPage: React.FC<CommunityDashboardPageProps> = (props) =>
         );
     }
 
-    if (isSegmentInfoLoading || iIsLoading) {
+    if (iIsLoading) {
         return (
           <div className="wrapper">
             <LoadingSpinner />
@@ -66,10 +62,10 @@ const CommunityDashboardPage: React.FC<CommunityDashboardPageProps> = (props) =>
     }
 
     const filteredTopIdeas = () => {
-        const segmentId = segmentInfoData?.segId;
+        const segmentId = singleSegmentBySegmentIdQueryResult.data?.segId;
         const filteredTopIdeas: IIdeaWithAggregations[] = [];
         iData && iData.forEach(idea => {
-            if (idea.segId && idea.segId === segmentId || (idea.segId == null && idea.superSegId == segmentInfoData?.superSegId )) {
+            if (idea.segId && idea.segId === segmentId || (idea.segId == null && idea.superSegId == singleSegmentBySegmentIdQueryResult.data?.superSegId )) {
                 filteredTopIdeas.push(idea);
             }
 
@@ -82,9 +78,9 @@ const CommunityDashboardPage: React.FC<CommunityDashboardPageProps> = (props) =>
         <div className="wrapper">
           <CommunityDashboardContent
             topIdeas={filteredTopIdeas()}
-            segmentData={segmentInfoData!}
             allUserSegmentsQueryResult={allUserSegmentsQueryResult}
             segmentInfoAggregateQueryResult={segmentInfoAggregateQueryResult}
+            singleSegmentBySegmentIdQueryResult={singleSegmentBySegmentIdQueryResult}
           />
         </div>
       </>

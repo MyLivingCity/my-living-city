@@ -18,7 +18,7 @@ interface SystemUpdatesProps {
 
 const SystemUpdates: React.FC<SystemUpdatesProps> = ({
   header,
-  userIdeas: userFollowedideas,
+  userIdeas,
   proposals,
   endorser,
   isLoading,
@@ -63,8 +63,8 @@ const SystemUpdates: React.FC<SystemUpdatesProps> = ({
           <Carousel controls={true} interval={null} slide={true} fade={false}>
             {[...Array(4)].map((x, i) => (
               <Carousel.Item key={i}>
-                {userFollowedideas
-                  ? userFollowedideas
+                {userIdeas
+                  ? userIdeas
                       .slice(i * 3, i * 3 + 3)
                       .map((idea: IIdeaWithAggregations) => {
                         return idea && idea.active ? (

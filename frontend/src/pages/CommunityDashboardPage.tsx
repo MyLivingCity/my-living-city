@@ -20,12 +20,6 @@ const CommunityDashboardPage: React.FC<CommunityDashboardPageProps> = (props) =>
     } = props;
 
     const { user, token } = useContext(UserProfileContext);
-
-    const {
-      data: segmentAggregateData,
-      isLoading: isAggregateLoading,
-      isError: isAggregateError,
-    } = useSegmentInfoAggregate(parseInt(segId));
     const {
       data: segmentInfoData,
       isLoading: isSegmentInfoLoading,
@@ -37,7 +31,7 @@ const CommunityDashboardPage: React.FC<CommunityDashboardPageProps> = (props) =>
       isError: iIsError,
     } = useIdeasHomepage();
     const allUserSegmentsQueryResult = useAllUserSegments(token, user?.id || null);
-    // const segmentInfoAggregateQueryResult = useSegmentInfoAggregate(parseInt(segId));
+    const segmentInfoAggregateQueryResult = useSegmentInfoAggregate(parseInt(segId));
     // if segId == 0 then use segmentIds to set segId to the home segment
     if (parseInt(segId) === 0 && allUserSegmentsQueryResult.data?.homeSegmentId) {
       props.history.push(`/community-dashboard/${allUserSegmentsQueryResult.data.homeSegmentId}`);
@@ -53,7 +47,7 @@ const CommunityDashboardPage: React.FC<CommunityDashboardPageProps> = (props) =>
     }
 
 
-    if (isAggregateError || isSegmentInfoError || iIsError) {
+    if (isSegmentInfoError || iIsError) {
         return (
           <div className="wrapper">
             <p>
@@ -63,7 +57,7 @@ const CommunityDashboardPage: React.FC<CommunityDashboardPageProps> = (props) =>
         );
     }
 
-    if (isAggregateLoading || isSegmentInfoLoading || iIsLoading) {
+    if (isSegmentInfoLoading || iIsLoading) {
         return (
           <div className="wrapper">
             <LoadingSpinner />
@@ -88,10 +82,9 @@ const CommunityDashboardPage: React.FC<CommunityDashboardPageProps> = (props) =>
         <div className="wrapper">
           <CommunityDashboardContent
             topIdeas={filteredTopIdeas()}
-            data={segmentAggregateData!}
             segmentData={segmentInfoData!}
             allUserSegmentsQueryResult={allUserSegmentsQueryResult}
-            // segmentInfoAggregateQueryResult={segmentInfoAggregateQueryResult}
+            segmentInfoAggregateQueryResult={segmentInfoAggregateQueryResult}
           />
         </div>
       </>

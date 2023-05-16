@@ -23,10 +23,10 @@ import ErrorMessage from "../ui/ErrorMessage";
 import { useParams } from "react-router-dom";
 
 interface CommunityDashboardContentProps {
-  data: ISegmentAggregateInfo;
   segmentData: ISegment;
   topIdeas: IIdeaWithAggregations[];
   allUserSegmentsQueryResult: UseQueryResult<any, IFetchError>;
+  segmentInfoAggregateQueryResult: UseQueryResult<ISegmentAggregateInfo, IFetchError>
 }
 
 interface RouteParams {
@@ -34,10 +34,10 @@ interface RouteParams {
 }
 
 const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
-  data,
   segmentData,
   topIdeas,
   allUserSegmentsQueryResult,
+  segmentInfoAggregateQueryResult
 }: CommunityDashboardContentProps) => {
     const {segId} = useParams<RouteParams>();
     const currentSegmentId = parseInt(segId)
@@ -47,6 +47,11 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
     isLoading: isSegmentIdsLoading,
     isError: isSegmentIdsError,
   } = allUserSegmentsQueryResult;
+  const {
+    data: segmentInfoAggregateData,
+    isLoading: isSegmentInfoAggregateLoading,
+    isError: isSegmentInfoAggregateError,
+  } = segmentInfoAggregateQueryResult
   // Get segments as array of objects with id and name, but not super- or sub-segments.
   const segmentsArray = [];
   if (!isSegmentIdsLoading && !isSegmentIdsError) {
@@ -168,62 +173,89 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
         <Col>
           <h2>User Statistics</h2>
           <Card style={{ width: "25rem" }}>
-            <Row className="justify-content-center mt-3 mb-3">
-              <ListGroup variant="flush" className="">
-                {/* <ListGroup.Item><strong>Total Users</strong></ListGroup.Item> */}
-                <ListGroup.Item>
-                  <h5>Total Users</h5>
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  <strong>Residents</strong>
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  <strong>Students</strong>
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  <strong>Workers</strong>
-                </ListGroup.Item>
-              </ListGroup>
+            {isSegmentInfoAggregateLoading && <LoadingSpinnerInline />}
+            {!isSegmentInfoAggregateLoading && isSegmentInfoAggregateError && (
+              <ErrorMessage message="There was an error loading user statistics." />
+            )}
+            {!isSegmentInfoAggregateLoading && !isSegmentInfoAggregateError && (
+              <Row className="justify-content-center mt-3 mb-3">
+                <ListGroup variant="flush" className="">
+                  <ListGroup.Item>
+                    <h5>Total Users</h5>
+                  </ListGroup.Item>
+                  <ListGroup.Item>
+                    <strong>Residents</strong>
+                  </ListGroup.Item>
+                  <ListGroup.Item>
+                    <strong>Students</strong>
+                  </ListGroup.Item>
+                  <ListGroup.Item>
+                    <strong>Workers</strong>
+                  </ListGroup.Item>
+                </ListGroup>
 
-              <ListGroup variant="flush" className="">
-                <ListGroup.Item>
-                  <h5>{data.totalUsers}</h5>
-                </ListGroup.Item>
-                <ListGroup.Item>{data.residents}</ListGroup.Item>
-                <ListGroup.Item>{data.students}</ListGroup.Item>
-                <ListGroup.Item>{data.workers}</ListGroup.Item>
-              </ListGroup>
-            </Row>
+                <ListGroup variant="flush" className="">
+                  <ListGroup.Item>
+                    <h5>{segmentInfoAggregateData!.totalUsers}</h5>
+                  </ListGroup.Item>
+                  <ListGroup.Item>
+                    {segmentInfoAggregateData!.residents}
+                  </ListGroup.Item>
+                  <ListGroup.Item>
+                    {segmentInfoAggregateData!.students}
+                  </ListGroup.Item>
+                  <ListGroup.Item>
+                    {segmentInfoAggregateData!.workers}
+                  </ListGroup.Item>
+                </ListGroup>
+              </Row>
+            )}
           </Card>
         </Col>
         <Col>
           <h2>Post Statistics</h2>
           <Card style={{ width: "25rem" }}>
-            <Row className="justify-content-center mt-3 mb-3">
-              <ListGroup variant="flush" className="">
-                <ListGroup.Item>
-                  <h5>Total Posts</h5>
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  <strong>Ideas</strong>
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  <strong>Proposal</strong>
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  <strong>Projects</strong>
-                </ListGroup.Item>
-              </ListGroup>
+            {isSegmentInfoAggregateLoading && <LoadingSpinnerInline />}
+            {!isSegmentInfoAggregateLoading && isSegmentInfoAggregateError && (
+              <ErrorMessage message="There was an error loading user statistics." />
+            )}
+            {!isSegmentInfoAggregateLoading && !isSegmentInfoAggregateError && (
+              <Row className="justify-content-center mt-3 mb-3">
+                <ListGroup variant="flush" className="">
+                  <ListGroup.Item>
+                    <h5>Total Posts</h5>
+                  </ListGroup.Item>
+                  <ListGroup.Item>
+                    <strong>Ideas</strong>
+                  </ListGroup.Item>
+                  <ListGroup.Item>
+                    <strong>Proposal</strong>
+                  </ListGroup.Item>
+                  <ListGroup.Item>
+                    <strong>Projects</strong>
+                  </ListGroup.Item>
+                </ListGroup>
 
-              <ListGroup variant="flush" className="">
-                <ListGroup.Item>
-                  <h5>{data.ideas + data.proposals + data.projects}</h5>
-                </ListGroup.Item>
-                <ListGroup.Item>{data.ideas}</ListGroup.Item>
-                <ListGroup.Item>{data.proposals}</ListGroup.Item>
-                <ListGroup.Item>{data.projects}</ListGroup.Item>
-              </ListGroup>
-            </Row>
+                <ListGroup variant="flush" className="">
+                  <ListGroup.Item>
+                    <h5>
+                      {segmentInfoAggregateData!.ideas +
+                        segmentInfoAggregateData!.proposals +
+                        segmentInfoAggregateData!.projects}
+                    </h5>
+                  </ListGroup.Item>
+                  <ListGroup.Item>
+                    {segmentInfoAggregateData!.ideas}
+                  </ListGroup.Item>
+                  <ListGroup.Item>
+                    {segmentInfoAggregateData!.proposals}
+                  </ListGroup.Item>
+                  <ListGroup.Item>
+                    {segmentInfoAggregateData!.projects}
+                  </ListGroup.Item>
+                </ListGroup>
+              </Row>
+            )}
           </Card>
         </Col>
       </Row>
@@ -235,14 +267,27 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
               <h4>Region</h4>
             </Card.Header>
             <ListGroup variant="flush" id="region-list">
-              <ListGroup.Item
-                action
-                onClick={() =>
-                  handleCommunityChange(data.superSegmentName, "SuperSegment")
-                }
-              >
-                {capitalizeFirstLetterEachWord(data.superSegmentName)}
-              </ListGroup.Item>
+              {isSegmentInfoAggregateLoading && <LoadingSpinnerInline />}
+              {!isSegmentInfoAggregateLoading &&
+                isSegmentInfoAggregateError && (
+                  <ErrorMessage message="Unable to load region." />
+                )}
+              {!isSegmentInfoAggregateLoading &&
+                !isSegmentInfoAggregateError && (
+                  <ListGroup.Item
+                    action
+                    onClick={() =>
+                      handleCommunityChange(
+                        segmentInfoAggregateData!.superSegmentName,
+                        "SuperSegment"
+                      )
+                    }
+                  >
+                    {capitalizeFirstLetterEachWord(
+                      segmentInfoAggregateData!.superSegmentName
+                    )}
+                  </ListGroup.Item>
+                )}
             </ListGroup>
           </Card>
         </Col>
@@ -256,6 +301,13 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
               defaultActiveKey="#link1"
               id="municipality-list"
             >
+              {isSegmentInfoAggregateLoading && <LoadingSpinnerInline />}
+              {!isSegmentInfoAggregateLoading &&
+                isSegmentInfoAggregateError && (
+                  <ErrorMessage message="Unable to load municipality." />
+                )}
+              {!isSegmentInfoAggregateLoading &&
+                !isSegmentInfoAggregateError && (
               <ListGroup.Item
                 action
                 active
@@ -264,7 +316,7 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
                 }
               >
                 {capitalizeFirstLetterEachWord(segmentData.name)}
-              </ListGroup.Item>
+              </ListGroup.Item>)}
             </ListGroup>
           </Card>
         </Col>
@@ -274,8 +326,15 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
               <h4>Neighbourhood</h4>
             </Card.Header>
             <ListGroup variant="flush" id="neighbourhood-list">
-              {data.subSegments.length > 0 ? (
-                data.subSegments.map((subSeg) => (
+            {isSegmentInfoAggregateLoading && <LoadingSpinnerInline />}
+              {!isSegmentInfoAggregateLoading &&
+                isSegmentInfoAggregateError && (
+                  <ErrorMessage message="Unable to load region." />
+                )}
+              {!isSegmentInfoAggregateLoading &&
+                !isSegmentInfoAggregateError && 
+              segmentInfoAggregateData!.subSegments.length > 0 ? (
+                segmentInfoAggregateData!.subSegments.map((subSeg) => (
                   <ListGroup.Item
                     action
                     onClick={() => handleCommunityChange(subSeg, "SubSegment")}
@@ -284,7 +343,7 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
                   </ListGroup.Item>
                 ))
               ) : (
-                <ListGroup.Item>No subSegments</ListGroup.Item>
+                <ListGroup.Item>No neighbourhoods found.</ListGroup.Item>
               )}
             </ListGroup>
           </Card>

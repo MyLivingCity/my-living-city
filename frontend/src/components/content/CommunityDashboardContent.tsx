@@ -20,6 +20,7 @@ import { UseQueryResult } from "react-query";
 import { IFetchError } from "src/lib/types/types";
 import LoadingSpinnerInline from "../ui/LoadingSpinnerInline";
 import ErrorMessage from "../ui/ErrorMessage";
+import { useParams } from "react-router-dom";
 
 interface CommunityDashboardContentProps {
   data: ISegmentAggregateInfo;
@@ -28,12 +29,19 @@ interface CommunityDashboardContentProps {
   allUserSegmentsQueryResult: UseQueryResult<any, IFetchError>;
 }
 
+interface RouteParams {
+    segId: string;
+}
+
 const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
   data,
   segmentData,
   topIdeas,
   allUserSegmentsQueryResult,
 }: CommunityDashboardContentProps) => {
+    const {segId} = useParams<RouteParams>();
+    const currentSegmentId = parseInt(segId)
+   
   const {
     data: segmentIdsObj,
     isLoading: isSegmentIdsLoading,
@@ -48,7 +56,7 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
       ) {
         segmentsArray.push({
           id: segmentIdsObj.homeSegmentId,
-          name: "🏠" + segmentIdsObj.homeSegmentName,
+          name: segmentIdsObj.homeSegmentName + " 🏠",
         });
       }
     
@@ -59,7 +67,7 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
       ) {
         segmentsArray.push({
           id: segmentIdsObj.workSegmentId,
-          name: "🏢" + segmentIdsObj.workSegmentName,
+          name: segmentIdsObj.workSegmentName + " 🏢",
         });
       }
     
@@ -71,12 +79,11 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
       ) {
         segmentsArray.push({
           id: segmentIdsObj.schoolSegmentId,
-          name: "🏫" + segmentIdsObj.schoolSegmentName,
+          name: segmentIdsObj.schoolSegmentName + " 🏫",
         });
       }
   }
   
-
     const [currCommunityName, setCurrCommunityName] = useState(segmentData.name);
     const [currCommunityPosts, setCurrCommunityPosts] = useState(topIdeas);
 
@@ -135,19 +142,19 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
     <Container className="user-profile-content w-100">
       <Row className="mb-4 mt-4 justify-content-left">
         <h1 className="pb-2 pt-2 display-6">
-          Community: {capitalizeFirstLetterEachWord(segmentData.name)}
+          Community:
         </h1>
         {isSegmentIdsLoading && <LoadingSpinnerInline/>}
         {isSegmentIdsError && <ErrorMessage message="Error loading available communities."/>}
         {!isSegmentIdsLoading && !isSegmentIdsError && (
           <DropdownButton
             className="pt-3 ml-2 display-6"
-            title="Available Communities"
+            title={capitalizeFirstLetterEachWord(segmentData.name)}
           >
             {/* Use segmentIdsFiltered to dynamically add segments */}
-            {segmentsArray.map((segId: any) => (
-              <Dropdown.Item href={`/community-dashboard/${segId.id}`}>
-                {capitalizeFirstLetterEachWord(segId.name)}
+            {segmentsArray.map((segment: any) => (
+              <Dropdown.Item className="text-center" href={`/community-dashboard/${segment.id}`} disabled={segment.id === currentSegmentId}>
+                {capitalizeFirstLetterEachWord(segment.name)}
               </Dropdown.Item>
             ))}
           </DropdownButton>

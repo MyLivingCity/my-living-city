@@ -37,7 +37,7 @@ const CommunityDashboardPage: React.FC<CommunityDashboardPageProps> = (props) =>
       isError: iIsError,
     } = useIdeasHomepage();
     const allUserSegmentsQueryResult = useAllUserSegments(token, user?.id || null);
-
+    // const segmentInfoAggregateQueryResult = useSegmentInfoAggregate(parseInt(segId));
     // if segId == 0 then use segmentIds to set segId to the home segment
     if (parseInt(segId) === 0 && allUserSegmentsQueryResult.data?.homeSegmentId) {
       props.history.push(`/community-dashboard/${allUserSegmentsQueryResult.data.homeSegmentId}`);
@@ -84,11 +84,17 @@ const CommunityDashboardPage: React.FC<CommunityDashboardPageProps> = (props) =>
     }
 
     return (
-        <>
-            <div className="wrapper">
-                <CommunityDashboardContent topIdeas={filteredTopIdeas()} data={segmentAggregateData!} segmentData={segmentInfoData!} allUserSegmentsQueryResult={allUserSegmentsQueryResult} />
-            </div>
-        </>
+      <>
+        <div className="wrapper">
+          <CommunityDashboardContent
+            topIdeas={filteredTopIdeas()}
+            data={segmentAggregateData!}
+            segmentData={segmentInfoData!}
+            allUserSegmentsQueryResult={allUserSegmentsQueryResult}
+            // segmentInfoAggregateQueryResult={segmentInfoAggregateQueryResult}
+          />
+        </div>
+      </>
     );
 }
 

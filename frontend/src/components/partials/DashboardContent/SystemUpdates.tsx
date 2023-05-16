@@ -10,7 +10,6 @@ interface SystemUpdatesProps {
   header: string;
   userIdeas: IIdeaWithAggregations[];
   proposals?: IProposalWithAggregations[];
-  endorser: boolean;
   postType?: string;
   isLoading?: boolean;
   isError?: boolean;
@@ -20,7 +19,6 @@ const SystemUpdates: React.FC<SystemUpdatesProps> = ({
   header,
   userIdeas,
   proposals,
-  endorser,
   isLoading,
   isError
 }) => {
@@ -51,13 +49,14 @@ const SystemUpdates: React.FC<SystemUpdatesProps> = ({
         `}
       </style>
 
-
       <h2 className="pb-1 border-bottom display-6">
-        {endorser ? `${header}` : "Followed Ideas"}
+        {header}
       </h2>
    
       {isLoading && <LoadingSpinner />}
+
       {!isLoading && isError && <ErrorMessage message="There was an error loading system updates."/>}
+      
       {!isLoading && !isError && (
         <>
           <Carousel controls={true} interval={null} slide={true} fade={false}>

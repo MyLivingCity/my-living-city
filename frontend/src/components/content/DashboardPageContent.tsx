@@ -163,7 +163,6 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
             })
           }
           proposals={pData!}
-          endorser={canEndorse}
           isLoading={
             ideaLoading ||
             pLoading ||
@@ -176,33 +175,37 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
           }
         />
       </Row>
-      <br />
-      <Row as="article" className="system-updates">
-        <SystemUpdates
-          header="Endorsed Posts"
-          userIdeas={
-            (ideaData ?? []).filter((idea) => {
-              return (
-                (userEndorsedIdeaData ?? []).some((endorsedIdea) => {
-                  return endorsedIdea.id === idea.id;
+      
+      {canEndorse && 
+        <>
+          <br />
+          <Row as="article" className="system-updates">
+            <SystemUpdates
+              header="Endorsed Posts"
+              userIdeas={
+                (ideaData ?? []).filter((idea) => {
+                  return (
+                    (userEndorsedIdeaData ?? []).some((endorsedIdea) => {
+                      return endorsedIdea.id === idea.id;
+                    })
+                  );
                 })
-              );
-            })
-          }
-          proposals={pData!}
-          endorser={canEndorse}
-          isLoading={
-            ideaLoading ||
-            pLoading ||
-            userEndorsedLoading
-          }
-          isError={
-            ideaIsError ||
-            pIsError ||
-            userEndorsedIsError
-          }
-        />
-      </Row>
+              }
+              proposals={pData!}
+              isLoading={
+                ideaLoading ||
+                pLoading ||
+                userEndorsedLoading
+              }
+              isError={
+                ideaIsError ||
+                pIsError ||
+                userEndorsedIsError
+              }
+            />
+          </Row>    
+        </>
+      }
       <br />
       <Row as="article" className="new-and-trending">
         <NewAndTrendingSection

@@ -1,11 +1,29 @@
+//required modules for uploading image to s3 bucket
+const AWS = require("aws-sdk");
+const e = require("express");
+const fs = require("fs");
+
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
-const { S3Client, GetObjectCommand } = require("@aws-sdk/client-s3");
+const { S3Client, GetObjectCommand, PutObjectCommand } = require("@aws-sdk/client-s3");
 const { AWS_CONFIG, AWS_S3_BUCKET_NAME } = require("./constants");
 
 const client = new S3Client(AWS_CONFIG);
 
-async function uploadImage() {
-    // todo
+async function uploadImage(folderName, fileName, fileContent) {
+    try{
+
+    const params = {
+        Bucket: AWS_S3_BUCKET_NAME,
+        Key: `${folderName}/${fileName}`,
+        Body: fileContent,
+    };
+
+    const command = new PutObjectCommand(params);
+    await client.send(command);
+    console.log("Uploaded Successully", response);
+    }catch(error){
+    console.error("Uploading failed", error.message);
+    }
 }
 
 const IMG_EXPIRY_TIME = 60; // in seconds

@@ -3,12 +3,44 @@ const AWS = require("aws-sdk");
 const e = require("express");
 const fs = require("fs");
 
+const multer = require('multer');
+const multerS3 = require('multer-s3');
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const { S3Client, GetObjectCommand, PutObjectCommand } = require("@aws-sdk/client-s3");
 const { AWS_CONFIG, AWS_S3_BUCKET_NAME } = require("./constants");
 
 const client = new S3Client(AWS_CONFIG);
 
+const maxFileSize = 10485760;
+
+const theFileFilter = (req, file, cb) => {
+    console.log(file);
+    if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'image/tiff' || file.mimetype === 'image/webp' || file.mimetype === 'image/jpg') {
+        cb(null, true);
+    } else {
+        cb(new Error('file format not supported'), false);
+    }
+}
+
+// make a multer variable 
+function makeUpload(folderName){
+    const upload = multer({
+    storage: multerS3({
+        s3: client,
+        bucket: AWS_S3_BUCKET_NAME,
+        key: function (req, file, cb) {
+            const fileName = Date.now() + '-' + file.originalname;
+            const fullPath = folderName + '/' + fileName;
+            cb(null, fullPath);
+        },
+    }),
+        limits: { fileSize: maxFileSize },
+        fileFilter: theFileFilter,
+    }).single('imagePath');
+    return upload;
+}
+
+// upload image to s3 bucket
 async function uploadImage(folderName, fileName, fileContent) {
     try{
 
@@ -19,7 +51,7 @@ async function uploadImage(folderName, fileName, fileContent) {
     };
 
     const command = new PutObjectCommand(params);
-    await client.send(command);
+    const response = await client.send(command);
     console.log("Uploaded Successully", response);
     }catch(error){
     console.error("Uploading failed", error.message);
@@ -51,5 +83,6 @@ async function deleteImage() {
 module.exports = { 
     uploadImage, 
     accessImage, 
-    deleteImage 
+    deleteImage,
+    makeUpload
 };

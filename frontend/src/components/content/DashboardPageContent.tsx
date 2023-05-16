@@ -153,7 +153,7 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
       <Row as="article" className="system-updates">
         <SystemUpdates
           header="Followed Posts"
-          userFollowedideas={
+          userIdeas={
             (ideaData ?? []).filter((idea) => {
               return (
                 (userFollowedIdeaData ?? []).some((followedIdea) => {
@@ -180,7 +180,7 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
       <Row as="article" className="system-updates">
         <SystemUpdates
           header="Endorsed Posts"
-          userFollowedideas={
+          userIdeas={
             (ideaData ?? []).filter((idea) => {
               return (
                 (userEndorsedIdeaData ?? []).some((endorsedIdea) => {

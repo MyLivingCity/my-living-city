@@ -8,7 +8,7 @@ import LoadingSpinner from "src/components/ui/LoadingSpinner";
 import ErrorMessage from "src/components/ui/ErrorMessage";
 interface SystemUpdatesProps {
   header: string;
-  userFollowedideas: IIdeaWithAggregations[];
+  userIdeas: IIdeaWithAggregations[];
   proposals?: IProposalWithAggregations[];
   endorser: boolean;
   postType?: string;
@@ -18,7 +18,7 @@ interface SystemUpdatesProps {
 
 const SystemUpdates: React.FC<SystemUpdatesProps> = ({
   header,
-  userFollowedideas,
+  userIdeas: userFollowedideas,
   proposals,
   endorser,
   isLoading,
@@ -51,13 +51,11 @@ const SystemUpdates: React.FC<SystemUpdatesProps> = ({
         `}
       </style>
 
-      {endorser ? (
-        <h2 className="pb-1 border-bottom display-6">
-          {header}
-        </h2>
-      ) : (
-        <h2 className="pb-1 border-bottom display-6">Followed Ideas</h2>
-      )}
+
+      <h2 className="pb-1 border-bottom display-6">
+        {endorser ? `${header}` : "Followed Ideas"}
+      </h2>
+   
       {isLoading && <LoadingSpinner />}
       {!isLoading && isError && <ErrorMessage message="There was an error loading system updates."/>}
       {!isLoading && !isError && (

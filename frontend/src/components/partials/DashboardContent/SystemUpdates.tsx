@@ -7,6 +7,7 @@ import { IProposalWithAggregations } from "src/lib/types/data/proposal.type";
 import LoadingSpinner from "src/components/ui/LoadingSpinner";
 import ErrorMessage from "src/components/ui/ErrorMessage";
 interface SystemUpdatesProps {
+  header: string;
   userFollowedideas: IIdeaWithAggregations[];
   proposals?: IProposalWithAggregations[];
   endorser: boolean;
@@ -16,6 +17,7 @@ interface SystemUpdatesProps {
 }
 
 const SystemUpdates: React.FC<SystemUpdatesProps> = ({
+  header,
   userFollowedideas,
   proposals,
   endorser,
@@ -51,7 +53,7 @@ const SystemUpdates: React.FC<SystemUpdatesProps> = ({
 
       {endorser ? (
         <h2 className="pb-1 border-bottom display-6">
-          Followed and Endorsed Posts
+          {header}
         </h2>
       ) : (
         <h2 className="pb-1 border-bottom display-6">Followed Ideas</h2>

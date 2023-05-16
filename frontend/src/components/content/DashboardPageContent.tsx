@@ -152,13 +152,37 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
 
       <Row as="article" className="system-updates">
         <SystemUpdates
+          header="Followed Posts"
           userFollowedideas={
-            // Concat userFollowedIdeaData and userEndorsedIdeaData w/o duplicates
             (ideaData ?? []).filter((idea) => {
               return (
                 (userFollowedIdeaData ?? []).some((followedIdea) => {
                   return followedIdea.id === idea.id;
-                }) ||
+                })
+              );
+            })
+          }
+          proposals={pData!}
+          endorser={canEndorse}
+          isLoading={
+            ideaLoading ||
+            pLoading ||
+            userFollowedIsLoading
+          }
+          isError={
+            ideaIsError ||
+            pIsError ||
+            userFollowedIsError
+          }
+        />
+      </Row>
+      <br />
+      <Row as="article" className="system-updates">
+        <SystemUpdates
+          header="Endorsed Posts"
+          userFollowedideas={
+            (ideaData ?? []).filter((idea) => {
+              return (
                 (userEndorsedIdeaData ?? []).some((endorsedIdea) => {
                   return endorsedIdea.id === idea.id;
                 })
@@ -170,18 +194,15 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
           isLoading={
             ideaLoading ||
             pLoading ||
-            userFollowedIsLoading ||
             userEndorsedLoading
           }
           isError={
             ideaIsError ||
             pIsError ||
-            userFollowedIsError ||
             userEndorsedIsError
           }
         />
       </Row>
-      <br />
       <br />
       <Row as="article" className="new-and-trending">
         <NewAndTrendingSection

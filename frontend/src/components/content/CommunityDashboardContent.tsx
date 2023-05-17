@@ -192,7 +192,11 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
       <Row className="mb-4 mt-4 justify-content-left">
         <h1 className="pb-2 pt-2 display-6">Community:</h1>
         {(isSegmentIdsLoading || isSegmentDataLoading) && (
-          <LoadingSpinnerInline />
+          <Row className="align-items-center">
+            <Col>
+              <LoadingSpinnerInline />
+            </Col>
+          </Row>
         )}
         {(isSegmentIdsError || isSegmentDataError) && (
           <ErrorMessage message="Error loading available communities." />
@@ -222,7 +226,7 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
           <Card style={{ width: "25rem" }}>
             {isSegmentInfoAggregateLoading && <LoadingSpinnerInline />}
             {!isSegmentInfoAggregateLoading && isSegmentInfoAggregateError && (
-              <ErrorMessage message="There was an error loading user statistics." />
+              <ErrorMessage message="Unable to load user statistics." />
             )}
             {!isSegmentInfoAggregateLoading && !isSegmentInfoAggregateError && (
               <Row className="justify-content-center mt-3 mb-3">
@@ -264,7 +268,7 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
           <Card style={{ width: "25rem" }}>
             {isSegmentInfoAggregateLoading && <LoadingSpinnerInline />}
             {!isSegmentInfoAggregateLoading && isSegmentInfoAggregateError && (
-              <ErrorMessage message="There was an error loading user statistics." />
+              <ErrorMessage message="Unable to load post statistics." />
             )}
             {!isSegmentInfoAggregateLoading && !isSegmentInfoAggregateError && (
               <Row className="justify-content-center mt-3 mb-3">
@@ -382,19 +386,21 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
                   <ErrorMessage message="Unable to load region." />
                 )}
               {!isSegmentInfoAggregateLoading &&
-              !isSegmentInfoAggregateError &&
-              segmentInfoAggregateData!.subSegments.length > 0 ? (
-                segmentInfoAggregateData!.subSegments.map((subSeg) => (
-                  <ListGroup.Item
-                    action
-                    onClick={() => handleCommunityChange(subSeg, "SubSegment")}
-                  >
-                    {capitalizeFirstLetterEachWord(subSeg)}
-                  </ListGroup.Item>
-                ))
-              ) : (
-                <ListGroup.Item>No neighbourhoods found.</ListGroup.Item>
-              )}
+                !isSegmentInfoAggregateError &&
+                (segmentInfoAggregateData!.subSegments.length > 0 ? (
+                  segmentInfoAggregateData!.subSegments.map((subSeg) => (
+                    <ListGroup.Item
+                      action
+                      onClick={() =>
+                        handleCommunityChange(subSeg, "SubSegment")
+                      }
+                    >
+                      {capitalizeFirstLetterEachWord(subSeg)}
+                    </ListGroup.Item>
+                  ))
+                ) : (
+                  <ListGroup.Item>No neighbourhoods found.</ListGroup.Item>
+                ))}
             </ListGroup>
           </Card>
         </Col>

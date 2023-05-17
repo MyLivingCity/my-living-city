@@ -18,12 +18,9 @@ const { AWS_CONFIG, AWS_S3_BUCKET_NAME } = require("../lib/constants");
 
 const s3 = new AWS.S3();
 const maxFileSize = 10485760;
-const upload = makeUpload("advertisement");
+const upload = makeUpload("advertisement").single('imagePath');
 
-//Error information holder
-let error = '';
-let errorMessage = '';
-let errorStack = '';
+
 
 //For handling post request
 advertisementRouter.post(
@@ -31,8 +28,12 @@ advertisementRouter.post(
     [passport.authenticate('jwt', { session: false }),upload],
     async (req, res) => {
 
+    //Error information holder
+    let error = '';
+    let errorMessage = '';
+    let errorStack = '';
         try {
-            let imagePath = req.file.key.substring(req.file.key.indexOf("/")+1);
+           let imagePath = req.file.key.substring(req.file.key.indexOf("/")+1); 
             //get email and user id from request
             const { email, id } = req.user;
             

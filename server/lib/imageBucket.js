@@ -1,7 +1,4 @@
 //required modules for uploading image to s3 bucket
-const AWS = require("aws-sdk");
-const e = require("express");
-const fs = require("fs");
 
 const multer = require('multer');
 const multerS3 = require('multer-s3');

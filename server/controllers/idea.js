@@ -7,65 +7,38 @@ const { checkIdeaThresholds } = require('../lib/prismaFunctions');
 const { imagePathsToS3Url } = require('../lib/utilityFunctions');
 const { isInteger, isEmpty } = require('lodash');
 
+const {uploadImage, makeUpload} = require('../lib/imageBucket');
 const fs = require('fs');
 
-const multer = require('multer');
-
-//multer storage policy, including file destination and file naming policy
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, './uploads/ideaImage');
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + '-' + file.originalname);
-  }
-});
-
-//file filter policy, only accept image file
-const theFileFilter = (req, file, cb) => {
-  console.log(file);
-  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'image/tiff' || file.mimetype === 'image/webp' || file.mimetype === 'image/jpg') {
-    cb(null, true);
-  } else {
-    cb(new Error('file format not supported'), false);
-  }
-}
+const { AWS_CONFIG, AWS_S3_BUCKET_NAME } = require("../lib/constants");
+const upload = makeUpload("idea-proposal").single('imagePath');
 
 //const variable for 10MB max file size in bytes
 const maxFileSize = 10485760;
 
-//multer upload project, setting receiving mode and which key components to use
-const upload = multer({ storage: storage, limits: { fileSize: maxFileSize }, fileFilter: theFileFilter }).single('imagePath');
-
+let error = '';
+let errorMessage = '';
+let errorStack = '';
 
 // post request to create an idea
 ideaRouter.post(
-  '/create',
-  passport.authenticate('jwt', { session: false }),
-  //upload.single('imagePath'),
-  async (req, res) => {
+    '/create',
+    [passport.authenticate('jwt', { session: false }), upload],
+    async (req, res) => {
 
-    upload(req, res, async function (err) {
-      //multer error handling method
-      let error = '';
-      let errorMessage = '';
-      let errorStack = '';
-      if (err) {
-        console.log(err);
-        error += err + ' ';
-        errorMessage += err + ' ';
-        errorStack += err + ' ';
-      };
       try {
+        let imagePath = req.file.key.substring(req.file.key.indexOf("/")+1);
 
         //check if user is in bad posting behavior table if so res.status(400).json({message: 'User is in bad posting behavior table'})
         const { id } = req.user;
+        
         const user = await prisma.bad_Posting_Behavior.findFirst({
           where: {
             userId: id,
             post_comment_ban: true,
           },
         });
+        
         if (user) {
           return res.status(400).json({
             message: 'User is in bad posting behavior table',
@@ -91,14 +64,6 @@ ideaRouter.post(
         const theUserSegment = await prisma.userSegments.findFirst({ where: { userId: id } });
 
         const { homeSuperSegId, workSuperSegId, schoolSuperSegId, homeSegmentId, workSegmentId, schoolSegmentId, homeSubSegmentId, workSubSegmentId, schoolSubSegmentId } = theUserSegment;
-
-        //Image path holder
-        let imagePath = '';
-        //if there's req.file been parsed by multer
-        if (req.file) {
-          //console.log(req.file);
-          imagePath = req.file.path;
-        }
 
         let { categoryId, superSegmentId, segmentId, subSegmentId, banned, title,
           description,
@@ -287,9 +252,6 @@ ideaRouter.post(
         await prisma.$disconnect();
       }
     });
-
-  }
-)
 
 ideaRouter.get(
   '/',

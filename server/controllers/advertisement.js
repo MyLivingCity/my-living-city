@@ -11,7 +11,6 @@ const { isEmpty } = require('lodash');
 const { UserType } = require('@prisma/client');
 
 require('dotenv').config();
-const AWS = require('aws-sdk');
 const { limits } = require('argon2');
 
 const { AWS_CONFIG, AWS_S3_BUCKET_NAME } = require("../lib/constants");

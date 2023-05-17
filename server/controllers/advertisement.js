@@ -23,7 +23,7 @@ const upload = makeUpload("advertisement").single('imagePath');
 //For handling post request
 advertisementRouter.post(
     '/create',
-    [passport.authenticate('jwt', { session: false }),upload],
+    [passport.authenticate('jwt', { session: false }), upload],
     async (req, res) => {
 
     //Error information holder

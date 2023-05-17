@@ -567,7 +567,7 @@ advertisementRouter.delete(
                 select: { userType: true }
             });
 
-            if (theUser.userType == 'ADMIN' || theUser.userType == 'BUSINESS') {
+            if (theUser.userType === 'ADMIN' || theUser.userType === 'BUSINESS') {
                 const theAdvertisement = await prisma.advertisements.findUnique({
                     where: { id: parsedAdvertisementId }
                 })
@@ -578,13 +578,15 @@ advertisementRouter.delete(
                     if (theAdvertisement.ownerId === loggedInUserId) {
                         await deleteImage("advertisement", theAdvertisement.imagePath);
                         
-                        await prisma.advertisements.delete({
+                        const deletedAd = await prisma.advertisements.delete({
                             where: {
                                 id: parsedAdvertisementId
                             }
                         });
-
-                        res.sendStatus(204);
+                        res.status(200).json({
+                            message: "Advertisement succesfully deleted",
+                            deletedAd: deletedAd,
+                        });
                     } else {
                         return res.status(401).json({
                             message: `The user ${email} is not the author or an admin and therefore cannot delete this advertisement.`

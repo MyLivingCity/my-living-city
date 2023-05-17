@@ -167,7 +167,6 @@ advertisementRouter.post(
                 }
 
                 let createAnAdvertisement;
-                console.log("imagePath:",imagePath);
 
                 //if advertisement type is extra, create one with duration date; if not, create one without duration.
                 if (adType == 'EXTRA') {

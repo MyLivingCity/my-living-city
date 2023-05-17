@@ -18,9 +18,6 @@ const upload = makeUpload("idea-proposal");
 //const variable for 10MB max file size in bytes
 const maxFileSize = 10485760;
 
-//multer upload project, setting receiving mode and which key components to use
-// const upload = multer({ storage: storage, limits: { fileSize: maxFileSize }, fileFilter: theFileFilter }).single('imagePath');
-
 let error = '';
 let errorMessage = '';
 let errorStack = '';
@@ -70,14 +67,6 @@ ideaRouter.post(
         const theUserSegment = await prisma.userSegments.findFirst({ where: { userId: id } });
 
         const { homeSuperSegId, workSuperSegId, schoolSuperSegId, homeSegmentId, workSegmentId, schoolSegmentId, homeSubSegmentId, workSubSegmentId, schoolSubSegmentId } = theUserSegment;
-
-        //Image path holder
-        // let imagePath = '';
-        //if there's req.file been parsed by multer
-        // if (req.file) {
-        //   //console.log(req.file);
-        //   imagePath = req.file.path;
-        // }
 
         let { categoryId, superSegmentId, segmentId, subSegmentId, banned, title,
           description,

@@ -3,22 +3,13 @@ const express = require('express');
 const advertisementRouter = express.Router();
 const prisma = require('../lib/prismaClient');
 const { imagePathsToS3Url } = require('../lib/utilityFunctions');
-
 const {uploadImage, makeUpload} = require('../lib/imageBucket');
 const fs = require('fs');
-
 const { isEmpty } = require('lodash');
-const { UserType } = require('@prisma/client');
 
 require('dotenv').config();
-const { limits } = require('argon2');
 
-const { AWS_CONFIG, AWS_S3_BUCKET_NAME } = require("../lib/constants");
-
-const s3 = new AWS.S3();
 const upload = makeUpload("advertisement").single('imagePath');
-
-
 
 //For handling post request
 advertisementRouter.post(

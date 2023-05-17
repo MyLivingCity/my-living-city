@@ -33,7 +33,7 @@ const AdminManagementPage: React.FC<AdminManagementPropsLegacy> = ({}) => {
   const { data: banData, isLoading: banLoading} = useAllBanDetails();
   const { data: segData = [], isLoading: segLoading} = useAllSuperSegments();
   const { data: subSegData = [], isLoading: subSegLoading} = useAllSegments();
-  const { data: userSegementData = [], isLoading: userSegementLoading} = useAllUserSegments(null, null);
+
  
 
   if (userLoading || banLoading || segLoading || subSegLoading) {
@@ -48,7 +48,7 @@ const AdminManagementPage: React.FC<AdminManagementPropsLegacy> = ({}) => {
 
   return (
     <div className="wrapper">
-      <AdminManagementContent  users={userData!}token={token} user={user}  bans={banData} segs={segData} subSeg={subSegData}/>
+      <AdminManagementContent  users={userData!}token={token} user={user}  bans={banData} segs={segData} subSeg={subSegData} />
     </div>
   );
 }

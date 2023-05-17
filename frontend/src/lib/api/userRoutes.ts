@@ -102,7 +102,7 @@ export const getUserWithJWTVerbose = async ({ jwtAuthToken }: GetUserWithJWTInpu
   );
   return res.data;
 }
-export const postRegisterUser = async(registerData: IRegisterInput, requestData:IUserSegmentRequest[], avatar: any): Promise<LoginResponse> => {
+export const postRegisterUser = async(registerData: IRegisterInput, requestData:IUserSegmentRequest[] | null, avatar: any): Promise<LoginResponse> => {
   const { 
     email, 
     password, 

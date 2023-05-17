@@ -87,7 +87,7 @@ const AllAdsPageContent: React.FC<AllAdsPageContentProps> = ({
                 <td>
                   <img
                     alt=""
-                    src={`${API_BASE_URL}/${item.imagePath}`}
+                    src={item.imagePath}
                     height="100rem"
                   ></img>
                 </td>

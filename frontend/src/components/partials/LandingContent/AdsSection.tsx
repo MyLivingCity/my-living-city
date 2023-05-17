@@ -31,7 +31,7 @@ const AdsSection: React.FC<AdsSectionProps> = ({ ads }) => {
                     maxHeight: "150px",
                     maxWidth: "100%",
                   }}
-                  src={`${API_BASE_URL}/${ad.imagePath}`}
+                  src={ad.imagePath}
                 />
               </a>
             </Carousel.Item>

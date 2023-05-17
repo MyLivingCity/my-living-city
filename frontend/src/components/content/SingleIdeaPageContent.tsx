@@ -258,7 +258,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
       <Card>
         {imagePath ? (
           <Image
-            src={`${API_BASE_URL}/${imagePath}`}
+            src={imagePath}
             style={{ objectFit: "cover", height: "400px" }}
           ></Image>
         ) : null}

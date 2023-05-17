@@ -61,7 +61,6 @@ import {
 import { createFlagUnderIdea, compareIdeaFlagsWithThreshold } from "src/lib/api/flagRoutes";
 import { useCheckFlagBan } from 'src/hooks/flagHooks';
 import EndorsedUsersSection from '../partials/SingleIdeaContent/EndorsedUsersSection';
-import { ISegment } from 'src/lib/types/data/segment.type';
 
 interface SingleIdeaPageContentProps {
   ideaData: IIdeaWithRelationship;
@@ -69,10 +68,8 @@ interface SingleIdeaPageContentProps {
   ideaId: string;
 }
 
-const getSegmentName = (segment?: ISegment) => {
-  return segment
-        ? capitalizeFirstLetterEachWord(segment.name)
-        : "N/A"
+const getSegmentName = (segment: string | undefined): string => {
+  return segment ? capitalizeFirstLetterEachWord(segment) : "N/A";
 }
 
 const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
@@ -159,7 +156,15 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
 
   function redirectToIdeaSubmit() {
-    window.location.href = `/submit?supportedProposal=${proposalId}&municipality=${getSegmentName(segment)}`;
+    let name = segment?.name
+    
+    if (!name && superSegment) {
+      name = superSegment.name
+    }
+
+    const communityOfInterest = getSegmentName(name);
+
+    window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}`;
   }
 
   const { token, user } = useContext(UserProfileContext);
@@ -564,7 +569,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                   {segment ? (
                     <h4 className="h5">
                       Municipality:{" "}
-                      {getSegmentName(segment)}
+                      {getSegmentName(segment.name)}
                     </h4>
                   ) : null}
                   {subSegment ? (

@@ -104,13 +104,13 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
   const supportedProposal = urlParams.get("supportedProposal");
-  const municipality = urlParams.get("municipality");
+  const communityOfInterest = urlParams.get("communityOfInterest");
   const parsedProposalId = parseInt(supportedProposal!);
 
-  const renderCommunitiesOfInterest = (segData: ISegmentData[], municipality: string | null) => {
-    if (municipality) {
-      return <option key={municipality} value={municipality}>
-        {municipality}
+  const renderCommunitiesOfInterest = (segData: ISegmentData[], communityOfInterest: string | null) => {
+    if (communityOfInterest) {
+      return <option key={communityOfInterest} value={communityOfInterest}>
+        {communityOfInterest}
       </option>
     }
     
@@ -201,7 +201,7 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
                 type="number"
                 onChange={(e) => handleCommunityChange(Number(e.target.value))}
               >
-                {renderCommunitiesOfInterest(segData, municipality)}
+                {renderCommunitiesOfInterest(segData, communityOfInterest)}
               </Form.Control>
             </Form.Group>
             <Form.Group>

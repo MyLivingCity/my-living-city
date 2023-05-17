@@ -25,7 +25,7 @@ let errorStack = '';
 // post request to create an idea
 ideaRouter.post(
     '/create',
-    [passport.authenticate('jwt', { session: false }),upload],
+    [passport.authenticate('jwt', { session: false }), upload],
     async (req, res) => {
 
       try {

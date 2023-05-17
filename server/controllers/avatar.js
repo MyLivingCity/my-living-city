@@ -5,32 +5,8 @@ const prisma = require('../lib/prismaClient');
 const fs = require('fs');
 const multer = require('multer');
 
-//multer storage policy, including file destination and file naming policy
-const storage = multer.diskStorage({
-    destination: function(req,file,cb){
-        cb(null,'./uploads/avatarImages');
-    },
-    filename: function (req, file, cb) {
-      cb(null,Date.now() + '-' + file.originalname);
-    }
-});
-
-//file filter policy, only accept image file
-const theFileFilter = (req,file,cb) =>{
-    if(file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'image/tiff' || file.mimetype === 'image/webp' || file.mimetype === 'image/jpg'){
-        cb(null,true);
-    }else{
-        cb(new Error('file format not supported'),false);
-    }
-}
-//const variable for 2MB max file size in bytes
-const maxFileSize = 2097152;
-//multer upload project, setting receiving mode and which key components to use
-const upload = multer({
-  storage:storage,
-  limits:{fileSize:maxFileSize},
-  fileFilter:theFileFilter
-}).single("avatar");
+const {uploadImage, makeUpload} = require('../lib/imageBucket');
+const upload = makeUpload("avatar").single('avatar');
 
 //make this get the userId and add it to the image name;
 avatarRouter.get(
@@ -62,36 +38,22 @@ avatarRouter.get(
 
   avatarRouter.post(
     '/image',
-    passport.authenticate('jwt',{session:false}),
+    [passport.authenticate('jwt', { session: false }), upload],
     async (req, res, next) => {
       try {
-        upload(req, res, async function(err){
+          let imagePath = req.file.key.substring(req.file.key.indexOf("/")+1);
           const {email,id} = req.user;
 
           const theUser = await prisma.user.findUnique({where:{id:id}});
 
           const originalPath = theUser.imagePath;
           //multer error handling method
-          let error = '';
-          let errorMessage = '';
-          let errorStack = '';
-          if(err){
-              console.log(err);
-              error+=err+' ';
-              errorMessage+=err+' ';
-              errorStack+=err+' ';
-
-              return res.status(400).json(err);
-          };
-
-          let imagePath = '';
+         
 
           if(!req.file){
             return res.status(400).json({
               message: 'The image in the request body are missing. '
             });
-          }else{
-            imagePath = req.file.path;
           }
 
           const result = await prisma.user.update({
@@ -106,7 +68,7 @@ avatarRouter.get(
           }
 
           res.status(200).json(result);
-        })
+    
         } catch (error) {
                 res.status(400).json({
                     message: error.message,

@@ -39,19 +39,18 @@ function makeUpload(folderName){
 
 // upload image to s3 bucket
 async function uploadImage(folderName, fileName, fileContent) {
-    try{
+    try {
+        const params = {
+            Bucket: AWS_S3_BUCKET_NAME,
+            Key: `${folderName}/${fileName}`,
+            Body: fileContent,
+        };
 
-    const params = {
-        Bucket: AWS_S3_BUCKET_NAME,
-        Key: `${folderName}/${fileName}`,
-        Body: fileContent,
-    };
-
-    const command = new PutObjectCommand(params);
-    const response = await client.send(command);
-    console.log("Uploaded Successully", response);
-    }catch(error){
-    console.error("Uploading failed", error.message);
+        const command = new PutObjectCommand(params);
+        const response = await client.send(command);
+        console.log("Uploaded Successully", response);
+    } catch(error) {
+        console.error("Uploading failed", error.message);
     }
 }
 

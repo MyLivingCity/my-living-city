@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import {
   ISegmentAggregateInfo,
@@ -23,10 +23,10 @@ import ErrorMessage from "../ui/ErrorMessage";
 import { useParams } from "react-router-dom";
 
 interface CommunityDashboardContentProps {
-  topIdeas: IIdeaWithAggregations[];
   allUserSegmentsQueryResult: UseQueryResult<any, IFetchError>;
   segmentInfoAggregateQueryResult: UseQueryResult<ISegmentAggregateInfo, IFetchError>;
   singleSegmentBySegmentIdQueryResult: UseQueryResult<ISegment, IFetchError>;
+  ideasHomepageQueryResult: UseQueryResult<IIdeaWithAggregations[], IFetchError>;
 }
 
 interface RouteParams {
@@ -34,10 +34,10 @@ interface RouteParams {
 }
 
 const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
-  topIdeas,
   allUserSegmentsQueryResult,
   segmentInfoAggregateQueryResult,
-  singleSegmentBySegmentIdQueryResult
+  singleSegmentBySegmentIdQueryResult,
+  ideasHomepageQueryResult
 }: CommunityDashboardContentProps) => {
     const {segId} = useParams<RouteParams>();
     const currentSegmentId = parseInt(segId)
@@ -57,6 +57,12 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
     isLoading: isSegmentDataLoading,
     isError: isSegmentDataError,
   } = singleSegmentBySegmentIdQueryResult
+  const {
+    data: iData,
+    isLoading: iIsLoading,
+    isError: iIsError,
+  } = ideasHomepageQueryResult
+
   // Get segments as array of objects with id and name, but not super- or sub-segments.
   const segmentsArray = [];
   if (!isSegmentIdsLoading && !isSegmentIdsError) {
@@ -94,26 +100,59 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
       }
   }
   
-    const [currCommunityName, setCurrCommunityName] = useState(segmentData?.name || "");
-    const [currCommunityPosts, setCurrCommunityPosts] = useState(topIdeas);
+    const [currCommunityName, setCurrCommunityName] = useState<string>("");
+    const [currCommunityPosts, setCurrCommunityPosts] = useState<IIdeaWithAggregations[]>([]);
+
+    if (
+      currCommunityName === "" &&
+      !isSegmentDataLoading &&
+      segmentData &&
+      segmentData.name !== ""
+    ) {
+      setCurrCommunityName(segmentData.name);
+    }
+
+    if (
+      currCommunityPosts.length === 0 &&
+      !iIsLoading &&
+      !isSegmentDataLoading &&
+      iData &&
+      iData.length !== 0 &&
+      segmentData
+    ) {
+      const segmentId = segmentData.segId;
+      const filteredIdeas: IIdeaWithAggregations[] = [];
+      iData.forEach((idea) => {
+        if (
+          (idea.segId && idea.segId === segmentId) ||
+          (idea.segId == null && idea.superSegId == segmentData.superSegId)
+        ) {
+          filteredIdeas.push(idea);
+        }
+      });
+      setCurrCommunityPosts(filteredIdeas);
+    }
 
     const handleCommunityChange = (communityName: string, type: string) => {
-        setCurrCommunityName(communityName);
-        handleActiveCommunity(communityName, type);
-        if (type === 'Segment') {
-            setCurrCommunityPosts(
-                topIdeas.filter((idea: IIdeaWithAggregations) => idea.segmentName === communityName)
-            )
-        } else if (type === 'SuperSegment') {
-            setCurrCommunityPosts(
-                topIdeas
-            )
-        } else if (type === 'SubSegment') {
-            setCurrCommunityPosts(
-                topIdeas.filter((idea: IIdeaWithAggregations) => idea.subSegmentName === communityName)
-            )
-        }
-    }
+      setCurrCommunityName(communityName);
+      handleActiveCommunity(communityName, type);
+      if (type === "Segment") {
+        setCurrCommunityPosts(
+          iData!.filter(
+            (idea: IIdeaWithAggregations) => idea.segmentName === communityName
+          )
+        );
+      } else if (type === "SuperSegment") {
+        setCurrCommunityPosts(iData!);
+      } else if (type === "SubSegment") {
+        setCurrCommunityPosts(
+          iData!.filter(
+            (idea: IIdeaWithAggregations) =>
+              idea.subSegmentName === communityName
+          )
+        );
+      }
+    };
 
     const handleActiveCommunity = (communityName: string, type: string) => {
         const regionLocation = document.getElementById('region-list');

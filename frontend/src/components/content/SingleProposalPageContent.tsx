@@ -61,11 +61,18 @@ import {
 import { createFlagUnderIdea, compareIdeaFlagsWithThreshold } from "src/lib/api/flagRoutes";
 import { useCheckFlagBan } from 'src/hooks/flagHooks';
 import EndorsedUsersSection from '../partials/SingleIdeaContent/EndorsedUsersSection';
+import { ISegment } from 'src/lib/types/data/segment.type';
 
 interface SingleIdeaPageContentProps {
   ideaData: IIdeaWithRelationship;
   proposalData: any;
   ideaId: string;
+}
+
+const getSegmentName = (segment?: ISegment) => {
+  return segment
+        ? capitalizeFirstLetterEachWord(segment.name)
+        : "N/A"
 }
 
 const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
@@ -150,8 +157,9 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     return !ideaData.champion && !!ideaData.isChampionable;
   };
 
+
   function redirectToIdeaSubmit() {
-    window.location.href = `/submit?supportedProposal=${proposalId}`;
+    window.location.href = `/submit?supportedProposal=${proposalId}&municipality=${getSegmentName(segment)}`;
   }
 
   const { token, user } = useContext(UserProfileContext);
@@ -556,9 +564,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                   {segment ? (
                     <h4 className="h5">
                       Municipality:{" "}
-                      {segment
-                        ? capitalizeFirstLetterEachWord(segment.name)
-                        : "N/A"}
+                      {getSegmentName(segment)}
                     </h4>
                   ) : null}
                   {subSegment ? (

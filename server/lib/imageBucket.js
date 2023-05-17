@@ -36,7 +36,7 @@ function makeUpload(folderName){
     }),
         limits: { fileSize: maxFileSize },
         fileFilter: theFileFilter,
-    }).single('imagePath');
+    });
     return upload;
 }
 

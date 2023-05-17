@@ -26,6 +26,7 @@ import {
 } from "../../lib/utilityFunctions";
 import { CONTENT, Toastie } from "../partials/LandingContent/CategoriesSection";
 import ImageUploader from "react-images-upload";
+
 interface SubmitIdeaPageContentProps {
   categories: ICategory[] | undefined;
   segData: ISegmentData[];
@@ -103,7 +104,23 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
   const supportedProposal = urlParams.get("supportedProposal");
+  const municipality = urlParams.get("municipality");
   const parsedProposalId = parseInt(supportedProposal!);
+
+  const renderCommunitiesOfInterest = (segData: ISegmentData[], municipality: string | null) => {
+    if (municipality) {
+      return <option key={municipality} value={municipality}>
+        {municipality}
+      </option>
+    }
+    
+    return segData &&
+    segData.map((seg, index) => (
+      <option key={String(seg.name)} value={index}>
+        {capitalizeString(seg.name)}
+      </option>
+    ))
+  }
 
   const formik = useFormik<ICreateIdeaInput>({
     initialValues: {
@@ -184,12 +201,7 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
                 type="number"
                 onChange={(e) => handleCommunityChange(Number(e.target.value))}
               >
-                {segData &&
-                  segData.map((seg, index) => (
-                    <option key={String(seg.name)} value={index}>
-                      {capitalizeString(seg.name)}
-                    </option>
-                  ))}
+                {renderCommunitiesOfInterest(segData, municipality)}
               </Form.Control>
             </Form.Group>
             <Form.Group>

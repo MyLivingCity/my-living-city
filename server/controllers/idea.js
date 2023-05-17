@@ -10,7 +10,6 @@ const { isInteger, isEmpty } = require('lodash');
 const {uploadImage, makeUpload} = require('../lib/imageBucket');
 const fs = require('fs');
 
-const AWS = require('aws-sdk');
 const { AWS_CONFIG, AWS_S3_BUCKET_NAME } = require("../lib/constants");
 const s3 = new AWS.S3();
 const upload = makeUpload("idea-proposal").single('imagePath');

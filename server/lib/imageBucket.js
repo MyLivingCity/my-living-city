@@ -1,9 +1,7 @@
-//required modules for uploading image to s3 bucket
-
 const multer = require('multer');
 const multerS3 = require('multer-s3');
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
-const { S3Client, GetObjectCommand, PutObjectCommand } = require("@aws-sdk/client-s3");
+const { S3Client, GetObjectCommand, PutObjectCommand, DeleteObjectCommand } = require("@aws-sdk/client-s3");
 const { AWS_CONFIG, AWS_S3_BUCKET_NAME } = require("./constants");
 
 const client = new S3Client(AWS_CONFIG);
@@ -64,16 +62,38 @@ const IMG_EXPIRY_TIME = 60; // in seconds
  * @returns { string }              The pre-signed url
  */
 async function accessImage(imageFolder, imageKey) {
-    const command = new GetObjectCommand({
-        Bucket: AWS_S3_BUCKET_NAME,
-        Key: `${imageFolder}/${imageKey}`,
-    });
+    try {
+        const command = new GetObjectCommand({
+            Bucket: AWS_S3_BUCKET_NAME,
+            Key: `${imageFolder}/${imageKey}`,
+        });
 
-    return await getSignedUrl(client, command, { expiresIn: IMG_EXPIRY_TIME });
+        return await getSignedUrl(client, command, { expiresIn: IMG_EXPIRY_TIME });
+    } catch (err) {
+        console.log("Error generating signed url for image: ", err);
+    }
 }
 
-async function deleteImage() {
-    // todo
+/**
+ * Removes the image from the S3 bucket and inserts a delete marker where the image was.
+ * Returns a "success" message regardless of whether something has been deleted.
+ * 
+ * @param { string } imageFolder            The folder path the image resides in
+ * @param { string } imageKey               The name of the image
+ * @returns { DeleteMarker: true || false, 
+ *            VersionId: "STRING_VALUE", 
+ *            RequestCharged: "requester" } The deletion response from AWS
+ */
+async function deleteImage(imageFolder, imageKey) {
+    try {
+        const command = new DeleteObjectCommand({
+            Bucket: AWS_S3_BUCKET_NAME,
+            Key: `${imageFolder}/${imageKey}`,
+        });
+        return await client.send(command);
+    } catch (err) {
+        console.log("Error deleting image: ", err);
+    }
 }
 
 module.exports = { 

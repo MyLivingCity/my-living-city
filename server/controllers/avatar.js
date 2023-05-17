@@ -38,7 +38,7 @@ avatarRouter.get(
 
   avatarRouter.post(
     '/image',
-    [passport.authenticate('jwt', { session: false }),upload],
+    [passport.authenticate('jwt', { session: false }), upload],
     async (req, res, next) => {
       try {
           let imagePath = req.file.key.substring(req.file.key.indexOf("/")+1);

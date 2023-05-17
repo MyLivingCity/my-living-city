@@ -32,7 +32,7 @@ advertisementRouter.post(
     async (req, res) => {
 
         try {
-            let imagePath = req.file.key.substring(req.file.key.indexOf("/")+1);;
+            let imagePath = req.file.key.substring(req.file.key.indexOf("/")+1);
             //get email and user id from request
             const { email, id } = req.user;
             
@@ -41,8 +41,7 @@ advertisementRouter.post(
                 where: { id: id },
                 select: { userType: true }
             });
-
-            console.log("usertype:", theUser.userType=="BUSINESS");
+            
             //test to see if the user is an admin or business user
             if (
                 theUser.userType == "ADMIN" || 

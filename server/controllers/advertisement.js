@@ -16,7 +16,6 @@ const { limits } = require('argon2');
 const { AWS_CONFIG, AWS_S3_BUCKET_NAME } = require("../lib/constants");
 
 const s3 = new AWS.S3();
-const maxFileSize = 10485760;
 const upload = makeUpload("advertisement").single('imagePath');
 
 

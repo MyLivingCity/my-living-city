@@ -31,7 +31,6 @@ ideaRouter.post(
       try {
         let imagePath = req.file.key.substring(req.file.key.indexOf("/")+1);
 
-        console.log("imagePath: ", imagePath);
         //check if user is in bad posting behavior table if so res.status(400).json({message: 'User is in bad posting behavior table'})
         const { id } = req.user;
         

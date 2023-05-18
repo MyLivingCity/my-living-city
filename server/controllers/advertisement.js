@@ -136,7 +136,8 @@ advertisementRouter.post(
 
                 //If there's error in error holder
                 if (error && errorMessage && errorStack) {
-                    await deleteImage("advertisement", imagePath); // delet image if it already exists
+                    // delete image if it already exists
+                    await deleteImage("advertisement", imagePath); 
 
                     let tempError = error;
                     let tempErrorMessage = errorMessage;

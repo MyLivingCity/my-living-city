@@ -305,8 +305,8 @@ advertisementRouter.get(
             res.status(400).json({
                 message: "An error occured while trying to retrieve the adsId.",
                 details: {
-                    errorMessage: error.message,
-                    errorStack: error.stack,
+                    errorMessage: err.message,
+                    errorStack: err.stack,
                 }
             });
         } finally {

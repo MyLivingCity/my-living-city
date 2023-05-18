@@ -2,10 +2,8 @@ const passport = require('passport');
 const express = require('express');
 const avatarRouter = express.Router();
 const prisma = require('../lib/prismaClient');
-const fs = require('fs');
-const multer = require('multer');
+const { makeUpload } = require('../lib/imageBucket');
 
-const {uploadImage, makeUpload} = require('../lib/imageBucket');
 const upload = makeUpload("avatar").single('avatar');
 
 //make this get the userId and add it to the image name;

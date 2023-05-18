@@ -3,8 +3,8 @@ const express = require('express');
 const advertisementRouter = express.Router();
 const prisma = require('../lib/prismaClient');
 const { imagePathsToS3Url } = require('../lib/utilityFunctions');
-const {uploadImage, makeUpload, deleteImage} = require('../lib/imageBucket');
 const { isEmpty } = require('lodash');
+const { makeUpload, deleteImage} = require('../lib/imageBucket');
 
 require('dotenv').config();
 

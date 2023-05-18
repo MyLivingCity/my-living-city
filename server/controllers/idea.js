@@ -1,5 +1,4 @@
 const passport = require('passport');
-
 const express = require('express');
 const ideaRouter = express.Router();
 const prisma = require('../lib/prismaClient');
@@ -7,15 +6,9 @@ const { checkIdeaThresholds } = require('../lib/prismaFunctions');
 const { imagePathsToS3Url } = require('../lib/utilityFunctions');
 const { deleteImage } = require('../lib/imageBucket');
 const { isInteger, isEmpty } = require('lodash');
+const { makeUpload } = require('../lib/imageBucket');
 
-const {uploadImage, makeUpload} = require('../lib/imageBucket');
-const fs = require('fs');
-
-const { AWS_CONFIG, AWS_S3_BUCKET_NAME } = require("../lib/constants");
 const upload = makeUpload("idea-proposal").single('imagePath');
-
-//const variable for 10MB max file size in bytes
-const maxFileSize = 10485760;
 
 let error = '';
 let errorMessage = '';

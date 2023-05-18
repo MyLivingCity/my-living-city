@@ -67,7 +67,7 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
   const segmentsArray = [];
   if (!isSegmentIdsLoading && !isSegmentIdsError) {
     if (
-        segmentIdsObj.homeSegmentId !== undefined &&
+        segmentIdsObj.homeSegmentId &&
         segmentIdsObj.homeSegmentName !== undefined
       ) {
         segmentsArray.push({
@@ -77,7 +77,7 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
       }
     
       if (
-        segmentIdsObj.workSegmentId !== undefined &&
+        segmentIdsObj.workSegmentId &&
         segmentIdsObj.workSegmentName !== undefined &&
         segmentIdsObj.workSegmentId !== segmentIdsObj.homeSegmentId
       ) {
@@ -88,7 +88,7 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
       }
     
       if (
-        segmentIdsObj.schoolSegmentId !== undefined &&
+        segmentIdsObj.schoolSegmentId &&
         segmentIdsObj.schoolSegmentName !== undefined &&
         segmentIdsObj.schoolSegmentId !== segmentIdsObj.homeSegmentId &&
         segmentIdsObj.schoolSegmentId !== segmentIdsObj.workSegmentId
@@ -99,6 +99,7 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
         });
       }
   }
+  console.log(segmentsArray)
   
     const [currCommunityName, setCurrCommunityName] = useState<string>("");
     const [currCommunityPosts, setCurrCommunityPosts] = useState<IIdeaWithAggregations[]>([]);
@@ -214,7 +215,7 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
                   href={`/community-dashboard/${segment.id}`}
                   disabled={segment.id === currentSegmentId}
                 >
-                  {capitalizeFirstLetterEachWord(segment.name)}
+                  {segment.name && capitalizeFirstLetterEachWord(segment.name)}
                 </Dropdown.Item>
               ))}
             </DropdownButton>

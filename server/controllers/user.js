@@ -3,7 +3,7 @@ const express = require('express');
 const userRouter = express.Router();
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET, JWT_EXPIRY } = require('../lib/constants');
-const { argon2ConfirmHash, argon2Hash } = require('../lib/utilityFunctions');
+const { argon2ConfirmHash, argon2Hash, imagePathsToS3Url } = require('../lib/utilityFunctions');
 const prisma = require('../lib/prismaClient');
 const { authenticate } = require('passport');
 
@@ -132,10 +132,9 @@ userRouter.get(
 				password: null,
 			};
 
+			await imagePathsToS3Url([parsedUser], "avatar");
 			res.status(200);
-			res.json({
-        ...parsedUser
-			});
+			res.json({...parsedUser});
 		} catch (error) {
 			res.status(400);
 			res.json({
@@ -169,7 +168,6 @@ userRouter.get(
 				})
 			}
 
-
 			res.status(200).json(foundUser);
 		} catch (error) {
 			console.log(error.message);
@@ -201,6 +199,7 @@ userRouter.get(
 					message: "User could not be found or does not exist in the database."
 				});
 			}
+			await imagePathsToS3Url([foundUser], "avatar");
 			res.status(200);
 			res.json({
 				foundUser
@@ -241,6 +240,7 @@ userRouter.get(
 				})
 			}
 
+			await imagePathsToS3Url([foundUser], "avatar");
 			const parsedUser = {
 				...foundUser,
 				password: null,

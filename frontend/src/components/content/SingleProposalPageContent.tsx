@@ -68,6 +68,10 @@ interface SingleIdeaPageContentProps {
   ideaId: string;
 }
 
+const getSegmentName = (segment: string | undefined): string => {
+  return segment ? capitalizeFirstLetterEachWord(segment) : "N/A";
+}
+
 const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
   ideaData,
   proposalData,
@@ -150,8 +154,17 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     return !ideaData.champion && !!ideaData.isChampionable;
   };
 
+
   function redirectToIdeaSubmit() {
-    window.location.href = `/submit?supportedProposal=${proposalId}`;
+    let name = segment?.name
+    
+    if (!name && superSegment) {
+      name = superSegment.name
+    }
+
+    const communityOfInterest = getSegmentName(name);
+
+    window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}`;
   }
 
   const { token, user } = useContext(UserProfileContext);
@@ -441,7 +454,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
       <Card>
         {imagePath ? (
           <Image
-            src={`${API_BASE_URL}/${imagePath}`}
+            src={imagePath}
             style={{ objectFit: "cover", height: "400px" }}
           ></Image>
         ) : null}
@@ -556,9 +569,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                   {segment ? (
                     <h4 className="h5">
                       Municipality:{" "}
-                      {segment
-                        ? capitalizeFirstLetterEachWord(segment.name)
-                        : "N/A"}
+                      {getSegmentName(segment.name)}
                     </h4>
                   ) : null}
                   {subSegment ? (

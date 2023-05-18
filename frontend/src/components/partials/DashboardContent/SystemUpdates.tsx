@@ -7,18 +7,18 @@ import { IProposalWithAggregations } from "src/lib/types/data/proposal.type";
 import LoadingSpinner from "src/components/ui/LoadingSpinner";
 import ErrorMessage from "src/components/ui/ErrorMessage";
 interface SystemUpdatesProps {
-  userFollowedideas: IIdeaWithAggregations[];
+  header: string;
+  userIdeas: IIdeaWithAggregations[];
   proposals?: IProposalWithAggregations[];
-  endorser: boolean;
   postType?: string;
   isLoading?: boolean;
   isError?: boolean;
 }
 
 const SystemUpdates: React.FC<SystemUpdatesProps> = ({
-  userFollowedideas,
+  header,
+  userIdeas,
   proposals,
-  endorser,
   isLoading,
   isError
 }) => {
@@ -49,22 +49,21 @@ const SystemUpdates: React.FC<SystemUpdatesProps> = ({
         `}
       </style>
 
-      {endorser ? (
-        <h2 className="pb-1 border-bottom display-6">
-          Followed and Endorsed Posts
-        </h2>
-      ) : (
-        <h2 className="pb-1 border-bottom display-6">Followed Ideas</h2>
-      )}
+      <h2 className="pb-1 border-bottom display-6">
+        {header}
+      </h2>
+   
       {isLoading && <LoadingSpinner />}
+
       {!isLoading && isError && <ErrorMessage message="There was an error loading system updates."/>}
+      
       {!isLoading && !isError && (
         <>
           <Carousel controls={true} interval={null} slide={true} fade={false}>
             {[...Array(4)].map((x, i) => (
               <Carousel.Item key={i}>
-                {userFollowedideas
-                  ? userFollowedideas
+                {userIdeas
+                  ? userIdeas
                       .slice(i * 3, i * 3 + 3)
                       .map((idea: IIdeaWithAggregations) => {
                         return idea && idea.active ? (

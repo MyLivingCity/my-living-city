@@ -24,7 +24,6 @@ interface SpecifiedCommunityProps {
 const SpecifiedCommunitySection: React.FC<SpecifiedCommunityProps> = ({
   sectionTitle,
   topIdeas,
-  postType,
   isDashboard,
   showCustomFilter,
 }) => {
@@ -197,12 +196,12 @@ const SpecifiedCommunitySection: React.FC<SpecifiedCommunityProps> = ({
 
       {isDashboard ? (
         <div className="pb-1 border-bottom display-6">
-          <h2 style={titleStyle}>{capitalizeFirstLetterEachWord(sectionTitle)} Posts</h2>
+          <h2 style={titleStyle}>{sectionTitle ? capitalizeFirstLetterEachWord(sectionTitle) : ""} Posts</h2>
           {showCustomFilter === false ? null : <BsFilter onMouseOver={mouseHoverPointer} style={filterButtonStyle} onClick={() => {setShowModal(!showModal)}} size={30} />}
         </div>
       ) : (
         <div className="pb-1 border-bottom display-6 text-left">
-          <h2 style={titleStyle}>{capitalizeFirstLetterEachWord(sectionTitle)} Posts</h2>
+          <h2 style={titleStyle}>{sectionTitle ? capitalizeFirstLetterEachWord(sectionTitle) : ""} Posts</h2>
           {showCustomFilter === false ? null : <BsFilter onMouseOver={mouseHoverPointer} style={filterButtonStyle} onClick={() => {setShowModal(!showModal)}} size={30} />}
 
         </div>

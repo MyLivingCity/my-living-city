@@ -393,7 +393,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                 {imagePath ? (
                   <Image
                     fluid
-                    src={`${API_BASE_URL}/${imagePath}`}
+                    src={imagePath}
                     style={{
                       objectFit: "cover",
                       height: "200px",
@@ -688,7 +688,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                 {imagePath ? (
                   <Image
                     fluid
-                    src={`${API_BASE_URL}/${imagePath}`}
+                    src={imagePath}
                     style={{
                       objectFit: "cover",
                       height: "200px",
@@ -979,7 +979,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                 {imagePath ? (
                   <Image
                     fluid
-                    src={`${API_BASE_URL}/${imagePath}`}
+                    src={imagePath}
                     style={{
                       objectFit: "cover",
                       height: "200px",

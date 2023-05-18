@@ -26,6 +26,16 @@ const STRIPE_PRODUCTS = {
   "COMMUNITY":process.env.STRIPE_COMMUNITY_PRODUCT_KEY
 }
 
+// AWS configuration settings for our images bucket
+const AWS_CONFIG = {
+  credentials: {
+      accessKeyId: process.env.AWS_ACCESS_KEY, // store it in .env file to keep it safe
+      secretAccessKey: process.env.AWS_SECRET_KEY
+  },
+  region: process.env.AWS_REGION // this is the region that you select in AWS account
+};
+const AWS_S3_BUCKET_NAME = process.env.AWS_S3_BUCKET_NAME;
+
 module.exports = {
   // mandatory application configuration
   __prod__,
@@ -38,6 +48,9 @@ module.exports = {
   PROPOSAL_RATING_COUNT,
   PROJECT_RATING_AVG,
   PROJECT_RATING_COUNT,
-  STRIPE_PRODUCTS
+  STRIPE_PRODUCTS,
+  // aws configuration
+  AWS_CONFIG,
+  AWS_S3_BUCKET_NAME,
 }
 

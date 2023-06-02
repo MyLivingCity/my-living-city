@@ -28,7 +28,7 @@ const ProposalTile: React.FC<proposalTileProps> = ({
   const date = currentTime.getTime() - postDate.getTime();
 
   const isNew = date < oneWeek;
-
+  const ratingAvgUpdated = Number(idea.ratingAvg);
   return (
     // <Card style={{ width: '18rem' }}>
     <Card>
@@ -59,7 +59,7 @@ const ProposalTile: React.FC<proposalTileProps> = ({
             <div className="px-2 text-muted d-flex flex-column justify-content-center align-items-center">
               <AiOutlineStar className="" />
               <p className="mb-0 user-select-none">
-                {idea.ratingAvg ? idea.ratingAvg.toFixed(2) : 0}
+               {ratingAvgUpdated.toFixed(2)}
               </p>
             </div>
             <div className="px-2 text-muted d-flex flex-column justify-content-center align-items-center">

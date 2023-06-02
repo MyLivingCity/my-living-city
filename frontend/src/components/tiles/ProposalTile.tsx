@@ -59,7 +59,7 @@ const ProposalTile: React.FC<proposalTileProps> = ({
             <div className="px-2 text-muted d-flex flex-column justify-content-center align-items-center">
               <AiOutlineStar className="" />
               <p className="mb-0 user-select-none">
-               {ratingAvgUpdated.toFixed(2)}
+               {ratingAvgUpdated.toFixed(1)}
               </p>
             </div>
             <div className="px-2 text-muted d-flex flex-column justify-content-center align-items-center">

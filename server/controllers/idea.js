@@ -274,6 +274,7 @@ ideaRouter.get(
         }
       });
       await imagePathsToS3Url(allIdeas, "idea-proposal");
+      console.log("IDeas here" + allIdeas)
       res.status(200).json(allIdeas);
     } catch (error) {
       res.status(400).json({
@@ -315,15 +316,18 @@ ideaRouter.post(
 ideaRouter.post(
   '/getall/aggregations',
   async (req, res, next) => {
-    const take = req.body.take;
+    let take = req.body.take;
+    take = Number.isInteger(take) ? Number(take) : undefined;
     let takeClause = '';
     if (!!take) {
       takeClause = `limit ${take}`;
     }
+    
     try {
       // TODO: if rating is adjusted raw query will break
-      const data = await prisma.$queryRaw(`
-      select
+      console.log("The data:" + req.params.userId)
+      const rawData = await prisma.$queryRawUnsafe(`
+        select
         i.id,
         i.author_id as "authorId",
         i.category_id as "categoryId",
@@ -419,121 +423,150 @@ ideaRouter.post(
             "ratingAvg" desc,
             updated_at desc,
             engagements desc
-        ${takeClause}
-        ;
+            ${takeClause}
+        
       `);
-
-      res.status(200).json(data);
-    } catch (error) {
-      console.error(error);
-      res.status(400).json({
-        message: "An error occured while trying to fetch all ideas",
-        details: {
-          errorMessage: error.message,
-          errorStack: error.stack,
+      const data = rawData.map((row) => {
+        const newRow = {};
+        for (const key in row) {
+          if (typeof row[key] === 'bigint') {
+            newRow[key] = String(row[key]);
+          } else {
+            newRow[key] = row[key];
+          }
         }
+        return newRow;
       });
-    } finally {
-      await prisma.$disconnect();
-    }
+    res.status(200).json(data);
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({
+      message: "An error occurred while trying to fetch all ideas",
+      details: {
+        errorMessage: error.message,
+        errorStack: error.stack,
+      }
+    });
+  } finally {
+    await prisma.$disconnect();
   }
-)
+});
 
 // Get all ideas from a specific author
 ideaRouter.get(
   '/getall/:userId',
   async (req, res, next) => {
     try {
+      console.log("The request:" + req.params.userId)
       const allIdeas = await prisma.$queryRaw(`
-        select
-          i.id,
-          i.author_id as "authorId",
-          i.category_id as "categoryId",
-          i.title,
-         
-          i.description,
-          i.notification_dismissed,
-          i.segment_id,
-          i.sub_segment_id,
-          coalesce(ic.total_comments + ir.total_ratings, 0) as engagements,
-          coalesce(ir.avg_rating, 0) as "ratingAvg",
-          coalesce(ic.total_comments, 0) as "commentCount",
-          coalesce(ir.total_ratings, 0) as "ratingCount",
-          coalesce(pr.pos_rating, 0) as "posRatings",
-          coalesce(nr.neg_rating, 0) as "negRatings",
-          coalesce(sn.segment_name, '') as "segmentName",
-          coalesce(sbn.sub_segment_name, '') as "subSegmentName",
-          coalesce(userfname.f_name, '') as "firstName",
-          coalesce(userStreetAddress.street_address, '') as "streetAddress",
-          i.state,
-          i.active,
-          i.updated_at as "updatedAt",
-          i.created_at as "createdAt"
-            from idea i
-            -- Aggregate total comments
-            left join (
-                select
-                  idea_id,
-                  count(id) as total_comments
-                from idea_comment
-                group by idea_comment.idea_id
-            ) ic on i.id = ic.idea_id
-            -- Aggregate total ratings and rating avg
-            left join (
-                select
-                  idea_id,
-                  count(id) as total_ratings,
-                  avg(rating) as avg_rating
-                from idea_rating
-                group by idea_rating.idea_id
-            ) ir on	i.id = ir.idea_id
-            -- Aggregate total neg ratings
-            left join (
-                select
-                  idea_id,
-                  count(id) as neg_rating
-                from idea_rating
-                where rating < 0
-                group by idea_id
-            ) nr on	i.id = nr.idea_id
-            -- Aggregate total pos ratings
-            left join (
-                select
-                  idea_id,
-                  count(id) as pos_rating
-                from idea_rating
-                where rating > 0
-                group by idea_id
-            ) pr on	i.id = pr.idea_id
-            -- Aggregate idea segment name
-            left join (
-                select seg_id, segment_name
-                from segment
-                ) sn on i.segment_id = sn.seg_id
-            -- Aggregate idea sub segment name
-            left join (
-                select id, sub_segment_name
-                from sub_segment
-                ) sbn on i.sub_segment_id = sbn.id
-            -- Aggregate author's first name
-            left join  (
-                select id, f_name
-                from "user"
-                ) userfname on i.author_id = userfname.id
-            -- Aggregate author's address
-            left join (
-                select user_id, street_address
-                from user_address
-                ) userStreetAddress on i.author_id = userStreetAddress.user_id
-            where i.author_id = '${req.params.userId}'
-            
-            order by
-            "ratingCount" desc,
-            "ratingAvg" desc,
-            updated_at desc,
-            engagements desc
-        ;
-      `);
+      SELECT
+        i.id,
+        i.author_id as "authorId",
+        i.category_id as "categoryId",
+        i.title,
+        i.description,
+        i.notification_dismissed,
+        i.segment_id,
+        i.sub_segment_id,
+        COALESCE(ic.total_comments + ir.total_ratings, 0) as engagements,
+        COALESCE(ir.avg_rating, 0) as "ratingAvg",
+        COALESCE(ic.total_comments, 0) as "commentCount",
+        COALESCE(ir.total_ratings, 0) as "ratingCount",
+        COALESCE(pr.pos_rating, 0) as "posRatings",
+        COALESCE(nr.neg_rating, 0) as "negRatings",
+        COALESCE(sn.segment_name, '') as "segmentName",
+        COALESCE(sbn.sub_segment_name, '') as "subSegmentName",
+        COALESCE(userfname.f_name, '') as "firstName",
+        COALESCE(userStreetAddress.street_address, '') as "streetAddress",
+        i.state,
+        i.active,
+        i.updated_at as "updatedAt",
+        i.created_at as "createdAt"
+      FROM
+        idea i
+      -- Aggregate total comments
+      LEFT JOIN (
+        SELECT
+          idea_id,
+          COUNT(id) as total_comments
+        FROM
+          idea_comment
+        GROUP BY
+          idea_comment.idea_id
+      ) ic ON i.id = ic.idea_id
+      -- Aggregate total ratings and rating avg
+      LEFT JOIN (
+        SELECT
+          idea_id,
+          COUNT(id) as total_ratings,
+          AVG(rating) as avg_rating
+        FROM
+          idea_rating
+        GROUP BY
+          idea_rating.idea_id
+      ) ir ON i.id = ir.idea_id
+      -- Aggregate total neg ratings
+      LEFT JOIN (
+        SELECT
+          idea_id,
+          COUNT(id) as neg_rating
+        FROM
+          idea_rating
+        WHERE
+          rating < 0
+        GROUP BY
+          idea_id
+      ) nr ON i.id = nr.idea_id
+      -- Aggregate total pos ratings
+      LEFT JOIN (
+        SELECT
+          idea_id,
+          COUNT(id) as pos_rating
+        FROM
+          idea_rating
+        WHERE
+          rating > 0
+        GROUP BY
+          idea_id
+      ) pr ON i.id = pr.idea_id
+      -- Aggregate idea segment name
+      LEFT JOIN (
+        SELECT
+          seg_id,
+          segment_name
+        FROM
+          segment
+      ) sn ON i.segment_id = sn.seg_id
+      -- Aggregate idea sub segment name
+      LEFT JOIN (
+        SELECT
+          id,
+          sub_segment_name
+        FROM
+          sub_segment
+      ) sbn ON i.sub_segment_id = sbn.id
+      -- Aggregate author's first name
+      LEFT JOIN (
+        SELECT
+          id,
+          f_name
+        FROM
+          "user"
+      ) userfname ON i.author_id = userfname.id
+      -- Aggregate author's address
+      LEFT JOIN (
+        SELECT
+          user_id,
+          street_address
+        FROM
+          user_address
+      ) userStreetAddress ON i.author_id = userStreetAddress.user_id
+      ORDER BY
+        ic.total_comments + ir.total_ratings DESC,
+        ir.avg_rating DESC,
+        i.updated_at DESC,
+        engagements DESC
+    `);
 
       res.status(200).json(allIdeas);
     } catch (error) {

@@ -70,7 +70,7 @@ const RatingDisplay = ({
   const aggregateBreakdown = [
     {
       title: "Rating Average:",
-      value: ratingAvg.toFixed(2),
+      value: ratingAvg
     },
     {
       title: "Interactions:",

@@ -1,6 +1,5 @@
 import React from "react";
 import { ShowSubSegments } from "src/components/content/SegmentManagementContent";
-import LoadingSpinner from "src/components/ui/LoadingSpinner";
 import { useAllSubSegmentsWithId } from "src/hooks/segmentHooks";
 
 export interface ShowSubSegmentsPageProps {

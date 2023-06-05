@@ -7,15 +7,12 @@ import {
   Form,
   Button,
   Alert,
-  Image,
 } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
 // import { getUserHomeSegmentInfo, getUserSchoolSegmentInfo, getUserWorkSegmentInfo } from 'src/lib/api/userSegmentRoutes';
-import { API_BASE_URL } from "src/lib/constants";
+import { TEXT_INPUT_LIMIT } from "src/lib/constants";
 import {
-  ISegment,
   ISegmentData,
-  ISubSegment,
 } from "src/lib/types/data/segment.type";
 import { UserProfileContext } from "../../contexts/UserProfile.Context";
 import { postCreateIdea } from "../../lib/api/ideaRoutes";
@@ -23,22 +20,18 @@ import { ICategory } from "../../lib/types/data/category.type";
 import { ICreateIdeaInput } from "../../lib/types/input/createIdea.input";
 import { IFetchError } from "../../lib/types/types";
 import {
-  capitalizeFirstLetterEachWord,
   capitalizeString,
   handlePotentialAxiosError,
 } from "../../lib/utilityFunctions";
 import { CONTENT, Toastie } from "../partials/LandingContent/CategoriesSection";
 import ImageUploader from "react-images-upload";
-import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
-import SubmitDirectProposalPage from "src/pages/SubmitDirectProposalPage";
 import {
-  getDirectProposal,
   postCreateProposal,
 } from "src/lib/api/proposalRoutes";
 import SimpleMap from "../map/SimpleMap";
 import { MAP_KEY } from "../../lib/constants";
-import {getUserBanWithToken} from "../../lib/api/banRoutes";
+import { getUserBanWithToken } from "../../lib/api/banRoutes";
 import { checkUser } from "src/lib/api/badPostingBehaviorRoutes";
 
 interface SubmitDirectProposalPageContentProps {
@@ -79,10 +72,18 @@ const SubmitDirectProposalPageContent: React.FC<
   };
 
   const [numberOfFeedback, setNumberOfFeedback] = useState(0);
-  const emptyFeedbackList:string[] = [];
+  const emptyFeedbackList: string[] = [];
   const [feedbackList, setFeedbackList] = useState<string[]>(emptyFeedbackList);
-  const emptyFeedbackTypeList:string[] = ["YESNO", "YESNO", "YESNO", "YESNO", "YESNO"];
-  const [feedbackTypeList, setFeedbackTypeList] = useState<string[]>(emptyFeedbackTypeList);
+  const emptyFeedbackTypeList: string[] = [
+    "YESNO",
+    "YESNO",
+    "YESNO",
+    "YESNO",
+    "YESNO",
+  ];
+  const [feedbackTypeList, setFeedbackTypeList] = useState<string[]>(
+    emptyFeedbackTypeList
+  );
 
   // const toggleNumberOfFeedback = (num: number) => {
   //   //let numberOfFeedback = 0;
@@ -95,20 +96,17 @@ const SubmitDirectProposalPageContent: React.FC<
   //   setNumberOfFeedback(numberOfFeedback + num);
   // };
 
-  const updateFeedback = (feedback:string, index:number) => {
+  const updateFeedback = (feedback: string, index: number) => {
     const newFeedbackList = [...feedbackList];
     newFeedbackList[index] = feedback;
     setFeedbackList(newFeedbackList);
 
     formik.values.feedback![index] = feedback;
-
-  }
+  };
 
   // rename to "addNewFeedback"
-  const addNewFeedback = (item:number) => {
-    if (
-      (numberOfFeedback == 5)
-    ) {
+  const addNewFeedback = (item: number) => {
+    if (numberOfFeedback == 5) {
       return;
     }
 
@@ -117,16 +115,13 @@ const SubmitDirectProposalPageContent: React.FC<
     setNumberOfFeedback(numberOfFeedback + 1);
     const newFeedbackList = [...feedbackList, feedback];
     setFeedbackList(newFeedbackList);
-
-
   };
 
   const removeFeedback = (index: number) => {
     //check if index less than size-1
 
-
-    setNumberOfFeedback(numberOfFeedback - 1)
-    const newFeedbackList = [...feedbackList]
+    setNumberOfFeedback(numberOfFeedback - 1);
+    const newFeedbackList = [...feedbackList];
     newFeedbackList.splice(index, 1);
     //formik.values.feedback![index] = "";
     for (let i = index; i < formik.values.feedback!.length - 1; i++) {
@@ -138,18 +133,21 @@ const SubmitDirectProposalPageContent: React.FC<
     const newFeedbackTypeList = [...feedbackTypeList];
     newFeedbackTypeList.splice(index, 1);
     for (let i = index; i < formik.values.feedbackRatingType!.length - 1; i++) {
-      formik.values.feedbackRatingType![i] = formik.values.feedbackRatingType![i + 1];
+      formik.values.feedbackRatingType![i] =
+        formik.values.feedbackRatingType![i + 1];
     }
-    formik.values.feedbackRatingType![formik.values.feedbackRatingType!.length - 1] = "YESNO";
+    formik.values.feedbackRatingType![
+      formik.values.feedbackRatingType!.length - 1
+    ] = "YESNO";
     setFeedbackTypeList(newFeedbackTypeList);
-  }
+  };
 
-  const updateFeedbackType = (feedbackType:string, index:number) => {
+  const updateFeedbackType = (feedbackType: string, index: number) => {
     const newFeedbackTypeList = [...feedbackTypeList];
     newFeedbackTypeList[index] = feedbackType;
     formik.values.feedbackRatingType![index] = feedbackType;
     setFeedbackTypeList(newFeedbackTypeList);
-  }
+  };
 
   const handleCommunityChange = (index: number) => {
     if (segData[index].segType === "Segment") {
@@ -173,84 +171,83 @@ const SubmitDirectProposalPageContent: React.FC<
     try {
       const metThreshhold = await checkUser(token, user!.id);
       try {
-         setError(null);
-      setIsLoading(true);
-      setTimeout(() => console.log("timeout"), 5000);
-      //const ideaValues with <ICreateIdeaInput> interface
-      const ideaValues: ICreateIdeaInput = {
-        categoryId: values.categoryId,
-        title: values.title,
-        userType: values.userType,
-        description: values.description,
-        proposal_role: values.proposal_role,
-        requirements: values.requirements,
-        proposal_benefits: values.proposal_benefits,
-        artsImpact: values.artsImpact,
-        communityImpact: values.communityImpact,
-        energyImpact: values.energyImpact,
-        manufacturingImpact: values.manufacturingImpact,
-        natureImpact: values.natureImpact,
-        address: {
-          streetAddress: values.address!.streetAddress,
-          streetAddress2: values.address!.streetAddress2,
-          city: values.address!.city,
-          postalCode: values.address!.postalCode,
-          country: values.address!.country,
-        },
-        geo: {
-          lat: values.geo!.lat,
-          lon: values.geo!.lon,
-        },
-        segmentId: values.segmentId,
-        subSegmentId: values.subSegmentId,
-        superSegmentId: values.superSegmentId,
-        state: "PROPOSAL",
-        imagePath: values.imagePath
+        setError(null);
+        setIsLoading(true);
+        setTimeout(() => console.log("timeout"), 5000);
+        //const ideaValues with <ICreateIdeaInput> interface
+        const ideaValues: ICreateIdeaInput = {
+          categoryId: values.categoryId,
+          title: values.title,
+          userType: values.userType,
+          description: values.description,
+          proposal_role: values.proposal_role,
+          requirements: values.requirements,
+          proposal_benefits: values.proposal_benefits,
+          artsImpact: values.artsImpact,
+          communityImpact: values.communityImpact,
+          energyImpact: values.energyImpact,
+          manufacturingImpact: values.manufacturingImpact,
+          natureImpact: values.natureImpact,
+          address: {
+            streetAddress: values.address!.streetAddress,
+            streetAddress2: values.address!.streetAddress2,
+            city: values.address!.city,
+            postalCode: values.address!.postalCode,
+            country: values.address!.country,
+          },
+          geo: {
+            lat: values.geo!.lat,
+            lon: values.geo!.lon,
+          },
+          segmentId: values.segmentId,
+          subSegmentId: values.subSegmentId,
+          superSegmentId: values.superSegmentId,
+          state: "PROPOSAL",
+          imagePath: values.imagePath,
+        };
+        const banDetails = await getUserBanWithToken(token);
+        let banned = true;
+        if (!user!.banned || !banDetails || banDetails.banType === "WARNING") {
+          banned = false;
+        }
+        const idea = await postCreateIdea(ideaValues, banned, token);
+        const proposalValues = {
+          ideaId: idea.id,
+          needCollaborators: values.needCollaborators,
+          needVolunteers: values.needVolunteers,
+          needDonations: values.needDonations,
+          needFeedback: values.needFeedback,
+          needSuggestions: values.needSuggestions,
+          location: values.location,
+          feedback: values.feedback,
+          feedbackRatingType: values.feedbackRatingType,
+        };
 
-      };
-      const banDetails = await getUserBanWithToken(token);
-      let banned = true;
-      if (!user!.banned || !banDetails || banDetails.banType === "WARNING") {
-        banned = false;
+        const proposal = await postCreateProposal(
+          proposalValues,
+          user!.banned,
+          token
+        );
+
+        setError(null);
+        history.push("/proposals/" + proposal.id);
+        formik.resetForm();
+      } catch (error) {
+        const genericMessage =
+          "An error occured while trying to create a Proposal.";
+        const errorObj = handlePotentialAxiosError(genericMessage, error);
+        setError(errorObj);
+      } finally {
+        setIsLoading(false);
       }
-      const idea = await postCreateIdea(ideaValues, banned, token);
-      const proposalValues = {
-        ideaId: idea.id,
-        needCollaborators: values.needCollaborators,
-        needVolunteers: values.needVolunteers,
-        needDonations: values.needDonations,
-        needFeedback: values.needFeedback,
-        needSuggestions: values.needSuggestions,
-        location: values.location,
-        feedback: values.feedback,
-        feedbackRatingType: values.feedbackRatingType,
-      };
-
-      const proposal = await postCreateProposal(
-        proposalValues,
-        user!.banned,
-        token
-      );
-
-      setError(null);
-      history.push("/proposals/" + proposal.id);
-      formik.resetForm();
     } catch (error) {
       const genericMessage =
-        "An error occured while trying to create a Proposal.";
+        "You have too many bad posts / post flagged. Post was NOT submittted.";
       const errorObj = handlePotentialAxiosError(genericMessage, error);
       setError(errorObj);
     } finally {
       setIsLoading(false);
     }
-  } catch (error) {
-    const genericMessage = 
-    "You have too many bad posts / post flagged. Post was NOT submittted.";
-    const errorObj = handlePotentialAxiosError(genericMessage, error);
-    setError(errorObj);
-  } finally {
-    setIsLoading(false);
-  }
   };
 
   function toggleElement(str: string, str2: string) {
@@ -316,11 +313,11 @@ const SubmitDirectProposalPageContent: React.FC<
     setIsLoading(true);
     fetch(
       "https://maps.googleapis.com/maps/api/geocode/json?latlng=" +
-      (markers.home.lat ? markers.home.lat : "48.4284") +
-      "," +
-      (markers.home.lng ? markers.home.lng : "-123.3656") +
-      "&key=" +
-      MAP_KEY
+        (markers.home.lat ? markers.home.lat : "48.4284") +
+        "," +
+        (markers.home.lng ? markers.home.lng : "-123.3656") +
+        "&key=" +
+        MAP_KEY
     )
       .then((response) => response.json())
       .then((data) => {
@@ -330,7 +327,6 @@ const SubmitDirectProposalPageContent: React.FC<
         setIsLoading(false);
       })
       .catch((error) => {
-
         setIsLoading(false);
       });
   }
@@ -394,7 +390,11 @@ const SubmitDirectProposalPageContent: React.FC<
                 onChange={formik.handleChange}
                 value={formik.values.title}
                 placeholder="Enter the title of your proposal"
+                maxLength={TEXT_INPUT_LIMIT.TITLE}
               />
+              <p className="text-right">
+                {`${formik.values.title.length}/${TEXT_INPUT_LIMIT.TITLE}`}
+              </p>
             </Form.Group>
             {/* <Form.Group>
               <Form.Label>*Describe your proposal</Form.Label>
@@ -407,44 +407,73 @@ const SubmitDirectProposalPageContent: React.FC<
               />
             </Form.Group> */}
             <Form.Group>
-              <Form.Label>Proposer info (Describe you, your organization, and what you bring to the table to help make this proposal happen).</Form.Label>
+              <Form.Label>
+                Proposer info (Describe you, your organization, and what you
+                bring to the table to help make this proposal happen).
+              </Form.Label>
               <Form.Control
                 as="textarea"
                 rows={3}
                 name="proposal_role"
                 onChange={formik.handleChange}
                 value={formik.values.proposal_role}
+                maxLength={TEXT_INPUT_LIMIT.DESCRIPTION}
               />
+              <p className="text-right">
+                {`${formik.values.proposal_role.length}/${TEXT_INPUT_LIMIT.DESCRIPTION}`}
+              </p>
             </Form.Group>
             <Form.Group>
-              <Form.Label>Describe your Proposal (What is the goal, what does it look like, how it will work).</Form.Label>
+              <Form.Label>
+                Describe your Proposal (What is the goal, what does it look
+                like, how it will work).
+              </Form.Label>
               <Form.Control
                 as="textarea"
                 rows={3}
                 name="description"
                 onChange={formik.handleChange}
                 value={formik.values.description}
+                maxLength={TEXT_INPUT_LIMIT.DESCRIPTION}
               />
+              <p className="text-right">
+                {`${formik.values.description.length}/${TEXT_INPUT_LIMIT.DESCRIPTION}`}
+              </p>
             </Form.Group>
             <Form.Group>
-              <Form.Label>Community Benefits  (Describe how it will improve and benefit the community).</Form.Label>
+              <Form.Label>
+                Community Benefits (Describe how it will improve and benefit the
+                community).
+              </Form.Label>
               <Form.Control
                 as="textarea"
                 rows={3}
                 name="proposal_benefits"
                 onChange={formik.handleChange}
                 value={formik.values.proposal_benefits}
+                maxLength={TEXT_INPUT_LIMIT.DESCRIPTION}
               />
+              <p className="text-right">
+                {`${formik.values.proposal_benefits.length}/${TEXT_INPUT_LIMIT.DESCRIPTION}`}
+              </p>
             </Form.Group>
             <Form.Group>
-              <Form.Label>Requirements (Describe what will be needed to make this a reality: number of people, resources, land use agreement, municipal agreement etc…).</Form.Label>
+              <Form.Label>
+                Requirements (Describe what will be needed to make this a
+                reality: number of people, resources, land use agreement,
+                municipal agreement etc…).
+              </Form.Label>
               <Form.Control
                 as="textarea"
                 rows={3}
                 name="requirements"
                 onChange={formik.handleChange}
                 value={formik.values.requirements}
+                maxLength={TEXT_INPUT_LIMIT.DESCRIPTION}
               />
+              <p className="text-right">
+                {`${formik.values.requirements.length}/${TEXT_INPUT_LIMIT.DESCRIPTION}`}
+              </p>
             </Form.Group>
             <Form.Group>
               <Form.Label>Proposal image</Form.Label>
@@ -454,7 +483,6 @@ const SubmitDirectProposalPageContent: React.FC<
                 withPreview={true}
                 onChange={(picture) => {
                   formik.setFieldValue("imagePath", picture);
-
                 }}
                 imgExtension={[".jpg", ".jpeg", ".png", ".webp"]}
                 buttonText="Select Proposal Image"
@@ -507,7 +535,11 @@ const SubmitDirectProposalPageContent: React.FC<
                     value={formik.values.communityImpact}
                     placeholder=""
                     style={{ marginTop: "0rem" }}
+                    maxLength={TEXT_INPUT_LIMIT.IMPACT_AREAS}
                   />
+                  <p className="text-right">
+                    {`${formik.values.communityImpact?.length}/${TEXT_INPUT_LIMIT.IMPACT_AREAS}`}
+                  </p>
                 </Col>
                 <Col></Col>
               </Row>
@@ -548,7 +580,11 @@ const SubmitDirectProposalPageContent: React.FC<
                     value={formik.values.natureImpact}
                     placeholder=""
                     style={{ marginTop: "0rem" }}
+                    maxLength={TEXT_INPUT_LIMIT.IMPACT_AREAS}
                   />
+                  <p className="text-right">
+                    {`${formik.values.natureImpact?.length}/${TEXT_INPUT_LIMIT.IMPACT_AREAS}`}
+                  </p>
                 </Col>
                 <Col></Col>
               </Row>
@@ -589,7 +625,11 @@ const SubmitDirectProposalPageContent: React.FC<
                     value={formik.values.artsImpact}
                     placeholder=""
                     style={{ marginTop: "0rem" }}
+                    maxLength={TEXT_INPUT_LIMIT.IMPACT_AREAS}
                   />
+                  <p className="text-right">
+                    {`${formik.values.artsImpact?.length}/${TEXT_INPUT_LIMIT.IMPACT_AREAS}`}
+                  </p>
                 </Col>
                 <Col></Col>
               </Row>
@@ -630,7 +670,11 @@ const SubmitDirectProposalPageContent: React.FC<
                     value={formik.values.energyImpact}
                     placeholder=""
                     style={{ marginTop: "0rem" }}
+                    maxLength={TEXT_INPUT_LIMIT.IMPACT_AREAS}
                   />
+                  <p className="text-right">
+                    {`${formik.values.energyImpact?.length}/${TEXT_INPUT_LIMIT.IMPACT_AREAS}`}
+                  </p>
                 </Col>
                 <Col></Col>
               </Row>
@@ -671,7 +715,11 @@ const SubmitDirectProposalPageContent: React.FC<
                     value={formik.values.manufacturingImpact}
                     placeholder=""
                     style={{ marginTop: "0rem" }}
+                    maxLength={TEXT_INPUT_LIMIT.IMPACT_AREAS}
                   />
+                  <p className="text-right">
+                    {`${formik.values.manufacturingImpact?.length}/${TEXT_INPUT_LIMIT.IMPACT_AREAS}`}
+                  </p>
                 </Col>
                 <Col></Col>
               </Row>
@@ -727,27 +775,25 @@ const SubmitDirectProposalPageContent: React.FC<
                     &nbsp;&nbsp;Specific Feedback&nbsp;&nbsp;
                   </Form.Label>
                   {extraFeedback && (
-
-
-                      <Button
-                        color="success"
-                        size="sm"
-                        onClick={() => addNewFeedback(numberOfFeedback)}
-                      >
-                        +
-                      </Button>)}
-                  {extraFeedback && feedbackList.map((feedback, index) => {
-                    return <div className="feedback-1">
+                    <Button
+                      color="success"
+                      size="sm"
+                      onClick={() => addNewFeedback(numberOfFeedback)}
+                    >
+                      +
+                    </Button>
+                  )}
+                  {extraFeedback &&
+                    feedbackList.map((feedback, index) => {
+                      return (
+                        <div className="feedback-1">
                           <br />
-                          <Form.Label
-                            style={{ display: "flex" }}
-                          >
+                          <Form.Label style={{ display: "flex" }}>
                             &nbsp;&nbsp;Specific Feedback {index + 1}
                             <Button
                               style={{ marginLeft: "auto" }}
                               color="danger"
                               size="sm"
-
                               onClick={() => removeFeedback(index)}
                             >
                               -
@@ -759,42 +805,48 @@ const SubmitDirectProposalPageContent: React.FC<
                             name="specificFeedback1"
                             onChange={(event) => {
                               updateFeedback(event.target.value, index);
-                              formik.handleChange(formik.values.feedback![index])(event);
-                            } }
+                              formik.handleChange(
+                                formik.values.feedback![index]
+                              )(event);
+                            }}
                             value={formik.values.feedback![index]}
                             placeholder="Extra Feedback"
                           />
                           <Form.Check
-                              inline
-                              label="Yes/No"
-                              name= {`group-${index}`}
-                              type="radio"
-                              id={`inline-radio-1`}
-                              checked={formik.values.feedbackRatingType![index] === "YESNO"}
-                              onClick={(event) =>
-                                {
-                                  formik.values.feedbackRatingType![index] = "YESNO";
-                                  updateFeedbackType("YESNO", index);
-
-                                }
-                              }
+                            inline
+                            label="Yes/No"
+                            name={`group-${index}`}
+                            type="radio"
+                            id={`inline-radio-1`}
+                            checked={
+                              formik.values.feedbackRatingType![index] ===
+                              "YESNO"
+                            }
+                            onClick={(event) => {
+                              formik.values.feedbackRatingType![index] =
+                                "YESNO";
+                              updateFeedbackType("YESNO", index);
+                            }}
                           />
                           <Form.Check
-                              inline
-                              label="Rating Scale"
-                              name={`group-${index}`}
-                              type={"radio"}
-                              id={`inline-radio-2`}
-                              checked={formik.values.feedbackRatingType![index] === "RATING"}
-                              onClick={(event) =>
-                                {
-                                  formik.values.feedbackRatingType![index] = "RATING";
-                                  updateFeedbackType("RATING", index);
-
-                                }
-                              }
+                            inline
+                            label="Rating Scale"
+                            name={`group-${index}`}
+                            type={"radio"}
+                            id={`inline-radio-2`}
+                            checked={
+                              formik.values.feedbackRatingType![index] ===
+                              "RATING"
+                            }
+                            onClick={(event) => {
+                              formik.values.feedbackRatingType![index] =
+                                "RATING";
+                              updateFeedbackType("RATING", index);
+                            }}
                           />
-                        </div>})}
+                        </div>
+                      );
+                    })}
                 </div>
               </div>
             </Form.Group>

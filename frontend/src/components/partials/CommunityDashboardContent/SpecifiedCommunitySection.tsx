@@ -1,19 +1,16 @@
-import { Container, Row, Col, Carousel, Modal, Collapse, Accordion } from "react-bootstrap";
+import { Container,  Col, Carousel, Modal, Collapse} from "react-bootstrap";
 import PlaceholderIdeaTile from "src/components/tiles/PlaceholderIdeaTile";
 import { IIdeaWithAggregations } from "../../../lib/types/data/idea.type";
 import IdeaTile from "../../tiles/IdeaTile";
 import {BsFilter} from "react-icons/bs";
 import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
 import CSS from "csstype";
-import { Button } from "react-bootstrap";
 import React, { useState } from "react";
-import { ICategory } from "src/lib/types/data/category.type";
 import { useCategories} from "src/hooks/categoryHooks";
 import {useAllProposals} from "src/hooks/proposalHooks";
 import { capitalizeFirstLetterEachWord } from "./../../../lib/utilityFunctions";
 import { useAllSuperSegments, useAllSegments } from "./../../../hooks/segmentHooks";
 import ProposalTile from "../../tiles/ProposalTile";
-import {IProposalWithAggregations} from "../../../lib/types/data/proposal.type";
 
 
 interface SpecifiedCommunityProps {
@@ -27,7 +24,6 @@ interface SpecifiedCommunityProps {
 const SpecifiedCommunitySection: React.FC<SpecifiedCommunityProps> = ({
   sectionTitle,
   topIdeas,
-  postType,
   isDashboard,
   showCustomFilter,
 }) => {
@@ -200,12 +196,12 @@ const SpecifiedCommunitySection: React.FC<SpecifiedCommunityProps> = ({
 
       {isDashboard ? (
         <div className="pb-1 border-bottom display-6">
-          <h2 style={titleStyle}>{capitalizeFirstLetterEachWord(sectionTitle)} Posts</h2>
+          <h2 style={titleStyle}>{sectionTitle ? capitalizeFirstLetterEachWord(sectionTitle) : ""} Posts</h2>
           {showCustomFilter === false ? null : <BsFilter onMouseOver={mouseHoverPointer} style={filterButtonStyle} onClick={() => {setShowModal(!showModal)}} size={30} />}
         </div>
       ) : (
         <div className="pb-1 border-bottom display-6 text-left">
-          <h2 style={titleStyle}>{capitalizeFirstLetterEachWord(sectionTitle)} Posts</h2>
+          <h2 style={titleStyle}>{sectionTitle ? capitalizeFirstLetterEachWord(sectionTitle) : ""} Posts</h2>
           {showCustomFilter === false ? null : <BsFilter onMouseOver={mouseHoverPointer} style={filterButtonStyle} onClick={() => {setShowModal(!showModal)}} size={30} />}
 
         </div>

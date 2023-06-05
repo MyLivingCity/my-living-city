@@ -16,6 +16,8 @@ import { ICommentAggregations } from "src/lib/types/data/comment.type";
 import { updateCommentNotificationStatus } from "src/lib/api/commentRoutes";
 import { IQuarantineNotification } from "src/lib/types/data/quarantinePostNotification.type";
 import { dismissQuarantineNotification } from "src/lib/api/quarantinePostNotificationRoutes";
+import LoadingSpinner from "src/components/ui/LoadingSpinner";
+import ErrorMessage from "src/components/ui/ErrorMessage";
 
 interface NotificationPageContentProps {
   userIdeas: IIdeaWithAggregations[] | undefined;
@@ -24,6 +26,8 @@ interface NotificationPageContentProps {
   userPostBans: IBanPost[] | undefined;
   userCommentBans: IBanComment[] | undefined;
   userQuarantineNotifications: IQuarantineNotification[] | undefined;
+  isLoading?: boolean;
+  isError?: boolean;
 }
 
 const Notifications: React.FC<NotificationPageContentProps> = ({
@@ -33,10 +37,77 @@ const Notifications: React.FC<NotificationPageContentProps> = ({
   userPostBans,
   userCommentBans,
   userQuarantineNotifications,
+  isLoading,
+  isError
 }) => {
+  const styling = `
+  td {
+     border-top: 0.5px solid #d4d4d4 !important;
+     border-bottom: 0.5px solid #d4d4d4 !important;
+  }
+  tr:hover {
+    background-color: #e8ffe9;
+    cursor: pointer;
+ }
+ h5 {
+   display: inline;
+ }
+ `
   const [isDismissed, setIsDismissed] = useState(false);
   const { user, token } = useContext(UserProfileContext);
 
+  if (isLoading) {
+    return (
+      <Container
+        className="system"
+        id="hanging-icons"
+        style={{ padding: "3rem 1rem 0rem 1rem", margin: "0 auto" }}
+      >
+        <style>{styling}</style>
+        <div className="d-flex justify-content-between border-bottom display-6">
+          <div className="col-example text-left">
+            <h2 className="display-6">Notifications</h2>
+          </div>
+          <div className="col-example text-left">
+            <Button disabled>Dismiss All</Button>
+          </div>
+        </div>
+
+        <div style={{ marginTop: "1rem" }}>
+          <Table>
+            <tbody className="wrapper" key={Math.random()}>
+              <LoadingSpinner />
+            </tbody>
+          </Table>
+        </div>
+      </Container>
+    );
+  }
+  
+  if (isError) {
+    return (
+      <Container
+        className="system"
+        id="hanging-icons"
+        style={{ padding: "3rem 1rem 0rem 1rem", margin: "0 auto" }}
+      >
+        <style>{styling}</style>
+        <div className="d-flex justify-content-between border-bottom display-6">
+          <div className="col-example text-left">
+            <h2 className="display-6">Notifications</h2>
+          </div>
+          <div className="col-example text-left">
+            <Button disabled>Dismiss All</Button>
+          </div>
+        </div>
+
+        <div style={{ marginTop: "1rem" }}>
+          <ErrorMessage message="There was an error loading notifications." />
+        </div>
+      </Container>
+    );
+  }
+  
   const dismissAll = async () => {
     if (userIdeas) {
       userIdeas?.map(async (userIdea) => {
@@ -164,23 +235,10 @@ const Notifications: React.FC<NotificationPageContentProps> = ({
     <Container
       className="system"
       id="hanging-icons"
-      // Top Right Bottom Left
       style={{ padding: "3rem 1rem 0rem 1rem", margin: "0 auto" }}
     >
       <style>
-        {`
-         td {
-            border-top: 0.5px solid #d4d4d4 !important;
-            border-bottom: 0.5px solid #d4d4d4 !important;
-         }
-         tr:hover {
-           background-color: #e8ffe9;
-           cursor: pointer;
-        }
-        h5 {
-          display: inline;
-        }
-        `}
+        {styling}
       </style>
       <div className="d-flex justify-content-between border-bottom display-6">
         <div className="col-example text-left">

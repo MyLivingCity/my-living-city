@@ -1,34 +1,27 @@
-import React, { ChangeEvent, useContext, useEffect, useState } from 'react'
+import React, {  useContext,  useState } from 'react'
 import { RouteComponentProps } from 'react-router-dom';
 import { UserManagementContent } from 'src/components/content/UserManagementContent';
 import { IdeaManagementContent } from 'src/components/content/IdeaManagementContent';
 import { UserProfileContext } from '../contexts/UserProfile.Context';
 import { useAllUsers, useBannedUsers } from 'src/hooks/userHooks';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
-import { useCategories } from '../hooks/categoryHooks';
-import { CacheProvider } from '@emotion/react';
 import { ProposalManagementContent } from 'src/components/content/ProposalManagementContent';
 import { CommentManagementContent } from 'src/components/content/CommentManagementContent';
 import { useIdeasWithBreakdown } from 'src/hooks/ideaHooks';
 import { useProposalsWithBreakdown } from 'src/hooks/proposalHooks';
 import { useAllCommentFlags, useAllFlags } from 'src/hooks/flagHooks';
 import { useThreshold, useFalseFlagThreshold, useBadPostingThreshhold } from 'src/hooks/threshholdHooks';
-import { IIdea, IIdeaWithAggregations } from 'src/lib/types/data/idea.type';
+import {  IIdeaWithAggregations } from 'src/lib/types/data/idea.type';
 import { useAllComments } from 'src/hooks/commentHooks';
 import { IUser } from 'src/lib/types/data/user.type';
 import { IComment } from 'src/lib/types/data/comment.type';
 import { IProposalWithAggregations } from 'src/lib/types/data/proposal.type';
 import { Button } from 'react-bootstrap';
-import { checkIfUserHasRated } from 'src/lib/utilityFunctions';
-import UserFlagsModal from 'src/components/partials/SingleIdeaContent/UserFlagsModal';
-import { updateLanguageServiceSourceFile } from 'typescript';
 import { updateThreshhold, updateFalseFlagThreshold, updateBadPostingThreshhold } from 'src/lib/api/threshholdRoutes';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import { ButtonGroup } from "react-bootstrap";
-import { now } from 'moment';
 import { useAllBanDetails, useRemoveAllExpiredBans } from 'src/hooks/banHooks';
-import { getAllBannedUsers } from 'src/lib/api/userRoutes';
 import { BannedUsersManagementContent } from 'src/components/content/BannedUsersManagementContent';
 import { FalseFlagManagementContent } from 'src/components/content/FalseFlagManagementContent';
 import { BadPostingManagementContent } from 'src/components/content/BadPostingManagementContent';

@@ -1,10 +1,8 @@
 import React, { useState } from 'react'
-import { Card, Table, Dropdown, Container, Button, Form, NavDropdown } from 'react-bootstrap';
+import { Table, Dropdown, Container, Button, Form, NavDropdown } from 'react-bootstrap';
 import { updateCommentStatus } from 'src/lib/api/commentRoutes';
 import { updateFalseFlagComment } from 'src/lib/api/flagRoutes';
-import { updateUser } from 'src/lib/api/userRoutes';
 import { incrementBadPostCount } from 'src/lib/api/badPostingBehaviorRoutes';
-import { USER_TYPES } from 'src/lib/constants';
 import { IComment } from 'src/lib/types/data/comment.type';
 import { ICommentFlag } from 'src/lib/types/data/flag.type';
 import { IIdeaWithAggregations } from 'src/lib/types/data/idea.type';
@@ -77,7 +75,6 @@ export const CommentManagementContent: React.FC<CommentManagementContentProps> =
             commentNumFlags.push(counter);
         }
     }
-    const userTypes = Object.keys(USER_TYPES);
     const ideaURL = '/ideas/';
         return (
             <Container style={{maxWidth: '80%', marginLeft: 50}}>

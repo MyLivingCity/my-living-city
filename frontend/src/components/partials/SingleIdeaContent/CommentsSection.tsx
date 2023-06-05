@@ -1,21 +1,21 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Alert, Button, Container, Row } from "react-bootstrap";
-import { useParams } from "react-router";
-import { IFetchError } from "src/lib/types/types";
-import { handlePotentialAxiosError } from "src/lib/utilityFunctions";
 import { UserProfileContext } from "../../../contexts/UserProfile.Context";
-import {
-  useAllCommentsUnderIdea,
-  useCreateCommentMutation,
-} from "../../../hooks/commentHooks";
+import { useCreateCommentMutation } from "../../../hooks/commentHooks";
 import IdeaCommentTile from "../../tiles/IdeaComment/IdeaCommentTile";
 import LoadingSpinner from "../../ui/LoadingSpinner";
 import CommentSubmitModal from "./CommentSubmitModal";
-import { createCommentFlagUnderIdea, updateFalseFlagComment, getAllCommentFlags} from "src/lib/api/flagRoutes";
-const CommentsSection = (ideaIdProp: any) => {
-  const { ideaId } = ideaIdProp;
+import "../../../scss/content/textlimit.scss";
+import { UseQueryResult } from "react-query";
+import { IFetchError } from "src/lib/types/types";
+import { IComment } from "src/lib/types/data/comment.type";
 
+interface CommentsSectionProps {
+  ideaId: string;
+  allCommentsUnderIdea: UseQueryResult<IComment[], IFetchError>;
+}
 
+const CommentsSection: React.FC<CommentsSectionProps> = ({ideaId, allCommentsUnderIdea}) => {
   const { token, user, isUserAuthenticated } = useContext(UserProfileContext);
   const [showModal, setShowModal] = useState<boolean>(false);
 
@@ -25,7 +25,7 @@ const CommentsSection = (ideaIdProp: any) => {
     isLoading,
     isError,
     error,
-  } = useAllCommentsUnderIdea(ideaId, token);
+  } = allCommentsUnderIdea;
 
 // ===================== REMOVING DEACTIVATED COMMENTS ========================
 if(ideaComments){
@@ -63,19 +63,15 @@ if(ideaComments){
     // Unauthenticated
     let buttonText = "Please login to comment";
     if (isUserAuthenticated()) buttonText = "Submit Comment";
-    if (isLoading) buttonText = "Saving Comment";
+    if (commentIsLoading) buttonText = "Saving Comment";
     return buttonText;
   };
-  // const flagFunc = async(commentId: number, token: string, userId: string, ideaActive: boolean) => {
-  //   const createFlagData = await createCommentFlagUnderIdea(commentId, flagReason, token!);
-  //   //const updateData = await updateIdeaStatus(token, userId, ideaId.toString(), ideaActive, false);
-  //   //const updateFlagData = await updateFalseFlagIdea(parseInt(ideaId.toString()), token!, false);
-  // }
+
   if (error && isError) {
     return <p>An error occured while fetching comments</p>;
   }
 
-  if (isLoading) {
+  if (commentIsLoading) {
     return <LoadingSpinner />;
   }
 
@@ -101,9 +97,13 @@ if(ideaComments){
         ) : (
           ideaComments &&
           ideaComments.map((comment) => (
+            <div className="textlimit">
             <Row key={comment.id}>
-              <IdeaCommentTile commentData={comment} />
+              <IdeaCommentTile 
+                commentData={comment} 
+                />
             </Row>
+            </div>
           ))
         )}
       </div>

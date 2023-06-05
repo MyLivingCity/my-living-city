@@ -1,16 +1,14 @@
-import { NONAME } from 'dns';
-import { Formik, useFormik} from 'formik';
+import { Formik} from 'formik';
 import React, { useContext, useState } from 'react'
 import { Col, Container, Row, Form, Button, Alert, Modal } from 'react-bootstrap'
 import { CreateAdvertisementInput } from 'src/lib/types/input/advertisement.input';
 import { UserProfileContext } from '../../contexts/UserProfile.Context';
-import { getAdvertisementById, updateAdvertisement } from 'src/lib/api/advertisementRoutes';
+import { updateAdvertisement } from 'src/lib/api/advertisementRoutes';
 import { IAdvertisement } from '../../lib/types/data/advertisement.type';
 import { IFetchError } from '../../lib/types/types';
-import { capitalizeString, handlePotentialAxiosError } from '../../lib/utilityFunctions';
+import { handlePotentialAxiosError } from '../../lib/utilityFunctions';
 import ImageUploader from 'react-images-upload';
 import * as Yup from 'yup';
-import { values } from 'lodash';
 
 import '../../scss/content/_createAds.scss'
 import moment from 'moment';

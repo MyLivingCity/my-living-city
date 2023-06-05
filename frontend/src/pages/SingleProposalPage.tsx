@@ -1,27 +1,9 @@
-import React from "react";
-import { useState } from "react";
-import { RouteComponentProps } from "react-router-dom";
 import { useSingleProposal } from "src/hooks/proposalHooks";
-import {
-  useSingleSegmentBySegmentId,
-  useSingleSubSegmentBySubSegmentId,
-} from "src/hooks/segmentHooks";
-import { IIdeaWithRelationship } from "src/lib/types/data/idea.type";
 import SingleProposalPageContent from "../components/content/SingleProposalPageContent";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 import { useSingleIdea } from "../hooks/ideaHooks";
 
 // TODO: Pages are responsible for fetching, error handling, and loading spinner
-
-// Extends Route component props with idea title route param
-interface SingleIdeaPageProps
-  extends RouteComponentProps<{
-    ideaId: string;
-    proposalId: string;
-  }> {
-  // Add custom added props here
-  ideaId: string;
-}
 
 const SingleProposalPage = (props: any) => {
   // Destructured props
@@ -45,19 +27,12 @@ const SingleProposalPage = (props: any) => {
     var ideaStringId = "";
   }
 
-  const { data, error, isLoading, isError } = useSingleIdea(ideaStringId);
-  // const segmentData = useSingleSegmentBySegmentId(data?.segmentId!);
+  const { data, error: ideaError, isLoading: ideaIsLoading, isError: ideaIsError } = useSingleIdea(ideaStringId);
 
-  // const [subSegmentId, setSubSegmentId] = useState(data?.subSegmentId);
+  proposalIsError && console.error(`Error fetching single proposal: ${proposalError}`)
+  ideaIsError && console.error(`Error fetching single idea: ${ideaError}`)
 
-  // if (subSegmentId) {
-  //   const subSegmentData = useSingleSubSegmentBySubSegmentId(subSegmentId);
-  // } else {
-
-  // }
-  // const subSegmentData = useSingleSubSegmentBySubSegmentId(data?.subSegmentId!);
-
-  if (proposalIsError) {
+  if (ideaIsError || proposalIsError) {
   
     return (
       <div className="wrapper">
@@ -69,27 +44,7 @@ const SingleProposalPage = (props: any) => {
     );
   }
 
-  if (proposalIsLoading) {
-    return (
-      <div className="wrapper">
-        <LoadingSpinner />
-      </div>
-    );
-  }
-
-  if (isError) {
- 
-    return (
-      <div className="wrapper">
-        <p>
-          Error occured while trying to retrieve proposal. Please try again
-          later.
-        </p>
-      </div>
-    );
-  }
-
-  if (isLoading) {
+  if (ideaIsLoading || proposalIsLoading) {
     return (
       <div className="wrapper">
         <LoadingSpinner />

@@ -28,10 +28,7 @@ import { ShowSubSegmentsPage } from "src/pages/ShowSubSegmentsPage";
 import { UserSegmentRequestCard } from "../partials/UserSegmentRequestCard";
 import { COUNTRIES, PROVINCES } from "src/lib/constants";
 import { Dropdown } from "react-bootstrap";
-//import {Image} from 'react-native';
 import { capitalizeFirstLetterEachWord } from "./../../lib/utilityFunctions";
-// //import timeout timers/promises
-// import { setTimeout } from "timers/promises";
 
 export interface ShowSubSegmentsProps {
   segId: number;

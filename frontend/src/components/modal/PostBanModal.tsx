@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { Button, Container, Form, Modal, Row, Col } from 'react-bootstrap';
 import { IIdeaWithAggregations } from 'src/lib/types/data/idea.type';
-import { IUser } from 'src/lib/types/data/user.type';
 import { useFormik } from "formik";
 import { IBanPostInput } from 'src/lib/types/input/banPost.input';
 import { postCreatePostBan } from 'src/lib/api/banRoutes';

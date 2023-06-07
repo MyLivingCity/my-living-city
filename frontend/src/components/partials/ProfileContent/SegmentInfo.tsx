@@ -1,20 +1,10 @@
-import React, { useEffect, useState } from 'react'
-import { Col, Container, Row, Card, Image, ListGroup, ListGroupItem, Button, Form, Table, NavDropdown, Dropdown, Alert} from 'react-bootstrap';
-import { postUserSegmentRequest } from 'src/lib/api/userSegmentRequestRoutes';
-import { API_BASE_URL, USER_TYPES } from 'src/lib/constants';
+import React, { useState } from 'react'
+import { Col, Row, Card, ListGroup, ListGroupItem, Button, Form} from 'react-bootstrap';
 import { IUser } from '../../../lib/types/data/user.type';
 import { capitalizeString } from '../../../lib/utilityFunctions';
-import { RequestSegmentModal } from '../../partials/RequestSegmentModal';
-import StripeCheckoutButton from "src/components/partials/StripeCheckoutButton"
-import {getUserSubscriptionStatus} from 'src/lib/api/userRoutes'
-import { LinkType, Link, PublicStandardProfile, PublicCommunityBusinessProfile, PublicMunicipalProfile } from 'src/lib/types/data/publicProfile.type'; 
-import { getCommunityBusinessProfile, updateCommunityBusinessProfile, getCommunityBusinessLinks, getMunicipalProfile, getStandardProfile, updateStandardProfile,updateMunicipalProfile, getMunicipalLinks } from 'src/lib/api/publicProfileRoutes';
-import { postAvatarImage } from 'src/lib/api/avatarRoutes';
-import ImageUploader from 'react-images-upload';
 import Modal from 'react-bootstrap/Modal';
 import SimpleMap from 'src/components/map/SimpleMap';
-import { findSegmentByName, getAllSegments, getAllSubSegmentsWithId, getSegmentByName, getSingleSegmentBySegmentId } from 'src/lib/api/segmentRoutes';
-import { useAllSegments } from 'src/hooks/segmentHooks';
+import { getAllSubSegmentsWithId } from 'src/lib/api/segmentRoutes';
 import { ISegment } from 'src/lib/types/data/segment.type';
 import { ISubSegment } from 'src/lib/types/data/segment.type';
 

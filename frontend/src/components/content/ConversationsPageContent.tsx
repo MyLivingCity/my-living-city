@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Col, Container, Row, Button, Carousel } from "react-bootstrap";
+import React, {  } from "react";
+import { Col, Container, Carousel } from "react-bootstrap";
 import { IIdeaWithAggregations } from "../../lib/types/data/idea.type";
 import { IProposalWithAggregations } from "src/lib/types/data/proposal.type";
 import IdeaTile from "../tiles/IdeaTile";
@@ -10,9 +10,6 @@ interface ConversationsPageContentProps {
   ideas: IIdeaWithAggregations[] | undefined;
   proposals: IProposalWithAggregations[] | undefined;
 }
-
-// sorting and parsing ideas here
-
 
 const ConversationsPageContent: React.FC<ConversationsPageContentProps> = ({
   ideas,

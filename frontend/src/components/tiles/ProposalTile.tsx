@@ -1,7 +1,6 @@
 import { Button, Card } from "react-bootstrap";
 import { IProposalWithAggregations } from "../../lib/types/data/proposal.type";
 import {
-  capitalizeFirstLetterEachWord,
   timeDifference,
   truncateString,
 } from "../../lib/utilityFunctions";
@@ -29,7 +28,7 @@ const ProposalTile: React.FC<proposalTileProps> = ({
   const date = currentTime.getTime() - postDate.getTime();
 
   const isNew = date < oneWeek;
-
+  const ratingAvgUpdated = Number(idea.ratingAvg);
   return (
     // <Card style={{ width: '18rem' }}>
     <Card>
@@ -60,7 +59,7 @@ const ProposalTile: React.FC<proposalTileProps> = ({
             <div className="px-2 text-muted d-flex flex-column justify-content-center align-items-center">
               <AiOutlineStar className="" />
               <p className="mb-0 user-select-none">
-                {idea.ratingAvg ? idea.ratingAvg.toFixed(2) : 0}
+               {ratingAvgUpdated.toFixed(1)}
               </p>
             </div>
             <div className="px-2 text-muted d-flex flex-column justify-content-center align-items-center">

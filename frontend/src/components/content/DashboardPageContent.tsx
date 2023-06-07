@@ -1,15 +1,9 @@
 import React from "react";
-import { Container, Row, Spinner, Button, Carousel } from "react-bootstrap";
-import { IIdeaWithAggregations } from "../../lib/types/data/idea.type";
-import { IFetchError } from "../../lib/types/types";
+import { Container, Row, Button} from "react-bootstrap";
 import NewAndTrendingSection from "../partials/LandingContent/NewAndTrendingSection";
 import MyPosts from "../partials/DashboardContent/MyPosts";
-
-import AdsSection from "../partials/LandingContent/AdsSection"; //
-import { AdsSectionPage } from "src/pages/AdsSectionPage";
 import Notifications from "../partials/DashboardContent/Notifications";
 import SystemUpdates from "../partials/DashboardContent/SystemUpdates";
-import LoadingSpinner from "../ui/LoadingSpinner";
 import { useIdeasWithBreakdown, useIdeasHomepage, useUserFollowedIdeas, useUserIdeas, useUserEndorsedIdeas } from "../../hooks/ideaHooks";
 import { IUser } from "src/lib/types/data/user.type";
 import { FindBanDetails, FindUndismissedPostBans, FindUndismissedCommentBans } from "src/hooks/banHooks";
@@ -35,7 +29,8 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
   const { 
     data: commentData,
     isLoading: commentLoading,
-    error: commentError
+    error: commentError,
+    isError: commentIsError
   } = useAllComments();
 
   const {
@@ -49,6 +44,7 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
     data: userIdeaData,
     error: uError,
     isLoading: uLoading,
+    isError: uIsError,
   } = useUserIdeas(user.id);
 
   const {
@@ -62,36 +58,40 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
     data: undismissedPostBansData,
     error: undismissedPostBansError,
     isLoading: undismissedPostBansLoading,
+    isError: undismissedPostBansIsError
   } = FindUndismissedPostBans(user.id);
 
   const {
     data: undismissedCommentBansData,
-    isError: undismissedCommentBansError,
-    isLoading: undismissedCommentBansLoading
+    isLoading: undismissedCommentBansLoading,
+    isError: undismissedCommentBansIsError
   } = FindUndismissedCommentBans(user.id);
 
   const {
     data: userFollowedIdeaData,
     error: userFollowedError,
-    isLoading: userFollowedLoading,
+    isLoading: userFollowedIsLoading,
+    isError: userFollowedIsError
   } = useUserFollowedIdeas(user.id)
 
   const {
     data: userEndorsedIdeaData,
     error: userEndorsedError,
     isLoading: userEndorsedLoading,
+    isError: userEndorsedIsError
   } = useUserEndorsedIdeas(user.id)
 
   const {
       data: userBannedData,
-      isError: userBannedDataError,
-      isLoading: userBannedDataLoading
+      isLoading: userBannedIsLoading,
+      isError: userBannedIsError
     } = FindBanDetails(user.id);
     
   const {
     data: quarantinePostNotifications,
     error: quarantinePostNotificationsError,
-    isLoading: quarantinePostNotificationsLoading
+    isLoading: quarantinePostNotificationsLoading,
+    isError: quarantinePostNotificationsIsError
   } = useQuarantinePostNotifications();
 
   const canEndorse = (
@@ -100,67 +100,121 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
     user.userType === USER_TYPES.BUSINESS ||
     user.userType === USER_TYPES.MUNICIPAL
   );
-
-  if ( ideaLoading || iLoading || uLoading || pLoading || userFollowedLoading || userEndorsedLoading || userBannedDataLoading || commentLoading || undismissedPostBansLoading || undismissedCommentBansLoading || quarantinePostNotificationsLoading) {
-    return <LoadingSpinner />;
-  }
-
-  if (ideaError || iError || iIsError || uError || pError || userFollowedError || (canEndorse && userEndorsedError) || userBannedDataError || commentError || undismissedPostBansError || undismissedCommentBansError || quarantinePostNotificationsError) {
-    return <div>Error when fetching necessary data</div>;
-  }
-
-
-  const userIdeasWithoutProposals = userIdeaData!?.filter((idea) => {
-    return !pData?.some((proposal) => {
-      return proposal.ideaId === idea.id
-    })
-  })
-
-  console.log(userIdeaData!);
   
   return (
     <Container className="landing-page-content">
       <Row as="article" className="featured"></Row>
       <Row as="article" className="system-messages">
-        <Notifications userIdeas={userIdeaData} userBanInfo={userBannedData} userComments={commentData} userPostBans={undismissedPostBansData} userCommentBans={undismissedCommentBansData} userQuarantineNotifications={quarantinePostNotifications}/>
+        <Notifications
+          isLoading={
+            uLoading ||
+            userBannedIsLoading ||
+            commentLoading ||
+            undismissedPostBansLoading ||
+            undismissedCommentBansLoading ||
+            quarantinePostNotificationsLoading
+          }
+          isError={
+            uIsError ||
+            userBannedIsError ||
+            commentIsError ||
+            undismissedPostBansIsError ||
+            undismissedCommentBansIsError ||
+            quarantinePostNotificationsIsError
+          }
+          userIdeas={userIdeaData}
+          userBanInfo={userBannedData}
+          userComments={commentData}
+          userPostBans={undismissedPostBansData}
+          userCommentBans={undismissedCommentBansData}
+          userQuarantineNotifications={quarantinePostNotifications}
+        />
       </Row>
       <Row as="article" className="new-and-trending">
-        <MyPosts 
-          userIdeas={userIdeaData!} 
-          userProposals={pData!}
-          numPosts={6} 
-          isDashboard={true} />
+        <MyPosts
+          isLoading={pLoading || uLoading}
+          isError={pIsError || uIsError}
+          userIdeas={userIdeaData}
+          userProposals={pData}
+          numPosts={6}
+          isDashboard={true}
+        />
         <div className="" style={{ margin: "0rem 1rem 3rem 1rem" }}>
           <Button
             onClick={() => (window.location.href = "/dashboard/my-posts")}
             size="lg"
+            disabled={pLoading || uLoading}
           >
             See More
           </Button>
         </div>
       </Row>
-      <Row as="article" className="new-and-trending">
-        <NewAndTrendingSection topIdeas={topIdeasData!} isDashboard={true} />
-      </Row>
-      <br/><br/>
+
       <Row as="article" className="system-updates">
-      <SystemUpdates userFollowedideas={
-            // Concat userFollowedIdeaData and userEndorsedIdeaData w/o duplicates
-            ideaData!.filter((idea) => {
+        <SystemUpdates
+          header="Followed Posts"
+          userIdeas={
+            (ideaData ?? []).filter((idea) => {
               return (
-                userFollowedIdeaData!.some((followedIdea) => {
+                (userFollowedIdeaData ?? []).some((followedIdea) => {
                   return followedIdea.id === idea.id;
-                }) ||
-                userEndorsedIdeaData!.some((endorsedIdea) => {
-                  return endorsedIdea.id === idea.id;
                 })
               );
             })
           }
           proposals={pData!}
-          endorser={canEndorse} 
-          />
-        </Row>
+          isLoading={
+            ideaLoading ||
+            pLoading ||
+            userFollowedIsLoading
+          }
+          isError={
+            ideaIsError ||
+            pIsError ||
+            userFollowedIsError
+          }
+        />
+      </Row>
+      
+      {canEndorse && 
+        <>
+          <br />
+          <Row as="article" className="system-updates">
+            <SystemUpdates
+              header="Endorsed Posts"
+              userIdeas={
+                (ideaData ?? []).filter((idea) => {
+                  return (
+                    (userEndorsedIdeaData ?? []).some((endorsedIdea) => {
+                      return endorsedIdea.id === idea.id;
+                    })
+                  );
+                })
+              }
+              proposals={pData!}
+              isLoading={
+                ideaLoading ||
+                pLoading ||
+                userEndorsedLoading
+              }
+              isError={
+                ideaIsError ||
+                pIsError ||
+                userEndorsedIsError
+              }
+            />
+          </Row>    
+        </>
+      }
+      <br />
+      <Row as="article" className="new-and-trending">
+        <NewAndTrendingSection
+          topIdeas={topIdeasData!}
+          isDashboard={true}
+          isLoading={iLoading}
+          isError={iIsError}
+        />
+      </Row>
     </Container>
   );
 };

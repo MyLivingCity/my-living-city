@@ -1,4 +1,5 @@
 const argon2 = require('argon2');
+const { accessImage } = require('./imageBucket');
 
 /**
  * Hashes a plain text string using argon2 hashing algorithm.
@@ -32,7 +33,29 @@ const argon2ConfirmHash = async (string, hash) => {
   }
 }
 
+/**
+ * Reassigns the image paths of a list of objects to their AWS S3 bucket URLs.
+ * Assumes that the item type is either "advertisement", "idea-proposal", or "avatar".
+ * 
+ * @param { Array } items     The list of items to re-assign image paths to
+ * @param { string } itemType The item type we want to process
+ */
+const imagePathsToS3Url = async (items, itemType) => {
+  const validPaths = new Set(["advertisement", "idea-proposal", "avatar"]);
+  if (!validPaths.has(itemType)) {
+    console.log("Invalid item type for image path conversion.");
+    return;
+  }
+
+  await Promise.all(items.map(async (item) => {
+    if (item.imagePath) {
+      item.imagePath = await accessImage(itemType, item.imagePath);
+    }
+  }));
+}
+
 module.exports = {
   argon2Hash,
   argon2ConfirmHash,
+  imagePathsToS3Url
 }

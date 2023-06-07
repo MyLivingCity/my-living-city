@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import {Button, Card, Table} from 'react-bootstrap';
-import { findSegmentRequests } from 'src/lib/api/segmentRoutes';
 import { deleteUserSegmentById } from 'src/lib/api/userSegmentRequestRoutes';
 import { ISegmentRequest } from 'src/lib/types/data/segment.type';
 import { capitalizeFirstLetterEachWord } from 'src/lib/utilityFunctions';

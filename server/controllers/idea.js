@@ -1,70 +1,42 @@
 const passport = require('passport');
-
 const express = require('express');
 const ideaRouter = express.Router();
 const prisma = require('../lib/prismaClient');
 const { checkIdeaThresholds } = require('../lib/prismaFunctions');
+const { imagePathsToS3Url } = require('../lib/utilityFunctions');
+const { deleteImage } = require('../lib/imageBucket');
 const { isInteger, isEmpty } = require('lodash');
+const { makeUpload } = require('../lib/imageBucket');
 
-const fs = require('fs');
+const upload = makeUpload("idea-proposal").single('imagePath');
 
-const multer = require('multer');
-
-//multer storage policy, including file destination and file naming policy
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, './uploads/ideaImage');
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + '-' + file.originalname);
-  }
-});
-
-//file filter policy, only accept image file
-const theFileFilter = (req, file, cb) => {
-  console.log(file);
-  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'image/tiff' || file.mimetype === 'image/webp' || file.mimetype === 'image/jpg') {
-    cb(null, true);
-  } else {
-    cb(new Error('file format not supported'), false);
-  }
-}
-
-//const variable for 10MB max file size in bytes
-const maxFileSize = 10485760;
-
-//multer upload project, setting receiving mode and which key components to use
-const upload = multer({ storage: storage, limits: { fileSize: maxFileSize }, fileFilter: theFileFilter }).single('imagePath');
-
+let error = '';
+let errorMessage = '';
+let errorStack = '';
 
 // post request to create an idea
 ideaRouter.post(
-  '/create',
-  passport.authenticate('jwt', { session: false }),
-  //upload.single('imagePath'),
-  async (req, res) => {
-
-    upload(req, res, async function (err) {
-      //multer error handling method
-      let error = '';
-      let errorMessage = '';
-      let errorStack = '';
-      if (err) {
-        console.log(err);
-        error += err + ' ';
-        errorMessage += err + ' ';
-        errorStack += err + ' ';
-      };
+    '/create',
+    [passport.authenticate('jwt', { session: false }), upload],
+    async (req, res) => {
+      let imagePath;
       try {
-
+        if (req.file) {
+         imagePath = req.file.key.substring(req.file.key.indexOf("/")+1);
+        }
+        else{
+          imagePath = null;
+        }
         //check if user is in bad posting behavior table if so res.status(400).json({message: 'User is in bad posting behavior table'})
         const { id } = req.user;
+        
         const user = await prisma.bad_Posting_Behavior.findFirst({
           where: {
             userId: id,
             post_comment_ban: true,
           },
         });
+        
         if (user) {
           return res.status(400).json({
             message: 'User is in bad posting behavior table',
@@ -82,7 +54,7 @@ ideaRouter.post(
           })
         }
 
-        console.log(req.body);
+        
 
         // passport middleware provides this based on JWT
         const { email } = req.user;
@@ -90,14 +62,6 @@ ideaRouter.post(
         const theUserSegment = await prisma.userSegments.findFirst({ where: { userId: id } });
 
         const { homeSuperSegId, workSuperSegId, schoolSuperSegId, homeSegmentId, workSegmentId, schoolSegmentId, homeSubSegmentId, workSubSegmentId, schoolSubSegmentId } = theUserSegment;
-
-        //Image path holder
-        let imagePath = '';
-        //if there's req.file been parsed by multer
-        if (req.file) {
-          //console.log(req.file);
-          imagePath = req.file.path;
-        }
 
         let { categoryId, superSegmentId, segmentId, subSegmentId, banned, title,
           description,
@@ -221,10 +185,7 @@ ideaRouter.post(
 
         //If there's error in error holder
         if (error || errorMessage || errorStack) {
-          //multer is a kind of middleware, if file is valid, multer will add it to upload folder. Following code are responsible for deleting files if error happened.
-          if (fs.existsSync(imagePath)) {
-            fs.unlinkSync(imagePath);
-          }
+          await deleteImage("idea-proposal", imagePath); // delete image if idea/proposal creation errors out
           return res.status(400).json({
             message: error,
             details: {
@@ -287,9 +248,6 @@ ideaRouter.post(
       }
     });
 
-  }
-)
-
 ideaRouter.get(
   '/',
   async (req, res, next) => {
@@ -319,7 +277,8 @@ ideaRouter.get(
           updatedAt: 'desc'
         }
       });
-      console.log(allIdeas)
+      await imagePathsToS3Url(allIdeas, "idea-proposal");
+      console.log("IDeas here" + allIdeas)
       res.status(200).json(allIdeas);
     } catch (error) {
       res.status(400).json({
@@ -340,8 +299,8 @@ ideaRouter.post(
   '/getall/with-sort',
   async (req, res, next) => {
     try {
-      console.log(req.body);
       const allIdeas = await prisma.idea.findMany(req.body);
+      await imagePathsToS3Url(allIdeas, "idea-proposal");
 
       res.status(200).json(allIdeas);
     } catch (error) {
@@ -361,15 +320,18 @@ ideaRouter.post(
 ideaRouter.post(
   '/getall/aggregations',
   async (req, res, next) => {
-    const take = req.body.take;
+    let take = req.body.take;
+    take = Number.isInteger(take) ? Number(take) : undefined;
     let takeClause = '';
     if (!!take) {
       takeClause = `limit ${take}`;
     }
+    
     try {
       // TODO: if rating is adjusted raw query will break
-      const data = await prisma.$queryRaw(`
-      select
+      console.log("The data:" + req.params.userId)
+      const rawData = await prisma.$queryRawUnsafe(`
+        select
         i.id,
         i.author_id as "authorId",
         i.category_id as "categoryId",
@@ -465,123 +427,164 @@ ideaRouter.post(
             "ratingAvg" desc,
             updated_at desc,
             engagements desc
-        ${takeClause}
-        ;
+            ${takeClause}
+        
       `);
-
-      res.status(200).json(data);
-    } catch (error) {
-      console.error(error);
-      res.status(400).json({
-        message: "An error occured while trying to fetch all ideas",
-        details: {
-          errorMessage: error.message,
-          errorStack: error.stack,
+      const data = rawData.map((row) => {
+        const newRow = {};
+        for (const key in row) {
+          if (typeof row[key] === 'bigint') {
+            newRow[key] = String(row[key]);
+          } else {
+            newRow[key] = row[key];
+          }
         }
+        return newRow;
       });
-    } finally {
-      await prisma.$disconnect();
-    }
+    res.status(200).json(data);
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({
+      message: "An error occurred while trying to fetch all ideas",
+      details: {
+        errorMessage: error.message,
+        errorStack: error.stack,
+      }
+    });
+  } finally {
+    await prisma.$disconnect();
   }
-)
+});
 
 // Get all ideas from a specific author
 ideaRouter.get(
   '/getall/:userId',
   async (req, res, next) => {
+    let take = req.body.take;
+    take = Number.isInteger(take) ? Number(take) : undefined;
+    let takeClause = '';
+    if (!!take) {
+      takeClause = `limit ${take}`;
+    }
+    
     try {
-      const allIdeas = await prisma.$queryRaw(`
+      // TODO: if rating is adjusted raw query will break
+      console.log("The data:" + req.params.userId)
+      const rawData = await prisma.$queryRawUnsafe(`
         select
-          i.id,
-          i.author_id as "authorId",
-          i.category_id as "categoryId",
-          i.title,
-         
-          i.description,
-          i.notification_dismissed,
-          i.segment_id,
-          i.sub_segment_id,
-          coalesce(ic.total_comments + ir.total_ratings, 0) as engagements,
-          coalesce(ir.avg_rating, 0) as "ratingAvg",
-          coalesce(ic.total_comments, 0) as "commentCount",
-          coalesce(ir.total_ratings, 0) as "ratingCount",
-          coalesce(pr.pos_rating, 0) as "posRatings",
-          coalesce(nr.neg_rating, 0) as "negRatings",
-          coalesce(sn.segment_name, '') as "segmentName",
-          coalesce(sbn.sub_segment_name, '') as "subSegmentName",
-          coalesce(userfname.f_name, '') as "firstName",
-          coalesce(userStreetAddress.street_address, '') as "streetAddress",
-          i.state,
-          i.active,
-          i.updated_at as "updatedAt",
-          i.created_at as "createdAt"
-            from idea i
-            -- Aggregate total comments
-            left join (
-                select
-                  idea_id,
-                  count(id) as total_comments
-                from idea_comment
-                group by idea_comment.idea_id
-            ) ic on i.id = ic.idea_id
-            -- Aggregate total ratings and rating avg
-            left join (
-                select
-                  idea_id,
-                  count(id) as total_ratings,
-                  avg(rating) as avg_rating
-                from idea_rating
-                group by idea_rating.idea_id
-            ) ir on	i.id = ir.idea_id
-            -- Aggregate total neg ratings
-            left join (
-                select
-                  idea_id,
-                  count(id) as neg_rating
-                from idea_rating
-                where rating < 0
-                group by idea_id
-            ) nr on	i.id = nr.idea_id
-            -- Aggregate total pos ratings
-            left join (
-                select
-                  idea_id,
-                  count(id) as pos_rating
-                from idea_rating
-                where rating > 0
-                group by idea_id
-            ) pr on	i.id = pr.idea_id
-            -- Aggregate idea segment name
-            left join (
-                select seg_id, segment_name
-                from segment
-                ) sn on i.segment_id = sn.seg_id
-            -- Aggregate idea sub segment name
-            left join (
-                select id, sub_segment_name
-                from sub_segment
-                ) sbn on i.sub_segment_id = sbn.id
-            -- Aggregate author's first name
-            left join  (
-                select id, f_name
-                from "user"
-                ) userfname on i.author_id = userfname.id
-            -- Aggregate author's address
-            left join (
-                select user_id, street_address
-                from user_address
-                ) userStreetAddress on i.author_id = userStreetAddress.user_id
+        i.id,
+        i.author_id as "authorId",
+        i.category_id as "categoryId",
+        i.title,
+        i.description,
+        i.proposal_role,
+        i.requirements,
+        i.proposal_benefits,
+        i.notification_dismissed,
+        i.quarantined_at,
+        i.segment_id as "segId",
+        i.sub_segment_id as "subSegId",
+        i.super_segment_id as "superSegId",
+        i.community_impact as "communityImpact",
+        i.nature_impact as "natureImpact",
+        i.energy_impact as "energyImpact",
+        i.manufacturing_impact as "manufacturingImpact",
+        i.arts_impact as "artsImpact",
+        coalesce(ic.total_comments + ir.total_ratings, 0) as engagements,
+        coalesce(ir.avg_rating, 0) as "ratingAvg",
+        coalesce(ic.total_comments, 0) as "commentCount",
+        coalesce(ir.total_ratings, 0) as "ratingCount",
+        coalesce(pr.pos_rating, 0) as "posRatings",
+        coalesce(nr.neg_rating, 0) as "negRatings",
+        coalesce(sn.segment_name, '') as "segmentName",
+        coalesce(sbn.sub_segment_name, '') as "subSegmentName",
+        coalesce(userfname.f_name, '') as "firstName",
+        coalesce(userStreetAddress.street_address, '') as "streetAddress",
+        i.state,
+        i.active,
+        i.banned,
+        i.reviewed,
+        i.updated_at as "updatedAt",
+        i.created_at as "createdAt"
+          from idea i
+          -- Aggregate total comments
+          left join (
+              select
+                idea_id,
+                count(id) as total_comments
+              from idea_comment
+              group by idea_comment.idea_id
+          ) ic on i.id = ic.idea_id
+          -- Aggregate total ratings and rating avg
+          left join (
+              select
+                idea_id,
+                count(id) as total_ratings,
+                avg(rating) as avg_rating
+              from idea_rating
+              group by idea_rating.idea_id
+          ) ir on	i.id = ir.idea_id
+          -- Aggregate total neg ratings
+          left join (
+              select
+                idea_id,
+                count(id) as neg_rating
+              from idea_rating
+              where rating < 0
+              group by idea_id
+          ) nr on	i.id = nr.idea_id
+          -- Aggregate total pos ratings
+          left join (
+              select
+                idea_id,
+                count(id) as pos_rating
+              from idea_rating
+              where rating > 0
+              group by idea_id
+          ) pr on	i.id = pr.idea_id
+          -- Aggregate idea segment name
+          left join (
+              select seg_id, segment_name
+              from segment
+              ) sn on i.segment_id = sn.seg_id
+          -- Aggregate idea sub segment name
+          left join (
+              select id, sub_segment_name
+              from sub_segment
+              ) sbn on i.sub_segment_id = sbn.id
+          -- Aggregate author's first name
+          left join  (
+              select id, f_name
+              from "user"
+              ) userfname on i.author_id = userfname.id
+          -- Aggregate author's address
+          left join (
+              select user_id, street_address
+              from user_address
+              ) userStreetAddress on i.author_id = userStreetAddress.user_id
             where i.author_id = '${req.params.userId}'
-            
-            order by
+              
+          order by
             "ratingCount" desc,
             "ratingAvg" desc,
             updated_at desc,
             engagements desc
-        ;
+            ${takeClause}
+      
       `);
+      const data = rawData.map((row) => {
+        const newRow = {};
+        for (const key in row) {
+          if (typeof row[key] === 'bigint') {
+            newRow[key] = String(row[key]);
+          } else {
+            newRow[key] = row[key];
+          }
+        }
+        return newRow;
+      });
 
-      res.status(200).json(allIdeas);
+      res.status(200).json(data);
     } catch (error) {
       res.status(400).json({
         message: "An error occured while trying to fetch all ideas",
@@ -653,6 +656,7 @@ ideaRouter.get(
           message: `The idea with that listed ID (${parsedIdeaId}) does not exist.`,
         });
       }
+      await imagePathsToS3Url([foundIdea], "idea-proposal");
 
       const result = { ...foundIdea, isChampionable };
       delete result.author.password;
@@ -690,7 +694,7 @@ ideaRouter.get(
         });
       }
 
-      const foundIdea = await prisma.idea.findMany({
+      const foundIdeas = await prisma.idea.findMany({
         where: {
           supportingProposalId: parsedSupportingProposalId
         },
@@ -712,13 +716,14 @@ ideaRouter.get(
         }
       });
 
-      if (!foundIdea) {
+      if (!foundIdeas) {
         return res.status(400).json({
           message: `The idea with that listed ID (${parsedSupportingProposalId}) does not exist.`,
         });
       }
+      await imagePathsToS3Url(foundIdeas, "idea-proposal");
 
-      res.status(200).json(foundIdea);
+      res.status(200).json(foundIdeas);
     } catch (error) {
       console.error(error);
       res.status(400).json({
@@ -991,7 +996,7 @@ ideaRouter.delete(
       const foundIdea = await prisma.idea.findUnique({ where: { id: parsedIdeaId } });
       if (!foundIdea) {
         return res.status(400).json({
-          message: `The idea with that listed ID (${ideaId}) does not exist.`,
+          message: `The idea with that listed ID (${parsedIdeaId}) does not exist.`,
         });
       }
 
@@ -1004,15 +1009,15 @@ ideaRouter.delete(
       }
 
       if (foundIdea.imagePath) {
-        if (fs.existsSync(foundIdea.imagePath)) {
-          fs.unlinkSync(foundIdea.imagePath);
-        }
+        await deleteImage("idea-proposal", foundIdea.imagePath);
       }
 
-      const deleteComment = await prisma.ideaComment.deleteMany({ where: { ideaId: foundIdea.id } });
-      const deleteRating = await prisma.ideaRating.deleteMany({ where: { ideaId: foundIdea.id } });
-      const deletedGeo = await prisma.ideaGeo.deleteMany({ where: { ideaId: foundIdea.id } });
-      const deleteAddress = await prisma.ideaAddress.deleteMany({ where: { ideaId: foundIdea.id } });
+      await prisma.ideaComment.deleteMany({ where: { ideaId: foundIdea.id } });
+      await prisma.ideaRating.deleteMany({ where: { ideaId: foundIdea.id } });
+      await prisma.ideaGeo.deleteMany({ where: { ideaId: foundIdea.id } });
+      await prisma.ideaAddress.deleteMany({ where: { ideaId: foundIdea.id } });
+      await prisma.userIdeaEndorse.deleteMany({ where: { ideaId: foundIdea.id } });
+      await prisma.proposal.deleteMany({ where: { ideaId: foundIdea.id } });
       const deletedIdea = await prisma.idea.delete({ where: { id: parsedIdeaId } });
 
       res.status(200).json({
@@ -1495,6 +1500,7 @@ ideaRouter.get(
       let ideas = [];
       for await (const endorse of userIdeaEndorses) {
         const idea = await prisma.idea.findUnique({ where: { id: endorse.ideaId } });
+        await imagePathsToS3Url([idea]);
         ideas.push(idea);
       }
       res.status(200).json(ideas);

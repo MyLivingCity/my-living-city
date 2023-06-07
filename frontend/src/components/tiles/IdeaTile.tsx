@@ -1,13 +1,11 @@
 import { Button, Card } from "react-bootstrap";
 import { IIdeaWithAggregations } from "../../lib/types/data/idea.type";
 import {
-  capitalizeFirstLetterEachWord,
   timeDifference,
   truncateString,
 } from "../../lib/utilityFunctions";
 import { BsPeople, BsHeartHalf } from "react-icons/bs";
-import { AiOutlineStar } from "react-icons/ai";
-// import { FaRegThumbsUp, FaRegThumbsDown } from 'react-icons/fa'
+import { AiOutlineRadiusBottomright, AiOutlineStar } from "react-icons/ai";
 
 interface ideaTileProps {
   ideaData: IIdeaWithAggregations;
@@ -60,7 +58,7 @@ const IdeaTile: React.FC<ideaTileProps> = ({
   const date = currentTime.getTime() - postDate.getTime();
 
   const isNew = date < oneWeek;
-
+  const ratingAvgUpdated = Number(ratingAvg);
 
   return (
     // <Card style={{ width: '18rem' }}>
@@ -91,7 +89,7 @@ const IdeaTile: React.FC<ideaTileProps> = ({
           <div className="d-flex align-content-center">
             <div className="px-2 text-muted d-flex flex-column justify-content-center align-items-center">
               <AiOutlineStar className="" />
-              <p className="mb-0 user-select-none">{ratingAvg.toFixed(2)}</p>
+              <p className="mb-0 user-select-none">{ratingAvgUpdated.toFixed(1)}</p>
             </div>
             <div className="px-2 text-muted d-flex flex-column justify-content-center align-items-center">
               <BsPeople className="" />

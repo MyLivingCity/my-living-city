@@ -5,7 +5,7 @@ import SubmitIdeaPageContent from '../components/content/SubmitIdeaPageContent';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import { useCategories } from '../hooks/categoryHooks';
 // import { getUserHomeSegmentInfo } from 'src/lib/api/userSegmentRoutes';
-import {  useAllUserSegments, useAllUserSegmentsRefined } from 'src/hooks/userSegmentHooks';
+import {   useAllUserSegmentsRefined } from 'src/hooks/userSegmentHooks';
 
 // Extends Route component props with idea title route param
 interface SubmitIdeaPageProps extends RouteComponentProps<{}> {

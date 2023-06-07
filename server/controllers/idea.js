@@ -19,10 +19,14 @@ ideaRouter.post(
     '/create',
     [passport.authenticate('jwt', { session: false }), upload],
     async (req, res) => {
-
+      let imagePath;
       try {
-        let imagePath = req.file.key.substring(req.file.key.indexOf("/")+1);
-
+        if (req.file) {
+         imagePath = req.file.key.substring(req.file.key.indexOf("/")+1);
+        }
+        else{
+          imagePath = null;
+        }
         //check if user is in bad posting behavior table if so res.status(400).json({message: 'User is in bad posting behavior table'})
         const { id } = req.user;
         
@@ -50,7 +54,7 @@ ideaRouter.post(
           })
         }
 
-        console.log(req.body);
+        
 
         // passport middleware provides this based on JWT
         const { email } = req.user;

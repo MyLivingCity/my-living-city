@@ -166,18 +166,19 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                 <tr key={req.id}>
                     {req.id !== hideControls ? 
                     <>
-                    <td>{req.email}</td>
-                    <td>{req.organizationName ? req.organizationName : "N/A"}</td>
-                    <td>{req.fname}</td>
-                    <td>{req.lname}</td>
-                    <td>{req.userType}</td>
-                    <td>{userFlags![index].toString()}</td>
-                    <td>{userFalseFlags![index].toString()}</td>
-                    <td>{req.banned ? "Yes" : "No" }</td> 
-                    <td>{req.reviewed ? "Yes" : "No"}</td>
+                    <td className="align-middle">{req.email}</td>
+                    <td className="text-center align-middle">{req.organizationName ? req.organizationName : "N/A"}</td>
+                    <td className="text-center align-middle">{req.fname}</td>
+                    <td className="text-center align-middle">{req.lname}</td>
+                    <td className="text-center align-middle">{req.userType}</td>
+                    <td className="text-center align-middle">{userFlags![index].toString()}</td>
+                    <td className="text-center align-middle">{userFalseFlags![index].toString()}</td>
+                    <td className="text-center align-middle">{req.banned ? "Yes" : "No" }</td> 
+                    <td className="text-center align-middle">{req.reviewed ? "Yes" : "No"}</td>
                     </> :
                     <>
                     <td><Form.Control type="text" defaultValue={req.email} onChange={(e)=>req.email = e.target.value}/></td>
+                    <td><Form.Control type="text" defaultValue={req.organizationName} onChange={(e)=>req.organizationName = e.target.value}/></td>
                     <td><Form.Control type="text" defaultValue={req.fname} onChange={(e)=>req.fname = e.target.value}/></td>
                     <td><Form.Control type="text" defaultValue={req.lname} onChange={(e)=>req.lname = e.target.value}/></td>
                     <td><Form.Control as="select" onChange={(e)=>{(req.userType as String) = e.target.value}}>
@@ -187,10 +188,10 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                         )}
                         </Form.Control>
                     </td>
-                    <td><Button onClick={()=> setShowUserFlagsModal(true)}>More Details</Button></td>
+                    <td className="text-center align-middle "><Button onClick={()=> setShowUserFlagsModal(true)}>Info</Button></td>
                     <td></td>
-                    <td>{req.banned ? "Yes" : "No" }</td>
-                    <td><Form.Check type="switch" checked={reviewed} onChange={(e)=>{
+                    <td className="text-center align-middle">{req.banned ? "Yes" : "No" }</td>
+                    <td className="text-center align-middle" ><Form.Check type="switch" checked={reviewed} onChange={(e)=>{
                         setReviewed(e.target.checked)
                         req.reviewed = e.target.checked;
                         }} id="reviewed-switch"/>
@@ -229,12 +230,14 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                             <Dropdown.Item onClick={() => removePostCommentQuarantine(req.id)}>Remove Post Comment Quarantine</Dropdown.Item>
                         </NavDropdown>
                         : <>
-                        <Button size="sm" variant="outline-danger" className="mr-2 mb-2" onClick={()=>setHideControls('')}>Cancel</Button>
-                        <Button size="sm" onClick={()=>{
+                        <div className="d-flex justify-content-between">
+                        <Button size="sm" variant="outline-danger" className="mr-2 mb-2 text-center align-middle" onClick={()=>setHideControls('')}>Cancel</Button>
+                        <Button size="sm"  className="mr-2 mb-2 text-center align-middle" onClick={()=>{
                             setHideControls('');
                             
                             updateUser(req, token, user);
                             }}>Save</Button>
+                            </div>
                         </>
                     }
 

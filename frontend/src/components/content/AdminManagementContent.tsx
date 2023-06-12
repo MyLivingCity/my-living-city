@@ -44,7 +44,7 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({ 
     }
 
 
-
+    const [selectedUserType, setSelectedUserType] = useState("");
     const [selectedRegion, setSelectedRegion] = useState("");
     const handleRegionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedRegionName = event.target.value;
@@ -95,9 +95,7 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({ 
             reachSegmentIds: [],
         };
        
-        console.log(registerData)
-
-        console.log("Made it to Try")
+       
         try {
             await postRegisterUser(registerData, null, null);
             console.log('User registered successfully!');
@@ -250,8 +248,6 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({ 
                         <th scope="col" className="col-1">Last</th>
                         <th scope="col" className="col-2">User Type</th>
                         <th scope="col" className="col-4">Primary</th>
-                        <th scope="col" className="col-1">Banned</th>
-                        <th scope="col" className="col-1">Reviewed</th>
                         <th scope="col" className="col-1">Controls</th>
                     </tr>
                 </thead>
@@ -263,33 +259,28 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({ 
                                     <>
 
                                         <td className="text-left align-middle">{req.email}</td>
-                                        <td className="text-left align-middle">{req.fname}</td>
+                                        <td className="text-left align-middle ">{req.fname}</td>
                                         <td className="text-left align-middle">{req.lname}</td>
                                         <td className="text-center align-middle">{req.userType}</td>
                                         <td className="text-center align-middle"><UserSegPlainText email={req.email} id={req.id} token={token} /></td>
 
-                                        <td className="text-center align-middle">{req.banned ? "Yes" : "No"}</td>
-                                        <td className="text-center align-middle">{req.reviewed ? "Yes" : "No"}</td>
+                                   
                                     </> :
                                     <>
                                         <td className="text-left align-middle"><Form.Control type="text" defaultValue={req.email} onChange={(e) => req.email = e.target.value} /></td>
                                         <td className="text-left align-middle"><Form.Control type="text" defaultValue={req.fname} onChange={(e) => req.fname = e.target.value} /></td>
                                         <td className="text-left align-middle"><Form.Control type="text" defaultValue={req.lname} onChange={(e) => req.lname = e.target.value} /></td>
                                         <td className="text-left align-middle"><Form.Control as="select" onChange={(e) => { (req.userType as String) = e.target.value }}>
-                                            <option>{req.userType}</option>
+                                            <option className="text-center align-middle" >{req.userType}</option>
                                             {userTypes.filter(type => type !== req.userType).map(item =>
                                                 <option key={item}>{item}</option>
                                             )}
+
                                         </Form.Control>
                                         </td>
 
-                                        <td></td>
-                                        <td className="text-center align-middle">{req.banned ? "Yes" : "No"}</td>
-                                        <td className="text-center align-middle"><Form.Check type="switch" checked={reviewed} onChange={(e) => {
-                                            setReviewed(e.target.checked)
-                                            req.reviewed = e.target.checked;
-                                        }} id="reviewed-switch" />
-                                        </td>
+                                        <td className="text-center align-middle"><UserSegPlainText email={req.email} id={req.id} token={token} /></td>
+                                       
                                     </>
                                 }
 

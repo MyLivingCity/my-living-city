@@ -8,6 +8,7 @@ import { getAxiosJwtRequestOption } from "./axiosRequestOptions";
 import { IWorkDetailsInput } from "../types/input/workDetails.input";
 import { ISchoolDetailsInput } from "../types/input/schoolDetails.input";
 import { IHomeDetailsInput } from "../types/input/homeDetails.input";
+import { getUserIdeas } from "./ideaRoutes";
 
 export interface LoginData {
   email: string;
@@ -32,7 +33,7 @@ export const getUserById = async (userId: string | null) => {
 }
 
 export const getAllUsers = async (token: string | null) => {
-  const res = await axios.get(`${API_BASE_URL}/user/getAll`,getAxiosJwtRequestOption(token!));
+  const res = await axios.get(`${API_BASE_URL}/user/getAll`, getAxiosJwtRequestOption(token!));
   return res.data;
 }
 export const updateUser = async (userData: IUser, token: string | null, user: IUser | null) => {
@@ -40,15 +41,29 @@ export const updateUser = async (userData: IUser, token: string | null, user: IU
   let userType = user?.userType
   const res = await axios({
     method: "put",
-    url: `${API_BASE_URL}/user/${userType?.toLowerCase( )}-update-profile`,
+    url: `${API_BASE_URL}/user/${userType?.toLowerCase()}-update-profile`,
     data: userData,
-    headers: {"Access-Control-Allow-Origin": "*", "x-auth-token": token},
+    headers: { "Access-Control-Allow-Origin": "*", "x-auth-token": token },
     withCredentials: true
-})
+  })
   return res.data;
 }
+
+export const deleteUser = async (userId: string, token: string | null) => {
+  try {
+    const response = await axios.delete(`${API_BASE_URL}/user/${userId}`, {
+      headers: {
+        "Access-Control-Allow-Origin": "*", "x-auth-token": token
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error('Failed to delete user');
+  }
+};
+
 export const resetUserPassword = async (loginData: ResetPassword): Promise<ResetPassword> => {
-  if(loginData.password !== loginData.confirmPassword){
+  if (loginData.password !== loginData.confirmPassword) {
     throw new Error("Passwords must match");
   }
   const queryString = window.location.search;
@@ -72,7 +87,7 @@ export interface UseUserWithJwtInput {
 
 export const getUserWithJWT = async ({ jwtAuthToken }: GetUserWithJWTInput): Promise<IUser> => {
   const res = await axios.get<IUser>(
-    `${API_BASE_URL}/user/me`, 
+    `${API_BASE_URL}/user/me`,
     getAxiosJwtRequestOption(jwtAuthToken)
   );
   return res.data;
@@ -97,15 +112,15 @@ export const getUserSubscriptionStatus = async (userId: string | undefined) => {
 }
 export const getUserWithJWTVerbose = async ({ jwtAuthToken }: GetUserWithJWTInput): Promise<IUser> => {
   const res = await axios.get<IUser>(
-    `${API_BASE_URL}/user/me-verbose`, 
+    `${API_BASE_URL}/user/me-verbose`,
     getAxiosJwtRequestOption(jwtAuthToken)
   );
   return res.data;
 }
-export const postRegisterUser = async(registerData: IRegisterInput, requestData:IUserSegmentRequest[] | null, avatar: any): Promise<LoginResponse> => {
-  const { 
-    email, 
-    password, 
+export const postRegisterUser = async (registerData: IRegisterInput, requestData: IUserSegmentRequest[] | null, logUser: boolean | null, avatar: any): Promise<LoginResponse> => {
+  const {
+    email,
+    password,
     confirmPassword,
     organizationName,
     fname,
@@ -134,7 +149,7 @@ export const postRegisterUser = async(registerData: IRegisterInput, requestData:
   if (password !== confirmPassword) {
     throw new Error("Both your passwords must match. Please ensure both passwords match to register.")
   }
-  const request = await axios.post<LoginResponse>(`${API_BASE_URL}/user/signup`, {email,password,confirmPassword,organizationName,fname,lname,address,geo, userType});
+  const request = await axios.post<LoginResponse>(`${API_BASE_URL}/user/signup`, { email, password, confirmPassword, organizationName, fname, lname, address, geo, userType });
   const request2 = await axios({
     method: "post",
     url: `${API_BASE_URL}/schoolDetails/create`,
@@ -142,7 +157,7 @@ export const postRegisterUser = async(registerData: IRegisterInput, requestData:
       schoolDetails: schoolDetails,
       userId: request.data.user.address?.userId,
     },
-    headers: {"Access-Control-Allow-Origin": "*", "x-auth-token": request.data.token},
+    headers: { "Access-Control-Allow-Origin": "*", "x-auth-token": request.data.token },
     withCredentials: true,
   })
 
@@ -153,80 +168,82 @@ export const postRegisterUser = async(registerData: IRegisterInput, requestData:
       workDetails: workDetails,
       userId: request.data.user.address?.userId,
     },
-    headers: {"Access-Control-Allow-Origin": "*", "x-auth-token": request.data.token},
+    headers: { "Access-Control-Allow-Origin": "*", "x-auth-token": request.data.token },
     withCredentials: true,
   })
 
   await axios({
     method: "post",
     url: `${API_BASE_URL}/userSegment/create`,
-    data: { 
-        homeSegmentId,
-        workSegmentId,
-        schoolSegmentId,
-        homeSubSegmentId,
-        workSubSegmentId,
-        schoolSubSegmentId
+    data: {
+      homeSegmentId,
+      workSegmentId,
+      schoolSegmentId,
+      homeSubSegmentId,
+      workSubSegmentId,
+      schoolSubSegmentId
     },
-    headers: {"Access-Control-Allow-Origin": "*", "x-auth-token": request.data.token},
+    headers: { "Access-Control-Allow-Origin": "*", "x-auth-token": request.data.token },
     withCredentials: true
   })
-  if(requestData){
-    if(requestData[0]){
+  if (requestData) {
+    if (requestData[0]) {
       request3 = await axios({
-          method: "post",
-          url: `${API_BASE_URL}/userSegmentRequest/create`,
-          data: requestData[0],
-          headers: {"Access-Control-Allow-Origin": "*", "x-auth-token": request.data.token},
-          withCredentials: true
+        method: "post",
+        url: `${API_BASE_URL}/userSegmentRequest/create`,
+        data: requestData[0],
+        headers: { "Access-Control-Allow-Origin": "*", "x-auth-token": request.data.token },
+        withCredentials: true
       })
-  }if(requestData[1]){
+    } if (requestData[1]) {
       request4 = await axios({
-          method: "post",
-          url: `${API_BASE_URL}/userSegmentRequest/create`,
-          data: requestData[1],
-          headers: {"Access-Control-Allow-Origin": "*", "x-auth-token": request.data.token},
-          withCredentials: true
+        method: "post",
+        url: `${API_BASE_URL}/userSegmentRequest/create`,
+        data: requestData[1],
+        headers: { "Access-Control-Allow-Origin": "*", "x-auth-token": request.data.token },
+        withCredentials: true
       })
-  }if(requestData[2]){
+    } if (requestData[2]) {
       request5 = await axios({
-          method: "post",
-          url: `${API_BASE_URL}/userSegmentRequest/create`,
-          data: requestData[2],
-          headers: {"Access-Control-Allow-Origin": "*", "x-auth-token": request.data.token},
-          withCredentials: true
+        method: "post",
+        url: `${API_BASE_URL}/userSegmentRequest/create`,
+        data: requestData[2],
+        headers: { "Access-Control-Allow-Origin": "*", "x-auth-token": request.data.token },
+        withCredentials: true
       })
+    }
   }
-}
-const request6 = avatar ? await postAvatarImage(avatar, request.data.token) : null;
+  const request6 = avatar ? await postAvatarImage(avatar, request.data.token) : null;
 
-let request7: AxiosResponse<any>[] = [];
-if (userType === USER_TYPES.IN_PROGRESS || userType === USER_TYPES.BUSINESS || userType === USER_TYPES.COMMUNITY) {
-  reachSegmentIds?.forEach(async (segId) => {
-    const newUserReachReq = await axios({
-      method: "post",
-      url: `${API_BASE_URL}/reach/create`,
-      data: {
-        segId: segId,
-        userId: request.data.user.address?.userId,
-      },
-      headers: {"Access-Control-Allow-Origin": "*", "x-auth-token": request.data.token},
-      withCredentials: true,
-    });
-    request7.push(newUserReachReq);
+  let request7: AxiosResponse<any>[] = [];
+  if (userType === USER_TYPES.IN_PROGRESS || userType === USER_TYPES.BUSINESS || userType === USER_TYPES.COMMUNITY) {
+    reachSegmentIds?.forEach(async (segId) => {
+      const newUserReachReq = await axios({
+        method: "post",
+        url: `${API_BASE_URL}/reach/create`,
+        data: {
+          segId: segId,
+          userId: request.data.user.address?.userId,
+        },
+        headers: { "Access-Control-Allow-Origin": "*", "x-auth-token": request.data.token },
+        withCredentials: true,
+      });
+      request7.push(newUserReachReq);
+    })
+  }
+
+
+
+  Promise.all([request, request2, request3, request4, request5, request6, ...request7]).then((...responses) => {
+
   })
-}
-
-console.log("schoolDetails", schoolDetails)
-
-Promise.all([request, request2, request3, request4, request5, request6, ...request7]).then((...responses)=>{
-  
-})
-const {token, user} = request.data;
-storeUserAndTokenInLocalStorage(token, user);
-storeTokenExpiryInLocalStorage();
-await delay(2000);
-return request.data;
+  if (logUser){
+    const { token, user } = request.data;
+    storeUserAndTokenInLocalStorage(token, user);
+    storeTokenExpiryInLocalStorage();
+  }
+  await delay(2000);
+  return request.data;
 }
 
 export const getUserBanHistory = async (userId: string | undefined) => {
@@ -369,7 +386,7 @@ export const updateHomeSegmentDetails = async (userId: string | undefined, data:
   console.log("updateHomeSegmentDetails, part2", res2.data);
   console.log("updateHomeSegmentDetails, part3", res3.data);
   // Combine data from both responses
-  return {...res1.data, ...res2.data};
+  return { ...res1.data, ...res2.data };
 }
 
 export const getUserGeoData = async (userId: string | undefined) => {

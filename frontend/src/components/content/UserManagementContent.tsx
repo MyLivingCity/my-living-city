@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Table, Dropdown, Container, Button, Form, NavDropdown } from 'react-bootstrap';
-import { updateUser, getUserBanHistory, removeFlagQuarantine, removePostCommentQuarantine } from 'src/lib/api/userRoutes';
+import { updateUser, getUserBanHistory, removeFlagQuarantine, removePostCommentQuarantine, deleteUser } from 'src/lib/api/userRoutes';
 import { USER_TYPES } from 'src/lib/constants';
 import { IComment } from 'src/lib/types/data/comment.type';
 import { ICommentFlag, IFlag } from 'src/lib/types/data/flag.type';
@@ -28,6 +28,7 @@ interface UserManagementContentProps {
 }
 
 export const UserManagementContent: React.FC<UserManagementContentProps> = ({users, token, user, flags, commentFlags, ideas, proposals, comments, bans}) => {
+    const [filteredUsers, setFilteredUsers] = useState<IUser[]>([]);
     const [hideControls, setHideControls] = useState('');
     const [showUserSegmentCard, setShowUserSegmentCard] = useState(false);
     const [email, setEmail] = useState('');
@@ -124,8 +125,36 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
         }
     }
     const userTypes = Object.keys(USER_TYPES);
+
+    const handleDeleteUser = async (userId: string) => {
+        try {
+          await deleteUser(userId, token);
+          console.log('User deleted successfully!');
+          // Remove the deleted user from the filteredUsers state
+          setFilteredUsers(filteredUsers.filter((user) => user.id !== userId));
+        } catch (error) {
+          console.error('Error deleting user:', error);
+          // Handle error state or show error message to the user
+        }
+      };
+
+      useEffect(() => {
+        if (users) {
+          // Filter out specific user types or conditions if needed
+          const filteredUsers = users.filter(
+            (user) =>
+              user.userType !== 'ADMIN' &&
+              user.userType !== 'MOD' &&
+              user.userType !== 'SEG_MOD' &&
+              user.userType !== 'MUNICIPAL_SEG_ADMIN' &&
+              user.userType !== 'SEG_ADMIN'
+          );
+          setFilteredUsers(filteredUsers);
+        }
+      }, [users]);
+  
         return (
-            <Container style={{maxWidth: '80%', marginLeft: 50}}>
+            <Container style={{maxWidth: '100%', marginLeft: 50}}>
             {showUserFlagsModal ?
             <UserFlagsModal show={showUserFlagsModal} setShow={setShowUserFlagsModal} user={modalUser!} flags={flags} commentFlags={commentFlags} ideas={ideas} proposals={proposals} comments={comments}/>
             : null
@@ -148,21 +177,21 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
             <Table bordered hover size="sm">
             <thead className="table-active">
             <tr>
-                <th scope="col">Email</th>
-                <th scope="col">Organization</th>
-                <th scope="col">First</th>
-                <th scope="col">Last</th>
-                <th scope="col">User Type</th>
-                <th scope="col">Total Flags</th>
-                <th scope="col">False Flags</th>
-                <th scope="col">Banned</th>
-                <th scope="col">Reviewed</th>
-                <th scope="col">Controls</th>
+                <th scope="col" className="text-center align-middle">Email</th>
+                <th scope="col" className="text-center align-middle">Organization</th>
+                <th scope="col" className="text-center align-middle">First</th>
+                <th scope="col" className="text-center align-middle">Last</th>
+                <th scope="col" className="text-center align-middle">User Type</th>
+                <th scope="col" className="text-center align-middle">Total Flags</th>
+                <th scope="col" className="text-center align-middle">False Flags</th>
+                <th scope="col" className="text-center align-middle">Banned</th>
+                <th scope="col" className="text-center align-middle">Reviewed</th>
+                <th scope="col" className="text-center align-middle">Controls</th>
                 </tr>
             </thead>
             <tbody>
-            {users?.map((req: IUser, index: number) => (
-                
+            {filteredUsers?.map((req: IUser, index: number) => (
+                  req.userType !== "ADMIN" && req.userType !== "MOD" && req.userType !== "SEG_MOD" && req.userType !== "MUNICIPAL_SEG_ADMIN" && req.userType !== "SEG_ADMIN" ? (
                 <tr key={req.id}>
                     {req.id !== hideControls ? 
                     <>
@@ -181,9 +210,17 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                     <td><Form.Control type="text" defaultValue={req.organizationName} onChange={(e)=>req.organizationName = e.target.value}/></td>
                     <td><Form.Control type="text" defaultValue={req.fname} onChange={(e)=>req.fname = e.target.value}/></td>
                     <td><Form.Control type="text" defaultValue={req.lname} onChange={(e)=>req.lname = e.target.value}/></td>
-                    <td><Form.Control as="select" onChange={(e)=>{(req.userType as String) = e.target.value}}>
-                        <option>{req.userType}</option>
-                        {userTypes.filter(type => type !== req.userType).map(item =>
+                    <td><Form.Control as="select" onChange={(e)=>{(req.userType as string) = e.target.value}}>
+                        {userTypes
+                        .filter(type => type !== req.userType)
+                        .filter((type => type !== "ADMIN"))
+                        .filter((type => type !== "SEG_ADMIN"))
+                        .filter((type => type !== "MUNICIPAL_SEG_ADMIN"))
+                        .filter((type => type !== "DEVELOPER"))
+                        .filter((type => type !== "IN_PROGRESS"))
+                        .filter((type => type !== "ASSOCIATE"))
+                        .filter((type => type !== "MUNICIPAL_SEG_ADMIN"))
+                        .map(item =>
                             <option key={item}>{item}</option>
                         )}
                         </Form.Control>
@@ -228,6 +265,14 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                             })} >Ban History</Dropdown.Item>
                             <Dropdown.Item onClick={() => removeFlagQuarantine(req.id)}>Remove Flag Quarantine</Dropdown.Item>
                             <Dropdown.Item onClick={() => removePostCommentQuarantine(req.id)}>Remove Post Comment Quarantine</Dropdown.Item>
+                            <Dropdown.Item onClick={() => {
+                                                const confirmed = window.confirm("Are you sure you want to delete this user?");
+                                                if (confirmed) {
+                                                    handleDeleteUser(req.id);
+                                                }
+                                            }} className="text-danger">
+                                                Delete
+                                            </Dropdown.Item>
                         </NavDropdown>
                         : <>
                         <div className="d-flex justify-content-between">
@@ -243,7 +288,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
 
                     </td>
                 </tr>
-                ))}
+                ): null))}
             </tbody>
             </Table>
         </Form>

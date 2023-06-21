@@ -194,7 +194,7 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
           // const {email, password, confirmPassword} = values;
           try {
             setIsLoading(true);
-            await postRegisterUser(values, segmentRequests, avatar);
+            await postRegisterUser(values, segmentRequests, true, avatar);
             if (userType === USER_TYPES.RESIDENTIAL) {
               wipeLocalStorage();
               window.location.href = ROUTES.LOGIN;

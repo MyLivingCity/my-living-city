@@ -152,7 +152,125 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
           setFilteredUsers(filteredUsers);
         }
       }, [users]);
-  
+
+      if (user?.userType === USER_TYPES.MUNICIPAL_SEG_ADMIN) {
+        return (
+            <Container style={{maxWidth: '80%', marginLeft: 50}}>
+            {showUserFlagsModal ?
+            <UserFlagsModal show={showUserFlagsModal} setShow={setShowUserFlagsModal} user={modalUser!} flags={flags} commentFlags={commentFlags} ideas={ideas} proposals={proposals} comments={comments}/>
+            : null
+             }
+            {showUserBanModal ?
+            <UserManagementBanModal show={showUserBanModal} setShow={setShowUserBanModal} modalUser={modalUser!} currentUser={user!} token={token}/>
+            : null
+            }
+            {showUserUnbanModal ?
+            <UserManagementUnbanModal show={showUserUnbanModal} setShow={setShowUserUnbanModal} modalUser={modalUser!} currentUser={user!} token={token} />
+            : null
+            }
+            {showUserBanHistoryModal ?
+            <UserManagementBanHistoryModal show={showUserBanHistoryModal} setShow={setShowUserBanHistoryModal} modalUser={modalUser!} currentUser={user!} token={token} data={banHistory!}/>
+            : null
+            }
+
+            <Form>
+            <h2 className="mb-4 mt-4">User Management</h2>
+            <Table bordered hover size="sm">
+            <thead className="table-active">
+            <tr>
+                <th scope="col">Email</th>
+                <th scope="col">Organization</th>
+                <th scope="col">First</th>
+                <th scope="col">Last</th>
+                <th scope="col">User Type</th>
+                <th scope="col">Controls</th>
+                </tr>
+            </thead>
+            <tbody>
+            {users?.map((req: IUser, index: number) => (
+                
+                <tr key={req.id}>
+                    {req.id !== hideControls ? 
+                    <>
+                        <td>{req.email}</td>
+                        <td>{req.organizationName ? req.organizationName : "N/A"}</td>
+                        <td>{req.fname}</td>
+                        <td>{req.lname}</td>
+                        <td>{req.userType}</td>
+                    </> :
+                    <>
+                        <td><Form.Control type="text" defaultValue={req.email} onChange={(e)=>req.email = e.target.value}/></td>
+                        <td><Form.Control type="text" defaultValue={req.fname} onChange={(e)=>req.fname = e.target.value}/></td>
+                        <td><Form.Control type="text" defaultValue={req.lname} onChange={(e)=>req.lname = e.target.value}/></td>
+                        <td><Form.Control as="select" onChange={(e)=>{(req.userType as String) = e.target.value}}>
+                            <option>{req.userType}</option>
+                            {userTypes.filter(type => type !== req.userType).map(item =>
+                                <option key={item}>{item}</option>
+                            )}
+                            </Form.Control>
+                        </td>
+                        <td><Button onClick={()=> setShowUserFlagsModal(true)}>More Details</Button></td>
+                        <td></td>
+                        <td>{req.banned ? "Yes" : "No" }</td>
+                        <td><Form.Check type="switch" checked={reviewed} onChange={(e)=>{
+                            setReviewed(e.target.checked)
+                            req.reviewed = e.target.checked;
+                            }} id="reviewed-switch"/>
+                        </td>
+                    </>
+                    }
+                    <td>
+                    {req.id !== hideControls ? 
+                        <NavDropdown title="Controls" id="nav-dropdown">
+                            <Dropdown.Item onClick={()=>{
+                                setHideControls(req.id);
+                                setReviewed(req.reviewed);
+                                setModalUser(req);
+                                }}>Edit</Dropdown.Item>
+                            <Dropdown.Item onClick={()=>
+                                UserSegmentHandler(req.email, req.id)
+                                }>View Segments</Dropdown.Item>
+                            {req.banned ? 
+                                <Dropdown.Item onClick={()=> {
+                                    setModalUser(req);
+                                    setShowUserUnbanModal(true);
+                                }}>Modify Ban</Dropdown.Item>
+                                :
+                                <Dropdown.Item onClick={()=> {
+                                    setModalUser(req);
+                                    setShowUserBanModal(true);
+                                }}>Ban User</Dropdown.Item>
+                            }
+                            <Dropdown.Item onClick={() => getUserBanHistory(req.id).then(data => {
+                                setModalUser(req);
+                                setBanHistory(formatBanHistory(data));
+                                setShowUserBanHistoryModal(true);
+                            })} >Ban History</Dropdown.Item>
+                            <Dropdown.Item onClick={() => removeFlagQuarantine(req.id)}>Remove Flag Quarantine</Dropdown.Item>
+                            <Dropdown.Item onClick={() => removePostCommentQuarantine(req.id)}>Remove Post Comment Quarantine</Dropdown.Item>
+                        </NavDropdown>
+                        : <>
+                        <Button size="sm" variant="outline-danger" className="mr-2 mb-2" onClick={()=>setHideControls('')}>Cancel</Button>
+                        <Button size="sm" onClick={()=>{
+                            setHideControls('');
+                            
+                            updateUser(req, token, user);
+                            }}>Save</Button>
+                        </>
+                    }
+
+                    </td>
+                </tr>
+                ))}
+            </tbody>
+            </Table>
+        </Form>
+        <br></br>
+        {/* <UserSegmentHandler/> */}
+        {showUserSegmentCard && <UserSegmentInfoCard email={email} id={id} token={token}/>}
+        </Container>
+        );
+    } else { 
         return (
             <Container style={{maxWidth: '100%', marginLeft: 50}}>
             {showUserFlagsModal ?
@@ -297,4 +415,5 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
         {showUserSegmentCard && <UserSegmentInfoCard email={email} id={id} token={token}/>}
         </Container>
         );
+    }
 }

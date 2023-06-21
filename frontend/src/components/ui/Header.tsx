@@ -185,6 +185,11 @@ function Header() {
                       <Nav.Link href="/admin/management">Admin Manager</Nav.Link>
                     </NavDropdown>
                   )}
+
+                  {user.userType === "MUNICIPAL_SEG_ADMIN" && (
+                    <Nav.Link href="/user/management">User Management</Nav.Link>
+                  )}
+
                   {(user.userType === "BUSINESS" || user.userType === "COMMUNITY") && (
                     <Nav.Link href="/advertisement/user">My Ads</Nav.Link>
                   )}

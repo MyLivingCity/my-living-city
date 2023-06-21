@@ -14,6 +14,9 @@ export const UserSegmentInfoCard: React.FC<UserSegmentInfoCardProps> = ({email, 
     const [showReq, setShowReq] = useState(false);
     const [update, setUpdate] = useState(false);
     const [userSegment, setUserSegment] = useState<IUserSegment | null>();
+    const capitalizeString = (s: string) => {
+        return s.charAt(0).toUpperCase() + s.slice(1);
+    };
     useEffect(()=>{
         async function fetchData() {
             const response = await getMyUserSegmentInfo(token!, id);
@@ -44,12 +47,12 @@ export const UserSegmentInfoCard: React.FC<UserSegmentInfoCardProps> = ({email, 
             </thead>
             <tbody>
                 <tr>
-                    <td>{userSegment ? userSegment.homeSegmentName : ''}</td>
-                    <td>{userSegment ? userSegment.workSegmentName : ''}</td>
-                    <td>{userSegment ? userSegment.schoolSegmentName : ''}</td>
-                    <td>{userSegment ? userSegment.homeSubSegmentName : ''}</td>
-                    <td>{userSegment ? userSegment.workSubSegmentName : ''}</td>
-                    <td>{userSegment ? userSegment.schoolSubSegmentName : ''}</td>
+                    <td>{userSegment ? capitalizeString(userSegment.homeSegmentName) : ''}</td>
+                    <td>{userSegment ? capitalizeString(userSegment.workSegmentName) : ''}</td>
+                    <td>{userSegment ? capitalizeString(userSegment.schoolSegmentName) : ''}</td>
+                    <td>{userSegment ? capitalizeString(userSegment.homeSubSegmentName) : ''}</td>
+                    <td>{userSegment ? capitalizeString(userSegment.workSubSegmentName) : ''}</td>
+                    <td>{userSegment ? capitalizeString(userSegment.schoolSubSegmentName) : ''}</td>
                 </tr>
             {/* {segReq?.map((req: ISegmentRequest, index: number) => (
                 <tr key={req.id}>

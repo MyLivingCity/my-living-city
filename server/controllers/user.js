@@ -264,7 +264,82 @@ userRouter.get(
 		}
 	}
 )
+userRouter.delete(
+	'/:userId',
+	async (req, res, next) => {
+		try {
+			const { userId } = req.params;
+		  
+			// Check if the user exists
+			const foundUser = await prisma.user.findUnique({
+			  where: { id: userId },
+			});
+		  
+			if (!foundUser) {
+			  return res.status(400).json({
+				message: "User could not be found or does not exist in the database.",
+			  });
+			}
+		  
+			// Delete related records first
+			await prisma.userAddress.deleteMany({
+			  where: { userId: foundUser.id },
+			});
+		  
+			await prisma.userGeo.deleteMany({
+			  where: { userId: foundUser.id },
+			});
+		  
+			await prisma.userSegments.deleteMany({
+			  where: { userId: foundUser.id },
+			});
+		  
+			await prisma.userReach.deleteMany({
+			  where: { userId: foundUser.id },
+			});
 
+			await prisma.userStripe.deleteMany({
+				where: { userId: foundUser.id },
+			  });
+
+			await prisma.idea.deleteMany({
+				where: { authorId: foundUser.id },
+			  });
+
+			await prisma.advertisements.deleteMany({
+				where: { ownerId: foundUser.id },
+			  });
+
+			await prisma.ideaRating.deleteMany({
+				where: { authorId: foundUser.id },
+			  }); 
+
+			await prisma.userIdeaFollow.deleteMany({
+				where: { userId: foundUser.id },
+			  });
+		  
+			// Delete the user record
+			await prisma.user.delete({
+			  where: { id: foundUser.id },
+			});
+		  
+			res.status(200).json({
+			  message: "User deleted successfully.",
+			});
+		  } catch (error) {
+			console.log(error);
+			res.status(400).json({
+			  message: error.message,
+			  details: {
+				errorMessage: error.message,
+				errorStack: error.stack,
+			  },
+			});
+		  } finally {
+			await prisma.$disconnect();
+		  }
+	}
+);
 /**
  * Signs up a user with fields referenced in the User DB model.
  * At a minimum must have email and password to succeed.

@@ -181,7 +181,8 @@ function Header() {
                     <NavDropdown title="Admin Tools" id="nav-dropdown">
                       <Nav.Link href="/advertisement/all">Ad Manager</Nav.Link>
                       <Nav.Link href="/segment/management">Segments</Nav.Link>
-                      <Nav.Link href="/user/management">Users</Nav.Link>
+                      <Nav.Link href="/user/management">User Manager</Nav.Link>
+                      <Nav.Link href="/admin/management">Admin Manager</Nav.Link>
                     </NavDropdown>
                   )}
                   {(user.userType === "BUSINESS" || user.userType === "COMMUNITY") && (

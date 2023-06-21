@@ -585,7 +585,7 @@ userRouter.get(
 
 			const theUser = await prisma.user.findUnique({where:{id:id}});
 
-			if(theUser.userType === 'ADMIN' || theUser.userType === 'MOD'){
+			if(theUser.userType === 'ADMIN' || theUser.userType === 'MOD' || theUser.userType === 'MUNICIPAL_SEG_ADMIN'){
 				const allUsers = await prisma.user.findMany();
 
 				res.json(allUsers);

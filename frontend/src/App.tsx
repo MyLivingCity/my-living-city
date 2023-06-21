@@ -96,7 +96,7 @@ function App() {
           <CustomRoute
             path={ROUTES.USER_MANAGEMENT}
             component={UserManagementPage}
-            userTypes={[USER_TYPES.ADMIN, USER_TYPES.MOD]}
+            userTypes={[USER_TYPES.ADMIN, USER_TYPES.MOD, USER_TYPES.MUNICIPAL_SEG_ADMIN]}
           />
           
           <CustomRoute

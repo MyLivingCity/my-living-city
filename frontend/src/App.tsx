@@ -25,6 +25,7 @@ import EditAdsPage from "./pages/EditAdsPage";
 import AdminRoute from "./components/utility/AdminRoute";
 import CustomRoute from "./components/utility/CustomRoute";
 import UserManagementPage from "./pages/UserManagementPage";
+import AdminManagementPage from "./pages/AdminManagementPage";
 import SubmitDirectProposalPage from "./pages/SubmitDirectProposalPage";
 import DashboardPage from "./pages/DashboardPage";
 import MyPostsPage from "./pages/MyPostsPage";
@@ -97,6 +98,12 @@ function App() {
             component={UserManagementPage}
             userTypes={[USER_TYPES.ADMIN, USER_TYPES.MOD]}
           />
+          
+          <CustomRoute
+            path={ROUTES.ADMIN_MANAGEMENT}
+            component={AdminManagementPage}
+            userTypes={[USER_TYPES.ADMIN]}
+          /> 
           <CustomRoute
             path={ROUTES.MOD_MANAGEMENT}
             component={ModManagementPage}

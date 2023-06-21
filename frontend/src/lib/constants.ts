@@ -68,6 +68,7 @@ export const ROUTES = {
   RESET_PASSWORD: "/user/reset-password",
   SEGMENT_MANAGEMENT: "/segment/management",
   USER_MANAGEMENT: "/user/management",
+  ADMIN_MANAGEMENT: "/admin/management",
   SUBMIT_DIRECT_PROPOSAL: "/submit-direct-proposal",
   DASHBOARD: "/dashboard",
   My_POSTS: "/dashboard/my-posts",

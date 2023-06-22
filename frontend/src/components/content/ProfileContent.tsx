@@ -707,7 +707,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
             <Row className="justify-content-center mt-3">
               <ListGroup variant="flush" className="">
                 <ListGroup.Item>
-                  <strong>Organization Name</strong>
+                  <strong>Municipality Name</strong>
                 </ListGroup.Item>
                 <ListGroup.Item>
                   <strong>Email</strong>

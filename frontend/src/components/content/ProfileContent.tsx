@@ -411,12 +411,6 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                 )}
               </Col>
             </Row>
-            <Card.Title className="mt-3">
-              {organizationName
-                ? capitalizeString(organizationName)
-                : "Unknown"}
-            </Card.Title>
-            <Card.Text className="mb-3">{email}</Card.Text>
             {stripeStatus !== "" && (
               <>
                 <p>
@@ -451,9 +445,6 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                 <ListGroup.Item>
                   <strong>Postal Code / Zip</strong>
                 </ListGroup.Item>
-                <ListGroup.Item>
-                  <strong>Community Request</strong>
-                </ListGroup.Item>
               </ListGroup>
 
               <ListGroup variant="flush" className="">
@@ -480,11 +471,6 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                 </ListGroup.Item>
                 <ListGroup.Item>
                   {postalCode ? postalCode.toUpperCase() : "Unknown"}
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  <Button variant="link" onClick={() => setShow((b) => !b)}>
-                    Request your Community!
-                  </Button>
                 </ListGroup.Item>
               </ListGroup>
               <RequestSegmentModal
@@ -706,12 +692,6 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                 )}
               </Col>
             </Row>
-            <Card.Title className="mt-3">
-              {organizationName
-                ? capitalizeString(organizationName)
-                : "Unknown"}
-            </Card.Title>
-            <Card.Text className="mb-3">{email}</Card.Text>
             {stripeStatus !== "" && (
               <>
                 <p>
@@ -746,9 +726,6 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                 <ListGroup.Item>
                   <strong>Postal Code / Zip</strong>
                 </ListGroup.Item>
-                <ListGroup.Item>
-                  <strong>Community Request</strong>
-                </ListGroup.Item>
               </ListGroup>
 
               <ListGroup variant="flush" className="">
@@ -775,11 +752,6 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                 </ListGroup.Item>
                 <ListGroup.Item>
                   {postalCode ? postalCode.toUpperCase() : "Unknown"}
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  <Button variant="link" onClick={() => setShow((b) => !b)}>
-                    Request your Community!
-                  </Button>
                 </ListGroup.Item>
               </ListGroup>
               <RequestSegmentModal

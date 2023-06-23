@@ -160,7 +160,8 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
           const municipalFilteredUsers = users.filter(
             (m_user) =>
               m_user.userType === 'MUNICIPAL' &&
-              m_user.userSegments?.homeSegmentId === user?.userSegments?.homeSegmentId
+              m_user.userSegments?.homeSubSegmentId === user?.userSegments?.homeSubSegmentId &&
+              m_user.userSegments?.homeSubSegmentName === user?.userSegments?.homeSegmentName
           );
           setMunicipalFilteredUsers(municipalFilteredUsers);
         }
@@ -219,12 +220,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                     <td><Form.Control as="select" onChange={(e)=>{(req.userType as string) = e.target.value}}>
                         {userTypes
                         .filter(type => type !== req.userType)
-                        .filter((type => type !== "ADMIN"))
-                        .filter((type => type !== "SEG_ADMIN"))
-                        .filter((type => type !== "MUNICIPAL_SEG_ADMIN"))
-                        .filter((type => type !== "DEVELOPER"))
-                        .filter((type => type !== "IN_PROGRESS"))
-                        .filter((type => type !== "ASSOCIATE"))
+                        .filter((type => type === "MUNICIPAL"))
                         .map(item =>
                             <option key={item}>{item}</option>
                         )}

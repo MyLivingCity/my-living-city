@@ -127,6 +127,8 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
     }
     const userTypes = Object.keys(USER_TYPES);
 
+    const userHomeSegment = user?.userSegments?.homeSegmentName;
+
     const handleDeleteUser = async (userId: string) => {
         try {
           await deleteUser(userId, token);
@@ -158,9 +160,9 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
         if (users) {
           // Filter out specific user types or conditions if needed
           const municipalFilteredUsers = users.filter(
-            (m_user) =>
-              m_user.userType === 'MUNICIPAL' &&
-              m_user.userSegments?.homeSegmentName === user?.userSegments?.homeSegmentName
+            (user) =>
+              user.userType === 'MUNICIPAL' &&
+              user.userSegments?.homeSegmentName === userHomeSegment
           );
           setMunicipalFilteredUsers(municipalFilteredUsers);
         }
@@ -192,7 +194,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
             <thead className="table-active">
             <tr>
                 <th scope="col" className="text-center align-middle">Email</th>
-                <th scope="col" className="text-center align-middle">Organization</th>
+                <th scope="col" className="text-center align-middle">Department</th>
                 <th scope="col" className="text-center align-middle">First</th>
                 <th scope="col" className="text-center align-middle">Last</th>
                 <th scope="col" className="text-center align-middle">User Type</th>
@@ -201,7 +203,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
             </thead>
             <tbody>
             {municipalFilteredUsers?.map((req: IUser, index: number) => (
-                  req.userType !== "ADMIN" && req.userType !== "MOD" && req.userType !== "SEG_MOD" && req.userType !== "MUNICIPAL_SEG_ADMIN" && req.userType !== "SEG_ADMIN" ? (
+                  req.userType === 'MUNICIPAL' && req.userSegments?.homeSegmentName === user.userSegments?.homeSegmentName ? (
                 <tr key={req.id}>
                     {req.id !== hideControls ? 
                     <>
@@ -219,12 +221,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                     <td><Form.Control as="select" onChange={(e)=>{(req.userType as string) = e.target.value}}>
                         {userTypes
                         .filter(type => type !== req.userType)
-                        .filter((type => type !== "ADMIN"))
-                        .filter((type => type !== "SEG_ADMIN"))
-                        .filter((type => type !== "MUNICIPAL_SEG_ADMIN"))
-                        .filter((type => type !== "DEVELOPER"))
-                        .filter((type => type !== "IN_PROGRESS"))
-                        .filter((type => type !== "ASSOCIATE"))
+                        .filter((type => type === "MUNICIPAL"))
                         .map(item =>
                             <option key={item}>{item}</option>
                         )}
@@ -243,27 +240,6 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                                 setReviewed(req.reviewed);
                                 setModalUser(req);
                                 }}>Edit</Dropdown.Item>
-                            <Dropdown.Item onClick={()=>
-                                UserSegmentHandler(req.email, req.id)
-                                }>View Segments</Dropdown.Item>
-                            {req.banned ? 
-                                <Dropdown.Item onClick={()=> {
-                                    setModalUser(req);
-                                    setShowUserUnbanModal(true);
-                                }}>Modify Ban</Dropdown.Item>
-                                :
-                                <Dropdown.Item onClick={()=> {
-                                    setModalUser(req);
-                                    setShowUserBanModal(true);
-                                }}>Ban User</Dropdown.Item>
-                            }
-                            <Dropdown.Item onClick={() => getUserBanHistory(req.id).then(data => {
-                                setModalUser(req);
-                                setBanHistory(formatBanHistory(data));
-                                setShowUserBanHistoryModal(true);
-                            })} >Ban History</Dropdown.Item>
-                            <Dropdown.Item onClick={() => removeFlagQuarantine(req.id)}>Remove Flag Quarantine</Dropdown.Item>
-                            <Dropdown.Item onClick={() => removePostCommentQuarantine(req.id)}>Remove Post Comment Quarantine</Dropdown.Item>
                             <Dropdown.Item onClick={() => {
                                                 const confirmed = window.confirm("Are you sure you want to delete this user?");
                                                 if (confirmed) {

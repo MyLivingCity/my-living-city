@@ -703,65 +703,190 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
             )}
           </Card>
 
-          <Card style={{ width: "40rem" }}>
-            <Row className="justify-content-center mt-3">
-              <ListGroup variant="flush" className="">
-                <ListGroup.Item>
-                  <strong>Municipality Name</strong>
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  <strong>Email</strong>
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  <strong>Street Address</strong>
-                </ListGroup.Item>
-                {streetAddress2 ? (
-                  <ListGroup.Item>
-                    <strong>Street Address 2</strong>
-                  </ListGroup.Item>
-                ) : null}
-                <ListGroup.Item>
-                  <strong>City</strong>
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  <strong>Postal Code / Zip</strong>
-                </ListGroup.Item>
-              </ListGroup>
-
-              <ListGroup variant="flush" className="">
-                <ListGroup.Item>
-                  {organizationName
-                    ? capitalizeString(organizationName)
-                    : "Unknown"}{" "}
-                </ListGroup.Item>
-                <ListGroup.Item>{email}</ListGroup.Item>
-                <ListGroup.Item>
-                  {streetAddress ? capitalizeString(streetAddress) : "Unknown"}
-                </ListGroup.Item>
-                {streetAddress2 ? (
-                  <ListGroup.Item>
-                    {streetAddress2
-                      ? capitalizeString(streetAddress2)
-                      : "Unknown"}
-                  </ListGroup.Item>
-                ) : null}
-                <ListGroup.Item>
-                  {city
-                    ? capitalizeString(city)
-                    : capitalizeString(userSegments!.homeSegmentName)}
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  {postalCode ? postalCode.toUpperCase() : "Unknown"}
-                </ListGroup.Item>
-              </ListGroup>
-              <RequestSegmentModal
-                showModal={show}
-                setShowModal={setShow}
-                index={0}
-                setSegmentRequests={setSegmentRequests}
-                segmentRequests={segmentRequests}
-              />
+          <Card
+            style={{
+              width: "42rem",
+              padding: "2rem",
+              justifyContent: "center",
+            }}
+          >
+            {showAlert ? (
+              <Alert
+                variant="primary"
+                dismissible
+                onClose={() => setShowAlert(false)}
+              >
+                Profile Updated
+              </Alert>
+            ) : null}
+            <Row>
+              <Col style={{ maxWidth: "4rem" }}></Col>
+              {editPersonalInfo ? (
+                <Form
+                  id="formPublicProfile"
+                  style={{ minWidth: "20rem" }}
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleStandardProfile();
+                    setEditPersonalInfo(false);
+                    // Change
+                    window.location.reload();
+                  }}
+                >
+                  <Form.Group
+                    className="mb-3"
+                    controlId="formProfileInformation"
+                  >
+                    {standardProfile ? (
+                      <>
+                        <Form.Group className="mb-3" controlId="organizationName">
+                          <Form.Label>
+                            <strong>Municipality Name:</strong>
+                          </Form.Label>
+                          <Form.Control
+                            type="text"
+                            id="formStandardOrganizationName"
+                            placeholder="First Name"
+                            defaultValue={organizationName}
+                            maxLength={TEXT_INPUT_LIMIT.NAME}
+                          />
+                        </Form.Group>
+                        <Form.Group className="mb-3" controlId="email">
+                          <Form.Label>
+                            <strong>Email:</strong>
+                          </Form.Label>
+                          <Form.Control
+                            type="email"
+                            id="formStandardEmail"
+                            placeholder="Email Address"
+                            defaultValue={email}
+                          />
+                        </Form.Group>
+                        <Form.Group className="mb-3" controlId="streetAddress">
+                          <Form.Label>
+                            <strong>Street Address:</strong>
+                          </Form.Label>
+                          <Form.Control
+                            type="streetAddress"
+                            id="formStandardStreetAddress"
+                            placeholder="Street Address"
+                            defaultValue={streetAddress}
+                          />
+                        </Form.Group>
+                        <Form.Group>
+                          <Form.Label>
+                            <strong>Segments:</strong>
+                          </Form.Label>
+                          <Form.Control
+                              type="segments"
+                              id="formStandardSegments"
+                              placeholder="Segments"
+                              defaultValue={userSegments!.homeSegmentName}
+                            />
+                        </Form.Group>
+                        <Form.Group>
+                          <Form.Label>
+                            <strong>Postal Code / Zip:</strong>
+                          </Form.Label>
+                          <Form.Control
+                              type="postalCode"
+                              id="formStandardPostalCode"
+                              placeholder="Postal Code"
+                              defaultValue={postalCode}
+                            />
+                        </Form.Group>
+                      </>
+                    ) : null}
+                    <Button
+                      variant="danger"
+                      className="btn-sm"
+                      style={{ marginRight: "1rem" }}
+                      onClick={handleEditPersonalInfo}
+                    >
+                      Cancel
+                    </Button>
+                    <Button variant="primary" className="btn-sm" type="submit">
+                      Update
+                    </Button>
+                  </Form.Group>
+                </Form>
+              ) : (
+                <>
+                  <Col style={{ padding: "0", maxWidth: "15rem" }}>
+                    <ListGroup variant="flush">
+                      <ListGroupItem>
+                        <strong>Municipality Name: </strong>
+                      </ListGroupItem>
+                      <ListGroupItem>
+                        <strong>Email: </strong>
+                      </ListGroupItem>
+                      <ListGroupItem>
+                        <strong>Street Address: </strong>
+                      </ListGroupItem>
+                      <ListGroupItem>
+                        <strong>City: </strong>
+                      </ListGroupItem>
+                      <ListGroupItem>
+                        <strong>Postal Code / Zip: </strong>
+                      </ListGroupItem>
+                    </ListGroup>
+                  </Col>
+                  <Col style={{ padding: "0" }}>
+                    <ListGroup variant="flush">
+                      <ListGroupItem>
+                        {organizationName
+                          ? capitalizeString(organizationName!)
+                          : "Unknown"}
+                      </ListGroupItem>
+                      <ListGroupItem>
+                        {email
+                          ? capitalizeString(email)
+                          : "Unknown"}
+                      </ListGroupItem>
+                      <ListGroupItem>
+                        {streetAddress
+                          ? capitalizeString(streetAddress)
+                          : "Unknown"}
+                      </ListGroupItem>
+                      {streetAddress2 ? (
+                        <ListGroup.Item>
+                          {streetAddress2
+                            ? capitalizeString(streetAddress2)
+                            : "Unknown"}
+                        </ListGroup.Item>
+                      ) : null}
+                      <ListGroupItem>
+                        {userSegments!.homeSegmentName
+                          ? capitalizeString(userSegments!.homeSegmentName)
+                          : "Unknown"}
+                      </ListGroupItem>
+                      <ListGroupItem>
+                        {postalCode
+                          ? capitalizeString(postalCode)
+                          : "Unknown"}
+                      </ListGroupItem>
+                    </ListGroup>
+                  </Col>
+                  <Col style={{ maxWidth: "8rem" }}>
+                    <Button
+                      variant="primary"
+                      className=""
+                      onClick={handleEditPersonalInfo}
+                      style={{ float: "right" }}
+                    >
+                      Edit
+                    </Button>
+                  </Col>
+                </>
+              )}
             </Row>
+            <RequestSegmentModal
+              showModal={show}
+              setShowModal={setShow}
+              index={0}
+              setSegmentRequests={setSegmentRequests}
+              segmentRequests={segmentRequests}
+            />
           </Card>
         </Row>
 

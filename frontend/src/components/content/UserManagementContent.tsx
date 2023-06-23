@@ -127,6 +127,8 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
     }
     const userTypes = Object.keys(USER_TYPES);
 
+    const userHomeSegment = user?.userSegments?.homeSegmentId;
+
     const handleDeleteUser = async (userId: string) => {
         try {
           await deleteUser(userId, token);
@@ -158,10 +160,9 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
         if (users) {
           // Filter out specific user types or conditions if needed
           const municipalFilteredUsers = users.filter(
-            (m_user) =>
-              m_user.userType === 'MUNICIPAL' &&
-              m_user.userSegments?.homeSubSegmentId === user?.userSegments?.homeSubSegmentId &&
-              m_user.userSegments?.homeSubSegmentName === user?.userSegments?.homeSegmentName
+            (user) =>
+              user.userType === 'MUNICIPAL' &&
+              user.userSegments?.homeSegmentId === userHomeSegment
           );
           setMunicipalFilteredUsers(municipalFilteredUsers);
         }

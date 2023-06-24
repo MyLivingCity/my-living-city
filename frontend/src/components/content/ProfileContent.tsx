@@ -411,12 +411,6 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                 )}
               </Col>
             </Row>
-            <Card.Title className="mt-3">
-              {organizationName
-                ? capitalizeString(organizationName)
-                : "Unknown"}
-            </Card.Title>
-            <Card.Text className="mb-3">{email}</Card.Text>
             {stripeStatus !== "" && (
               <>
                 <p>
@@ -451,9 +445,6 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                 <ListGroup.Item>
                   <strong>Postal Code / Zip</strong>
                 </ListGroup.Item>
-                <ListGroup.Item>
-                  <strong>Community Request</strong>
-                </ListGroup.Item>
               </ListGroup>
 
               <ListGroup variant="flush" className="">
@@ -480,11 +471,6 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                 </ListGroup.Item>
                 <ListGroup.Item>
                   {postalCode ? postalCode.toUpperCase() : "Unknown"}
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  <Button variant="link" onClick={() => setShow((b) => !b)}>
-                    Request your Community!
-                  </Button>
                 </ListGroup.Item>
               </ListGroup>
               <RequestSegmentModal
@@ -674,7 +660,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
         </Row>
       </Container>
     );
-  } else if (userType === USER_TYPES.MUNICIPAL) {
+  } else if (userType === USER_TYPES.MUNICIPAL_SEG_ADMIN) {
     return (
       <Container className="user-profile-content w-100">
         <Row className="mb-4 mt-4 justify-content-center">
@@ -706,12 +692,6 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                 )}
               </Col>
             </Row>
-            <Card.Title className="mt-3">
-              {organizationName
-                ? capitalizeString(organizationName)
-                : "Unknown"}
-            </Card.Title>
-            <Card.Text className="mb-3">{email}</Card.Text>
             {stripeStatus !== "" && (
               <>
                 <p>
@@ -746,9 +726,6 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                 <ListGroup.Item>
                   <strong>Postal Code / Zip</strong>
                 </ListGroup.Item>
-                <ListGroup.Item>
-                  <strong>Community Request</strong>
-                </ListGroup.Item>
               </ListGroup>
 
               <ListGroup variant="flush" className="">
@@ -775,11 +752,6 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                 </ListGroup.Item>
                 <ListGroup.Item>
                   {postalCode ? postalCode.toUpperCase() : "Unknown"}
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  <Button variant="link" onClick={() => setShow((b) => !b)}>
-                    Request your Community!
-                  </Button>
                 </ListGroup.Item>
               </ListGroup>
               <RequestSegmentModal
@@ -961,6 +933,186 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                 </Button>
               </Form>
             </Card.Body>
+          </Card>
+        </Row>
+      </Container>
+    );
+  } else if (userType === USER_TYPES.MUNICIPAL) {
+    return (
+      <Container className="user-profile-content w-100">
+        <Row className="mb-4 mt-4 justify-content-center">
+          <h2 className="pb-2 pt-2 display-6">User Profile</h2>
+        </Row>
+
+        <Row style={{ marginBottom: "2rem" }}>
+          <Card className="text-center mx-5 mb-5" style={{ width: "18rem" }}>
+            <Row className="mt-3">
+              <Col>
+                {imagePath ? (
+                  <Image
+                    fluid
+                    src={imagePath}
+                    style={{
+                      objectFit: "cover",
+                      height: "200px",
+                      width: "200px",
+                    }}
+                    roundedCircle
+                  />
+                ) : (
+                  <Image
+                    fluid
+                    src="https://ih1.redbubble.net/image.785212781.7855/st,small,507x507-pad,600x600,f8f8f8.jpg"
+                    width="70%"
+                    roundedCircle
+                  />
+                )}
+              </Col>
+            </Row>
+            <Card.Title className="mt-3">
+              {fname ? capitalizeString(fname) : "Unknown"}{" "}
+              {lname ? capitalizeString(lname) : "Unknown"}
+            </Card.Title>
+            <Card.Text className="mb-3">{email}</Card.Text>
+            {stripeStatus !== "" && (
+              <>
+                <p>
+                  Subscription Status:{" "}
+                  {stripeStatus === "active" ? "Active" : "Not Active"}
+                </p>
+                <StripeCheckoutButton status={stripeStatus} user={user} />
+              </>
+            )}
+          </Card>
+
+          <Card
+            style={{
+              width: "42rem",
+              padding: "1.5rem",
+              paddingBottom: "0",
+              paddingTop: "0",
+              justifyContent: "center",
+            }}
+          >
+            {showAlert ? (
+              <Alert
+                variant="primary"
+                dismissible
+                onClose={() => setShowAlert(false)}
+              >
+                Profile Updated
+              </Alert>
+            ) : null}
+            <Row>
+              <Col style={{ maxWidth: "4rem" }}></Col>
+              {editPersonalInfo ? (
+                <Form
+                  id="formPublicProfile"
+                  style={{ minWidth: "20rem" }}
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleStandardProfile();
+                    setEditPersonalInfo(false);
+                    // Change
+                    window.location.reload();
+                  }}
+                >
+                  <Form.Group
+                    className="mb-3"
+                    controlId="formProfileInformation"
+                  >
+                    {standardProfile ? (
+                      <>
+                        <Form.Group className="mb-3" controlId="firstName">
+                          <Form.Label>
+                            <strong>First Name:</strong>
+                          </Form.Label>
+                          <Form.Control
+                            type="text"
+                            id="formStandardFirstName"
+                            placeholder="First Name"
+                            defaultValue={fname}
+                            maxLength={TEXT_INPUT_LIMIT.NAME}
+                          />
+                        </Form.Group>
+                        <Form.Group className="mb-3" controlId="lastName">
+                          <Form.Label>
+                            <strong>Last Name:</strong>
+                          </Form.Label>
+                          <Form.Control
+                            type="text"
+                            id="formStandardLastName"
+                            placeholder="Last Name"
+                            defaultValue={lname}
+                            maxLength={TEXT_INPUT_LIMIT.NAME}
+                          />
+                        </Form.Group>
+                        <Form.Group className="mb-3" controlId="email">
+                          <Form.Label>
+                            <strong>Email:</strong>
+                          </Form.Label>
+                          <Form.Control
+                            type="email"
+                            id="formStandardEmail"
+                            placeholder="Email Address"
+                            defaultValue={email}
+                          />
+                        </Form.Group>
+                      </>
+                    ) : null}
+                    <Button
+                      variant="danger"
+                      className="btn-sm"
+                      style={{ marginRight: "1rem" }}
+                      onClick={handleEditPersonalInfo}
+                    >
+                      Cancel
+                    </Button>
+                    <Button variant="primary" className="btn-sm" type="submit">
+                      Update
+                    </Button>
+                  </Form.Group>
+                </Form>
+              ) : (
+                <>
+                  <Col style={{ padding: "0", maxWidth: "15rem" }}>
+                    <ListGroup variant="flush">
+                      <ListGroupItem>
+                        <strong>Full Name: </strong>
+                      </ListGroupItem>
+                      <ListGroupItem>
+                        <strong>Email: </strong>
+                      </ListGroupItem>
+                    </ListGroup>
+                  </Col>
+                  <Col style={{ padding: "0" }}>
+                    <ListGroup variant="flush">
+                      <ListGroupItem>
+                        {capitalizeString(fname!)} {capitalizeString(lname!)}
+                      </ListGroupItem>
+                      <ListGroupItem>{email!}</ListGroupItem>
+                    </ListGroup>
+                  </Col>
+                  <Col style={{ maxWidth: "8rem" }}>
+                    <Button
+                      variant="primary"
+                      className=""
+                      onClick={handleEditPersonalInfo}
+                      style={{ float: "right" }}
+                    >
+                      Edit
+                    </Button>
+                  </Col>
+                </>
+              )}
+            </Row>
+            <RequestSegmentModal
+              showModal={show}
+              setShowModal={setShow}
+              index={0}
+              setSegmentRequests={setSegmentRequests}
+              segmentRequests={segmentRequests}
+            />
           </Card>
         </Row>
       </Container>

@@ -160,7 +160,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
           const municipalFilteredUsers = users.filter(
             (m_user) =>
               m_user.userType === 'MUNICIPAL' &&
-              m_user.userSegments?.homeSegmentId === user?.userSegments?.homeSegmentId
+              m_user.userSegments?.homeSegmentName === user?.userSegments?.homeSegmentName
           );
           setMunicipalFilteredUsers(municipalFilteredUsers);
         }

@@ -156,8 +156,12 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
 
   function redirectToIdeaSubmit() {
-    let name = segment?.name
+    let name = subSegment?.name
     
+    if (!name && segment) {
+      name = segment.name
+    }
+
     if (!name && superSegment) {
       name = superSegment.name
     }

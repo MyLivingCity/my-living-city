@@ -203,7 +203,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
             </thead>
             <tbody>
             {municipalFilteredUsers?.map((req: IUser, index: number) => (
-                  req.userType === 'MUNICIPAL' && req.userSegments?.homeSegmentName === user.userSegments?.homeSegmentName ? (
+                  req.userType === 'MUNICIPAL' && req.userSegments?.homeSegmentName === userHomeSegment ? (
                 <tr key={req.id}>
                     {req.id !== hideControls ? 
                     <>

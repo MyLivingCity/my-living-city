@@ -187,7 +187,7 @@ function Header() {
                   )}
 
                   {user.userType === "MUNICIPAL_SEG_ADMIN" && (
-                    <Nav.Link href="/user/management">User Management</Nav.Link>
+                    <Nav.Link href="/user/management">Municipal Manager</Nav.Link>
                   )}
 
                   {(user.userType === "BUSINESS" || user.userType === "COMMUNITY") && (

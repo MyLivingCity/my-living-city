@@ -352,6 +352,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
   }
 
   const handleStandardProfile = () => {
+  
     const id = user.id;
     const firstName = (
       document.getElementById("formStandardFirstName") as HTMLInputElement
@@ -739,15 +740,28 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                   >
                     {standardProfile ? (
                       <>
-                        <Form.Group className="mb-3" controlId="organizationName">
+                       
+                       <Form.Group className="mb-3" controlId="firstName">
                           <Form.Label>
-                            <strong>Municipality Name:</strong>
+                            <strong>First Name:</strong>
                           </Form.Label>
                           <Form.Control
                             type="text"
-                            id="formStandardOrganizationName"
+                            id="formStandardFirstName"
                             placeholder="First Name"
-                            defaultValue={organizationName}
+                            defaultValue={fname}
+                            maxLength={TEXT_INPUT_LIMIT.NAME}
+                          />
+                        </Form.Group>
+                        <Form.Group className="mb-3" controlId="lastName">
+                          <Form.Label>
+                            <strong>Last Name:</strong>
+                          </Form.Label>
+                          <Form.Control
+                            type="text"
+                            id="formStandardLastName"
+                            placeholder="Last Name"
+                            defaultValue={lname}
                             maxLength={TEXT_INPUT_LIMIT.NAME}
                           />
                         </Form.Group>
@@ -762,39 +776,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                             defaultValue={email}
                           />
                         </Form.Group>
-                        <Form.Group className="mb-3" controlId="streetAddress">
-                          <Form.Label>
-                            <strong>Street Address:</strong>
-                          </Form.Label>
-                          <Form.Control
-                            type="streetAddress"
-                            id="formStandardStreetAddress"
-                            placeholder="Street Address"
-                            defaultValue={streetAddress}
-                          />
-                        </Form.Group>
-                        <Form.Group>
-                          <Form.Label>
-                            <strong>Segments:</strong>
-                          </Form.Label>
-                          <Form.Control
-                              type="segments"
-                              id="formStandardSegments"
-                              placeholder="Segments"
-                              defaultValue={userSegments!.homeSegmentName}
-                            />
-                        </Form.Group>
-                        <Form.Group>
-                          <Form.Label>
-                            <strong>Postal Code / Zip:</strong>
-                          </Form.Label>
-                          <Form.Control
-                              type="postalCode"
-                              id="formStandardPostalCode"
-                              placeholder="Postal Code"
-                              defaultValue={postalCode}
-                            />
-                        </Form.Group>
+                      
                       </>
                     ) : null}
                     <Button
@@ -814,65 +796,36 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                 <>
                   <Col style={{ padding: "0", maxWidth: "15rem" }}>
                     <ListGroup variant="flush">
-                      <ListGroupItem>
+                    <ListGroupItem>
                         <strong>Municipality Name: </strong>
                       </ListGroupItem>
                       <ListGroupItem>
+                        <strong>Full Name: </strong>
+                      </ListGroupItem>
+                      <ListGroupItem>
                         <strong>Email: </strong>
-                      </ListGroupItem>
-                      <ListGroupItem>
-                        <strong>Street Address: </strong>
-                      </ListGroupItem>
-                      <ListGroupItem>
-                        <strong>City: </strong>
-                      </ListGroupItem>
-                      <ListGroupItem>
-                        <strong>Postal Code / Zip: </strong>
                       </ListGroupItem>
                     </ListGroup>
                   </Col>
                   <Col style={{ padding: "0" }}>
                     <ListGroup variant="flush">
-                      <ListGroupItem>
-                        {organizationName
-                          ? capitalizeString(organizationName!)
-                          : "Unknown"}
-                      </ListGroupItem>
-                      <ListGroupItem>
-                        {email
-                          ? capitalizeString(email)
-                          : "Unknown"}
-                      </ListGroupItem>
-                      <ListGroupItem>
-                        {streetAddress
-                          ? capitalizeString(streetAddress)
-                          : "Unknown"}
-                      </ListGroupItem>
-                      {streetAddress2 ? (
-                        <ListGroup.Item>
-                          {streetAddress2
-                            ? capitalizeString(streetAddress2)
-                            : "Unknown"}
-                        </ListGroup.Item>
-                      ) : null}
-                      <ListGroupItem>
-                        {userSegments!.homeSegmentName
+                    <ListGroupItem>
+                      {userSegments!.homeSegmentName
                           ? capitalizeString(userSegments!.homeSegmentName)
                           : "Unknown"}
                       </ListGroupItem>
                       <ListGroupItem>
-                        {postalCode
-                          ? capitalizeString(postalCode)
-                          : "Unknown"}
+                        {capitalizeString(fname!)} {capitalizeString(lname!)}
                       </ListGroupItem>
+                      <ListGroupItem>{email!}</ListGroupItem>
                     </ListGroup>
                   </Col>
                   <Col style={{ maxWidth: "8rem" }}>
                     <Button
                       variant="primary"
-                      className=""
+                      className="mr-2 mb-2"
                       onClick={handleEditPersonalInfo}
-                      style={{ float: "right" }}
+                      style={{ float: "right",  marginTop: "10px"  }}
                     >
                       Edit
                     </Button>
@@ -1202,6 +1155,9 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                 <>
                   <Col style={{ padding: "0", maxWidth: "15rem" }}>
                     <ListGroup variant="flush">
+                    <ListGroupItem>
+                        <strong>Municipality Name: </strong>
+                      </ListGroupItem>
                       <ListGroupItem>
                         <strong>Full Name: </strong>
                       </ListGroupItem>
@@ -1212,6 +1168,11 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                   </Col>
                   <Col style={{ padding: "0" }}>
                     <ListGroup variant="flush">
+                    <ListGroupItem>
+                      {userSegments!.homeSegmentName
+                          ? capitalizeString(userSegments!.homeSegmentName)
+                          : "Unknown"}
+                      </ListGroupItem>
                       <ListGroupItem>
                         {capitalizeString(fname!)} {capitalizeString(lname!)}
                       </ListGroupItem>
@@ -1221,9 +1182,9 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                   <Col style={{ maxWidth: "8rem" }}>
                     <Button
                       variant="primary"
-                      className=""
+                      className="mr-2 mb-2"
                       onClick={handleEditPersonalInfo}
-                      style={{ float: "right" }}
+                      style={{ float: "right", marginTop: "5px" }}
                     >
                       Edit
                     </Button>
@@ -1415,7 +1376,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                       variant="primary"
                       className=""
                       onClick={handleEditPersonalInfo}
-                      style={{ float: "right" }}
+                      style={{ float: "right", marginTop: "10px" }}
                     >
                       Edit
                     </Button>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Table, Dropdown, Container, Button, Form, NavDropdown } from 'react-bootstrap';
-import { updateUser, getUserBanHistory, removeFlagQuarantine, removePostCommentQuarantine, deleteUser } from 'src/lib/api/userRoutes';
+import { updateUser, getUserBanHistory, removeFlagQuarantine, removePostCommentQuarantine, deleteUser, postRegisterUser } from 'src/lib/api/userRoutes';
 import { USER_TYPES } from 'src/lib/constants';
 import { IComment } from 'src/lib/types/data/comment.type';
 import { ICommentFlag, IFlag } from 'src/lib/types/data/flag.type';
@@ -13,7 +13,8 @@ import { UserManagementBanModal } from '../modal/UserManagementBanModal';
 import { UserManagementUnbanModal } from '../modal/UserManagementUnbanModal';
 import { UserManagementBanHistoryModal } from '../modal/UserManagementBanHistoryModal';
 import { IBanUser } from 'src/lib/types/data/banUser.type';
-
+import { UserSegPlainText } from '../partials/UserSegPlainText';
+import { IRegisterInput } from './../../lib/types/input/register.input';
 
 interface UserManagementContentProps {
     users: IUser[] | undefined;
@@ -47,10 +48,9 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
         setEmail(email);
         setId(id);
     }
-    // function userModalInfo(users: IUser[], user: IUser, flags: IFlag[], commentFlags: ICommentFlag[] ){
-    //     setShowUserFlagsModal(true);
-    // }
-
+  
+    const [buttonText, setButtonText] = useState("Municipal User Creation Wizard");
+    const [showCreateAccountForm, setShowCreateAccountForm] = useState(false);
     function formatBanHistory(banhistory: any){
 
         // iterate through ban history and format it
@@ -127,6 +127,85 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
     }
     const userTypes = Object.keys(USER_TYPES);
 
+    const toggleCreateAccountForm = () => {
+        setShowCreateAccountForm(!showCreateAccountForm);
+        setButtonText(showCreateAccountForm ? "Municipal User Creation Wizard" : "Hide Creation Wizard");
+    };
+     
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault()
+        console.log("Made it Submit")
+ 
+
+        const form = event.target as HTMLFormElement;
+        const formData = new FormData(form);
+     
+    
+        const registerData: IRegisterInput = {
+            userRoleId: undefined,
+            email: formData.get('inputEmail') as string,
+            password: formData.get('inputPassword') as string,
+            confirmPassword: formData.get('inputPassword') as string,
+            organizationName: undefined,
+            fname: formData.get('inputFirst') as string,
+            lname: formData.get('inputLast') as string,
+            address: {
+                streetAddress: "",
+                streetAddress2: "",
+                city: "",
+                postalCode: "",
+                country: "",
+            },
+            geo: {
+                lon: undefined,
+                lat: undefined,
+                work_lat: undefined,
+                work_lon: undefined,
+                school_lat: undefined,
+                school_lon: undefined,
+            },
+            workDetails: {
+                streetAddress: "",
+                postalCode: "",
+                company: "",
+            },
+            schoolDetails: {
+                streetAddress: "",
+                postalCode: "",
+                faculty: "",
+                programCompletionDate: new Date(),
+            },
+
+            homeSegmentId: user?.userSegments?.homeSegmentId,
+            workSegmentId: undefined,
+            schoolSegmentId: undefined,
+            homeSubSegmentId: undefined,
+            workSubSegmentId: undefined,
+            schoolSubSegmentId: undefined,
+            userType: "MUNICIPAL",
+            reachSegmentIds: [],
+
+        };
+
+
+        try {
+            await postRegisterUser(registerData, null, false, null);
+            console.log('User registered successfully!');
+            form.reset();
+            
+
+
+        } catch (error) {
+            console.error('Error registering user:', error);
+            
+        }
+    };
+
+
+    const capitalizeString = (s: string) => {
+        return s.charAt(0).toUpperCase() + s.slice(1);
+    };
+
     const handleDeleteUser = async (userId: string) => {
         try {
           await deleteUser(userId, token);
@@ -158,9 +237,8 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
         if (users) {
           // Filter out specific user types or conditions if needed
           const municipalFilteredUsers = users.filter(
-            (m_user) =>
-              m_user.userType === 'MUNICIPAL' &&
-              m_user.userSegments?.homeSegmentName === user?.userSegments?.homeSegmentName
+            (user) =>
+              user.userType === 'MUNICIPAL' 
           );
           setMunicipalFilteredUsers(municipalFilteredUsers);
         }
@@ -169,30 +247,53 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
       if (user?.userType === USER_TYPES.MUNICIPAL_SEG_ADMIN) {
         return (
             <Container style={{maxWidth: '100%', marginLeft: 50}}>
-            {showUserFlagsModal ?
-            <UserFlagsModal show={showUserFlagsModal} setShow={setShowUserFlagsModal} user={modalUser!} flags={flags} commentFlags={commentFlags} ideas={ideas} proposals={proposals} comments={comments}/>
-            : null
-             }
-            {showUserBanModal ?
-            <UserManagementBanModal show={showUserBanModal} setShow={setShowUserBanModal} modalUser={modalUser!} currentUser={user!} token={token}/>
-            : null
-            }
-            {showUserUnbanModal ?
-            <UserManagementUnbanModal show={showUserUnbanModal} setShow={setShowUserUnbanModal} modalUser={modalUser!} currentUser={user!} token={token} />
-            : null
-            }
-            {showUserBanHistoryModal ?
-            <UserManagementBanHistoryModal show={showUserBanHistoryModal} setShow={setShowUserBanHistoryModal} modalUser={modalUser!} currentUser={user!} token={token} data={banHistory!}/>
-            : null
-            }
+        
+            
+            <h2 className="mb-4 mt-4">Municipality of <UserSegPlainText email={user.email} id={user.id} token={token} /> User Management</h2>
+            <Button variant="primary" className="mb-4 mt-4" onClick={() => toggleCreateAccountForm()}>{buttonText}</Button>
+            {showCreateAccountForm && (
 
-            <Form>
-            <h2 className="mb-4 mt-4">User Management</h2>
+
+<Form onSubmit={handleSubmit}>
+    <div className="form-row">
+       
+    </div>
+    <div className="form-row">
+        <div className="form-group col-md-6">
+            <label htmlFor="inputFirst">First Name</label>
+            <input type="text" className="form-control" id="inputFirst" name="inputFirst" placeholder="John" required />
+        </div>
+        <div className="form-group col-md-6">
+            <label htmlFor="inputLast">Last Name</label>
+            <input type="text" className="form-control" id="inputLast" name="inputLast" placeholder="Doe" required />
+        </div>
+    </div>
+    <div className="form-row">
+        <div className="form-group col-md-6">
+            <label htmlFor="inputEmail">Email</label>
+            <input type="email" className="form-control" id="inputEmail" name="inputEmail" placeholder="Email" required />
+        </div>
+        <div className="form-group col-md-6">
+            <label htmlFor="inputPassword">Password</label>
+            <input type="password" className="form-control" id="inputPassword" name="inputPassword" placeholder="Password" required />
+        </div>
+    </div>
+
+    <div className="form-row">
+
+       
+      
+    </div>
+
+
+    <button type="submit" className="btn btn-primary mr-2 mb-2">Submit</button>
+</Form >
+)}
             <Table bordered hover size="sm">
             <thead className="table-active">
             <tr>
                 <th scope="col" className="text-center align-middle">Email</th>
-                <th scope="col" className="text-center align-middle">Organization</th>
+                <th scope="col" className="text-center align-middle">Department</th>
                 <th scope="col" className="text-center align-middle">First</th>
                 <th scope="col" className="text-center align-middle">Last</th>
                 <th scope="col" className="text-center align-middle">User Type</th>
@@ -201,8 +302,9 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
             </thead>
             <tbody>
             {municipalFilteredUsers?.map((req: IUser, index: number) => (
-                  req.userType !== "ADMIN" && req.userType !== "MOD" && req.userType !== "SEG_MOD" && req.userType !== "MUNICIPAL_SEG_ADMIN" && req.userType !== "SEG_ADMIN" ? (
+                  req.userType === 'MUNICIPAL' && String(<UserSegPlainText email={req.email} id={req.id} token={token} />).toLowerCase() === String(<UserSegPlainText email={user.email} id={user.id} token={token} />).toLowerCase()  ? (
                 <tr key={req.id}>
+                    
                     {req.id !== hideControls ? 
                     <>
                     <td className="align-middle">{req.email}</td>
@@ -216,54 +318,19 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                     <td><Form.Control type="text" defaultValue={req.organizationName} onChange={(e)=>req.organizationName = e.target.value}/></td>
                     <td><Form.Control type="text" defaultValue={req.fname} onChange={(e)=>req.fname = e.target.value}/></td>
                     <td><Form.Control type="text" defaultValue={req.lname} onChange={(e)=>req.lname = e.target.value}/></td>
-                    <td><Form.Control as="select" onChange={(e)=>{(req.userType as string) = e.target.value}}>
-                        {userTypes
-                        .filter(type => type !== req.userType)
-                        .filter((type => type !== "ADMIN"))
-                        .filter((type => type !== "SEG_ADMIN"))
-                        .filter((type => type !== "MUNICIPAL_SEG_ADMIN"))
-                        .filter((type => type !== "DEVELOPER"))
-                        .filter((type => type !== "IN_PROGRESS"))
-                        .filter((type => type !== "ASSOCIATE"))
-                        .map(item =>
-                            <option key={item}>{item}</option>
-                        )}
-                        </Form.Control>
-                    </td>
                     <td className="text-center align-middle "><Button onClick={()=> setShowUserFlagsModal(true)}>Info</Button></td>
-                    <td></td>
+                 
                     </>
                     }
 
                     <td>
                     {req.id !== hideControls ? 
-                        <NavDropdown title="Controls" id="nav-dropdown">
+                        <NavDropdown title="Controls" id="nav-dropdown" className="text-center align-middle ">
                             <Dropdown.Item onClick={()=>{
                                 setHideControls(req.id);
                                 setReviewed(req.reviewed);
                                 setModalUser(req);
                                 }}>Edit</Dropdown.Item>
-                            <Dropdown.Item onClick={()=>
-                                UserSegmentHandler(req.email, req.id)
-                                }>View Segments</Dropdown.Item>
-                            {req.banned ? 
-                                <Dropdown.Item onClick={()=> {
-                                    setModalUser(req);
-                                    setShowUserUnbanModal(true);
-                                }}>Modify Ban</Dropdown.Item>
-                                :
-                                <Dropdown.Item onClick={()=> {
-                                    setModalUser(req);
-                                    setShowUserBanModal(true);
-                                }}>Ban User</Dropdown.Item>
-                            }
-                            <Dropdown.Item onClick={() => getUserBanHistory(req.id).then(data => {
-                                setModalUser(req);
-                                setBanHistory(formatBanHistory(data));
-                                setShowUserBanHistoryModal(true);
-                            })} >Ban History</Dropdown.Item>
-                            <Dropdown.Item onClick={() => removeFlagQuarantine(req.id)}>Remove Flag Quarantine</Dropdown.Item>
-                            <Dropdown.Item onClick={() => removePostCommentQuarantine(req.id)}>Remove Post Comment Quarantine</Dropdown.Item>
                             <Dropdown.Item onClick={() => {
                                                 const confirmed = window.confirm("Are you sure you want to delete this user?");
                                                 if (confirmed) {
@@ -290,7 +357,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                 ): null))}
             </tbody>
             </Table>
-        </Form>
+       
         <br></br>
         {/* <UserSegmentHandler/> */}
         {showUserSegmentCard && <UserSegmentInfoCard email={email} id={id} token={token}/>}

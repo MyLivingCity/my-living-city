@@ -352,6 +352,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
   }
 
   const handleStandardProfile = () => {
+  
     const id = user.id;
     const firstName = (
       document.getElementById("formStandardFirstName") as HTMLInputElement
@@ -703,65 +704,142 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
             )}
           </Card>
 
-          <Card style={{ width: "40rem" }}>
-            <Row className="justify-content-center mt-3">
-              <ListGroup variant="flush" className="">
-                <ListGroup.Item>
-                  <strong>Organization Name</strong>
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  <strong>Email</strong>
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  <strong>Street Address</strong>
-                </ListGroup.Item>
-                {streetAddress2 ? (
-                  <ListGroup.Item>
-                    <strong>Street Address 2</strong>
-                  </ListGroup.Item>
-                ) : null}
-                <ListGroup.Item>
-                  <strong>City</strong>
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  <strong>Postal Code / Zip</strong>
-                </ListGroup.Item>
-              </ListGroup>
-
-              <ListGroup variant="flush" className="">
-                <ListGroup.Item>
-                  {organizationName
-                    ? capitalizeString(organizationName)
-                    : "Unknown"}{" "}
-                </ListGroup.Item>
-                <ListGroup.Item>{email}</ListGroup.Item>
-                <ListGroup.Item>
-                  {streetAddress ? capitalizeString(streetAddress) : "Unknown"}
-                </ListGroup.Item>
-                {streetAddress2 ? (
-                  <ListGroup.Item>
-                    {streetAddress2
-                      ? capitalizeString(streetAddress2)
-                      : "Unknown"}
-                  </ListGroup.Item>
-                ) : null}
-                <ListGroup.Item>
-                  {city
-                    ? capitalizeString(city)
-                    : capitalizeString(userSegments!.homeSegmentName)}
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  {postalCode ? postalCode.toUpperCase() : "Unknown"}
-                </ListGroup.Item>
-              </ListGroup>
-              <RequestSegmentModal
-                showModal={show}
-                setShowModal={setShow}
-                index={0}
-                setSegmentRequests={setSegmentRequests}
-                segmentRequests={segmentRequests}
-              />
+          <Card
+            style={{
+              width: "42rem",
+              padding: "2rem",
+              justifyContent: "center",
+            }}
+          >
+            {showAlert ? (
+              <Alert
+                variant="primary"
+                dismissible
+                onClose={() => setShowAlert(false)}
+              >
+                Profile Updated
+              </Alert>
+            ) : null}
+            <Row>
+              <Col style={{ maxWidth: "4rem" }}></Col>
+              {editPersonalInfo ? (
+                <Form
+                  id="formPublicProfile"
+                  style={{ minWidth: "20rem" }}
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleStandardProfile();
+                    setEditPersonalInfo(false);
+                    // Change
+                    window.location.reload();
+                  }}
+                >
+                  <Form.Group
+                    className="mb-3"
+                    controlId="formProfileInformation"
+                  >
+                    {standardProfile ? (
+                      <>
+                       
+                       <Form.Group className="mb-3" controlId="firstName">
+                          <Form.Label>
+                            <strong>First Name:</strong>
+                          </Form.Label>
+                          <Form.Control
+                            type="text"
+                            id="formStandardFirstName"
+                            placeholder="First Name"
+                            defaultValue={fname}
+                            maxLength={TEXT_INPUT_LIMIT.NAME}
+                          />
+                        </Form.Group>
+                        <Form.Group className="mb-3" controlId="lastName">
+                          <Form.Label>
+                            <strong>Last Name:</strong>
+                          </Form.Label>
+                          <Form.Control
+                            type="text"
+                            id="formStandardLastName"
+                            placeholder="Last Name"
+                            defaultValue={lname}
+                            maxLength={TEXT_INPUT_LIMIT.NAME}
+                          />
+                        </Form.Group>
+                        <Form.Group className="mb-3" controlId="email">
+                          <Form.Label>
+                            <strong>Email:</strong>
+                          </Form.Label>
+                          <Form.Control
+                            type="email"
+                            id="formStandardEmail"
+                            placeholder="Email Address"
+                            defaultValue={email}
+                          />
+                        </Form.Group>
+                      
+                      </>
+                    ) : null}
+                    <Button
+                      variant="danger"
+                      className="btn-sm"
+                      style={{ marginRight: "1rem" }}
+                      onClick={handleEditPersonalInfo}
+                    >
+                      Cancel
+                    </Button>
+                    <Button variant="primary" className="btn-sm" type="submit">
+                      Update
+                    </Button>
+                  </Form.Group>
+                </Form>
+              ) : (
+                <>
+                  <Col style={{ padding: "0", maxWidth: "15rem" }}>
+                    <ListGroup variant="flush">
+                    <ListGroupItem>
+                        <strong>Municipality Name: </strong>
+                      </ListGroupItem>
+                      <ListGroupItem>
+                        <strong>Full Name: </strong>
+                      </ListGroupItem>
+                      <ListGroupItem>
+                        <strong>Email: </strong>
+                      </ListGroupItem>
+                    </ListGroup>
+                  </Col>
+                  <Col style={{ padding: "0" }}>
+                    <ListGroup variant="flush">
+                    <ListGroupItem>
+                      {userSegments!.homeSegmentName
+                          ? capitalizeString(userSegments!.homeSegmentName)
+                          : "Unknown"}
+                      </ListGroupItem>
+                      <ListGroupItem>
+                        {capitalizeString(fname!)} {capitalizeString(lname!)}
+                      </ListGroupItem>
+                      <ListGroupItem>{email!}</ListGroupItem>
+                    </ListGroup>
+                  </Col>
+                  <Col style={{ maxWidth: "8rem" }}>
+                    <Button
+                      variant="primary"
+                      className="mr-2 mb-2"
+                      onClick={handleEditPersonalInfo}
+                      style={{ float: "right",  marginTop: "10px"  }}
+                    >
+                      Edit
+                    </Button>
+                  </Col>
+                </>
+              )}
             </Row>
+            <RequestSegmentModal
+              showModal={show}
+              setShowModal={setShow}
+              index={0}
+              setSegmentRequests={setSegmentRequests}
+              segmentRequests={segmentRequests}
+            />
           </Card>
         </Row>
 
@@ -1077,6 +1155,9 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                 <>
                   <Col style={{ padding: "0", maxWidth: "15rem" }}>
                     <ListGroup variant="flush">
+                    <ListGroupItem>
+                        <strong>Municipality Name: </strong>
+                      </ListGroupItem>
                       <ListGroupItem>
                         <strong>Full Name: </strong>
                       </ListGroupItem>
@@ -1087,6 +1168,11 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                   </Col>
                   <Col style={{ padding: "0" }}>
                     <ListGroup variant="flush">
+                    <ListGroupItem>
+                      {userSegments!.homeSegmentName
+                          ? capitalizeString(userSegments!.homeSegmentName)
+                          : "Unknown"}
+                      </ListGroupItem>
                       <ListGroupItem>
                         {capitalizeString(fname!)} {capitalizeString(lname!)}
                       </ListGroupItem>
@@ -1096,9 +1182,9 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                   <Col style={{ maxWidth: "8rem" }}>
                     <Button
                       variant="primary"
-                      className=""
+                      className="mr-2 mb-2"
                       onClick={handleEditPersonalInfo}
-                      style={{ float: "right" }}
+                      style={{ float: "right", marginTop: "5px" }}
                     >
                       Edit
                     </Button>
@@ -1290,7 +1376,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                       variant="primary"
                       className=""
                       onClick={handleEditPersonalInfo}
-                      style={{ float: "right" }}
+                      style={{ float: "right", marginTop: "10px" }}
                     >
                       Edit
                     </Button>

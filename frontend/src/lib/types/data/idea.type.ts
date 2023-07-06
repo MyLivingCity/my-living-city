@@ -56,6 +56,11 @@ export interface IIdeaWithRelationship extends IIdea {
 
   // Comments and Ratings are fetched seperately but could be fetched
   comments?: IComment[];
+  ratingAvg: number;
+  commentCount: number;
+  ratingCount: number;
+  posRatings: number;
+  negRatings: number;
   ratings?: IRating[];
 
   // Checks to see if idea has met thresholds
@@ -82,13 +87,6 @@ export interface IIdeaWithAggregations extends IIdea {
 
   // Aggregate breakdown
   engagements: number;
-  ratingAvg: number;
-  commentCount: number;
-  ratingCount: number;
-  posRatings: number;
-  negRatings: number;
-
-  ratings?: IRating[];
   comments?: IComment[];
   superSegId?: number;
   segId?: number;

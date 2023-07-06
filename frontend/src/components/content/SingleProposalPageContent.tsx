@@ -61,6 +61,8 @@ import {
 import { createFlagUnderIdea, compareIdeaFlagsWithThreshold } from "src/lib/api/flagRoutes";
 import { useCheckFlagBan } from 'src/hooks/flagHooks';
 import EndorsedUsersSection from '../partials/SingleIdeaContent/EndorsedUsersSection';
+import { BsPeople, BsHeartHalf } from "react-icons/bs";
+import { AiOutlineRadiusBottomright, AiOutlineStar } from "react-icons/ai";
 
 interface SingleIdeaPageContentProps {
   ideaData: IIdeaWithRelationship;
@@ -428,6 +430,8 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     await flagFunc(ideaId, token, userId, ideaActive, otherFlagReason, quarantined_at);
     
   }
+
+  const ratingAvgUpdated = Number(ratingAvg);
 
   if(!active){
     return (
@@ -1203,6 +1207,19 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                             {suggestion.title}
                           </a>
                         </td>
+                        <div className="d-flex align-content-center">
+                        <td className="px-2 text-muted d-flex flex-column justify-content-center align-items-center">
+                          <AiOutlineStar className="" /><p className="mb-0 user-select-none">{ratingAvgUpdated.toFixed(1)}</p>
+                        </td>
+                        <td className="px-2 text-muted d-flex flex-column justify-content-center align-items-center">
+                          <BsPeople className="" />
+                          <p className="mb-0 user-select-none">{ratingCount + commentCount}</p>
+                        </td>
+                        <td className="px-2 text-muted d-flex flex-column justify-content-center align-items-center">
+                          <BsHeartHalf />
+                          <p className="mb-0 user-select-none">{posRatings}/{negRatings}</p>
+                        </td>
+                        </div>
                       </tr>
                     ))}
                   </tbody>

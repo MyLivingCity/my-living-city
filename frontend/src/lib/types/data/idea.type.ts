@@ -87,6 +87,13 @@ export interface IIdeaWithAggregations extends IIdea {
 
   // Aggregate breakdown
   engagements: number;
+  ratingAvg: number;
+  commentCount: number;
+  ratingCount: number;
+  posRatings: number;
+  negRatings: number;
+
+  ratings?: IRating[];
   comments?: IComment[];
   superSegId?: number;
   segId?: number;

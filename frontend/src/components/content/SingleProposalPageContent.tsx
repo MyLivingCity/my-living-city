@@ -431,7 +431,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     
   }
 
-  const ratingAvgUpdated = Number(ratingAvg);
+  const ratingAvgUpdated = Number(ideaData.ratingAvg);
 
   if(!active){
     return (
@@ -1213,11 +1213,11 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                         </td>
                         <td className="px-2 text-muted d-flex flex-column justify-content-center align-items-center">
                           <BsPeople className="" />
-                          <p className="mb-0 user-select-none">{ratingCount + commentCount}</p>
+                          <p className="mb-0 user-select-none">{suggestion.ratingCount + suggestion.commentCount}</p>
                         </td>
                         <td className="px-2 text-muted d-flex flex-column justify-content-center align-items-center">
                           <BsHeartHalf />
-                          <p className="mb-0 user-select-none">{posRatings}/{negRatings}</p>
+                          <p className="mb-0 user-select-none">{suggestion.posRatings}/{suggestion.negRatings}</p>
                         </td>
                         </div>
                       </tr>

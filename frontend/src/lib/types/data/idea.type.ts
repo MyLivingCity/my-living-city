@@ -94,7 +94,7 @@ export interface IIdeaWithAggregations extends IIdea {
   negRatings: number;
 
   ratings?: IRating[];
-  comments?: IComment[];
+  comments: IComment[];
   superSegId?: number;
   segId?: number;
   subSegId?: number;

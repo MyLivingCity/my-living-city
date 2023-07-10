@@ -1,9 +1,9 @@
 import React from "react";
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   ISegmentAggregateInfo,
   ISegment,
-} from "./../../lib/types/data/segment.type";
+} from "../../lib/types/data/segment.type";
 import {
   Col,
   Container,
@@ -13,9 +13,9 @@ import {
   DropdownButton,
   Dropdown,
 } from "react-bootstrap";
-import { capitalizeFirstLetterEachWord } from "./../../lib/utilityFunctions";
+import { capitalizeFirstLetterEachWord } from "../../lib/utilityFunctions";
 import { IIdeaWithAggregations } from "src/lib/types/data/idea.type";
-import SpecifiedCommunitySectionTableView from "../partials/CommunityDashboardContent/SpecifiedCommunitySectionTableView";
+import SpecifiedMunicipalSectionTableView from "../partials/CommunityDashboardContent/SpecifiedMunicipalSectionTableView";
 import SpecifiedCommunitySection from "../partials/CommunityDashboardContent/SpecifiedCommunitySection";
 import { UseQueryResult } from "react-query";
 import { IFetchError } from "src/lib/types/types";
@@ -23,7 +23,7 @@ import LoadingSpinnerInline from "../ui/LoadingSpinnerInline";
 import ErrorMessage from "../ui/ErrorMessage";
 import { useParams } from "react-router-dom";
 
-interface CommunityDashboardContentProps {
+interface MunicipalDashboardContentProps {
   allUserSegmentsQueryResult: UseQueryResult<any, IFetchError>;
   segmentInfoAggregateQueryResult: UseQueryResult<ISegmentAggregateInfo, IFetchError>;
   singleSegmentBySegmentIdQueryResult: UseQueryResult<ISegment, IFetchError>;
@@ -34,12 +34,12 @@ interface RouteParams {
     segId: string;
 }
 
-const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
+const MunicipalDashboardContent: React.FC<MunicipalDashboardContentProps> = ({
   allUserSegmentsQueryResult,
   segmentInfoAggregateQueryResult,
   singleSegmentBySegmentIdQueryResult,
   ideasHomepageQueryResult
-}: CommunityDashboardContentProps) => {
+}: MunicipalDashboardContentProps) => {
     const {segId} = useParams<RouteParams>();
     const currentSegmentId = parseInt(segId)
    
@@ -77,29 +77,9 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
         });
       }
     
-      if (
-        segmentIdsObj.workSegmentId &&
-        segmentIdsObj.workSegmentName !== undefined &&
-        segmentIdsObj.workSegmentId !== segmentIdsObj.homeSegmentId
-      ) {
-        segmentsArray.push({
-          id: segmentIdsObj.workSegmentId,
-          name: segmentIdsObj.workSegmentName + " 🏢",
-        });
+      
       }
-    
-      if (
-        segmentIdsObj.schoolSegmentId &&
-        segmentIdsObj.schoolSegmentName !== undefined &&
-        segmentIdsObj.schoolSegmentId !== segmentIdsObj.homeSegmentId &&
-        segmentIdsObj.schoolSegmentId !== segmentIdsObj.workSegmentId
-      ) {
-        segmentsArray.push({
-          id: segmentIdsObj.schoolSegmentId,
-          name: segmentIdsObj.schoolSegmentName + " 🏫",
-        });
-      }
-  }
+  
 
   
     const [currCommunityName, setCurrCommunityName] = useState<string>("");
@@ -198,21 +178,11 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
         )}
         {!(isSegmentIdsLoading || isSegmentDataLoading) &&
           !(isSegmentIdsError || isSegmentDataError) && (
-            <DropdownButton
-              className="pt-2 ml-2 display-6 custom-dropdown-button"
-              title={capitalizeFirstLetterEachWord(segmentData!.name)}
-            >
-              {segmentsArray.map((segment: any) => (
-                <Dropdown.Item
-                  key={segment.id}
-                  className="text-center"
-                  href={`/community-dashboard/${segment.id}`}
-                  disabled={segment.id === currentSegmentId}
-                >
-                  {segment.name && capitalizeFirstLetterEachWord(segment.name)}
-                </Dropdown.Item>
-              ))}
-            </DropdownButton>
+            <button
+            className="ml-2 btn btn-primary btn-lg "
+          >
+             <h2 className="m-0">{capitalizeFirstLetterEachWord(segmentData!.name)}</h2>
+          </button>
           )}
       </Row>
       <Row>
@@ -413,7 +383,7 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
 {isTableView ? (
   <Row style={{ marginTop: "3rem" }}>
     <Col>
-      <SpecifiedCommunitySectionTableView
+      <SpecifiedMunicipalSectionTableView
         sectionTitle={currCommunityName}
         topIdeas={currCommunityPosts}
         isDashboard={false}
@@ -434,9 +404,9 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
   </Row>
 )}
         
-      
+
     </Container>
   );
 };
 
-export default CommunityDashboardContent;
+export default MunicipalDashboardContent;

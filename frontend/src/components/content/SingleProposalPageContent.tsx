@@ -67,6 +67,7 @@ import { useAllUserSegments } from 'src/hooks/userSegmentHooks';
 import { BsPeople, BsHeartHalf } from "react-icons/bs";
 import { AiOutlineRadiusBottomright, AiOutlineStar } from "react-icons/ai";
 
+
 interface SingleIdeaPageContentProps {
   ideaData: IIdeaWithRelationship;
   proposalData: any;
@@ -352,6 +353,8 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
       setEndorsingPost(!endorsingPost);
     }
   }
+  
+
 
   useEffect(() => {
     if (!isEndorsedUsersDataLoading) {
@@ -444,6 +447,13 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
       <div>Proposal Is Currently Inactive</div>
     )
   }
+
+
+
+ 
+
+
+
 
   return (
     <div className="single-idea-content pt-5">

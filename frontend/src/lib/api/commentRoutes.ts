@@ -35,6 +35,20 @@ export const getCommentsUnderIdea = async (
   return res.data;
 };
 
+export const getCommentsUnderMultipleIdeas = async (
+  ideas: { ideaId: number }[]
+): Promise<IComment[][]> => {
+  const fetchPromises = ideas.map(({ ideaId }) =>
+    axios.get<IComment[]>(`${API_BASE_URL}/comment/getall/${ideaId}`)
+  );
+
+  const responses = await Promise.all(fetchPromises);
+  const allComments = responses.map(response => response.data);
+
+  return allComments;
+};
+
+
 export const getCommentAggregateUnderIdea = async (ideaId: string) => {
   /*
   if (!ideaId) {

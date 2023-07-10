@@ -275,7 +275,14 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({ 
                                         <td className="text-left align-middle"><Form.Control type="text" defaultValue={req.lname} onChange={(e) => req.lname = e.target.value} /></td>
                                         <td className="text-left align-middle"><Form.Control as="select" onChange={(e) => { (req.userType as String) = e.target.value }}>
                                             <option className="text-center align-middle" >{req.userType}</option>
-                                            {userTypes.filter(type => type !== req.userType).map(item =>
+                                            {userTypes.filter(type => type !== req.userType)
+                                             .filter((type => type !== "DEVELOPER"))
+                                             .filter((type => type !== "IN_PROGRESS"))
+                                             .filter((type => type !== "ASSOCIATE"))
+                                             .filter((type => type !== "RESIDENTIAL"))
+                                             .filter((type => type !== "COMMUNITY"))
+                                             .filter((type => type !== "BUSINESS"))
+                                            .map(item =>
                                                 <option key={item}>{item}</option>
                                             )}
 

@@ -167,7 +167,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
         .then((e) => setLinks(e))
         .catch((e) => console.log(e));
     }
-  }, [communityBusinessProfile]);
+  }, [communityBusinessProfile, token]);
 
   useEffect(() => {
     getMunicipalProfile(user.id, token)
@@ -181,7 +181,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
         .then((e) => setLinks(e))
         .catch((e) => console.log(e));
     }
-  }, [municipalProfile]);
+  }, [municipalProfile, token]);
 
   useEffect(() => {
     getStandardProfile(user.id, token)

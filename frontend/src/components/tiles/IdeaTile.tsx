@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react'
 import { Button, Card } from "react-bootstrap";
 import { IIdeaWithAggregations } from "../../lib/types/data/idea.type";
 import {
@@ -6,13 +7,18 @@ import {
 } from "../../lib/utilityFunctions";
 import { BsPeople, BsHeartHalf } from "react-icons/bs";
 import { AiOutlineRadiusBottomright, AiOutlineStar } from "react-icons/ai";
+import {getAllSuperSegments} from "../../lib/api/segmentRoutes";
+import { ISuperSegment } from "../../lib/types/data/segment.type";
+
 
 interface ideaTileProps {
   ideaData: IIdeaWithAggregations;
   showFooter: boolean;
   postType?: string;
 }
-
+const capitalizeString = (s: string) => {
+  return s.charAt(0).toUpperCase() + s.slice(1);
+};
 const IdeaTile: React.FC<ideaTileProps> = ({
   ideaData,
   showFooter,
@@ -22,8 +28,8 @@ const IdeaTile: React.FC<ideaTileProps> = ({
     id,
     title,
     description,
-    // segmentName,
-    // subSegmentName,
+    segmentName,
+    subSegmentName,
     firstName,
     streetAddress,
     updatedAt,
@@ -41,8 +47,7 @@ const IdeaTile: React.FC<ideaTileProps> = ({
   let ratingRatio = 0;
 
   if (ratings) {
-    numRatings = ratings!.length;
-    numComments = comments!.length;
+  
     ratings?.forEach((rate: any) => {
       if (rate.rating > 0) {
         ratingRatio += 1;
@@ -59,6 +64,25 @@ const IdeaTile: React.FC<ideaTileProps> = ({
 
   const isNew = date < oneWeek;
   const ratingAvgUpdated = Number(ratingAvg);
+
+  const [superSegments, setSuperSegments] = useState<ISuperSegment[]>([]);
+  useEffect(() => {
+    const fetchSuperSegments = async () => {
+      try {
+        const fetchedSuperSegments = await getAllSuperSegments();
+        setSuperSegments(fetchedSuperSegments);
+      } catch (error) {
+        console.error(error);
+        // handle error appropriately
+      }
+    };
+  
+    fetchSuperSegments();
+  }, []);
+
+
+const superSegmentName = superSegments.find(superSegment => superSegment.superSegId === ideaData.superSegId)?.name || '';
+
 
   return (
     // <Card style={{ width: '18rem' }}>
@@ -77,9 +101,9 @@ const IdeaTile: React.FC<ideaTileProps> = ({
           }
         `}
       </style>
-      {isNew && <div className="new-banner">NEW</div>}
+      {isNew && <div className="new-banner p-1">NEW</div>}
       <Card.Body>
-        <div style={{ textAlign: "left", color: "gray" }}>{postType}</div>
+        <div className="mb-1" style={{ textAlign: "left", color: "gray" }}>{postType}</div>
         <Card.Title>{truncateString(title, 50)}</Card.Title>
         <Card.Text>{truncateString(description, 100)}</Card.Text>
         <div className="button-breakdown mt-3 d-flex justify-content-between align-items-center">
@@ -94,7 +118,7 @@ const IdeaTile: React.FC<ideaTileProps> = ({
             <div className="px-2 text-muted d-flex flex-column justify-content-center align-items-center">
               <BsPeople className="" />
               <p className="mb-0 user-select-none">
-                {ratingCount + commentCount}
+                {Number(ratingCount) + Number(commentCount)}
               </p>
             </div>
             <div className="px-2 text-muted d-flex flex-column justify-content-center align-items-center">
@@ -113,13 +137,18 @@ const IdeaTile: React.FC<ideaTileProps> = ({
         </div>
       </Card.Body>
       {showFooter && (
-        <Card.Footer>
-          <small className="text-muted user-select-none">
-            Updated {timeDifference(new Date(), new Date(updatedAt))}
-          </small>
-          {/* <small className='text-muted'>, {capitalizeFirstLetterEachWord(segmentName)}{subSegmentName ? ` at ${capitalizeFirstLetterEachWord(subSegmentName)}`: ""}</small> */}
-          {/* <small className='text-muted'>-- {firstName}@{streetAddress}</small> */}
-        </Card.Footer>
+       <Card.Footer className="d-flex justify-content-between">
+       <small className="text-muted user-select-none">
+         Updated {timeDifference(new Date(), new Date(updatedAt))}
+       </small>
+       <div className="text-right">
+       <small className='text-muted user-select-none'>
+              {subSegmentName ? ` ${capitalizeString(segmentName)}@${capitalizeString(subSegmentName)}` :
+                segmentName ? ` ${capitalizeString(segmentName)}` :
+                  superSegmentName ? ` ${capitalizeString(superSegmentName)}` : ""}
+            </small>
+       </div>
+     </Card.Footer>
       )}
     </Card>
   );

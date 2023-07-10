@@ -62,6 +62,7 @@ import { createFlagUnderIdea, compareIdeaFlagsWithThreshold } from "src/lib/api/
 import { useCheckFlagBan } from 'src/hooks/flagHooks';
 import EndorsedUsersSection from '../partials/SingleIdeaContent/EndorsedUsersSection';
 
+
 interface SingleIdeaPageContentProps {
   ideaData: IIdeaWithRelationship;
   proposalData: any;
@@ -340,6 +341,8 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
       setEndorsingPost(!endorsingPost);
     }
   }
+  
+
 
   useEffect(() => {
     if (!isEndorsedUsersDataLoading) {
@@ -430,6 +433,13 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
       <div>Proposal Is Currently Inactive</div>
     )
   }
+
+
+
+ 
+
+
+
 
   return (
     <div className="single-idea-content pt-5">

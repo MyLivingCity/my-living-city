@@ -244,13 +244,7 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
         likesScore * LIKES_WEIGHT -
         negRatingsScore * NEG_RATINGS_WEIGHT;
   
-      console.log(
-        idea.title +
-          ": HOW NEW IS IDEA? " +
-          isIdeaNew(idea) +
-          " Score: " +
-          totalScore
-      );
+      
       return totalScore;
     };
   

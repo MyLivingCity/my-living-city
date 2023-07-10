@@ -423,13 +423,14 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                     <td><Form.Control type="text" defaultValue={req.lname} onChange={(e)=>req.lname = e.target.value}/></td>
                     <td><Form.Control as="select" onChange={(e)=>{(req.userType as string) = e.target.value}}>
                         {userTypes
-                        .filter(type => type !== req.userType)
                         .filter((type => type !== "ADMIN"))
                         .filter((type => type !== "SEG_ADMIN"))
                         .filter((type => type !== "MUNICIPAL_SEG_ADMIN"))
                         .filter((type => type !== "DEVELOPER"))
                         .filter((type => type !== "IN_PROGRESS"))
                         .filter((type => type !== "ASSOCIATE"))
+                        .filter((type => type !== "MOD"))
+                        .filter((type => type !== "SEG_MOD"))
                         .map(item =>
                             <option key={item}>{item}</option>
                         )}

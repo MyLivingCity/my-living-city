@@ -13,8 +13,9 @@ import { FindBanDetailsWithToken } from "src/hooks/banHooks";
 import { FindBadPostingBehaviorDetails } from "src/hooks/badPostingBehaviorHooks";
 import { WarningMessageModal } from "../modal/WarningMessageModal";
 import {useBadPostingThreshhold } from 'src/hooks/threshholdHooks';
+import { useAllUserSegments } from 'src/hooks/userSegmentHooks';
 
-function Header() {
+function Header(){
   const [stripeStatus, setStripeStatus] = useState("");
   const { logout, user, token } = useContext(UserProfileContext);
   const { data } = useUserWithJwtVerbose({
@@ -27,6 +28,8 @@ function Header() {
   const { data: banData, isLoading: banQueryLoading} = FindBanDetailsWithToken(token);
   const { data: badPostingBehaviorData, isLoading: badPostLoading } = FindBadPostingBehaviorDetails(token);
   const {data: badPostingThreshholdData, isLoading: badPostingThreshholdLoading} = useBadPostingThreshhold(token);
+  const {data: userSegmentData, isLoading: userSegementLoading} = useAllUserSegments( token, user?.id || null)
+
 
   // const segData = useSingleSegmentByName({
   //   segName:googleQuery.data.city, province:googleQuery.data.province, country:googleQuery.data.country
@@ -39,6 +42,12 @@ function Header() {
   useEffect(() => {
     localStorage.setItem('warningModalState', String(showWarningModal));
   }, [showWarningModal]);
+  useEffect(() => {
+    if (userSegmentData && userSegmentData.homeSegmentId) {
+      setUserSegId(userSegmentData.homeSegmentId);
+    }
+  }, [userSegmentData]);
+  
 
   // useEffect(() => {
   //   const querySegmentData = async () => {
@@ -64,6 +73,7 @@ function Header() {
   //     });
   //   }
   // }, [segData, segQueryLoading])
+ 
 
   const paymentNotificationStyling: CSS.Properties = {
     backgroundColor: "#f7e4ab",
@@ -121,7 +131,7 @@ function Header() {
   //     );
   // }
 
-  return (
+return (
     <div className="outer-header">
       {stripeStatus !== "" && stripeStatus !== "active" &&
         (<Nav style={paymentNotificationStyling}>
@@ -146,7 +156,7 @@ function Header() {
                 {data && `${data.organizationName}`}
               </Nav.Link>
             )}
-            {(user.userType != "BUSINESS" && user.userType != "MUNICIPAL" && user.userType != "COMMUNITY") && (
+            {(user.userType !== "BUSINESS" && user.userType !== "MUNICIPAL" && user.userType !== "COMMUNITY") && (
               <Nav.Link href="/profile" className="d-inline-block alight-top">
                 {data && `${data.fname}@${data!.address!.streetAddress}`}
               </Nav.Link>
@@ -209,9 +219,17 @@ function Header() {
                   {(user.userType === "RESIDENTIAL" || user.userType === "COMMUNITY" || user.userType === "BUSINESS") && (
                     <NavDropdown
                       title="Dashboard"
-                      id="dashboard-dropdown">
+                      id="cdashboard-dropdown">
                       <Nav.Link href="/dashboard">My Dashboard</Nav.Link>
                       <Nav.Link href={`/community-dashboard/${userSegId}`}>Community Dashboard</Nav.Link>
+                    </NavDropdown>
+                  )}
+                    {( user.userType === "MUNICIPAL" || user.userType === "MUNICIPAL_SEG_ADMIN") && (
+                    <NavDropdown
+                      title="Dashboard"
+                      id="mdashboard-dropdown">
+                      <Nav.Link href="/dashboard">My Dashboard</Nav.Link>
+                      <Nav.Link href={`/municipal-dashboard/${userSegId}`}> Municipal Dashboard</Nav.Link>
                     </NavDropdown>
                   )}
 
@@ -228,7 +246,7 @@ function Header() {
         </Navbar.Collapse>
       </Navbar>
       { user && user.banned && banData && banData.banType === "SYS_BAN" ? <BanMessageModal/> : null }
-      { user && user.banned && banData && banData.banType == "POST_BAN" ?
+      { user && user.banned && banData && banData.banType === "POST_BAN" ?
           <>
             <Navbar className="bg-warning text-dark justify-content-center" expand="sm">
               Account has been banned from posting
@@ -237,7 +255,7 @@ function Header() {
           </>
           : null
       }
-      { user && user.banned && banData && banData.banType == "WARNING" ?
+      { user && user.banned && banData && banData.banType === "WARNING" ?
         <>
           <Navbar className="bg-warning text-dark justify-content-center" expand="sm">
             Account has been issued a warning
@@ -250,4 +268,4 @@ function Header() {
   );
 }
 
-export default memo(Header);
+export default memo(Header) ?? (() => null);

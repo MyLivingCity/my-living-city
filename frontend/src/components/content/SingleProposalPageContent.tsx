@@ -61,6 +61,11 @@ import {
 import { createFlagUnderIdea, compareIdeaFlagsWithThreshold } from "src/lib/api/flagRoutes";
 import { useCheckFlagBan } from 'src/hooks/flagHooks';
 import EndorsedUsersSection from '../partials/SingleIdeaContent/EndorsedUsersSection';
+import { IUserSegment } from "../../lib/types/data/segment.type";
+import {getMyUserSegmentInfo} from "../../lib/api/userSegmentRoutes";
+import { useAllUserSegments } from 'src/hooks/userSegmentHooks';
+import { BsPeople, BsHeartHalf } from "react-icons/bs";
+import { AiOutlineRadiusBottomright, AiOutlineStar } from "react-icons/ai";
 
 interface SingleIdeaPageContentProps {
   ideaData: IIdeaWithRelationship;
@@ -127,9 +132,6 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     feedbackType5,
   } = proposalData;
 
- 
-
-
   const { title: catTitle } = category!;
 
   const parsedDate = new Date(createdAt);
@@ -154,6 +156,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     return !ideaData.champion && !!ideaData.isChampionable;
   };
 
+  const [showProposalSegmentError, setShowProposalSegmentError] = useState(false);
 
   function redirectToIdeaSubmit() {
     let name = subSegment?.name
@@ -166,12 +169,17 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
       name = superSegment.name
     }
 
-    const communityOfInterest = getSegmentName(name);
+    if (name && JSON.stringify(userSegmentData).includes(name)) {
+      const communityOfInterest = getSegmentName(name);
+      window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}`;
+    } else {
+      setShowProposalSegmentError(true);
+    }
 
-    window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}`;
   }
 
   const { token, user } = useContext(UserProfileContext);
+  const {data: userSegmentData, isLoading: userSegementLoading} = useAllUserSegments( token, user?.id || null)
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<IFetchError | null>(null);
 
@@ -428,6 +436,8 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     await flagFunc(ideaId, token, userId, ideaActive, otherFlagReason, quarantined_at);
     
   }
+
+  const ratingAvgUpdated = Number(ideaData.ratingAvg);
 
   if(!active){
     return (
@@ -1171,6 +1181,15 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
       {needSuggestions && (
         <div style={{ marginTop: "2rem" }}>
           <Card>
+            {showProposalSegmentError ? (
+              <Alert
+                variant="danger"
+                dismissible
+                onClose={() => setShowProposalSegmentError(false)}
+              >
+                Error! Users may only comment on relevant proposals.
+              </Alert>
+            ) : null}
             <Card.Header>
               <div className="d-flex justify-content-between">
                 <h4 className="h4">Suggested Ideas</h4>
@@ -1203,6 +1222,19 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                             {suggestion.title}
                           </a>
                         </td>
+                        <div className="d-flex align-content-center">
+                        <td className="px-2 text-muted d-flex flex-column justify-content-center align-items-center">
+                          <AiOutlineStar className="" /><p className="mb-0 user-select-none">{ratingAvgUpdated.toFixed(1)}</p>
+                        </td>
+                        <td className="px-2 text-muted d-flex flex-column justify-content-center align-items-center">
+                          <BsPeople className="" />
+                          <p className="mb-0 user-select-none">{suggestion.ratingCount + suggestion.commentCount}</p>
+                        </td>
+                        <td className="px-2 text-muted d-flex flex-column justify-content-center align-items-center">
+                          <BsHeartHalf />
+                          <p className="mb-0 user-select-none">{suggestion.posRatings}/{suggestion.negRatings}</p>
+                        </td>
+                        </div>
                       </tr>
                     ))}
                   </tbody>

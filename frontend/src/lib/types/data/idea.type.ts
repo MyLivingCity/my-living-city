@@ -56,6 +56,11 @@ export interface IIdeaWithRelationship extends IIdea {
 
   // Comments and Ratings are fetched seperately but could be fetched
   comments?: IComment[];
+  ratingAvg: number;
+  commentCount: number;
+  ratingCount: number;
+  posRatings: number;
+  negRatings: number;
   ratings?: IRating[];
 
   // Checks to see if idea has met thresholds

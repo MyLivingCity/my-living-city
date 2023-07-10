@@ -1,6 +1,6 @@
 import axios from "axios"
 import { API_BASE_URL } from "../constants"
-import { ISegment, ISubSegment } from "../types/data/segment.type"
+import { ISegment, ISubSegment, ISuperSegment } from "../types/data/segment.type"
 
 export const getAllSegmentsWithSuperSegId = async (superSegId: any) => {
   const res = await axios.get<ISegment[]>(`${API_BASE_URL}/segment/getBySuperSegId/${superSegId}`);
@@ -173,3 +173,4 @@ export const getSegmentByName = async (segmentName: string) => {
   })
   return res.data;
 }
+

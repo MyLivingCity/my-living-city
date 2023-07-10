@@ -13,7 +13,8 @@ import {
   getIdeasEndorsedByUser,
   isIdeaEndorsedByUser,
   getEndorsedUsersByIdea,
-  isIdeaFlaggedByUser
+  isIdeaFlaggedByUser,
+  getEndorsedMunicipalUsersByIdea
 } from "../lib/api/ideaRoutes";
 
 // export const useIdeas = (
@@ -86,6 +87,13 @@ export const useCheckIdeaEndorsedByUser = (token: string|null, userId: string|nu
 export const useGetEndorsedUsersByIdea = (token: string|null, ideaId: string) => {
   return useQuery<any, IFetchError>("idea-endorsed-users", () => 
     getEndorsedUsersByIdea(token, ideaId))
+}
+
+export const useGetEndorsedMunicpalUsersByIdea = (token: string|null, ideas: { ideaId: number }[]) => {
+  return useQuery<any, IFetchError>(
+    ['idea-endorsed-municipal-users', ideas.map(idea => idea.ideaId)],
+    () => getEndorsedMunicipalUsersByIdea(token,ideas)
+  );
 }
 
 export const useCheckIdeaFlaggedByUser = (token: string|null, userId: string|null, ideaId: string|null) => {

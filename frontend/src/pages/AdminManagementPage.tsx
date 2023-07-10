@@ -11,7 +11,7 @@ import { ISuperSegment } from 'src/lib/types/data/segment.type';
 import { ISegment } from 'src/lib/types/data/segment.type';
 import { useAllSegments } from 'src/hooks/segmentHooks';
 import { IUserSegment } from 'src/lib/types/data/segment.type';
-import { useAllUserSegments } from 'src/hooks/userSegmentHooks';
+
 
 
 // Extends Route component props with idea title route param
@@ -26,7 +26,7 @@ interface AdminManagementPropsLegacy extends RouteComponentProps<{}> {
 
 }
 
-const AdminManagementPage: React.FC<AdminManagementPropsLegacy> = ({}) => {
+const AdminManagementPage: React.FC<AdminManagementPropsLegacy> = () => {
   const { token } = useContext(UserProfileContext);
   const { user } = useContext(UserProfileContext);
   const { data: userData, isLoading: userLoading} = useAllUsers(token);

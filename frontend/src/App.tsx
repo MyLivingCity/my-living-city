@@ -31,6 +31,7 @@ import DashboardPage from "./pages/DashboardPage";
 import MyPostsPage from "./pages/MyPostsPage";
 import CommunityDashboardPage from "./pages/CommunityDashboardPage";
 import ModManagementPage from "./pages/ModManagementPage";
+import MunicipalDashboardPage from "./pages/MunicipalDashboardPage";
 
 function App() {
   return (
@@ -81,6 +82,12 @@ function App() {
             path={ROUTES.COMMUNITY_DASHBOARD}
             component={CommunityDashboardPage}
             userTypes={[USER_TYPES.RESIDENTIAL, USER_TYPES.BUSINESS, USER_TYPES.COMMUNITY]}
+          />
+
+          <CustomRoute 
+            path={ROUTES.MUNICIPAL_DASHBOARD}
+            component={MunicipalDashboardPage}
+            userTypes={[USER_TYPES.MUNICIPAL, USER_TYPES.MUNICIPAL_SEG_ADMIN]}
           />
 
           <AdminRoute path={ROUTES.ALL_ADVERTISEMENT} component={AllAdsPage} />

@@ -336,6 +336,31 @@ export const getEndorsedUsersByIdea = async (token: string | null, ideaId: strin
   return res.data;
 }
 
+export const getEndorsedMunicipalUsersByIdea = async (
+  token: string | null,
+  ideas: { ideaId: number }[]
+ 
+): Promise<any[][]> => {
+  const fetchPromises = ideas.map(({ ideaId }) =>
+    axios.get<any[]>(`${API_BASE_URL}/idea/getAllEndorsersByIdea/${ideaId}`, {
+      method: "get",
+      headers: {
+        "x-auth-token": token,
+        "Access-Control-Allow-Origin": "*",
+      },
+      withCredentials: true,
+    })
+  );
+
+  const responses = await Promise.all(fetchPromises);
+  const allEndorsedPosts = responses.map(response => response.data);
+
+  return allEndorsedPosts;
+};
+
+
+
+
 export const isIdeaFlaggedByUser = async (token: string | null, userId: string | null, ideaId: string | null) => {
   const res = await axios({
     method: "post",

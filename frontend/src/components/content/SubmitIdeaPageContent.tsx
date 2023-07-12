@@ -48,22 +48,23 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
   const [crop, setCrop] = useState({ aspect: 16 / 9 });
   const history = useHistory();
   const handleCommunityChange = (index: number) => {
-    if (segData[index].segType === "Segment") {
-      formik.setFieldValue("segmentId", segData[index].id);
-      formik.setFieldValue("superSegmentId", undefined);
-      formik.setFieldValue("subSegmentId", undefined);
+    if (Array.isArray(segData) && segData.length > index) {
+      const selectedSegment = segData[index];
+      if (selectedSegment.segType === "Segment") {
+        formik.setFieldValue("segmentId", selectedSegment.id);
+        formik.setFieldValue("superSegmentId", undefined);
+        formik.setFieldValue("subSegmentId", undefined);
+      } else if (selectedSegment.segType === "Sub-Segment") {
+        formik.setFieldValue("subSegmentId", selectedSegment.id);
+        formik.setFieldValue("superSegmentId", undefined);
+        formik.setFieldValue("segmentId", undefined);
+      } else if (selectedSegment.segType === "Super-Segment") {
+        formik.setFieldValue("superSegmentId", selectedSegment.id);
+        formik.setFieldValue("subSegmentId", undefined);
+        formik.setFieldValue("segmentId", undefined);
+      }
+      formik.setFieldValue("userType", selectedSegment.userType);
     }
-    if (segData[index].segType === "Sub-Segment") {
-      formik.setFieldValue("subSegmentId", segData[index].id);
-      formik.setFieldValue("superSegmentId", undefined);
-      formik.setFieldValue("segmentId", undefined);
-    }
-    if (segData[index].segType === "Super-Segment") {
-      formik.setFieldValue("superSegmentId", segData[index].id);
-      formik.setFieldValue("subSegmentId", undefined);
-      formik.setFieldValue("segmentId", undefined);
-    }
-    formik.setFieldValue("userType", segData[index].userType);
   };
   const submitHandler = async (values: ICreateIdeaInput) => {
     try {
@@ -109,25 +110,31 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
 
   const renderCommunitiesOfInterest = (segData: ISegmentData[], communityOfInterest: string | null) => {
     if (communityOfInterest) {
-      return <option key={communityOfInterest} value={communityOfInterest}>
-        {communityOfInterest}
-      </option>
+      return (
+        <option key={communityOfInterest} value={communityOfInterest}>
+          {communityOfInterest}
+        </option>
+      );
     }
-    
-    return segData &&
-    segData.map((seg, index) => (
-      <option key={String(seg.name)} value={index}>
-        {capitalizeString(seg.name)}
-      </option>
-    ))
-  }
+  
+    if (Array.isArray(segData)) { // Add this check
+      return segData.map((seg, index) => (
+        <option key={String(seg.name)} value={index}>
+          {capitalizeString(seg.name)}
+        </option>
+      ));
+    }
+  
+    return null; // Return a fallback value or handle the case when segData is not an array
+  };
+  
 
   const formik = useFormik<ICreateIdeaInput>({
     initialValues: {
       // TODO: CatId when chosen is a string value
       categoryId: categories ? categories[0].id : DEFAULT_CAT_ID,
       title: "",
-      userType: segData ? segData[0].userType : "Resident",
+      userType: segData && segData.length > 0 ? segData[0].userType : "Resident",
       description: "",
       proposal_role: "",
       requirements: "",

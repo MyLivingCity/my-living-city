@@ -177,8 +177,9 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
       if (name && segment) {
         if (segment.segId === userSegmentData.homeSegmentId || segment.segId === userSegmentData.workSegmentId || segment.segId === userSegmentData.schoolSegmentId) {
-          const communityOfInterest = getSegmentName(name);
-          window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}`;
+          // const communityOfInterest = getSegmentName(name);
+          // window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}`;
+          console.log(error);
         } else {
           setShowProposalSegmentError(true);
         }

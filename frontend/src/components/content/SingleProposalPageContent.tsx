@@ -67,6 +67,7 @@ import { useAllUserSegments } from 'src/hooks/userSegmentHooks';
 import { BsPeople, BsHeartHalf } from "react-icons/bs";
 import { AiOutlineRadiusBottomright, AiOutlineStar } from "react-icons/ai";
 
+import SegmentInfo from '../partials/ProfileContent/SegmentInfo';
 
 interface SingleIdeaPageContentProps {
   ideaData: IIdeaWithRelationship;
@@ -161,22 +162,38 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
   function redirectToIdeaSubmit() {
     let name = subSegment?.name
+
+    if (name && subSegment) {
+      if (subSegment.segId === userSegmentData.homeSubSegmentId || subSegment.segId === userSegmentData.workSubSegmentId || subSegment.segId === userSegmentData.schoolSubSegmentId) {
+        const communityOfInterest = getSegmentName(name);
+        window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}`;
+      } else {
+        setShowProposalSegmentError(true);
+      }
+    }
     
     if (!name && segment) {
       name = segment.name
+
+      if (name && segment) {
+        if (segment.segId === userSegmentData.homeSegmentId || segment.segId === userSegmentData.workSegmentId || segment.segId === userSegmentData.schoolSegmentId) {
+          const communityOfInterest = getSegmentName(name);
+          window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}`;
+        } else {
+          setShowProposalSegmentError(true);
+        }
+      }
     }
 
     if (!name && superSegment) {
       name = superSegment.name
+      if (superSegment.superSegId === userSegmentData.homeSuperSegId || superSegment.superSegId === userSegmentData.workSuperSegId || superSegment.superSegId === userSegmentData.schoolSuperSegId) {
+        const communityOfInterest = getSegmentName(name);
+        window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}`;
+      } else {
+        setShowProposalSegmentError(true);
+      }
     }
-
-    if (name && JSON.stringify(userSegmentData).includes(name)) {
-      const communityOfInterest = getSegmentName(name);
-      window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}`;
-    } else {
-      setShowProposalSegmentError(true);
-    }
-
   }
 
   const { token, user } = useContext(UserProfileContext);
@@ -1197,7 +1214,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                 dismissible
                 onClose={() => setShowProposalSegmentError(false)}
               >
-                Error! Users may only comment on relevant proposals.
+                Error! You cannot propose ideas for communities to which you do not belong.
               </Alert>
             ) : null}
             <Card.Header>

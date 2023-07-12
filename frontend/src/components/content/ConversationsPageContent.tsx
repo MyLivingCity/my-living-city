@@ -66,6 +66,7 @@ const ConversationsPageContent: React.FC<ConversationsPageContentProps> = ({
                     <ProposalTile
                       proposalData={{id: proposals!.filter(obj => { if (obj.ideaId == idea.id) return obj})[0]?.id, ideaId: idea.id, idea}}
                       showFooter={true}
+                       postType={idea.state === "IDEA" ? "Idea" : "Proposal"}
                       
                     />
                   </Col>
@@ -84,12 +85,6 @@ const ConversationsPageContent: React.FC<ConversationsPageContentProps> = ({
         ))}
       </Carousel>) : <div>Sorry, there are no proposals submitted yet.</div> }
       <br></br>
-      <br></br>
-      <br></br>
-      <br></br>
-      <br></br>
-      <br></br>
-
       <h3 style={{ paddingTop: "1rem" }}>Ideas</h3>
       <hr />
       {filteredIdeasWithNoProposals && filteredIdeasWithNoProposals.length > 0 ? (<Carousel controls={true} interval={null} slide={true} fade={false}>

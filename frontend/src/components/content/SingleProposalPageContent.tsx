@@ -64,6 +64,9 @@ import EndorsedUsersSection from '../partials/SingleIdeaContent/EndorsedUsersSec
 import { IUserSegment } from "../../lib/types/data/segment.type";
 import {getMyUserSegmentInfo} from "../../lib/api/userSegmentRoutes";
 import { useAllUserSegments } from 'src/hooks/userSegmentHooks';
+import { BsPeople, BsHeartHalf } from "react-icons/bs";
+import { AiOutlineRadiusBottomright, AiOutlineStar } from "react-icons/ai";
+
 import SegmentInfo from '../partials/ProfileContent/SegmentInfo';
 
 interface SingleIdeaPageContentProps {
@@ -367,6 +370,8 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
       setEndorsingPost(!endorsingPost);
     }
   }
+  
+
 
   useEffect(() => {
     if (!isEndorsedUsersDataLoading) {
@@ -452,11 +457,20 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     
   }
 
+  const ratingAvgUpdated = Number(ideaData.ratingAvg);
+
   if(!active){
     return (
       <div>Proposal Is Currently Inactive</div>
     )
   }
+
+
+
+ 
+
+
+
 
   return (
     <div className="single-idea-content pt-5">
@@ -1235,6 +1249,19 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                             {suggestion.title}
                           </a>
                         </td>
+                        <div className="d-flex align-content-center">
+                        <td className="px-2 text-muted d-flex flex-column justify-content-center align-items-center">
+                          <AiOutlineStar className="" /><p className="mb-0 user-select-none">{ratingAvgUpdated.toFixed(1)}</p>
+                        </td>
+                        <td className="px-2 text-muted d-flex flex-column justify-content-center align-items-center">
+                          <BsPeople className="" />
+                          <p className="mb-0 user-select-none">{suggestion.ratingCount + suggestion.commentCount}</p>
+                        </td>
+                        <td className="px-2 text-muted d-flex flex-column justify-content-center align-items-center">
+                          <BsHeartHalf />
+                          <p className="mb-0 user-select-none">{suggestion.posRatings}/{suggestion.negRatings}</p>
+                        </td>
+                        </div>
                       </tr>
                     ))}
                   </tbody>

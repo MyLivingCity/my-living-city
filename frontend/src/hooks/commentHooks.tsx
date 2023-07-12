@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { getAxiosJwtRequestOption } from '../lib/api/axiosRequestOptions'
 import { API_BASE_URL } from '../lib/constants'
 import { ICreateCommentInput } from '../lib/types/input/createComment.input'
-import { getAllComments, getCommentAggregateUnderIdea, getCommentsUnderIdea } from '../lib/api/commentRoutes'
+import { getAllComments, getCommentAggregateUnderIdea, getCommentsUnderIdea, getCommentsUnderMultipleIdeas } from '../lib/api/commentRoutes'
 import { IComment, ICommentAggregateCount } from '../lib/types/data/comment.type'
 import { IFetchError } from '../lib/types/types'
 import { v4 as uuidv4 } from 'uuid';
@@ -32,6 +32,16 @@ export const useCommentAggregateUnderIdea = (ideaId: string) => {
   return useQuery<ICommentAggregateCount, IFetchError>(
     ['comment-aggregate', ideaId],
     () => getCommentAggregateUnderIdea(ideaId),
+    {
+      staleTime: 5 * 60 * 1000 // 5 minutes
+    }
+  )
+}
+
+export const useAllCommentsUnderMultipleIdeas = (ideas: { ideaId: number }[]) => {
+  return useQuery<IComment[][], IFetchError>(
+    ['comments-all', ideas.map(idea => idea.ideaId)],
+    () => getCommentsUnderMultipleIdeas(ideas),
     {
       staleTime: 5 * 60 * 1000 // 5 minutes
     }

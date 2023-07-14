@@ -99,6 +99,7 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({ 
             organizationName: undefined,
             fname: formData.get('inputFirst') as string,
             lname: formData.get('inputLast') as string,
+            
             address: {
                 streetAddress: "",
                 streetAddress2: "",
@@ -134,6 +135,7 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({ 
             schoolSubSegmentId: undefined,
             userType: formData.get('inputType') as string,
             reachSegmentIds: [],
+            verified: true,
 
         };
 

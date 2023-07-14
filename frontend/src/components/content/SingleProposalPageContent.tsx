@@ -82,6 +82,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
   ideaData,
   proposalData,
   ideaId,
+
 }) => {
   const {
     title: titleText,
@@ -133,6 +134,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     feedbackType5,
   } = proposalData;
 
+
   const { title: catTitle } = category!;
 
   const parsedDate = new Date(createdAt);
@@ -161,22 +163,38 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
   function redirectToIdeaSubmit() {
     let name = subSegment?.name
+
+    if (name && subSegment) {
+      if (subSegment.segId === userSegmentData.homeSubSegmentId || subSegment.segId === userSegmentData.workSubSegmentId || subSegment.segId === userSegmentData.schoolSubSegmentId) {
+        const communityOfInterest = getSegmentName(name);
+        window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}`;
+      } else {
+        setShowProposalSegmentError(true);
+      }
+    }
     
     if (!name && segment) {
       name = segment.name
+
+      if (name && segment) {
+        if (segment.segId === userSegmentData.homeSegmentId || segment.segId === userSegmentData.workSegmentId || segment.segId === userSegmentData.schoolSegmentId) {
+          const communityOfInterest = getSegmentName(name);
+          window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}`;
+        } else {
+          setShowProposalSegmentError(true);
+        }
+      }
     }
 
     if (!name && superSegment) {
       name = superSegment.name
+      if (superSegment.superSegId === userSegmentData.homeSuperSegId || superSegment.superSegId === userSegmentData.workSuperSegId || superSegment.superSegId === userSegmentData.schoolSuperSegId) {
+        const communityOfInterest = getSegmentName(name);
+        window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}`;
+      } else {
+        setShowProposalSegmentError(true);
+      }
     }
-
-    if (name && JSON.stringify(userSegmentData).includes(name)) {
-      const communityOfInterest = getSegmentName(name);
-      window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}`;
-    } else {
-      setShowProposalSegmentError(true);
-    }
-
   }
 
   const { token, user } = useContext(UserProfileContext);
@@ -313,6 +331,9 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     onSubmit: donorSubmitHandler
   });
 
+
+ 
+
   const [followingPost, setFollowingPost] = useState(false);
   const [endorsingPost, setEndorsingPost] = useState(false);
   const [endorsedUsers, setEndorsedUsers] = useState<any[]>([]);
@@ -323,6 +344,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
   const {data: flagBanData, isLoading: flagBanDataLoading} = useCheckFlagBan(token, (user ? user.id : ""));
   const {data: isFlagged, isLoading: isFlaggedLoading} = useCheckIdeaFlaggedByUser(token, (user ? user.id : user), ideaId);
   const {data: endorsedUsersData, isLoading: isEndorsedUsersDataLoading} = useGetEndorsedUsersByIdea(token, ideaId);
+ 
   // API hooks for children components
   const allRatingsUnderIdea = useAllRatingsUnderIdea(ideaId);
   const commentAggregateUnderIdea = useCommentAggregateUnderIdea(ideaId);
@@ -1197,7 +1219,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                 dismissible
                 onClose={() => setShowProposalSegmentError(false)}
               >
-                Error! Users may only comment on relevant proposals.
+                Error! You cannot propose ideas for communities to which you do not belong.
               </Alert>
             ) : null}
             <Card.Header>

@@ -70,7 +70,7 @@ const RatingDisplay = ({
   const aggregateBreakdown = [
     {
       title: "Rating Average:",
-      value: ratingAvg
+      value: ratingAvg.toFixed(2)
     },
     {
       title: "Interactions:",
@@ -78,7 +78,7 @@ const RatingDisplay = ({
     },
     {
       title: "Positive to Negative:",
-      value: `${posRatings}/${negRatings}`,
+      value: `${posRatings} /  ${negRatings}`,
     },
   ];
 

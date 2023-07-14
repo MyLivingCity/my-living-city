@@ -15,6 +15,7 @@ export interface IRegisterInput {
   geo?: IGeoInput;
   schoolDetails?: ISchoolDetailsInput;
   workDetails?: IWorkDetailsInput;
+  verified?: boolean;
   imagePath?: any;
   homeSegmentId?: number;
   workSegmentId?: number;

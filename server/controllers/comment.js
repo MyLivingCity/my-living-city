@@ -162,10 +162,11 @@ commentRouter.get(
       result.sort(compareCommentsBasedOnLikesAndDislikes);
 
       // put comments with a userType == 'MOD' at the top
+      const municipalComments = result.filter(comment => comment.author.userType === 'MUNICIPAL');
       const moderatorComments = result.filter(comment => comment.author.userType === 'MOD');
-      const nonModeratorComments = result.filter(comment => comment.author.userType !== 'MOD');
-
-      const sortedResult = [...moderatorComments, ...nonModeratorComments];
+      const nonModeratorAndNonMunicipalComments = result.filter(comment => comment.author.userType !== 'MOD' && comment.author.userType !== 'MUNICIPAL');
+      
+      const sortedResult = [...municipalComments, ...moderatorComments, ...nonModeratorAndNonMunicipalComments];
 
       res.status(200).json(sortedResult);
     } catch (error) {

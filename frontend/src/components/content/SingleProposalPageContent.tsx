@@ -457,20 +457,11 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     
   }
 
-  const ratingAvgUpdated = Number(ideaData.ratingAvg);
-
   if(!active){
     return (
       <div>Proposal Is Currently Inactive</div>
     )
   }
-
-
-
- 
-
-
-
 
   return (
     <div className="single-idea-content pt-5">
@@ -1236,13 +1227,14 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                     <tr>
                       <th>Author</th>
                       <th>Idea</th>
+                      <th>Ratings</th>
                     </tr>
                   </thead>
                   <tbody>
                     {suggestedIdeas.map((suggestion: any, index: number) => (
                       <tr>
                         <td>
-                          {suggestion.author.fname} {suggestion.author.lname}
+                          {suggestion.author.fname}@{JSON.stringify(suggestion.author)}
                         </td>
                         <td>
                           <a href={"/ideas/" + suggestion.id}>
@@ -1250,17 +1242,17 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                           </a>
                         </td>
                         <div className="d-flex align-content-center">
-                        <td className="px-2 text-muted d-flex flex-column justify-content-center align-items-center">
-                          <AiOutlineStar className="" /><p className="mb-0 user-select-none">{ratingAvgUpdated.toFixed(1)}</p>
-                        </td>
-                        <td className="px-2 text-muted d-flex flex-column justify-content-center align-items-center">
-                          <BsPeople className="" />
-                          <p className="mb-0 user-select-none">{suggestion.ratingCount + suggestion.commentCount}</p>
-                        </td>
-                        <td className="px-2 text-muted d-flex flex-column justify-content-center align-items-center">
-                          <BsHeartHalf />
-                          <p className="mb-0 user-select-none">{suggestion.posRatings}/{suggestion.negRatings}</p>
-                        </td>
+                          <td className="px-2 text-muted d-flex flex-column justify-content-center align-items-center">
+                            <AiOutlineStar className="" /><p className="mb-0 user-select-none">{Number(suggestion.ratingAvg).toFixed(1)}</p>
+                          </td>
+                          <td className="px-2 text-muted d-flex flex-column justify-content-center align-items-center">
+                            <BsPeople className="" />
+                            <p className="mb-0 user-select-none">{suggestion.ratingCount + suggestion.commentCount}</p>
+                          </td>
+                          <td className="px-2 text-muted d-flex flex-column justify-content-center align-items-center">
+                            <BsHeartHalf />
+                            <p className="mb-0 user-select-none">{suggestion.posRatings}/{suggestion.negRatings}</p>
+                          </td>
                         </div>
                       </tr>
                     ))}

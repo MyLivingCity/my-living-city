@@ -66,7 +66,8 @@ import {getMyUserSegmentInfo} from "../../lib/api/userSegmentRoutes";
 import { useAllUserSegments } from 'src/hooks/userSegmentHooks';
 import { BsPeople, BsHeartHalf } from "react-icons/bs";
 import { AiOutlineRadiusBottomright, AiOutlineStar } from "react-icons/ai";
-
+import { useAllIdeas } from 'src/hooks/ideaHooks';
+import { IIdeaWithAggregations } from "src/lib/types/data/idea.type";
 
 interface SingleIdeaPageContentProps {
   ideaData: IIdeaWithRelationship;
@@ -82,6 +83,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
   ideaData,
   proposalData,
   ideaId,
+
 }) => {
   const {
     title: titleText,
@@ -132,6 +134,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     feedbackType4,
     feedbackType5,
   } = proposalData;
+
 
   const { title: catTitle } = category!;
 
@@ -313,6 +316,9 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     onSubmit: donorSubmitHandler
   });
 
+
+ 
+
   const [followingPost, setFollowingPost] = useState(false);
   const [endorsingPost, setEndorsingPost] = useState(false);
   const [endorsedUsers, setEndorsedUsers] = useState<any[]>([]);
@@ -323,6 +329,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
   const {data: flagBanData, isLoading: flagBanDataLoading} = useCheckFlagBan(token, (user ? user.id : ""));
   const {data: isFlagged, isLoading: isFlaggedLoading} = useCheckIdeaFlaggedByUser(token, (user ? user.id : user), ideaId);
   const {data: endorsedUsersData, isLoading: isEndorsedUsersDataLoading} = useGetEndorsedUsersByIdea(token, ideaId);
+ 
   // API hooks for children components
   const allRatingsUnderIdea = useAllRatingsUnderIdea(ideaId);
   const commentAggregateUnderIdea = useCommentAggregateUnderIdea(ideaId);

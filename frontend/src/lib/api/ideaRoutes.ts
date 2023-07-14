@@ -19,6 +19,13 @@ export const getAllIdeas = async () => {
   return res.data;
 };
 
+export const getAllIdeaswithAgg = async () => {
+  const res = await axios.get<IIdeaWithAggregations[]>(
+    `${API_BASE_URL}/idea/getall`
+  );
+  return res.data;
+};
+
 export const postAllIdeasWithSort = async (
   sortOptions: IGetAllIdeasWithSort = getAllIdeasWithSortDefault
 ) => {

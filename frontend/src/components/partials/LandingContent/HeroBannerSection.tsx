@@ -9,7 +9,7 @@ const HeroBannerSection: React.FC<HeroBannerProps> = ({ }) => (
     <Image width='55%' src='/banner/MyLivingCity_Logo_Name-Tagline.png' />
     <div className="col-lg-9 mx-auto my-4">
         <p className="lead mb-4">
-        In order to transform our cities into living cities that exist in complete integrity with the natural world, we need to empower every citizen to engage in a conversation for change and a call to take action in their community.
+        MyLivingCity's mission is to create online discussion spaces for empowering community members to share ideas and have opportunities to work together.  This is where real sustainable innovation is born.  We aim to partner with municipalities and community members to host these important discussions.
         </p>
       <div className="d-grid gap-2 d-sm-flex justify-content-sm-center">
         <a href='/ideas'>

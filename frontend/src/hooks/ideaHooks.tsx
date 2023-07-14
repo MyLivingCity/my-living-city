@@ -14,7 +14,9 @@ import {
   isIdeaEndorsedByUser,
   getEndorsedUsersByIdea,
   isIdeaFlaggedByUser,
-  getEndorsedMunicipalUsersByIdea
+  getEndorsedMunicipalUsersByIdea,
+  getAllIdeas,
+  getAllIdeaswithAgg
 } from "../lib/api/ideaRoutes";
 
 // export const useIdeas = (
@@ -44,6 +46,16 @@ export const useIdeasWithBreakdown = (take?: number) => {
 export const useIdeasHomepage = () => {
   return useQuery<IIdeaWithAggregations[], IFetchError>("ideas-homepage", () =>
     postAllIdeasWithBreakdown(12)
+  );
+};
+
+export const useAllIdeas = () => {
+  return useQuery<IIdeaWithAggregations[], IFetchError>(
+    "ideas",
+    getAllIdeaswithAgg,
+    {
+      staleTime: 30 * 60 * 1000, // 30 minutes
+    }
   );
 };
 

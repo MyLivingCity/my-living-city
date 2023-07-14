@@ -52,6 +52,7 @@ const SingleProposalPage = (props: any) => {
     );
   }
 
+
   return (
     <div className="wrapper">
       {data && (
@@ -59,6 +60,7 @@ const SingleProposalPage = (props: any) => {
           ideaData={data}
           proposalData={proposalData}
           ideaId={ideaStringId}
+      
         />
       )}
     </div>

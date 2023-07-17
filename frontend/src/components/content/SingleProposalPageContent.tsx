@@ -635,35 +635,78 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                   ) : null}
 
                   <br />
-                    <p>
-                      <strong>Proposer Info:</strong> {proposorText}<br />
-                    </p>
-                    <p>
-                      <strong>Description:</strong> {descriptionText}<br />
-                    </p>
-                    <p>
-                      <strong>Community Benefits:</strong> {benefitText}<br />
-                    </p>
-
-                    <p>
-                      <strong>Requirements:</strong> {proposalText}<br />
-                    </p>
-                    <p>
-                      <strong>Community and Place:</strong> {communityImpact}
-                    </p>
-                    <p>
-                      <strong>Nature and Food Security:</strong> {natureImpact}
-                    </p>
-                    <p>
-                      <strong>Arts, Culture, and Education:</strong> {artsImpact}
-                    </p>
-                    <p>
-                      <strong>Water and Energy:</strong> {energyImpact}
-                    </p>
-                    <p>
-                      <strong>Manufacturing and Waste:</strong> 
-                      {manufacturingImpact ? capitalizeString(manufacturingImpact) : ""}
-                    </p>
+                  <table>
+                    
+                    <tr>
+                      <td className='h5'><strong>Description:</strong></td>
+                      <td className='lead'>{descriptionText}</td>
+                    </tr>
+                    <br />
+                    { proposorText ?
+                      <tr>
+                        <td className='px-4'><strong>Proposer Info:</strong></td>
+                        <td className='px-4'>{proposorText}</td>
+                      </tr>
+                      : null
+                    }
+                    { proposorText ? <br /> : null }
+                    { benefitText ?
+                      <tr>
+                        <td className='px-4'><strong>Community Benefits:</strong></td>
+                        <td className='px-4'>{benefitText}</td>
+                      </tr>
+                      : null
+                    }
+                    { benefitText ? <br /> : null }
+                    { proposalText ?
+                      <tr>
+                        <td className='px-4'><strong>Requirements:</strong></td>
+                        <td className='px-4'>{proposalText}</td>
+                      </tr>
+                      : null
+                    }
+                    { proposalText ? <br /> : null }
+                    { communityImpact ?
+                      <tr>
+                        <td className='px-4'><strong>Community and Place:</strong></td>
+                        <td className='px-4'>{communityImpact}</td>
+                      </tr>
+                      : null
+                    }
+                    { communityImpact ? <br /> : null }
+                    { natureImpact ?
+                      <tr>
+                        <td className='px-4'><strong>Nature and Food Security:</strong></td>
+                        <td className='px-4'>{natureImpact}</td>
+                      </tr>
+                      : null
+                    }
+                    { natureImpact ? <br /> : null }
+                    { artsImpact ?
+                      <tr>
+                        <td className='px-4'><strong>Arts, Culture, and Education:</strong></td>
+                        <td className='px-4'>{artsImpact}</td>
+                      </tr>
+                      : null
+                    }
+                    { artsImpact ? <br /> : null }
+                    { energyImpact ?
+                      <tr>
+                        <td className='px-4'><strong>Water and Energy:</strong></td>
+                        <td className='px-4'>{energyImpact}</td>
+                      </tr>
+                      : null
+                    }
+                    { energyImpact ? <br /> : null }
+                    { manufacturingImpact ?
+                      <tr>
+                        <td className='px-4'><strong>Manufacturing and Waste:</strong></td>
+                        <td className='px-4'>capitalizeString(manufacturingImpact)</td>
+                      </tr>
+                      : null
+                    }
+                    { manufacturingImpact ? <br /> : null }
+                  </table>
                 </Col>
               </Row>
             </Card.Body>

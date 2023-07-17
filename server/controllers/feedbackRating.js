@@ -11,9 +11,9 @@ feedbackRatingRouter.post(
         try {
             const { id: userId } = req.user;
             const { ratingExplanation, rating } = req.body;
-            const parsedFeedbackId = parseInt(req.params.feedbackId);
-            const parsedProposalId = parseInt(req.params.proposalId);
-
+            const  parsedProposalId = parseInt(req.params.feedbackId); // THESE GOT FLIPPED SOMEHOW BE CAREFUL
+            const  parsedFeedbackId = parseInt(req.params.proposalId);
+          
             if(!parsedFeedbackId || !parsedProposalId) {
                 return res.status(400).json({ 
                     message: `A valid ideaId must be specified in the route paramater.`, 
@@ -22,7 +22,10 @@ feedbackRatingRouter.post(
 
             const foundFeedback = await prisma.proposal.findUnique({ where: {id: parsedProposalId}});
             if(!foundFeedback) {
+                console.log("PARSEY BOy:  " + parsedProposalId)
+                console.log("FEEDBACKBOY" + parsedFeedbackId)
                 return res.status(404).json({ 
+                    
                     message: `The propsal with that listed ID (${parsedProposalId}) does not exist.`, 
                 });
             }

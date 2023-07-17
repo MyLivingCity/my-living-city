@@ -1329,6 +1329,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
               </div>
             </Card.Header>
             <Card.Body>
+            {console.log( "THE ID: " + proposalId)}
             {feedback1 ? (
               <Card>
               <Card.Header></Card.Header>
@@ -1340,6 +1341,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                           <FeedbackRatingYesNoSection
                             feedbackId = {"1"}
                             proposalId = {proposalId}
+                            
                           >
                           </FeedbackRatingYesNoSection>
                           ) : null}

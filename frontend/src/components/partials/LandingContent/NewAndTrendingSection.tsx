@@ -328,7 +328,7 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
             <Carousel.Item key={i}>
           
               {sortedIdeas && allProposals ? (
-                sortedIdeas.slice(i * 3, i * 3 + 3).map((idea) => {
+                sortedIdeas.slice(i * 6, i * 6 + 6).map((idea) => {
                   return doesIdeaPassFilter(idea) ? (
                     <Col
                       key={idea.id}

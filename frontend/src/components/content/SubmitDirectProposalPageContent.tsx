@@ -52,6 +52,8 @@ interface SubmitDirectProposalPageContentProps {
  */
 const DEFAULT_CAT_ID = 1;
 
+
+
 const SubmitDirectProposalPageContent: React.FC<
   SubmitDirectProposalPageContentProps
 > = ({ categories, segData }) => {
@@ -340,90 +342,155 @@ const SubmitDirectProposalPageContent: React.FC<
 
 
   const destructuredSegData = Object.entries(segData)
-if (destructuredSegData !== null){
- if (destructuredSegData[2][1].toString() !== '' && destructuredSegData[3][1].toString() !== '') {
-    updatedSegData.push({
-      id: parseInt(destructuredSegData[2][1].toString()),
-      name: destructuredSegData[3][1].toString(),
-      segType: "Super-Segment",
-      userType: "Resident"
-    });
+  if (destructuredSegData !== null) {
+
+    if (
+      destructuredSegData[2] &&
+      destructuredSegData[2][1] &&
+      destructuredSegData[2][1].toString() !== '' &&
+      destructuredSegData[3] &&
+      destructuredSegData[3][1] &&
+      destructuredSegData[3][1].toString() !== ''
+    ) {
+      updatedSegData.push({
+        id: parseInt(destructuredSegData[2][1].toString()),
+        name: destructuredSegData[3][1].toString(),
+        segType: "Super-Segment",
+        userType: "Resident"
+      });
+    }
+
+    if (
+      destructuredSegData[4] &&
+      destructuredSegData[4][1] &&
+      destructuredSegData[4][1].toString() !== '' &&
+      destructuredSegData[5] &&
+      destructuredSegData[5][1] &&
+      destructuredSegData[5][1].toString() !== ''
+    ) {
+      updatedSegData.push({
+        id: parseInt(destructuredSegData[4][1].toString()),
+        name: destructuredSegData[5][1].toString(),
+        segType: "Super-Segment",
+        userType: "Worker"
+      });
+    }
+
+    if (
+      destructuredSegData[6] &&
+      destructuredSegData[6][1] &&
+      destructuredSegData[6][1].toString() !== '' &&
+      destructuredSegData[7] &&
+      destructuredSegData[7][1] &&
+      destructuredSegData[7][1].toString() !== ''
+    ) {
+      updatedSegData.push({
+        id: parseInt(destructuredSegData[6][1].toString()),
+        name: destructuredSegData[7][1].toString(),
+        segType: "Super-Segment",
+        userType: "Student"
+      });
+    }
+
+    if (
+      destructuredSegData[8] &&
+      destructuredSegData[8][1] &&
+      destructuredSegData[8][1].toString() !== '' &&
+      destructuredSegData[9] &&
+      destructuredSegData[9][1] &&
+      destructuredSegData[9][1].toString() !== ''
+    ) {
+      updatedSegData.push({
+        id: parseInt(destructuredSegData[8][1].toString()),
+        name: destructuredSegData[9][1].toString(),
+        segType: "Segment",
+        userType: "Resident"
+      });
+    }
+
+    if (
+      destructuredSegData[10] &&
+      destructuredSegData[10][1] &&
+      destructuredSegData[10][1].toString() !== '' &&
+      destructuredSegData[11] &&
+      destructuredSegData[11][1] &&
+      destructuredSegData[11][1].toString() !== ''
+    ) {
+      updatedSegData.push({
+        id: parseInt(destructuredSegData[10][1].toString()),
+        name: destructuredSegData[11][1].toString(),
+        segType: "Segment",
+        userType: "Worker"
+      });
+    }
+
+    if (
+      destructuredSegData[12] &&
+      destructuredSegData[12][1] &&
+      destructuredSegData[12][1].toString() !== '' &&
+      destructuredSegData[13] &&
+      destructuredSegData[13][1] &&
+      destructuredSegData[13][1].toString() !== ''
+    ) {
+      updatedSegData.push({
+        id: parseInt(destructuredSegData[12][1].toString()),
+        name: destructuredSegData[13][1].toString(),
+        segType: "Segment",
+        userType: "Student"
+      });
+    }
+
+    if (
+      destructuredSegData[14] &&
+      destructuredSegData[14][1] &&
+      destructuredSegData[14][1].toString() !== '' &&
+      destructuredSegData[15] &&
+      destructuredSegData[15][1] &&
+      destructuredSegData[15][1].toString() !== ''
+    ) {
+      updatedSegData.push({
+        id: parseInt(destructuredSegData[14][1].toString()),
+        name: destructuredSegData[15][1].toString(),
+        segType: "Sub-Segment",
+        userType: "Resident"
+      });
+    }
+
+    if (
+      destructuredSegData[16] &&
+      destructuredSegData[16][1] &&
+      destructuredSegData[16][1].toString() !== '' &&
+      destructuredSegData[17] &&
+      destructuredSegData[17][1] &&
+      destructuredSegData[17][1].toString() !== ''
+    ) {
+      updatedSegData.push({
+        id: parseInt(destructuredSegData[16][1].toString()),
+        name: destructuredSegData[17][1].toString(),
+        segType: "Sub-Segment",
+        userType: "Worker"
+      });
+    }
+
+    if (
+      destructuredSegData[18] &&
+      destructuredSegData[18][1] &&
+      destructuredSegData[18][1].toString() !== '' &&
+      destructuredSegData[19] &&
+      destructuredSegData[19][1] &&
+      destructuredSegData[19][1].toString() !== ''
+    ) {
+      updatedSegData.push({
+        id: parseInt(destructuredSegData[18][1].toString()),
+        name: destructuredSegData[19][1].toString(),
+        segType: "Sub-Segment",
+        userType: "Student"
+      });
+    }
+
   }
-  
-  if (destructuredSegData[4][1].toString() !== '' && destructuredSegData[5][1].toString() !== '') {
-    updatedSegData.push({
-      id: parseInt(destructuredSegData[4][1].toString()),
-      name: destructuredSegData[5][1].toString(),
-      segType: "Super-Segment",
-      userType: "Worker"
-    });
-  }
-  
-  if (destructuredSegData[6][1].toString() !== '' && destructuredSegData[7][1].toString() !== '') {
-    updatedSegData.push({
-      id: parseInt(destructuredSegData[6][1].toString()),
-      name: destructuredSegData[7][1].toString(),
-      segType: "Super-Segment",
-      userType: "Student"
-    });
-  }
-  
-  if (destructuredSegData[8][1].toString() !== '' && destructuredSegData[9][1].toString() !== '') {
-    updatedSegData.push({
-      id: parseInt(destructuredSegData[8][1].toString()),
-      name: destructuredSegData[9][1].toString(),
-      segType: "Segment",
-      userType: "Resident"
-    });
-  }
-  
-  if (destructuredSegData[10][1].toString() !== '' && destructuredSegData[11][1].toString() !== '') {
-    updatedSegData.push({
-      id: parseInt(destructuredSegData[10][1].toString()),
-      name: destructuredSegData[11][1].toString(),
-      segType: "Segment",
-      userType: "Worker"
-    });
-  }
-  
-  if (destructuredSegData[12][1].toString() !== '' && destructuredSegData[13][1].toString() !== '') {
-    updatedSegData.push({
-      id: parseInt(destructuredSegData[12][1].toString()),
-      name: destructuredSegData[13][1].toString(),
-      segType: "Segment",
-      userType: "Student"
-    });
-  }
-  
-  if (destructuredSegData[14][1].toString() !== '' && destructuredSegData[15][1].toString() !== '') {
-    updatedSegData.push({
-      id: parseInt(destructuredSegData[14][1].toString()),
-      name: destructuredSegData[15][1].toString(),
-      segType: "Sub-Segment",
-      userType: "Resident"
-    });
-  }
-  
-  if (destructuredSegData[16][1].toString() !== '' && destructuredSegData[17][1].toString() !== '') {
-    updatedSegData.push({
-      id: parseInt(destructuredSegData[16][1].toString()),
-      name: destructuredSegData[17][1].toString(),
-      segType: "Sub-Segment",
-      userType: "Worker"
-    });
-  }
-  
-  if (destructuredSegData[18][1].toString() !== '' && destructuredSegData[19][1].toString() !== '') {
-    updatedSegData.push({
-      id: parseInt(destructuredSegData[18][1].toString()),
-      name: destructuredSegData[19][1].toString(),
-      segType: "Sub-Segment",
-      userType: "Student"
-    });
-  }
-}
-  
-  console.log(updatedSegData);
+
+
 
 
 
@@ -471,11 +538,18 @@ if (destructuredSegData !== null){
                 onChange={(e) => handleCommunityChange(Number(e.target.value))}
               >
                 {Array.isArray(updatedSegData) &&
-                  updatedSegData.map((seg, index) => (
-                    <option key={String(seg.name)} value={index}>
-                      {seg.name}
-                    </option>
-                  ))}
+                  updatedSegData
+                    .filter((seg, index, self) => {        
+                      return (
+                        index ===
+                        self.findIndex((s) => s.name === seg.name)
+                      );
+                    })
+                    .map((seg, index) => (
+                      <option key={String(seg.name)} value={index}>
+                        {capitalizeString(seg.name)}
+                      </option>
+                    ))}
               </Form.Control>
             </Form.Group>
             <Form.Group>

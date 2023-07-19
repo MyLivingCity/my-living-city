@@ -67,8 +67,8 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
   const HomeSubSegmentBySubSegmentIdQueryResult = useSingleSubSegmentBySubSegmentId(homeSubSegmentId);
   const WorkSubSegmentBySubSegmentIdQueryResult = useSingleSubSegmentBySubSegmentId(workSubSegmentId);
   const SchoolSubSegmentBySubSegmentIdQueryResult = useSingleSubSegmentBySubSegmentId(schoolSubSegmentId);
-  const segmentInfoAggregateQueryResult = useSegmentInfoAggregate(parseInt(segmentId.toString()));
-  const singleSegmentBySegmentIdQueryResult = useSingleSegmentBySegmentId(parseInt(segmentId.toString()));
+  const segmentInfoAggregateQueryResult = useSegmentInfoAggregate(parseInt(segmentId?.toString()));
+  const singleSegmentBySegmentIdQueryResult = useSingleSegmentBySegmentId(parseInt(segmentId?.toString()));
 
   const {
     data: segmentInfoAggregateData,

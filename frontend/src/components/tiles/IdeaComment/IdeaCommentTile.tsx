@@ -12,8 +12,8 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
 import React, { useEffect, useState } from "react";
 import { useCheckFlagBan } from "src/hooks/flagHooks";
 import { useSegmentInfoAggregate, useSingleSegmentBySegmentId, useSingleSubSegmentBySubSegmentId } from "./../../../hooks/segmentHooks";
-import { useAllUserSegments } from "src/hooks/userSegmentHooks";
 import { capitalize } from '@mui/material';
+import { capitalizeFirstLetterEachWord, capitalizeString } from "../../../lib/utilityFunctions";
 
 
 interface IdeaCommentTileProps {

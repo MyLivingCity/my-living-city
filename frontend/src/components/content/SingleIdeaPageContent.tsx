@@ -562,49 +562,49 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                   <table>
                       <tr>
                         <td className='h5'><strong>Description: </strong></td>
-                        <td className='px-4 lead'>{description}</td>
+                        <td className='lead px-1'>{description}</td>
                       </tr>
                       <br />
-                      { communityImpact ?
+                      { communityImpact?.trim() ?
                         <tr>
                           <td className='px-4'><strong>Community and Place: </strong></td>
                           <td className='px-4'>{communityImpact}</td>
                         </tr>
                         : null
                       }
-                      { communityImpact ? <br /> : null }
-                      { natureImpact ?
+                      { communityImpact?.trim() ? <br /> : null }
+                      { natureImpact?.trim() ?
                         <tr>
                           <td className='px-4'><strong>Nature and Food Security: </strong></td>
                           <td className='px-4'>{natureImpact}</td>
                         </tr>
                         : null
                       }
-                      { natureImpact ? <br /> : null }
-                      { artsImpact ?
+                      { natureImpact?.trim() ? <br /> : null }
+                      { artsImpact?.trim() ?
                         <tr>
                           <td className='px-4'><strong>Arts, Culture, and Education: </strong></td>
                           <td className='px-4'>{artsImpact}</td>
                         </tr>
                         : null
                       }
-                      { artsImpact ? <br /> : null }
-                      { energyImpact ?
+                      { artsImpact?.trim() ? <br /> : null }
+                      { energyImpact?.trim() ?
                         <tr>
                           <td className='px-4'><strong>Water and Energy: </strong></td>
                           <td className='px-4'>{energyImpact}</td>
                         </tr>
                         : null
                       }
-                      { energyImpact ? <br /> : null }
-                      { manufacturingImpact ?
+                      { energyImpact?.trim() ? <br /> : null }
+                      { manufacturingImpact?.trim() ?
                         <tr>
                           <td className='px-4'><strong>Manufacturing and Waste: </strong></td>
                           <td className='px-4'>capitalizeString(manufacturingImpact)</td>
                         </tr>
                         : null
                       }
-                      { manufacturingImpact ? <br /> : null }
+                      { manufacturingImpact?.trim() ? <br /> : null }
                     </table>
                 </Col>
               </Row>

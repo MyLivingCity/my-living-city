@@ -215,10 +215,13 @@ proposalRouter.get(
                         select: {
                             id: true,
                             title: true,
+                            ratings: true,
+                            comments: true,
                             author: {
                                 select: {
                                     fname: true,
                                     lname: true,
+                                    userSegments: true,
                                 }
                             }
                         },
@@ -312,10 +315,14 @@ proposalRouter.get(
                         select: {
                             id: true,
                             title: true,
+                            ratings: true,
+                            comments: true,
+                          
                             author: {
                                 select: {
                                     fname: true,
                                     lname: true,
+                                    userSegments: true,                                 
                                 }
                             }
                         },

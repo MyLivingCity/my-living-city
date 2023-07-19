@@ -50,7 +50,7 @@ import {
   unendorseIdeaByUser,
 } from "src/lib/api/ideaRoutes";
 import { incrementPostFlagCount } from 'src/lib/api/badPostingBehaviorRoutes';
-import { useCheckIdeaFollowedByUser, useCheckIdeaEndorsedByUser, useCheckIdeaFlaggedByUser, useGetEndorsedUsersByIdea } from "src/hooks/ideaHooks";
+import { useCheckIdeaFollowedByUser, useCheckIdeaEndorsedByUser, useCheckIdeaFlaggedByUser, useGetEndorsedUsersByIdea, useAllIdeas } from "src/hooks/ideaHooks";
 import { useAllRatingsUnderIdea } from "src/hooks/ratingHooks";
 import { useCommentAggregateUnderIdea, useAllCommentsUnderIdea } from "src/hooks/commentHooks";
 import {
@@ -199,6 +199,9 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
   const { token, user } = useContext(UserProfileContext);
   const {data: userSegmentData, isLoading: userSegementLoading} = useAllUserSegments( token, user?.id || null)
+  const {data: useAllIdeaData, isLoading: useAllIdeaLoading} = useAllIdeas();
+ 
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<IFetchError | null>(null);
 
@@ -215,6 +218,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     setOtherFlagReason("OTHER: " + val.target.value)
   
   }
+
 
   const handleHideFlagButton = () => setShowFlagButton(false);
 
@@ -377,6 +381,9 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
   }
   
 
+console.log("Suggested Ideas: ", JSON.stringify(suggestedIdeas))
+
+console.log("Suggested Ideas: ", suggestedIdeas)
 
   useEffect(() => {
     if (!isEndorsedUsersDataLoading) {
@@ -1270,42 +1277,52 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
             </Card.Header>
             <Card.Body>
               {suggestedIdeas.length > 0 ? (
-                <Table style={{ margin: "0rem" }} hover>
-                  <thead>
-                    <tr>
-                      <th>Author</th>
-                      <th>Idea</th>
-                      <th>Ratings</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {suggestedIdeas.map((suggestion: any, index: number) => (
-                      <tr>
-                        <td>
-                          {suggestion.author.fname}@{JSON.stringify(suggestion.author)}
-                        </td>
-                        <td>
-                          <a href={"/ideas/" + suggestion.id}>
-                            {suggestion.title}
-                          </a>
-                        </td>
-                        <div className="d-flex align-content-center">
-                          <td className="px-2 text-muted d-flex flex-column justify-content-center align-items-center">
-                            <AiOutlineStar className="" /><p className="mb-0 user-select-none">{Number(suggestion.ratingAvg).toFixed(1)}</p>
-                          </td>
-                          <td className="px-2 text-muted d-flex flex-column justify-content-center align-items-center">
-                            <BsPeople className="" />
-                            <p className="mb-0 user-select-none">{suggestion.ratingCount + suggestion.commentCount}</p>
-                          </td>
-                          <td className="px-2 text-muted d-flex flex-column justify-content-center align-items-center">
-                            <BsHeartHalf />
-                            <p className="mb-0 user-select-none">{suggestion.posRatings}/{suggestion.negRatings}</p>
-                          </td>
-                        </div>
-                      </tr>
-                    ))}
-                  </tbody>
-                </Table>
+         <Table style={{ margin: "0rem" }} hover>
+         <thead>
+           <tr>
+             <th>Author</th>
+             <th>Idea</th>
+             <th className="align-center text-center"><AiOutlineStar /></th>
+             <th className="align-center text-center"><BsPeople /></th>
+             <th className="align-center text-center"><BsHeartHalf /></th>
+           </tr>
+         </thead>
+         <tbody>
+           {suggestedIdeas.map((suggestion: any, index: number) => {
+       
+           const averageRating = suggestion.ratings.reduce((sum: number, rating: any) => sum + rating.rating, 0) / suggestion.ratings.length;
+
+           const positiveRatings = suggestion.ratings.reduce((sum: number, rating: any) => {
+            if (rating.rating > 0) {
+              return sum + 1;
+            }
+            return sum;
+          }, 0);
+    
+          const negativeRatings = suggestion.ratings.reduce((sum: number, rating: any) => {
+            if (rating.rating < 0) {
+              return sum - 1;
+            }
+            return sum;
+          }, 0);
+             return (
+               <tr key={suggestion.id}>
+                 <td>
+                   {suggestion.author.userSegments.homeSegHandle.trim()}
+                 </td>
+                 <td>
+                   <a href={"/ideas/" + suggestion.id}>
+                     {suggestion.title}
+                   </a>
+                 </td>
+                 <td className="align-center text-center">{isNaN(averageRating) ? 0 : averageRating}</td>
+                 <td className="align-middle text-center">{suggestion.ratings.length + suggestion.comments.length}</td>
+                 <td className="align-middle text-center">{positiveRatings} / {negativeRatings}</td>
+               </tr>
+             );
+           })}
+         </tbody>
+       </Table>
               ) : (
                 <p style={{ margin: "0rem", textAlign: "center" }}>
                   No suggestions yet, be the first!

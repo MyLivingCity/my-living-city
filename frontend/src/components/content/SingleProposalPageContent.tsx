@@ -1308,7 +1308,7 @@ console.log("Suggested Ideas: ", suggestedIdeas)
              return (
                <tr key={suggestion.id}>
                  <td>
-                   {suggestion.author.userSegments.homeSegHandle.trim()}
+                 {suggestion.author.fname}@{capitalizeFirstLetterEachWord(suggestion.subSegment.name) || capitalizeFirstLetterEachWord(suggestion.segment.name) || capitalizeFirstLetterEachWord(suggestion.author.userSegments.homeSegHandle)}
                  </td>
                  <td>
                    <a href={"/ideas/" + suggestion.id}>

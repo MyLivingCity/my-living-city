@@ -215,6 +215,9 @@ proposalRouter.get(
                         select: {
                             id: true,
                             title: true,
+                            segment: true,
+                            subSegment: true,
+                            superSegment: true,
                             ratings: true,
                             comments: true,
                             author: {
@@ -315,6 +318,9 @@ proposalRouter.get(
                         select: {
                             id: true,
                             title: true,
+                            segment: true,
+                            subSegment: true,
+                            superSegment: true,
                             ratings: true,
                             comments: true,
                           

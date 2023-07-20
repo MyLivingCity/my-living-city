@@ -42,11 +42,11 @@ import { IFetchError } from "../../lib/types/types";
 import { useFormik } from "formik";
 import "react-image-crop/dist/ReactCrop.css";
 import { handlePotentialAxiosError } from "../../lib/utilityFunctions";
-import { 
-  followIdeaByUser, 
-  unfollowIdeaByUser, 
-  updateIdeaStatus, 
-  endorseIdeaByUser, 
+import {
+  followIdeaByUser,
+  unfollowIdeaByUser,
+  updateIdeaStatus,
+  endorseIdeaByUser,
   unendorseIdeaByUser,
 } from "src/lib/api/ideaRoutes";
 import { incrementPostFlagCount } from 'src/lib/api/badPostingBehaviorRoutes';
@@ -62,7 +62,7 @@ import { createFlagUnderIdea, compareIdeaFlagsWithThreshold } from "src/lib/api/
 import { useCheckFlagBan } from 'src/hooks/flagHooks';
 import EndorsedUsersSection from '../partials/SingleIdeaContent/EndorsedUsersSection';
 import { IUserSegment } from "../../lib/types/data/segment.type";
-import {getMyUserSegmentInfo} from "../../lib/api/userSegmentRoutes";
+import { getMyUserSegmentInfo } from "../../lib/api/userSegmentRoutes";
 import { useAllUserSegments } from 'src/hooks/userSegmentHooks';
 import { BsPeople, BsHeartHalf } from "react-icons/bs";
 import { AiOutlineRadiusBottomright, AiOutlineStar } from "react-icons/ai";
@@ -172,7 +172,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
         setShowProposalSegmentError(true);
       }
     }
-    
+
     if (!name && segment) {
       name = segment.name
 
@@ -198,9 +198,9 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
   }
 
   const { token, user } = useContext(UserProfileContext);
-  const {data: userSegmentData, isLoading: userSegementLoading} = useAllUserSegments( token, user?.id || null)
-  const {data: useAllIdeaData, isLoading: useAllIdeaLoading} = useAllIdeas();
- 
+  const { data: userSegmentData, isLoading: userSegementLoading } = useAllUserSegments(token, user?.id || null)
+  const { data: useAllIdeaData, isLoading: useAllIdeaLoading } = useAllIdeas();
+
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<IFetchError | null>(null);
@@ -216,7 +216,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
   const [otherFlagReason, setOtherFlagReason] = useState("");
   function getOtherFlagReason(val: any) {
     setOtherFlagReason("OTHER: " + val.target.value)
-  
+
   }
 
 
@@ -231,7 +231,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
   const collaboratorSubmitHandler = async (values: any) => {
     try {
       // Set loading and error state
-      
+
       setError(null);
       setIsLoading(true);
       setTimeout(() => console.log("timeout"), 5000);
@@ -241,7 +241,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
         user!.banned,
         token
       );
-  
+
       setError(null);
       formikCollaborator.resetForm();
       window.location.reload();
@@ -258,7 +258,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
   const volunteerSubmitHandler = async (values: any) => {
     try {
       // Set loading and error state
-   
+
       setError(null);
       setIsLoading(true);
       setTimeout(() => console.log("timeout"), 5000);
@@ -268,7 +268,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
         user!.banned,
         token
       );
-    
+
       setError(null);
       formikVolunteer.resetForm();
       window.location.reload();
@@ -284,7 +284,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
   const donorSubmitHandler = async (values: any) => {
     try {
       // Set loading and error state
-     
+
       setError(null);
       setIsLoading(true);
       setTimeout(() => console.log("timeout"), 5000);
@@ -294,7 +294,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
         user!.banned,
         token
       );
-    
+
       setError(null);
       formikDonor.resetForm();
       window.location.reload();
@@ -336,26 +336,26 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
   });
 
 
- 
+
 
   const [followingPost, setFollowingPost] = useState(false);
   const [endorsingPost, setEndorsingPost] = useState(false);
   const [endorsedUsers, setEndorsedUsers] = useState<any[]>([]);
-  
+
   // API hooks for this component
-  const {data: isFollowingPost, isLoading: isFollowingPostLoading} = useCheckIdeaFollowedByUser(token, (user ? user.id : user), ideaId);
-  const {data: isEndorsingPost, isLoading: isEndorsingPostLoading} = useCheckIdeaEndorsedByUser(token, (user ? user.id : user), ideaId);
-  const {data: flagBanData, isLoading: flagBanDataLoading} = useCheckFlagBan(token, (user ? user.id : ""));
-  const {data: isFlagged, isLoading: isFlaggedLoading} = useCheckIdeaFlaggedByUser(token, (user ? user.id : user), ideaId);
-  const {data: endorsedUsersData, isLoading: isEndorsedUsersDataLoading} = useGetEndorsedUsersByIdea(token, ideaId);
- 
+  const { data: isFollowingPost, isLoading: isFollowingPostLoading } = useCheckIdeaFollowedByUser(token, (user ? user.id : user), ideaId);
+  const { data: isEndorsingPost, isLoading: isEndorsingPostLoading } = useCheckIdeaEndorsedByUser(token, (user ? user.id : user), ideaId);
+  const { data: flagBanData, isLoading: flagBanDataLoading } = useCheckFlagBan(token, (user ? user.id : ""));
+  const { data: isFlagged, isLoading: isFlaggedLoading } = useCheckIdeaFlaggedByUser(token, (user ? user.id : user), ideaId);
+  const { data: endorsedUsersData, isLoading: isEndorsedUsersDataLoading } = useGetEndorsedUsersByIdea(token, ideaId);
+
   // API hooks for children components
   const allRatingsUnderIdea = useAllRatingsUnderIdea(ideaId);
   const commentAggregateUnderIdea = useCommentAggregateUnderIdea(ideaId);
   const allCommentsUnderIdea = useAllCommentsUnderIdea(ideaId, token);
 
-  const canEndorse = user?.userType === USER_TYPES.BUSINESS || user?.userType === USER_TYPES.COMMUNITY 
-  || user?.userType === USER_TYPES.MUNICIPAL || user?.userType === USER_TYPES.MUNICIPAL_SEG_ADMIN; 
+  const canEndorse = user?.userType === USER_TYPES.BUSINESS || user?.userType === USER_TYPES.COMMUNITY
+    || user?.userType === USER_TYPES.MUNICIPAL || user?.userType === USER_TYPES.MUNICIPAL_SEG_ADMIN;
   const [showEndorseButton, setShowEndorseButton] = useState(false);
 
   useEffect(() => {
@@ -379,11 +379,11 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
       setEndorsingPost(!endorsingPost);
     }
   }
-  
 
-console.log("Suggested Ideas: ", JSON.stringify(suggestedIdeas))
 
-console.log("Suggested Ideas: ", suggestedIdeas)
+  console.log("Suggested Ideas: ", JSON.stringify(suggestedIdeas))
+
+  console.log("Suggested Ideas: ", suggestedIdeas)
 
   useEffect(() => {
     if (!isEndorsedUsersDataLoading) {
@@ -434,7 +434,7 @@ console.log("Suggested Ideas: ", suggestedIdeas)
     isPostAuthor = author!.id === user!.id;
   }
 
-  const flagFunc = async(ideaId: number, token: string, userId: string, ideaActive: boolean, reason: string, quarantined_at: Date) => {
+  const flagFunc = async (ideaId: number, token: string, userId: string, ideaActive: boolean, reason: string, quarantined_at: Date) => {
     await createFlagUnderIdea(ideaId, reason, token!);
     const thresholdExceeded = await compareIdeaFlagsWithThreshold(ideaId, token!);
     await updateIdeaStatus(token, ideaId.toString(), !thresholdExceeded, false, false, quarantined_at);
@@ -466,10 +466,10 @@ console.log("Suggested Ideas: ", suggestedIdeas)
     handleCloseOther();
     handleHideFlagButton();
     await flagFunc(ideaId, token, userId, ideaActive, otherFlagReason, quarantined_at);
-    
+
   }
 
-  if(!active){
+  if (!active) {
     return (
       <div>Proposal Is Currently Inactive</div>
     )
@@ -508,39 +508,39 @@ console.log("Suggested Ideas: ", suggestedIdeas)
               <div className="d-flex flex-column justify-content-between">
                 <h1 className="h1">{
                   titleText.length > 75 ?
-                  titleText.substring(0, 75) + "..." :
-                  titleText
+                    titleText.substring(0, 75) + "..." :
+                    titleText
                 }</h1>
-                <div style={{display: "flex", minWidth: "16rem", justifyContent: "left", marginTop: "0.5rem"}}>
+                <div style={{ display: "flex", minWidth: "16rem", justifyContent: "left", marginTop: "0.5rem" }}>
                   <div>
-                {flagBanDataLoading ? <LoadingSpinnerInline/> : showFlagButton ? (<ButtonGroup className="mr-2">
-                  {!reviewed ? (
+                    {flagBanDataLoading ? <LoadingSpinnerInline /> : showFlagButton ? (<ButtonGroup className="mr-2">
+                      {!reviewed ? (
                         <DropdownButton id="dropdown-basic-button d-flex" style={{ fontSize: "16px", font: "16px sans-serif" }} title="Flag">
-                        <Dropdown.Item eventKey= "Abusive or Inappropriate Language" onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Abusive or Inappropriate Language</Dropdown.Item>
-                        <Dropdown.Item eventKey= "Submission in Wrong Community" onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Submission in Wrong Community</Dropdown.Item>
-                        <Dropdown.Item eventKey= "Spam/Unsolicited Advertisement" onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Spam/Unsolicited Advertisement</Dropdown.Item>
-                        <Dropdown.Item eventKey= "Unrelated to Discussion (Off Topic)" onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Unrelated to Discussion (Off Topic)</Dropdown.Item>
-                        <Dropdown.Item eventKey= "Incomplete Submission (Requires Additional Details)" onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Incomplete Submission (Requires Additional Details)</Dropdown.Item>
-                        <Dropdown.Item eventKey= "Other" onSelect={(eventKey) => selectOtherReasonHandler(eventKey!)}>Other</Dropdown.Item>
-                      </DropdownButton>
+                          <Dropdown.Item eventKey="Abusive or Inappropriate Language" onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Abusive or Inappropriate Language</Dropdown.Item>
+                          <Dropdown.Item eventKey="Submission in Wrong Community" onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Submission in Wrong Community</Dropdown.Item>
+                          <Dropdown.Item eventKey="Spam/Unsolicited Advertisement" onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Spam/Unsolicited Advertisement</Dropdown.Item>
+                          <Dropdown.Item eventKey="Unrelated to Discussion (Off Topic)" onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Unrelated to Discussion (Off Topic)</Dropdown.Item>
+                          <Dropdown.Item eventKey="Incomplete Submission (Requires Additional Details)" onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Incomplete Submission (Requires Additional Details)</Dropdown.Item>
+                          <Dropdown.Item eventKey="Other" onSelect={(eventKey) => selectOtherReasonHandler(eventKey!)}>Other</Dropdown.Item>
+                        </DropdownButton>
                       ) : null}
-                  </ButtonGroup>
-                  ) : null}
-                  <ButtonGroup className="mr-2">
-                    {user && token && showFollowButton ? <Button
-                      onClick={async () => await handleFollowUnfollow()}
-                    >
-                      {followingPost ? "Unfollow" : "Follow"}
-                    </Button> : null}
-                  </ButtonGroup>
-                  <ButtonGroup className="mr-2">
-                    {user && token && showEndorseButton && canEndorse ? <Button
-                      onClick={async () => await handleEndorseUnendorse()}
-                    >
-                      {endorsingPost ? "Unendorse" : "Endorse"}
-                    </Button> : null}
-                  </ButtonGroup>
-                </div>
+                    </ButtonGroup>
+                    ) : null}
+                    <ButtonGroup className="mr-2">
+                      {user && token && showFollowButton ? <Button
+                        onClick={async () => await handleFollowUnfollow()}
+                      >
+                        {followingPost ? "Unfollow" : "Follow"}
+                      </Button> : null}
+                    </ButtonGroup>
+                    <ButtonGroup className="mr-2">
+                      {user && token && showEndorseButton && canEndorse ? <Button
+                        onClick={async () => await handleEndorseUnendorse()}
+                      >
+                        {endorsingPost ? "Unendorse" : "Endorse"}
+                      </Button> : null}
+                    </ButtonGroup>
+                  </div>
                 </div>
               </div>
             </Card.Header>
@@ -554,9 +554,11 @@ console.log("Suggested Ideas: ", suggestedIdeas)
                 <Button variant="secondary" onClick={handleClose}>
                   Cancel
                 </Button>
-                <Button style={{background: 'red'}} variant="primary"  onClick={
-                  () => {submitFlagReasonHandler(parseInt(ideaId), token!, user!.id, ideaData.active, new Date())
-                  incrementPostFlagCount(token, ideaId);}
+                <Button style={{ background: 'red' }} variant="primary" onClick={
+                  () => {
+                    submitFlagReasonHandler(parseInt(ideaId), token!, user!.id, ideaData.active, new Date())
+                    incrementPostFlagCount(token, ideaId);
+                  }
                 }>
                   Flag
                 </Button>
@@ -588,7 +590,7 @@ console.log("Suggested Ideas: ", suggestedIdeas)
                 <Button variant="secondary" onClick={handleCloseOther}>
                   Cancel
                 </Button>
-                <Button style={{background: 'red'}} variant="primary"  onClick={
+                <Button style={{ background: 'red' }} variant="primary" onClick={
                   () => submitOtherFlagReasonHandler(parseInt(ideaId), token!, user!.id, ideaData.active, new Date())
                 }>
                   Flag
@@ -643,76 +645,76 @@ console.log("Suggested Ideas: ", suggestedIdeas)
 
                   <br />
                   <table>
-                    
+
                     <tr>
                       <td className='h5'><strong>Description:</strong></td>
                       <td className='lead px-1'>{descriptionText}</td>
                     </tr>
                     <br />
-                    { proposorText?.trim() ?
+                    {proposorText?.trim() ?
                       <tr>
                         <td className='px-4'><strong>Proposer Info:</strong></td>
                         <td className='px-4'>{proposorText}</td>
                       </tr>
                       : null
                     }
-                    { proposorText?.trim() ? <br /> : null }
-                    { benefitText?.trim() ?
+                    {proposorText?.trim() ? <br /> : null}
+                    {benefitText?.trim() ?
                       <tr>
                         <td className='px-4'><strong>Community Benefits:</strong></td>
                         <td className='px-4'>{benefitText}</td>
                       </tr>
                       : null
                     }
-                    { benefitText?.trim() ? <br /> : null }
-                    { proposalText?.trim() ?
+                    {benefitText?.trim() ? <br /> : null}
+                    {proposalText?.trim() ?
                       <tr>
                         <td className='px-4'><strong>Requirements:</strong></td>
                         <td className='px-4'>{proposalText}</td>
                       </tr>
                       : null
                     }
-                    { proposalText?.trim() ? <br /> : null }
-                    { communityImpact?.trim() ?
+                    {proposalText?.trim() ? <br /> : null}
+                    {communityImpact?.trim() ?
                       <tr>
                         <td className='px-4'><strong>Community and Place:</strong></td>
                         <td className='px-4'>{communityImpact}</td>
                       </tr>
                       : null
                     }
-                    { communityImpact?.trim() ? <br /> : null }
-                    { natureImpact?.trim() ?
+                    {communityImpact?.trim() ? <br /> : null}
+                    {natureImpact?.trim() ?
                       <tr>
                         <td className='px-4'><strong>Nature and Food Security:</strong></td>
                         <td className='px-4'>{natureImpact}</td>
                       </tr>
                       : null
                     }
-                    { natureImpact?.trim() ? <br /> : null }
-                    { artsImpact?.trim() ?
+                    {natureImpact?.trim() ? <br /> : null}
+                    {artsImpact?.trim() ?
                       <tr>
                         <td className='px-4'><strong>Arts, Culture, and Education:</strong></td>
                         <td className='px-4'>{artsImpact}</td>
                       </tr>
                       : null
                     }
-                    { artsImpact?.trim() ? <br /> : null }
-                    { energyImpact?.trim() ?
+                    {artsImpact?.trim() ? <br /> : null}
+                    {energyImpact?.trim() ?
                       <tr>
                         <td className='px-4'><strong>Water and Energy:</strong></td>
                         <td className='px-4'>{energyImpact}</td>
                       </tr>
                       : null
                     }
-                    { energyImpact?.trim() ? <br /> : null }
-                    { manufacturingImpact?.trim() ?
+                    {energyImpact?.trim() ? <br /> : null}
+                    {manufacturingImpact?.trim() ?
                       <tr>
                         <td className='px-4'><strong>Manufacturing and Waste:</strong></td>
                         <td className='px-4'>capitalizeString(manufacturingImpact)</td>
                       </tr>
                       : null
                     }
-                    { manufacturingImpact?.trim() ? <br /> : null }
+                    {manufacturingImpact?.trim() ? <br /> : null}
                   </table>
                 </Col>
               </Row>
@@ -1277,52 +1279,56 @@ console.log("Suggested Ideas: ", suggestedIdeas)
             </Card.Header>
             <Card.Body>
               {suggestedIdeas.length > 0 ? (
-         <Table style={{ margin: "0rem" }} hover>
-         <thead>
-           <tr>
-             <th>Author</th>
-             <th>Idea</th>
-             <th className="align-center text-center"><AiOutlineStar /></th>
-             <th className="align-center text-center"><BsPeople /></th>
-             <th className="align-center text-center"><BsHeartHalf /></th>
-           </tr>
-         </thead>
-         <tbody>
-           {suggestedIdeas.map((suggestion: any, index: number) => {
-       
-           const averageRating = suggestion.ratings.reduce((sum: number, rating: any) => sum + rating.rating, 0) / suggestion.ratings.length;
+                <Table style={{ margin: "0rem" }} hover>
+                  <thead>
+                    <tr>
+                      <th>Author</th>
+                      <th>Idea</th>
+                      <th className="align-center text-center"><AiOutlineStar /></th>
+                      <th className="align-center text-center"><BsPeople /></th>
+                      <th className="align-center text-center"><BsHeartHalf /></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {suggestedIdeas.map((suggestion: any, index: number) => {
 
-           const positiveRatings = suggestion.ratings.reduce((sum: number, rating: any) => {
-            if (rating.rating > 0) {
-              return sum + 1;
-            }
-            return sum;
-          }, 0);
-    
-          const negativeRatings = suggestion.ratings.reduce((sum: number, rating: any) => {
-            if (rating.rating < 0) {
-              return sum - 1;
-            }
-            return sum;
-          }, 0);
-             return (
-               <tr key={suggestion.id}>
-                 <td>
-                 {suggestion.author.fname}@{capitalizeFirstLetterEachWord(suggestion.subSegment.name) || capitalizeFirstLetterEachWord(suggestion.segment.name) || capitalizeFirstLetterEachWord(suggestion.author.userSegments.homeSegHandle)}
-                 </td>
-                 <td>
-                   <a href={"/ideas/" + suggestion.id}>
-                     {suggestion.title}
-                   </a>
-                 </td>
-                 <td className="align-center text-center">{isNaN(averageRating) ? 0 : averageRating}</td>
-                 <td className="align-middle text-center">{suggestion.ratings.length + suggestion.comments.length}</td>
-                 <td className="align-middle text-center">{positiveRatings} / {negativeRatings}</td>
-               </tr>
-             );
-           })}
-         </tbody>
-       </Table>
+                      const averageRating = suggestion.ratings.reduce((sum: number, rating: any) => sum + rating.rating, 0) / suggestion.ratings.length;
+
+                      const positiveRatings = suggestion.ratings.reduce((sum: number, rating: any) => {
+                        if (rating.rating > 0) {
+                          return sum + 1;
+                        }
+                        return sum;
+                      }, 0);
+
+                      const negativeRatings = suggestion.ratings.reduce((sum: number, rating: any) => {
+                        if (rating.rating < 0) {
+                          return sum - 1;
+                        }
+                        return sum;
+                      }, 0);
+                      return (
+                        <tr key={suggestion.id}>
+                          <td>
+                            {
+                              (suggestion?.subSegment?.name || suggestion?.segment?.name)
+                                ? `${suggestion?.author?.fname}@${capitalizeFirstLetterEachWord(suggestion?.subSegment?.name) ?? capitalizeFirstLetterEachWord(suggestion?.segment?.name)}`
+                                : `${suggestion?.author?.fname}@${capitalizeFirstLetterEachWord(suggestion?.author?.userSegments?.homeSuperSegName)}`
+                            }
+</td>
+                            <td>
+                              <a href={"/ideas/" + suggestion.id}>
+                                {suggestion.title}
+                              </a>
+                            </td>
+                            <td className="align-center text-center">{isNaN(averageRating) ? 0 : averageRating}</td>
+                            <td className="align-middle text-center">{suggestion.ratings.length + suggestion.comments.length}</td>
+                            <td className="align-middle text-center">{positiveRatings} / {negativeRatings}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </Table>
               ) : (
                 <p style={{ margin: "0rem", textAlign: "center" }}>
                   No suggestions yet, be the first!
@@ -1346,146 +1352,146 @@ console.log("Suggested Ideas: ", suggestedIdeas)
               </div>
             </Card.Header>
             <Card.Body>
-            {console.log( "THE ID: " + proposalId)}
-            {feedback1 ? (
-              <Card>
-              <Card.Header></Card.Header>
-              <Card.Body>
+              {console.log("THE ID: " + proposalId)}
+              {feedback1 ? (
+                <Card>
+                  <Card.Header></Card.Header>
+                  <Card.Body>
                     <p>
                       <strong>Specific Feedback 1: </strong> {feedback1}
                     </p>
                     {feedbackType1 === "YESNO" ? (
-                          <FeedbackRatingYesNoSection
-                            feedbackId = {"1"}
-                            proposalId = {proposalId}
-                            
-                          >
-                          </FeedbackRatingYesNoSection>
-                          ) : null}
-                        {feedbackType1 === "RATING" ? (
-                          <FeedbackRatingScaleSection
-                            feedbackId = {"1"}
-                            proposalId = {proposalId}
-                          >
-                          </FeedbackRatingScaleSection>
-                        ) : null}
-                      </Card.Body>
-                    </Card>
-                  ) : null}
+                      <FeedbackRatingYesNoSection
+                        feedbackId={"1"}
+                        proposalId={proposalId}
 
-            {feedback2 ? (
-              <Card>
-              <Card.Header></Card.Header>
-              <Card.Body>
+                      >
+                      </FeedbackRatingYesNoSection>
+                    ) : null}
+                    {feedbackType1 === "RATING" ? (
+                      <FeedbackRatingScaleSection
+                        feedbackId={"1"}
+                        proposalId={proposalId}
+                      >
+                      </FeedbackRatingScaleSection>
+                    ) : null}
+                  </Card.Body>
+                </Card>
+              ) : null}
+
+              {feedback2 ? (
+                <Card>
+                  <Card.Header></Card.Header>
+                  <Card.Body>
                     <p>
                       <strong>Specific Feedback 2: </strong> {feedback2}
                     </p>
                     {feedbackType2 === "YESNO" ? (
-                          <FeedbackRatingYesNoSection
-                            feedbackId = {"2"}
-                            proposalId = {proposalId}
-                          >
-                          </FeedbackRatingYesNoSection>
-                          ) : null}
-                        {feedbackType2 === "RATING" ? (
-                          <FeedbackRatingScaleSection
-                            feedbackId = {"2"}
-                            proposalId = {proposalId}
-                          >
-                          </FeedbackRatingScaleSection>
-                        ) : null}
-                </Card.Body>
-              </Card>
-                  ) : null}
+                      <FeedbackRatingYesNoSection
+                        feedbackId={"2"}
+                        proposalId={proposalId}
+                      >
+                      </FeedbackRatingYesNoSection>
+                    ) : null}
+                    {feedbackType2 === "RATING" ? (
+                      <FeedbackRatingScaleSection
+                        feedbackId={"2"}
+                        proposalId={proposalId}
+                      >
+                      </FeedbackRatingScaleSection>
+                    ) : null}
+                  </Card.Body>
+                </Card>
+              ) : null}
 
-            {feedback3 ? (
-              <Card>
-              <Card.Header></Card.Header>
-              <Card.Body>
+              {feedback3 ? (
+                <Card>
+                  <Card.Header></Card.Header>
+                  <Card.Body>
                     <p>
                       <strong>Specific Feedback 3: </strong> {feedback3}
                     </p>
                     {feedbackType3 === "YESNO" ? (
-                              <FeedbackRatingYesNoSection
-                                feedbackId = {"3"}
-                                proposalId = {proposalId}
-                              >
-                              </FeedbackRatingYesNoSection>
-                              ) : null}
-                            {feedbackType3 === "RATING" ? (
-                              <FeedbackRatingScaleSection
-                                feedbackId = {"3"}
-                                proposalId = {proposalId}
-                              >
-                              </FeedbackRatingScaleSection>
-                            ) : null}
-                    </Card.Body>
-                  </Card>
-                  ) : null}
+                      <FeedbackRatingYesNoSection
+                        feedbackId={"3"}
+                        proposalId={proposalId}
+                      >
+                      </FeedbackRatingYesNoSection>
+                    ) : null}
+                    {feedbackType3 === "RATING" ? (
+                      <FeedbackRatingScaleSection
+                        feedbackId={"3"}
+                        proposalId={proposalId}
+                      >
+                      </FeedbackRatingScaleSection>
+                    ) : null}
+                  </Card.Body>
+                </Card>
+              ) : null}
 
-            {feedback4 ? (
-              <Card>
-              <Card.Header></Card.Header>
-              <Card.Body>
+              {feedback4 ? (
+                <Card>
+                  <Card.Header></Card.Header>
+                  <Card.Body>
                     <p>
                       <strong>Specific Feedback 4: </strong> {feedback4}
                     </p>
                     {feedbackType4 === "YESNO" ? (
-                              <FeedbackRatingYesNoSection
-                                feedbackId = {"4"}
-                                proposalId = {proposalId}
-                              >
-                              </FeedbackRatingYesNoSection>
-                              ) : null}
-                            {feedbackType4 === "RATING" ? (
-                              <FeedbackRatingScaleSection
-                                feedbackId = {"4"}
-                                proposalId = {proposalId}
-                              >
-                              </FeedbackRatingScaleSection>
-                            ) : null}
-                    </Card.Body>
-                  </Card>
-                  ) : null}
+                      <FeedbackRatingYesNoSection
+                        feedbackId={"4"}
+                        proposalId={proposalId}
+                      >
+                      </FeedbackRatingYesNoSection>
+                    ) : null}
+                    {feedbackType4 === "RATING" ? (
+                      <FeedbackRatingScaleSection
+                        feedbackId={"4"}
+                        proposalId={proposalId}
+                      >
+                      </FeedbackRatingScaleSection>
+                    ) : null}
+                  </Card.Body>
+                </Card>
+              ) : null}
 
-            {feedback5 ? (
-              <Card>
-              <Card.Header></Card.Header>
-              <Card.Body>
+              {feedback5 ? (
+                <Card>
+                  <Card.Header></Card.Header>
+                  <Card.Body>
                     <p>
                       <strong>Specific Feedback 5: </strong> {feedback5}
                     </p>
                     {feedbackType5 === "YESNO" ? (
-                              <FeedbackRatingYesNoSection
-                                feedbackId = {"5"}
-                                proposalId = {proposalId}
-                              >
-                              </FeedbackRatingYesNoSection>
-                              ) : null}
-                            {feedbackType5 === "RATING" ? (
-                              <FeedbackRatingScaleSection
-                                feedbackId = {"5"}
-                                proposalId = {proposalId}
-                              >
-                              </FeedbackRatingScaleSection>
-                            ) : null}
-                    </Card.Body>
-                  </Card>
-                  ) : null}
+                      <FeedbackRatingYesNoSection
+                        feedbackId={"5"}
+                        proposalId={proposalId}
+                      >
+                      </FeedbackRatingYesNoSection>
+                    ) : null}
+                    {feedbackType5 === "RATING" ? (
+                      <FeedbackRatingScaleSection
+                        feedbackId={"5"}
+                        proposalId={proposalId}
+                      >
+                      </FeedbackRatingScaleSection>
+                    ) : null}
+                  </Card.Body>
+                </Card>
+              ) : null}
             </Card.Body>
           </Card>
         </div>
       )}
 
-      {endorsedUsers && endorsedUsers.length > 0 && 
-        <EndorsedUsersSection endorsedUsers={endorsedUsers}/>
+      {endorsedUsers && endorsedUsers.length > 0 &&
+        <EndorsedUsersSection endorsedUsers={endorsedUsers} />
       }
 
       <Row>
-      <RatingsSection ideaId={ideaId} allRatingsUnderIdea={allRatingsUnderIdea} commentAggregateUnderIdea={commentAggregateUnderIdea}/>
+        <RatingsSection ideaId={ideaId} allRatingsUnderIdea={allRatingsUnderIdea} commentAggregateUnderIdea={commentAggregateUnderIdea} />
       </Row>
       <Row>
-        <CommentsSection ideaId={ideaId} allCommentsUnderIdea={allCommentsUnderIdea}/>
+        <CommentsSection ideaId={ideaId} allCommentsUnderIdea={allCommentsUnderIdea} />
       </Row>
     </div>
   );

@@ -1314,21 +1314,21 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                               Number(suggestion?.subSegment?.id)
                                 ? (
                                   Number(suggestion?.subSegment?.id) === suggestion?.author?.userSegments?.homeSubSegmentId
-                                    ? `${suggestion?.author?.userSegments?.homeSegHandle.replace(/\s+/g, '')} As Resident `
+                                    ? `${suggestion?.author?.userSegments?.homeSegHandle.replace(/\s+/g, '') || suggestion?.author?.userSegments?.homeSegHandle.replace(/\s+/g, '')} As Resident `
                                     : Number(suggestion?.subSegment?.id) === suggestion?.author?.userSegments?.workSubSegmentId
-                                      ? `${suggestion?.author?.userSegments?.workSegHandle.replace(/\s+/g, '')} As Worker`
+                                      ? `${suggestion?.author?.userSegments?.workSegHandle.replace(/\s+/g, '') || suggestion?.author?.userSegments?.homeSegHandle.replace(/\s+/g, '')} As Worker`
                                       : Number(suggestion?.subSegment?.id) === suggestion?.author?.userSegments?.schoolSubSegmentID
-                                        ? `${suggestion?.author?.userSegments?.schoolSegHandle.replace(/\s+/g, '')} As Student`
+                                        ? `${suggestion?.author?.userSegments?.schoolSegHandle.replace(/\s+/g, '') || suggestion?.author?.userSegments?.homeSegHandle.replace(/\s+/g, '')} As Student`
                                         : `${suggestion?.author?.userSegments?.homeSegHandle} As Resident `
                                 )
-                                : Number(suggestion?.segment?.id)
+                                : Number(suggestion?.segment?.segId)
                                   ? (
-                                    Number(suggestion?.segment?.id) === suggestion?.author?.userSegments?.homeSegmentId
-                                      ? `${suggestion?.author?.userSegments?.homeSegHandle.replace(/\s+/g, '')} As Resident `
-                                      : Number(suggestion?.segment?.id) === suggestion?.author?.userSegments?.workSegmentId
-                                        ? `${suggestion?.author?.userSegments?.workSegHandle.replace(/\s+/g, '')} As Worker`
-                                        : Number(suggestion?.segment?.id) === suggestion?.author?.userSegments?.schoolSegmentID
-                                          ? `${suggestion?.author?.userSegments?.schoolSegHandle.replace(/\s+/g, '')} As Student`
+                                    Number(suggestion?.segment?.segId) === suggestion?.author?.userSegments?.homeSegmentId
+                                      ? `${suggestion?.author?.userSegments?.homeSegHandle.replace(/\s+/g, '') || suggestion?.author?.userSegments?.homeSegHandle.replace(/\s+/g, '')} As Resident `
+                                      : Number(suggestion?.segment?.segId) === Number(suggestion?.author?.userSegments?.workSegmentId)
+                                        ? `${suggestion?.author?.userSegments?.workSegHandle.replace(/\s+/g, '') || suggestion?.author?.userSegments?.homeSegHandle.replace(/\s+/g, '')} As Worker`
+                                        : Number(suggestion?.segment?.segId) === suggestion?.author?.userSegments?.schoolSegmentId
+                                          ? `${suggestion?.author?.userSegments?.schoolSegHandle.replace(/\s+/g, '') || suggestion?.author?.userSegments?.homeSegHandle.replace(/\s+/g, '')} As Student`
                                           : `${suggestion?.author?.userSegments?.homeSegHandle.replace(/\s+/g, '')} As Resident `
                                   )
                                   : `${suggestion?.author?.userSegments?.homeSegHandle.replace(/\s+/g, '')} As Resident `

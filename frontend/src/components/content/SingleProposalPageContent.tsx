@@ -1311,19 +1311,38 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                         <tr key={suggestion.id}>
                           <td>
                             {
-                              (suggestion?.subSegment?.name || suggestion?.segment?.name)
-                                ? `${suggestion?.author?.fname}@${capitalizeFirstLetterEachWord(suggestion?.subSegment?.name) ?? capitalizeFirstLetterEachWord(suggestion?.segment?.name)}`
-                                : `${suggestion?.author?.fname}@${capitalizeFirstLetterEachWord(suggestion?.author?.userSegments?.homeSuperSegName)}`
+                              Number(suggestion?.subSegment?.id)
+                                ? (
+                                  Number(suggestion?.subSegment?.id) === suggestion?.author?.userSegments?.homeSubSegmentId
+                                    ? `${suggestion?.author?.userSegments?.homeSegHandle.replace(/\s+/g, '')} As Resident `
+                                    : Number(suggestion?.subSegment?.id) === suggestion?.author?.userSegments?.workSubSegmentId
+                                      ? `${suggestion?.author?.userSegments?.workSegHandle.replace(/\s+/g, '')} As Worker`
+                                      : Number(suggestion?.subSegment?.id) === suggestion?.author?.userSegments?.schoolSubSegmentID
+                                        ? `${suggestion?.author?.userSegments?.schoolSegHandle.replace(/\s+/g, '')} As Student`
+                                        : `${suggestion?.author?.userSegments?.homeSegHandle} As Resident `
+                                )
+                                : Number(suggestion?.segment?.id)
+                                  ? (
+                                    Number(suggestion?.segment?.id) === suggestion?.author?.userSegments?.homeSegmentId
+                                      ? `${suggestion?.author?.userSegments?.homeSegHandle.replace(/\s+/g, '')} As Resident `
+                                      : Number(suggestion?.segment?.id) === suggestion?.author?.userSegments?.workSegmentId
+                                        ? `${suggestion?.author?.userSegments?.workSegHandle.replace(/\s+/g, '')} As Worker`
+                                        : Number(suggestion?.segment?.id) === suggestion?.author?.userSegments?.schoolSegmentID
+                                          ? `${suggestion?.author?.userSegments?.schoolSegHandle.replace(/\s+/g, '')} As Student`
+                                          : `${suggestion?.author?.userSegments?.homeSegHandle.replace(/\s+/g, '')} As Resident `
+                                  )
+                                  : `${suggestion?.author?.userSegments?.homeSegHandle.replace(/\s+/g, '')} As Resident `
                             }
-</td>
-                            <td>
-                              <a href={"/ideas/" + suggestion.id}>
-                                {suggestion.title}
-                              </a>
-                            </td>
-                            <td className="align-center text-center">{isNaN(averageRating) ? 0 : averageRating}</td>
-                            <td className="align-middle text-center">{suggestion.ratings.length + suggestion.comments.length}</td>
-                            <td className="align-middle text-center">{positiveRatings} / {negativeRatings}</td>
+                          </td>
+
+                          <td>
+                            <a href={"/ideas/" + suggestion.id}>
+                              {suggestion.title}
+                            </a>
+                          </td>
+                          <td className="align-center text-center">{isNaN(averageRating) ? 0 : averageRating}</td>
+                          <td className="align-middle text-center">{suggestion.ratings.length + suggestion.comments.length}</td>
+                          <td className="align-middle text-center">{positiveRatings} / {negativeRatings}</td>
                         </tr>
                       );
                     })}

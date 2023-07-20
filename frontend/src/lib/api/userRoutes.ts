@@ -137,6 +137,7 @@ export const postRegisterUser = async (registerData: IRegisterInput, requestData
     schoolSubSegmentId,
     userType,
     reachSegmentIds,
+    verified,
   } = registerData;
   let request3 = null;
   let request4 = null;
@@ -149,7 +150,15 @@ export const postRegisterUser = async (registerData: IRegisterInput, requestData
   if (password !== confirmPassword) {
     throw new Error("Both your passwords must match. Please ensure both passwords match to register.")
   }
-  const request = await axios.post<LoginResponse>(`${API_BASE_URL}/user/signup`, { email, password, confirmPassword, organizationName, fname, lname, address, geo, userType });
+
+  if (!logUser) {
+    registerData.verified = true;
+  }
+  else {
+    registerData.verified = false;
+  }
+
+  const request = await axios.post<LoginResponse>(`${API_BASE_URL}/user/signup`, { email, password, confirmPassword, organizationName, fname, lname, address, geo, userType, verified });
   const request2 = await axios({
     method: "post",
     url: `${API_BASE_URL}/schoolDetails/create`,
@@ -231,6 +240,8 @@ export const postRegisterUser = async (registerData: IRegisterInput, requestData
       request7.push(newUserReachReq);
     })
   }
+  let request8: AxiosResponse<any>[] = [];
+ 
 
 
 
@@ -242,6 +253,7 @@ export const postRegisterUser = async (registerData: IRegisterInput, requestData
     storeUserAndTokenInLocalStorage(token, user);
     storeTokenExpiryInLocalStorage();
   }
+  
   await delay(2000);
   return request.data;
 }

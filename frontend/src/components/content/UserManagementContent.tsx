@@ -184,6 +184,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
             schoolSubSegmentId: undefined,
             userType: "MUNICIPAL",
             reachSegmentIds: [],
+            verified: true,
 
         };
 

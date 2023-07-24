@@ -687,9 +687,13 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                   <EmailIcon size={32} round />
                 </EmailShareButton>
               </div>
-              <div>
-                {author?.fname}@{author?.address?.streetAddress} as {userType}
-              </div>
+              { author?.userType === "RESIDENTIAL" ?
+                author?.displayFName ?
+                <div>{author?.displayFName}@{author?.displayLName} as {userType}</div> :
+                <div>{author?.fname}@{author?.address?.streetAddress} as {userType}</div>
+              :
+                <div>{author?.organizationName}</div>
+              }
             </Card.Footer>
           </Col>
         </Row>

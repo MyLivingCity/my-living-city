@@ -380,11 +380,6 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     }
   }
 
-
-  console.log("Suggested Ideas: ", JSON.stringify(suggestedIdeas))
-
-  console.log("Suggested Ideas: ", suggestedIdeas)
-
   useEffect(() => {
     if (!isEndorsedUsersDataLoading) {
       setEndorsedUsers(endorsedUsersData);
@@ -798,9 +793,13 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                   <EmailIcon size={32} round />
                 </EmailShareButton>
               </div>
-              <div>
-                {author?.fname}@{author?.address?.streetAddress} as {userType}
-              </div>
+              { author?.userType === "RESIDENTIAL" ?
+                author?.displayFName ?
+                <div>{author?.displayFName}@{author?.displayLName} as {userType}</div> :
+                <div>{author?.fname}@{author?.address?.streetAddress} as {userType}</div>
+              :
+                <div>{author?.organizationName}</div>
+              }
             </Card.Footer>
           </Col>
         </Row>
@@ -1371,7 +1370,6 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
               </div>
             </Card.Header>
             <Card.Body>
-              {console.log("THE ID: " + proposalId)}
               {feedback1 ? (
                 <Card>
                   <Card.Header></Card.Header>

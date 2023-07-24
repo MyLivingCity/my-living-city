@@ -11,8 +11,6 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import React, { useEffect, useState } from "react";
 import { useCheckFlagBan } from "src/hooks/flagHooks";
-import { useSegmentInfoAggregate, useSingleSegmentBySegmentId, useSingleSubSegmentBySubSegmentId } from "./../../../hooks/segmentHooks";
-import { capitalize } from '@mui/material';
 import { capitalizeFirstLetterEachWord, capitalizeString } from "../../../lib/utilityFunctions";
 
 
@@ -60,56 +58,13 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
     }
   } = commentData;
 
-  const { email, fname, lname, address, userSegments, userType } = commentData?.author;
+  const { email, fname, lname, displayFName, displayLName, Work_Details, School_Details, address, userSegments, userType } = commentData?.author;
   const { segmentId, subSegmentId, superSegmentId } = commentData?.idea;
-  const { homeSegmentId, workSegmentId, schoolSegmentId, homeSubSegmentId, workSubSegmentId, schoolSubSegmentId, homeSuperSegmentId, workSuperSegmentId, schoolSuperSegmentId } = userSegments;
-  const SingleSubSegmentBySubSegmentIdQueryResult = useSingleSubSegmentBySubSegmentId(subSegmentId);
-  const HomeSubSegmentBySubSegmentIdQueryResult = useSingleSubSegmentBySubSegmentId(homeSubSegmentId);
-  const WorkSubSegmentBySubSegmentIdQueryResult = useSingleSubSegmentBySubSegmentId(workSubSegmentId);
-  const SchoolSubSegmentBySubSegmentIdQueryResult = useSingleSubSegmentBySubSegmentId(schoolSubSegmentId);
-  const segmentInfoAggregateQueryResult = useSegmentInfoAggregate(parseInt(segmentId?.toString()));
-  const singleSegmentBySegmentIdQueryResult = useSingleSegmentBySegmentId(parseInt(segmentId?.toString()));
-
-  const {
-    data: segmentInfoAggregateData,
-    isLoading: isSegmentInfoAggregateLoading,
-    isError: isSegmentInfoAggregateError,
-  } = segmentInfoAggregateQueryResult
-
-  const {
-    data: segmentData,
-    isLoading: isSegmentDataLoading,
-    isError: isSegmentDataError,
-  } = singleSegmentBySegmentIdQueryResult
-
-
-  const {
-    data: subSegmentData,
-    isLoading: isSubSegmentDataLoading,
-    isError: isSubSegmentDataError,
-
-  } = SingleSubSegmentBySubSegmentIdQueryResult
-
-  const {
-    data: homeSubSegmentData,
-    isLoading: isHomeSubSegmentDataLoading,
-    isError: isHomeSubSegmentDataError,
-
-  } = HomeSubSegmentBySubSegmentIdQueryResult
-
-  const {
-    data: workSubSegmentData,
-    isLoading: isWorkSubSegmentDataLoading,
-    isError: isWorkSubSegmentDataError,
-
-  } = WorkSubSegmentBySubSegmentIdQueryResult
-
-  const {
-    data: schoolSubSegmentData,
-    isLoading: isSchoolSubSegmentDataLoading,
-    isError: isSchoolSubSegmentDataError,
-
-  } = SchoolSubSegmentBySubSegmentIdQueryResult
+  const { homeSegmentId, workSegmentId, schoolSegmentId,
+    homeSubSegmentId, workSubSegmentId, schoolSubSegmentId,
+    homeSuperSegmentId, workSuperSegmentId, schoolSuperSegmentId,
+    homeSegHandle, workSegHandle, schoolSegHandle
+  } = userSegments;
 
   const colouredUserNameHandle = (ideaId: number, homeId?: number, workId?: number, schoolId?: number) => {
     // let ideaId, homeId, workId, schoolId;
@@ -122,22 +77,64 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
     let userName = ``;
 
     if (subSegmentId) {
-      userName = `${fname}@${subSegmentData?.name}`;
+      if (subSegmentId === homeSubSegmentId) {
+        if (displayFName && displayLName) {
+          userName = capitalizeFirstLetterEachWord(displayFName + '@' + displayLName);
+        } else {
+          userName = capitalizeFirstLetterEachWord(homeSegHandle)
+        }
+      } else if (subSegmentId === workSubSegmentId) {
+        if (Work_Details.displayFName && Work_Details.displayLName) {
+          userName = capitalizeFirstLetterEachWord(Work_Details.displayFName + '@' + Work_Details.displayLName);
+        } else {
+          userName = capitalizeFirstLetterEachWord(workSegHandle)
+        }
+      } else if (subSegmentId === schoolSubSegmentId) {
+        if (School_Details.displayFName && School_Details.displayLName) {
+          userName = capitalizeFirstLetterEachWord(School_Details.displayFName + '@' + School_Details.displayLName);
+        } else {
+          userName = capitalizeFirstLetterEachWord(schoolSegHandle)
+        }
+      }
     } else if (segmentId) {
       if (segmentId === homeSegmentId) {
-        userName = `${fname}@${homeSubSegmentData?.name}`;
+        if (displayFName && displayLName) {
+          userName = capitalizeFirstLetterEachWord(displayFName + '@' + displayLName);
+        } else {
+          userName = capitalizeFirstLetterEachWord(homeSegHandle)
+        }
       } else if (segmentId === workSegmentId) {
-        userName = `${fname}@${workSubSegmentData?.name}`;
+        if (Work_Details.displayFName && Work_Details.displayLName) {
+          userName = capitalizeFirstLetterEachWord(Work_Details.displayFName + '@' + Work_Details.displayLName);
+        } else {
+          userName = capitalizeFirstLetterEachWord(workSegHandle)
+        }
       } else if (segmentId === schoolSegmentId) {
-        userName = `${fname}@${schoolSubSegmentData?.name}`;
+        if (School_Details.displayFName && School_Details.displayLName) {
+          userName = capitalizeFirstLetterEachWord(School_Details.displayFName + '@' + School_Details.displayLName);
+        } else {
+          userName = capitalizeFirstLetterEachWord(schoolSegHandle)
+        }
       }
     } else {
       if (superSegmentId === homeSuperSegmentId) {
-        userName = `${fname}@${homeSubSegmentData?.name}`;
+        if (displayFName && displayLName) {
+          userName = capitalizeFirstLetterEachWord(displayFName + '@' + displayLName);
+        } else {
+          userName = capitalizeFirstLetterEachWord(homeSegHandle)
+        }
       } else if (superSegmentId === workSuperSegmentId) {
-        userName = `${fname}@${workSubSegmentData?.name}`;
+        if (Work_Details.displayFName && Work_Details.displayLName) {
+          userName = capitalizeFirstLetterEachWord(Work_Details.displayFName + '@' + Work_Details.displayLName);
+        } else {
+          userName = capitalizeFirstLetterEachWord(workSegHandle)
+        }
       } else if (superSegmentId === schoolSuperSegmentId) {
-        userName = `${fname}@${schoolSubSegmentData?.name}`;
+        if (School_Details.displayFName && School_Details.displayLName) {
+          userName = capitalizeFirstLetterEachWord(School_Details.displayFName + '@' + School_Details.displayLName);
+        } else {
+          userName = capitalizeFirstLetterEachWord(schoolSegHandle)
+        }
       }
     }
 

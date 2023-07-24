@@ -123,6 +123,9 @@ commentRouter.get(
                   homeSubSegmentId: true,
                   workSubSegmentId: true,
                   schoolSubSegmentId: true,
+                  homeSegHandle: true,
+                  workSegHandle: true,
+                  schoolSegHandle: true,
                 }
               },
               address: {

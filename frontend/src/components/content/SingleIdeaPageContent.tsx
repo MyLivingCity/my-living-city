@@ -692,7 +692,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                 <div>{author?.displayFName}@{author?.displayLName} as {userType}</div> :
                 <div>{author?.fname}@{author?.address?.streetAddress} as {userType}</div>
               :
-                <div>{author?.organizationName}</div>
+                <div>{author?.organizationName}@{author?.address?.streetAddress}</div>
               }
             </Card.Footer>
           </Col>

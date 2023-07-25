@@ -76,64 +76,24 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
 
     let userName = ``;
 
-    if (subSegmentId) {
-      if (subSegmentId === homeSubSegmentId) {
+    if (subSegmentId || segmentId || superSegmentId) {
+      if (subSegmentId === homeSubSegmentId || segmentId === homeSegmentId || superSegmentId === homeSuperSegmentId) {
         if (displayFName && displayLName) {
           userName = capitalizeFirstLetterEachWord(displayFName + '@' + displayLName);
         } else {
-          userName = capitalizeFirstLetterEachWord(homeSegHandle)
+          userName = homeSegHandle;
         }
-      } else if (subSegmentId === workSubSegmentId) {
+      } else if (subSegmentId === workSubSegmentId || segmentId === workSegmentId || superSegmentId === workSuperSegmentId) {
         if (Work_Details.displayFName && Work_Details.displayLName) {
           userName = capitalizeFirstLetterEachWord(Work_Details.displayFName + '@' + Work_Details.displayLName);
         } else {
-          userName = capitalizeFirstLetterEachWord(workSegHandle)
+          userName = workSegHandle;
         }
-      } else if (subSegmentId === schoolSubSegmentId) {
+      } else if (subSegmentId === schoolSubSegmentId || segmentId === schoolSegmentId || superSegmentId === schoolSegmentId) {
         if (School_Details.displayFName && School_Details.displayLName) {
           userName = capitalizeFirstLetterEachWord(School_Details.displayFName + '@' + School_Details.displayLName);
         } else {
-          userName = capitalizeFirstLetterEachWord(schoolSegHandle)
-        }
-      }
-    } else if (segmentId) {
-      if (segmentId === homeSegmentId) {
-        if (displayFName && displayLName) {
-          userName = capitalizeFirstLetterEachWord(displayFName + '@' + displayLName);
-        } else {
-          userName = capitalizeFirstLetterEachWord(homeSegHandle)
-        }
-      } else if (segmentId === workSegmentId) {
-        if (Work_Details.displayFName && Work_Details.displayLName) {
-          userName = capitalizeFirstLetterEachWord(Work_Details.displayFName + '@' + Work_Details.displayLName);
-        } else {
-          userName = capitalizeFirstLetterEachWord(workSegHandle)
-        }
-      } else if (segmentId === schoolSegmentId) {
-        if (School_Details.displayFName && School_Details.displayLName) {
-          userName = capitalizeFirstLetterEachWord(School_Details.displayFName + '@' + School_Details.displayLName);
-        } else {
-          userName = capitalizeFirstLetterEachWord(schoolSegHandle)
-        }
-      }
-    } else {
-      if (superSegmentId === homeSuperSegmentId) {
-        if (displayFName && displayLName) {
-          userName = capitalizeFirstLetterEachWord(displayFName + '@' + displayLName);
-        } else {
-          userName = capitalizeFirstLetterEachWord(homeSegHandle)
-        }
-      } else if (superSegmentId === workSuperSegmentId) {
-        if (Work_Details.displayFName && Work_Details.displayLName) {
-          userName = capitalizeFirstLetterEachWord(Work_Details.displayFName + '@' + Work_Details.displayLName);
-        } else {
-          userName = capitalizeFirstLetterEachWord(workSegHandle)
-        }
-      } else if (superSegmentId === schoolSuperSegmentId) {
-        if (School_Details.displayFName && School_Details.displayLName) {
-          userName = capitalizeFirstLetterEachWord(School_Details.displayFName + '@' + School_Details.displayLName);
-        } else {
-          userName = capitalizeFirstLetterEachWord(schoolSegHandle)
+          userName = schoolSegHandle;
         }
       }
     }

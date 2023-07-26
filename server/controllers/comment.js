@@ -97,22 +97,6 @@ commentRouter.get(
               email: true,
               fname: true,
               lname: true,
-              displayFName: true,
-              displayLName: true,
-              School_Details: {
-                select: {
-                  id: true,
-                  displayFName: true,
-                  displayLName: true,
-                }
-              },
-              Work_Details: {
-                select: {
-                  id: true,
-                  displayFName: true,
-                  displayLName: true,
-                }
-              },
               userType: true,
               userSegments: {
                 select: {

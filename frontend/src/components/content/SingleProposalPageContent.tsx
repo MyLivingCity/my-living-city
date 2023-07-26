@@ -794,10 +794,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                 </EmailShareButton>
               </div>
               { author?.userType === "RESIDENTIAL" ?
-                author?.displayFName ?
-                <div>{author?.displayFName}@{author?.displayLName} as {userType}</div> :
-                <div>{author?.fname}@{author?.address?.streetAddress} as {userType}</div>
-              :
+                <div>{author?.fname}@{author?.address?.streetAddress} as {userType}</div> :
                 <div>{author?.organizationName}@{author?.address?.streetAddress}</div>
               }
             </Card.Footer>

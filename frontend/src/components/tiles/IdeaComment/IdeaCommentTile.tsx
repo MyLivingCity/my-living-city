@@ -58,7 +58,7 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
     }
   } = commentData;
 
-  const { email, fname, lname, displayFName, displayLName, Work_Details, School_Details, address, userSegments, userType } = commentData?.author;
+  const { email, fname, lname, address, userSegments, userType } = commentData?.author;
   const { segmentId, subSegmentId, superSegmentId } = commentData?.idea;
   const { homeSegmentId, workSegmentId, schoolSegmentId,
     homeSubSegmentId, workSubSegmentId, schoolSubSegmentId,
@@ -74,37 +74,15 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
 
     // }
 
-    let userName = ``;
-
-    if (subSegmentId || segmentId || superSegmentId) {
-      if (subSegmentId === homeSubSegmentId || segmentId === homeSegmentId || superSegmentId === homeSuperSegmentId) {
-        if (displayFName && displayLName) {
-          userName = capitalizeFirstLetterEachWord(displayFName + '@' + displayLName);
-        } else {
-          userName = homeSegHandle;
-        }
-      } else if (subSegmentId === workSubSegmentId || segmentId === workSegmentId || superSegmentId === workSuperSegmentId) {
-        if (Work_Details.displayFName && Work_Details.displayLName) {
-          userName = capitalizeFirstLetterEachWord(Work_Details.displayFName + '@' + Work_Details.displayLName);
-        } else {
-          userName = workSegHandle;
-        }
-      } else if (subSegmentId === schoolSubSegmentId || segmentId === schoolSegmentId || superSegmentId === schoolSegmentId) {
-        if (School_Details.displayFName && School_Details.displayLName) {
-          userName = capitalizeFirstLetterEachWord(School_Details.displayFName + '@' + School_Details.displayLName);
-        } else {
-          userName = schoolSegHandle;
-        }
-      }
-    }
+    let userName = 'Unknown';
 
     let colour = '';
     if (userType === 'ADMIN') {
-      userName += " as Admin";
+      userName = homeSegHandle + " as Admin";
       colour = 'text-danger';
     }
     else if (userType === 'MOD') {
-      userName += " as Mod";
+      userName = homeSegHandle + " as Mod";
       colour = 'text-warning';
     } else if (userType === 'MUNICIPAL') {
       userName = "Municipal Account";
@@ -113,15 +91,15 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
     else {
       switch (ideaId) {
         case homeId:
-          userName += " as Resident"
+          userName = homeSegHandle + " as Resident"
           colour = 'text-primary'
           break;
         case workId:
-          userName += " as Worker"
+          userName = workSegHandle + " as Worker"
           colour = 'text-next'
           break;
         case schoolId:
-          userName += " as Student"
+          userName = schoolSegHandle + " as Student"
           colour = 'text-next'
           break;
       }

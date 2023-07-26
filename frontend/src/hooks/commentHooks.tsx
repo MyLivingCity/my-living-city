@@ -106,16 +106,6 @@ export const useCreateCommentMutation = (
                   email,
                   fname: fname ?? '',
                   lname: lname ?? '',
-                  displayFName: fname ?? '',
-                  displayLName: lname ?? '',
-                  Work_Details: {
-                    displayFName: fname ?? '',
-                    displayLName: lname ?? '',
-                  },
-                  School_Details: {
-                    displayFName: fname ?? '',
-                    displayLName: lname ?? '',
-                  },
                   userType: userType ?? '',
                   address: {
                     postalCode: address?.postalCode ?? '',

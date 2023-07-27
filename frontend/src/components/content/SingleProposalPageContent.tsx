@@ -162,17 +162,10 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
   const [showProposalSegmentError, setShowProposalSegmentError] = useState(false);
 
   function redirectToIdeaSubmit() {
-    let name = subSegment?.name
+    if (userType === 'RESIDENT') {
+      let name = subSegment?.name
 
-    if (name && subSegment) {
-      if (userType != 'RESIDENT') {
-        if (subSegment.segId === userSegmentData.homeSubSegmentId || segment?.segId === userSegmentData.homeSegmentId || superSegment?.superSegId === userSegmentData.superSegmentId) {
-          const communityOfInterest = getSegmentName(name);
-          window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}`;
-        } else {
-          setShowProposalSegmentError(true);
-        }
-      } else {
+      if (name && subSegment) {
         if (subSegment.segId === userSegmentData.homeSubSegmentId || subSegment.segId === userSegmentData.workSubSegmentId || subSegment.segId === userSegmentData.schoolSubSegmentId) {
           const communityOfInterest = getSegmentName(name);
           window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}`;
@@ -202,6 +195,14 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
         } else {
           setShowProposalSegmentError(true);
         }
+      }
+    } else {
+      if (subSegment?.segId === userSegmentData.homeSubSegmentId || segment?.segId === userSegmentData.homeSegmentId || superSegment?.superSegId === userSegmentData.homeSuperSegId) {
+        let name = subSegment?.name || segment?.name || superSegment?.name;
+        const communityOfInterest = getSegmentName(name);
+        window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}`;
+      } else {
+        setShowProposalSegmentError(true);
       }
     }
   }

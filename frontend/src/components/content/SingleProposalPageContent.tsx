@@ -165,34 +165,43 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     let name = subSegment?.name
 
     if (name && subSegment) {
-      if (subSegment.segId === userSegmentData.homeSubSegmentId || subSegment.segId === userSegmentData.workSubSegmentId || subSegment.segId === userSegmentData.schoolSubSegmentId) {
-        const communityOfInterest = getSegmentName(name);
-        window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}`;
+      if (userType != 'RESIDENT') {
+        if (subSegment.segId === userSegmentData.homeSubSegmentId || segment?.segId === userSegmentData.homeSegmentId || superSegment?.superSegId === userSegmentData.superSegmentId) {
+          const communityOfInterest = getSegmentName(name);
+          window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}`;
+        } else {
+          setShowProposalSegmentError(true);
+        }
       } else {
-        setShowProposalSegmentError(true);
-      }
-    }
-
-    if (!name && segment) {
-      name = segment.name
-
-      if (name && segment) {
-        if (segment.segId === userSegmentData.homeSegmentId || segment.segId === userSegmentData.workSegmentId || segment.segId === userSegmentData.schoolSegmentId) {
+        if (subSegment.segId === userSegmentData.homeSubSegmentId || subSegment.segId === userSegmentData.workSubSegmentId || subSegment.segId === userSegmentData.schoolSubSegmentId) {
           const communityOfInterest = getSegmentName(name);
           window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}`;
         } else {
           setShowProposalSegmentError(true);
         }
       }
-    }
 
-    if (!name && superSegment) {
-      name = superSegment.name
-      if (superSegment.superSegId === userSegmentData.homeSuperSegId || superSegment.superSegId === userSegmentData.workSuperSegId || superSegment.superSegId === userSegmentData.schoolSuperSegId) {
-        const communityOfInterest = getSegmentName(name);
-        window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}`;
-      } else {
-        setShowProposalSegmentError(true);
+      if (!name && segment) {
+        name = segment.name
+
+        if (name && segment) {
+          if (segment.segId === userSegmentData.homeSegmentId || segment.segId === userSegmentData.workSegmentId || segment.segId === userSegmentData.schoolSegmentId) {
+            const communityOfInterest = getSegmentName(name);
+            window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}`;
+          } else {
+            setShowProposalSegmentError(true);
+          }
+        }
+      }
+
+      if (!name && superSegment) {
+        name = superSegment.name
+        if (superSegment.superSegId === userSegmentData.homeSuperSegId || superSegment.superSegId === userSegmentData.workSuperSegId || superSegment.superSegId === userSegmentData.schoolSuperSegId) {
+          const communityOfInterest = getSegmentName(name);
+          window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}`;
+        } else {
+          setShowProposalSegmentError(true);
+        }
       }
     }
   }

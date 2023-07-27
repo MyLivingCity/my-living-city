@@ -97,6 +97,7 @@ commentRouter.get(
               email: true,
               fname: true,
               lname: true,
+              organizationName: true,
               userType: true,
               userSegments: {
                 select: {

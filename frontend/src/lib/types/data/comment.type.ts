@@ -14,6 +14,7 @@ export interface IParsedCommentAuthor {
   email: string;
   fname: string;
   lname: string;
+  organizationName: string;
   address: {
     streetAddress: string;
     postalCode: string;

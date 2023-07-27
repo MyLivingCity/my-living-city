@@ -58,7 +58,7 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
     }
   } = commentData;
 
-  const { email, fname, lname, address, userSegments, userType } = commentData?.author;
+  const { email, fname, lname, organizationName, address, userSegments, userType } = commentData?.author;
   const { segmentId, subSegmentId, superSegmentId } = commentData?.idea;
   const { homeSegmentId, workSegmentId, schoolSegmentId,
     homeSubSegmentId, workSubSegmentId, schoolSubSegmentId,
@@ -74,21 +74,28 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
 
     // }
 
-    let userName = 'Unknown';
+    let userName = "Unknown";
 
     let colour = '';
     if (userType === 'ADMIN') {
       userName = homeSegHandle + " as Admin";
       colour = 'text-danger';
-    }
-    else if (userType === 'MOD') {
+    } else if (userType === 'MOD') {
       userName = homeSegHandle + " as Mod";
       colour = 'text-warning';
+    } else if (userType === 'MUNICIPAL_SEG_ADMIN') {
+      userName = "Municipal Admin";
+      colour = 'text-danger';
     } else if (userType === 'MUNICIPAL') {
       userName = "Municipal Account";
       colour = 'text-warning';
-    }
-    else {
+    } else if (userType === 'BUSINESS') {
+      userName = organizationName + "@" + address?.streetAddress + " as Business Member";
+      colour = 'text-primary'
+    } else if (userType === 'Community') {
+      userName = organizationName + "@" + address?.streetAddress + " as Community Member";
+      colour = 'text-primary'
+    } else {
       switch (ideaId) {
         case homeId:
           userName = homeSegHandle + " as Resident"

@@ -68,7 +68,7 @@ export const useCreateCommentMutation = (
     ),
     {
       onMutate: async (newComment) => {
-        const { id: userId, fname, lname, email, address, userSegments, userType} = user!
+        const { id: userId, fname, lname, organizationName, email, address, userSegments, userType} = user!
 
         // snapshot previous value
         const previousCommentAggregate = 
@@ -106,6 +106,7 @@ export const useCreateCommentMutation = (
                   email,
                   fname: fname ?? '',
                   lname: lname ?? '',
+                  organizationName: organizationName ?? '',
                   userType: userType ?? '',
                   address: {
                     postalCode: address?.postalCode ?? '',

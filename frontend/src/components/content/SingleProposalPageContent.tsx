@@ -803,7 +803,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                   <EmailIcon size={32} round />
                 </EmailShareButton>
               </div>
-              { author?.userType === "RESIDENTIAL" ?
+              {author?.userType === "RESIDENTIAL" ?
                 <div>{author?.fname}@{author?.address?.streetAddress} as {userType}</div> :
                 <div>{author?.organizationName}@{author?.address?.streetAddress}</div>
               }
@@ -1316,29 +1316,29 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                       return (
                         <tr key={suggestion.id}>
                           <td>
-                            {
-                              Number(suggestion?.subSegment?.id)
-                                ? (
-                                  Number(suggestion?.subSegment?.id) === suggestion?.author?.userSegments?.homeSubSegmentId
-                                    ? `${suggestion?.author?.displayFName}@${suggestion?.author?.displayLName} As Resident `
-                                    : Number(suggestion?.subSegment?.id) === suggestion?.author?.userSegments?.workSubSegmentId
-                                      ? `${suggestion?.author?.Work_Details?.displayFName}@${suggestion?.author?.Work_Details?.displayLName} As Worker`
-                                      : Number(suggestion?.subSegment?.id) === suggestion?.author?.userSegments?.schoolSubSegmentID
-                                        ? `${suggestion?.author?.School_Details?.displayFName}@${suggestion?.author?.School_Details?.displayLName} As Student`
-                                        : `${suggestion?.author?.displayFName}@${suggestion?.author?.displayLName} As Resident `
-                                )
-                                : Number(suggestion?.segment?.segId)
-                                  ? (
-                                    Number(suggestion?.segment?.segId) === suggestion?.author?.userSegments?.homeSegmentId
-                                      ? `${suggestion?.author?.displayFName}@${suggestion?.author?.displayLName} As Resident `
-                                      : Number(suggestion?.segment?.segId) === Number(suggestion?.author?.userSegments?.workSegmentId)
-                                        ? `${suggestion?.author?.Work_Details?.displayFName}@${suggestion?.author?.Work_Details?.displayLName} As Worker`
-                                        : Number(suggestion?.segment?.segId) === suggestion?.author?.userSegments?.schoolSegmentId
-                                          ? `${suggestion?.author?.School_Details?.displayFName}@${suggestion?.author?.School_Details?.displayLName} As Student`
-                                          : `${suggestion?.author?.displayFName}@${suggestion?.author?.displayLName} As Resident `
-                                  )
-                                  : `${suggestion?.author?.displayFName}@${suggestion?.author?.displayLName} As Resident `
-                            }
+                            {Number(suggestion?.subSegment?.id) ? (
+                              Number(suggestion?.subSegment?.id) ===
+                                suggestion?.author?.userSegments?.homeSubSegmentId ? (
+                                `${suggestion?.author?.userSegments?.homeSegHandle} As Resident`
+                              ) : Number(suggestion?.subSegment?.id) ===
+                                suggestion?.author?.userSegments?.workSubSegmentId ? (
+                                suggestion?.author?.userSegments?.workSegHandle || `${suggestion?.author?.userSegments?.homeSegHandle} As Worker`
+                              ) : Number(suggestion?.subSegment?.id) ===
+                                suggestion?.author?.userSegments?.schoolSubSegmentID ? (
+                                `${suggestion?.author?.userSegments?.schoolSegHandle} As Student`
+                              ) : `${suggestion?.author?.userSegments?.homeSegHandle} As Resident`
+                            ) : Number(suggestion?.segment?.segId) ? (
+                              Number(suggestion?.segment?.segId) ===
+                                suggestion?.author?.userSegments?.homeSegmentId ? (
+                                `${suggestion?.author?.displayFName}@${suggestion?.author?.displayLName} As Resident`
+                              ) : Number(suggestion?.segment?.segId) ===
+                                Number(suggestion?.author?.userSegments?.workSegmentId) ? (
+                                suggestion?.author?.userSegments?.workSegHandle || `${suggestion?.author?.userSegments?.homeSegHandle} As Worker`
+                              ) : Number(suggestion?.segment?.segId) ===
+                                suggestion?.author?.userSegments?.schoolSegmentId ? (
+                                `${suggestion?.author?.userSegments?.schoolSegHandle} As Student`
+                              ) : `${suggestion?.author?.userSegments?.homeSegHandle} As Resident`
+                            ) : `${suggestion?.author?.userSegments?.homeSegHandle} As Resident`}
                           </td>
 
                           <td>

@@ -114,7 +114,7 @@ const superSegmentName = superSegments.find(superSegment => superSegment.superSe
           </small>
           <div className="text-right">
             <small className='text-muted user-select-none'>
-              {idea.subSegmentName ? ` ${capitalizeString(idea.segmentName)}@${capitalizeString(idea.subSegmentName)}` :
+              {idea.subSegmentName ? ` ${capitalizeString(idea.segmentName)}\/${capitalizeString(idea.subSegmentName)}` :
                 idea.segmentName ? ` ${capitalizeString(idea.segmentName)}` :
                   superSegmentName ? ` ${capitalizeString(superSegmentName)}` : ""}
             </small>

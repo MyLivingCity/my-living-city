@@ -14,6 +14,7 @@ export interface IParsedCommentAuthor {
   email: string;
   fname: string;
   lname: string;
+  organizationName: string;
   address: {
     streetAddress: string;
     postalCode: string;
@@ -29,6 +30,9 @@ export interface IParsedCommentAuthor {
     homeSuperSegmentId: number;
     workSuperSegmentId: number;
     schoolSuperSegmentId: number;
+    homeSegHandle: string;
+    workSegHandle: string;
+    schoolSegHandle: string;
   }
 }
 export interface IParsedIdea {

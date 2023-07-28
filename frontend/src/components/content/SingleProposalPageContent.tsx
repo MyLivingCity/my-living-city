@@ -162,33 +162,43 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
   const [showProposalSegmentError, setShowProposalSegmentError] = useState(false);
 
   function redirectToIdeaSubmit() {
-    let name = subSegment?.name
+    if (userType === 'RESIDENT') {
+      let name = subSegment?.name
 
-    if (name && subSegment) {
-      if (subSegment.segId === userSegmentData.homeSubSegmentId || subSegment.segId === userSegmentData.workSubSegmentId || subSegment.segId === userSegmentData.schoolSubSegmentId) {
-        const communityOfInterest = getSegmentName(name);
-        window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}`;
-      } else {
-        setShowProposalSegmentError(true);
-      }
-    }
-
-    if (!name && segment) {
-      name = segment.name
-
-      if (name && segment) {
-        if (segment.segId === userSegmentData.homeSegmentId || segment.segId === userSegmentData.workSegmentId || segment.segId === userSegmentData.schoolSegmentId) {
+      if (name && subSegment) {
+        if (subSegment.segId === userSegmentData.homeSubSegmentId || subSegment.segId === userSegmentData.workSubSegmentId || subSegment.segId === userSegmentData.schoolSubSegmentId) {
           const communityOfInterest = getSegmentName(name);
           window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}`;
         } else {
           setShowProposalSegmentError(true);
         }
       }
-    }
 
-    if (!name && superSegment) {
-      name = superSegment.name
-      if (superSegment.superSegId === userSegmentData.homeSuperSegId || superSegment.superSegId === userSegmentData.workSuperSegId || superSegment.superSegId === userSegmentData.schoolSuperSegId) {
+      if (!name && segment) {
+        name = segment.name
+
+        if (name && segment) {
+          if (segment.segId === userSegmentData.homeSegmentId || segment.segId === userSegmentData.workSegmentId || segment.segId === userSegmentData.schoolSegmentId) {
+            const communityOfInterest = getSegmentName(name);
+            window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}`;
+          } else {
+            setShowProposalSegmentError(true);
+          }
+        }
+      }
+
+      if (!name && superSegment) {
+        name = superSegment.name
+        if (superSegment.superSegId === userSegmentData.homeSuperSegId || superSegment.superSegId === userSegmentData.workSuperSegId || superSegment.superSegId === userSegmentData.schoolSuperSegId) {
+          const communityOfInterest = getSegmentName(name);
+          window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}`;
+        } else {
+          setShowProposalSegmentError(true);
+        }
+      }
+    } else {
+      if (subSegment?.segId === userSegmentData.homeSubSegmentId || segment?.segId === userSegmentData.homeSegmentId || superSegment?.superSegId === userSegmentData.homeSuperSegId) {
+        let name = subSegment?.name || segment?.name || superSegment?.name;
         const communityOfInterest = getSegmentName(name);
         window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}`;
       } else {
@@ -379,11 +389,6 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
       setEndorsingPost(!endorsingPost);
     }
   }
-
-
-  console.log("Suggested Ideas: ", JSON.stringify(suggestedIdeas))
-
-  console.log("Suggested Ideas: ", suggestedIdeas)
 
   useEffect(() => {
     if (!isEndorsedUsersDataLoading) {
@@ -798,9 +803,10 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                   <EmailIcon size={32} round />
                 </EmailShareButton>
               </div>
-              <div>
-                {author?.fname}@{author?.address?.streetAddress} as {userType}
-              </div>
+              { author?.userType === "RESIDENTIAL" ?
+                <div>{author?.fname}@{author?.address?.streetAddress} as {userType}</div> :
+                <div>{author?.organizationName}@{author?.address?.streetAddress}</div>
+              }
             </Card.Footer>
           </Col>
         </Row>
@@ -1371,7 +1377,6 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
               </div>
             </Card.Header>
             <Card.Body>
-              {console.log("THE ID: " + proposalId)}
               {feedback1 ? (
                 <Card>
                   <Card.Header></Card.Header>

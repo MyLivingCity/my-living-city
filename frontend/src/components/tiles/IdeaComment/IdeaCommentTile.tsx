@@ -11,8 +11,6 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import React, { useEffect, useState } from "react";
 import { useCheckFlagBan } from "src/hooks/flagHooks";
-import { useSegmentInfoAggregate, useSingleSegmentBySegmentId, useSingleSubSegmentBySubSegmentId } from "./../../../hooks/segmentHooks";
-import { capitalize } from '@mui/material';
 import { capitalizeFirstLetterEachWord, capitalizeString } from "../../../lib/utilityFunctions";
 
 
@@ -60,56 +58,13 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
     }
   } = commentData;
 
-  const { email, fname, lname, address, userSegments, userType } = commentData?.author;
+  const { email, fname, lname, organizationName, address, userSegments, userType } = commentData?.author;
   const { segmentId, subSegmentId, superSegmentId } = commentData?.idea;
-  const { homeSegmentId, workSegmentId, schoolSegmentId, homeSubSegmentId, workSubSegmentId, schoolSubSegmentId, homeSuperSegmentId, workSuperSegmentId, schoolSuperSegmentId } = userSegments;
-  const SingleSubSegmentBySubSegmentIdQueryResult = useSingleSubSegmentBySubSegmentId(subSegmentId);
-  const HomeSubSegmentBySubSegmentIdQueryResult = useSingleSubSegmentBySubSegmentId(homeSubSegmentId);
-  const WorkSubSegmentBySubSegmentIdQueryResult = useSingleSubSegmentBySubSegmentId(workSubSegmentId);
-  const SchoolSubSegmentBySubSegmentIdQueryResult = useSingleSubSegmentBySubSegmentId(schoolSubSegmentId);
-  const segmentInfoAggregateQueryResult = useSegmentInfoAggregate(parseInt(segmentId?.toString()));
-  const singleSegmentBySegmentIdQueryResult = useSingleSegmentBySegmentId(parseInt(segmentId?.toString()));
-
-  const {
-    data: segmentInfoAggregateData,
-    isLoading: isSegmentInfoAggregateLoading,
-    isError: isSegmentInfoAggregateError,
-  } = segmentInfoAggregateQueryResult
-
-  const {
-    data: segmentData,
-    isLoading: isSegmentDataLoading,
-    isError: isSegmentDataError,
-  } = singleSegmentBySegmentIdQueryResult
-
-
-  const {
-    data: subSegmentData,
-    isLoading: isSubSegmentDataLoading,
-    isError: isSubSegmentDataError,
-
-  } = SingleSubSegmentBySubSegmentIdQueryResult
-
-  const {
-    data: homeSubSegmentData,
-    isLoading: isHomeSubSegmentDataLoading,
-    isError: isHomeSubSegmentDataError,
-
-  } = HomeSubSegmentBySubSegmentIdQueryResult
-
-  const {
-    data: workSubSegmentData,
-    isLoading: isWorkSubSegmentDataLoading,
-    isError: isWorkSubSegmentDataError,
-
-  } = WorkSubSegmentBySubSegmentIdQueryResult
-
-  const {
-    data: schoolSubSegmentData,
-    isLoading: isSchoolSubSegmentDataLoading,
-    isError: isSchoolSubSegmentDataError,
-
-  } = SchoolSubSegmentBySubSegmentIdQueryResult
+  const { homeSegmentId, workSegmentId, schoolSegmentId,
+    homeSubSegmentId, workSubSegmentId, schoolSubSegmentId,
+    homeSuperSegmentId, workSuperSegmentId, schoolSuperSegmentId,
+    homeSegHandle, workSegHandle, schoolSegHandle
+  } = userSegments;
 
   const colouredUserNameHandle = (ideaId: number, homeId?: number, workId?: number, schoolId?: number) => {
     // let ideaId, homeId, workId, schoolId;
@@ -119,52 +74,39 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
 
     // }
 
-    let userName = ``;
-
-    if (subSegmentId) {
-      userName = `${fname}@${subSegmentData?.name}`;
-    } else if (segmentId) {
-      if (segmentId === homeSegmentId) {
-        userName = `${fname}@${homeSubSegmentData?.name}`;
-      } else if (segmentId === workSegmentId) {
-        userName = `${fname}@${workSubSegmentData?.name}`;
-      } else if (segmentId === schoolSegmentId) {
-        userName = `${fname}@${schoolSubSegmentData?.name}`;
-      }
-    } else {
-      if (superSegmentId === homeSuperSegmentId) {
-        userName = `${fname}@${homeSubSegmentData?.name}`;
-      } else if (superSegmentId === workSuperSegmentId) {
-        userName = `${fname}@${workSubSegmentData?.name}`;
-      } else if (superSegmentId === schoolSuperSegmentId) {
-        userName = `${fname}@${schoolSubSegmentData?.name}`;
-      }
-    }
+    let userName = "Unknown";
 
     let colour = '';
     if (userType === 'ADMIN') {
-      userName += " as Admin";
+      userName = homeSegHandle + " as Admin";
       colour = 'text-danger';
-    }
-    else if (userType === 'MOD') {
-      userName += " as Mod";
+    } else if (userType === 'MOD') {
+      userName = homeSegHandle + " as Mod";
       colour = 'text-warning';
+    } else if (userType === 'MUNICIPAL_SEG_ADMIN') {
+      userName = "Municipal Admin";
+      colour = 'text-danger';
     } else if (userType === 'MUNICIPAL') {
       userName = "Municipal Account";
       colour = 'text-warning';
-    }
-    else {
+    } else if (userType === 'BUSINESS') {
+      userName = organizationName + "@" + address?.streetAddress + " as Business Member";
+      colour = 'text-primary'
+    } else if (userType === 'Community') {
+      userName = organizationName + "@" + address?.streetAddress + " as Community Member";
+      colour = 'text-primary'
+    } else {
       switch (ideaId) {
         case homeId:
-          userName += " as Resident"
+          userName = homeSegHandle + " as Resident"
           colour = 'text-primary'
           break;
         case workId:
-          userName += " as Worker"
+          userName = workSegHandle + " as Worker"
           colour = 'text-next'
           break;
         case schoolId:
-          userName += " as Student"
+          userName = schoolSegHandle + " as Student"
           colour = 'text-next'
           break;
       }

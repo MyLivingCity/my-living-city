@@ -97,6 +97,7 @@ commentRouter.get(
               email: true,
               fname: true,
               lname: true,
+              organizationName: true,
               userType: true,
               userSegments: {
                 select: {
@@ -106,7 +107,10 @@ commentRouter.get(
                   schoolSegmentId: true,
                   homeSubSegmentId: true,
                   workSubSegmentId: true,
-                  schoolSubSegmentId: true
+                  schoolSubSegmentId: true,
+                  homeSegHandle: true,
+                  workSegHandle: true,
+                  schoolSegHandle: true,
                 }
               },
               address: {

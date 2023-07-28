@@ -1314,24 +1314,24 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                               Number(suggestion?.subSegment?.id)
                                 ? (
                                   Number(suggestion?.subSegment?.id) === suggestion?.author?.userSegments?.homeSubSegmentId
-                                    ? `${suggestion?.author?.userSegments?.homeSegHandle.replace(/\s+/g, '') || suggestion?.author?.userSegments?.homeSegHandle.replace(/\s+/g, '')} As Resident `
+                                    ? `${suggestion?.author?.displayFName}@${suggestion?.author?.displayLName} As Resident `
                                     : Number(suggestion?.subSegment?.id) === suggestion?.author?.userSegments?.workSubSegmentId
-                                      ? `${suggestion?.author?.userSegments?.workSegHandle.replace(/\s+/g, '') || suggestion?.author?.userSegments?.homeSegHandle.replace(/\s+/g, '')} As Worker`
+                                      ? `${suggestion?.author?.Work_Details?.displayFName}@${suggestion?.author?.Work_Details?.displayLName} As Worker`
                                       : Number(suggestion?.subSegment?.id) === suggestion?.author?.userSegments?.schoolSubSegmentID
-                                        ? `${suggestion?.author?.userSegments?.schoolSegHandle.replace(/\s+/g, '') || suggestion?.author?.userSegments?.homeSegHandle.replace(/\s+/g, '')} As Student`
-                                        : `${suggestion?.author?.userSegments?.homeSegHandle} As Resident `
+                                        ? `${suggestion?.author?.School_Details?.displayFName}@${suggestion?.author?.School_Details?.displayLName} As Student`
+                                        : `${suggestion?.author?.displayFName}@${suggestion?.author?.displayLName} As Resident `
                                 )
                                 : Number(suggestion?.segment?.segId)
                                   ? (
                                     Number(suggestion?.segment?.segId) === suggestion?.author?.userSegments?.homeSegmentId
-                                      ? `${suggestion?.author?.userSegments?.homeSegHandle.replace(/\s+/g, '') || suggestion?.author?.userSegments?.homeSegHandle.replace(/\s+/g, '')} As Resident `
+                                      ? `${suggestion?.author?.displayFName}@${suggestion?.author?.displayLName} As Resident `
                                       : Number(suggestion?.segment?.segId) === Number(suggestion?.author?.userSegments?.workSegmentId)
-                                        ? `${suggestion?.author?.userSegments?.workSegHandle.replace(/\s+/g, '') || suggestion?.author?.userSegments?.homeSegHandle.replace(/\s+/g, '')} As Worker`
+                                        ? `${suggestion?.author?.Work_Details?.displayFName}@${suggestion?.author?.Work_Details?.displayLName} As Worker`
                                         : Number(suggestion?.segment?.segId) === suggestion?.author?.userSegments?.schoolSegmentId
-                                          ? `${suggestion?.author?.userSegments?.schoolSegHandle.replace(/\s+/g, '') || suggestion?.author?.userSegments?.homeSegHandle.replace(/\s+/g, '')} As Student`
-                                          : `${suggestion?.author?.userSegments?.homeSegHandle.replace(/\s+/g, '')} As Resident `
+                                          ? `${suggestion?.author?.School_Details?.displayFName}@${suggestion?.author?.School_Details?.displayLName} As Student`
+                                          : `${suggestion?.author?.displayFName}@${suggestion?.author?.displayLName} As Resident `
                                   )
-                                  : `${suggestion?.author?.userSegments?.homeSegHandle.replace(/\s+/g, '')} As Resident `
+                                  : `${suggestion?.author?.displayFName}@${suggestion?.author?.displayLName} As Resident `
                             }
                           </td>
 

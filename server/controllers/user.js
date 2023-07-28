@@ -1272,6 +1272,12 @@ userRouter.patch(
 					}
 				});
 			}
+			const userDetails = await prisma.userSegments.update({ where: {
+				userId: user.id,
+			},
+			data: {
+			  homeSegHandle: req.body.displayFName + "@" + req.body.displayLName,
+			},})
 
 			res.status(200).json({
 				message: "Display name successfully updated"

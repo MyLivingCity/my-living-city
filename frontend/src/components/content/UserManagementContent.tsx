@@ -149,6 +149,8 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
             organizationName: undefined,
             fname: formData.get('inputFirst') as string,
             lname: formData.get('inputLast') as string,
+            displayFName: formData.get('inputFirst') as string,
+            displayLName: "Municipal",
             address: {
                 streetAddress: "",
                 streetAddress2: "",
@@ -204,6 +206,9 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
 
 
     const capitalizeString = (s: string) => {
+        if (s === null){
+            return
+        }
         return s.charAt(0).toUpperCase() + s.slice(1);
     };
 

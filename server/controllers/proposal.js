@@ -218,13 +218,18 @@ proposalRouter.get(
                             segment: true,
                             subSegment: true,
                             superSegment: true,
+                            
                             ratings: true,
                             comments: true,
                             author: {
                                 select: {
                                     fname: true,
                                     lname: true,
+                                    displayFName: true,
+                                    displayLName: true,
                                     userSegments: true,
+                                    School_Details: true,
+                                    Work_Details: true,
                                 }
                             }
                         },
@@ -328,7 +333,11 @@ proposalRouter.get(
                                 select: {
                                     fname: true,
                                     lname: true,
-                                    userSegments: true,                                 
+                                    displayFName: true,
+                                    displayLName: true,
+                                    userSegments: true,  
+                                    School_Details: true,
+                                    Work_Details: true,                               
                                 }
                             }
                         },

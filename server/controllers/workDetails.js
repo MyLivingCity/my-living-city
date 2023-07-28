@@ -110,6 +110,13 @@ workDetailsRouter.patch(
                         updatedAt: new Date(),
                     },
                 });
+                const userDetails = await prisma.userSegments.update({ where: {
+                    userId: req.params.id,
+                },
+                data: {
+                  workSegHandle: req.body.displayFName + "@" + req.body.displayLName,
+                },})
+
             res.status(200).json(workDetails);
             }
         } catch (error) {
@@ -125,36 +132,42 @@ workDetailsRouter.patch(
     async (req, res) => {
         try {
             const city = await prisma.segments.findFirst({
-                where: {name: {equals: req.body.city, mode: 'insensitive'}},
+                where: { name: { equals: req.body.city, mode: 'insensitive' } },
             });
 
             const neighbourhood = await prisma.subSegments.findFirst({
-                where: {name: {equals: req.body.neighbourhood, mode: 'insensitive'}},
+                where: { name: { equals: req.body.neighbourhood, mode: 'insensitive' } },
             });
 
-            if (city && neighbourhood) {
-                const res = await prisma.userSegments.update({
-                    where: {
-                        userId: req.params.id,
-                    },
-                    data: {
-                        workSegmentId: city.id,
-                        workSubSegmentId: neighbourhood.id,
-                        workSegmentName: city.name,
-                        workSubSegmentName: neighbourhood.name,
-                    }
-                });
-            } else {
-                console.log('City or neighbourhood not found');
-                res.status(400).json({ error: 'City or neighbourhood not found' });
+            const data = {};
+
+            if (city) {
+                data.workSegmentId = city.id;
+                data.workSegmentName = city.name || "";
+            }
+
+            if (neighbourhood) {
+                data.workSubSegmentId = neighbourhood.id;
+                data.workSubSegmentName = neighbourhood.name || "";
+            }
+
+            if (Object.keys(data).length === 0) {
+                console.log('City and neighbourhood not found');
+                res.status(400).json({ error: 'City and neighbourhood not found' });
                 return;
             }
 
-            res.status(200).json(
-                {
-                   messsage: 'City and neighbourhood updated successfully'
-                }
-            );
+            const result = await prisma.userSegments.update({
+                where: {
+                    userId: req.params.id,
+                },
+                data,
+            });
+
+            res.status(200).json({
+                message: 'City and neighbourhood updated successfully',
+                result,
+            });
         } catch (error) {
             console.log(error);
             res.status(400).json({ error: error.message });
@@ -162,7 +175,8 @@ workDetailsRouter.patch(
             await prisma.$disconnect();
         }
     }
-)
+);
+
 
 
 

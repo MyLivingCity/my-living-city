@@ -14,7 +14,6 @@ userSegmentRouter.post(
             let error = '';
             let errorMessage = '';
             let errorStack = '';
-
             let homeSuperSegId,workSuperSegId,schoolSuperSegId;
             let homeSuperSegName = '';
             let workSuperSegName = '';
@@ -38,6 +37,8 @@ userSegmentRouter.post(
                     address:true
                 }
             });
+
+          
 
             const exist = await prisma.userSegments.findFirst({
                 where:{userId:id}
@@ -79,10 +80,12 @@ userSegmentRouter.post(
 
                         homeSuperSegName = queryResult.superSegName;
                         
-                        homeSegHandle = `${user.fname} @ ${user.address.streetAddress}`;
+                        homeSegHandle = `${user.fname}@${user.address.streetAddress}`;
                     }
                 }
             }
+
+
 
             if(workSegmentId){
                 if(!isInteger(workSegmentId)){
@@ -106,12 +109,12 @@ userSegmentRouter.post(
                         workSuperSegName=queryResult.superSegName;
 
                         if (workDetails) {
-                            workSegHandle = `${user.fname} @ ${workDetails.company}`;
+                            workSegHandle = `${user.fname}@${workDetails.company}`;
                         }
                     }
                 }
             }
-
+    
             if(schoolSegmentId){
                 if(!isInteger(schoolSegmentId)){
                     error+='schoolSegment Id must be integer.';
@@ -134,20 +137,20 @@ userSegmentRouter.post(
                         schoolSuperSegName=queryResult.superSegName;
 
                         if (schoolDetails.faculty == '') {
-                            schoolSegHandle = `${user.fname} @ ${schoolDetails.faculty}`;
+                            schoolSegHandle = `${user.fname}@${schoolDetails.faculty}`;
                         }
                     }
                 }
             }
-
+         
             if(homeSubSegmentId){
-                if(!homeSegmentId){
+                if(!Number.isInteger(homeSegmentId)){
                     error+='homeSegmend Id must be provide if request body contains homeSubSegmentId.';
                     errorMessage+='In order to assign user a subsegment, segmentId must be provided with sub segment id.';
                     errorStack+='In order to assign user a subsegment, segmentId must be provided with sub segment id.';
                 }
 
-                if(!isInteger(homeSubSegmentId)){
+                if(!Number.isInteger(homeSubSegmentId)){
                     error+='homeSubSegment Id must be integer.';
                     errorMessage+='homeSubSegment Id must be provided in request body as an integer.';
                     errorStack+='homeSubSegment Id must be provided in request body as an integer.';
@@ -165,15 +168,15 @@ userSegmentRouter.post(
                     }
                 }
             }
-
+       
             if(workSubSegmentId){
-                if(!workSegmentId){
+                if(!Number.isInteger(workSegmentId)){
                     error+='workSegmend Id must be provide if request body contains homeSubSegmentId.';
                     errorMessage+='In order to assign user a subsegment, segmentId must be provided with sub segment id.';
                     errorStack+='In order to assign user a subsegment, segmentId must be provided with sub segment id.';
                 }
 
-                if(!isInteger(workSubSegmentId)){
+                if(!Number.isInteger(workSubSegmentId)){
                     error+='workSubSegment Id must be integer.';
                     errorMessage+='workSubSegment Id must be provided in request body as an integer.';
                     errorStack+='workSubSegment Id must be provided in request body as an integer.';
@@ -191,15 +194,15 @@ userSegmentRouter.post(
                     }
                 }
             }
-
+            
             if(schoolSubSegmentId){
-                if(!schoolSegmentId){
+                if(!Number.isInteger(schoolSegmentId)){
                     error+='homeSegmend Id must be provide if request body contains homeSubSegmentId.';
                     errorMessage+='In order to assign user a subsegment, segmentId must be provided with sub segment id.';
                     errorStack+='In order to assign user a subsegment, segmentId must be provided with sub segment id.';
                 }
 
-                if(!isInteger(schoolSubSegmentId)){
+                if(!Number.isInteger(schoolSubSegmentId)){
                     error+='homeSubSegment Id must be integer.';
                     errorMessage+='homeSubSegment Id must be provided in request body as an integer.';
                     errorStack+='homeSubSegment Id must be provided in request body as an integer.';
@@ -259,7 +262,7 @@ userSegmentRouter.post(
             res.status(200).json(result);
             
         }catch(error){
-            console.log(error);
+            console.log("User Segment Error" , error);
             res.status(400).json({
                 message: "An error occured while trying to create a userSegment.",
                 details: {
@@ -457,13 +460,13 @@ userSegmentRouter.put(
                         errorMessage+='homeSegment Id must be provided with a existing segment id in the database.';
                         errorStack+='homeSegment Id must be provided with a existing segment id in the database.';
                     }else{
-                        homeSegmentName=queryResult.name;
+                        homeSegmentName = queryResult.name;
 
                         homeSuperSegId = queryResult.superSegId;
 
                         homeSegmentName = queryResult.superSegName;
 
-                        homeSegmentHandle = `${user.fname} @ ${user.address.streetAddress}`
+                        homeSegmentHandle = `${user.fname}@${user.address.streetAddress}`
                     }
                 }
             }
@@ -489,7 +492,7 @@ userSegmentRouter.put(
 
                         workSuperSegName=queryResult.superSegName;
 
-                        workSegmentHandle = `${user.fname} @ ${work_Details.company}`
+                        workSegmentHandle = `${user.fname}@${work_Details.company}`
                     }
                 }
             }
@@ -515,7 +518,7 @@ userSegmentRouter.put(
 
                         schoolSegmentName=queryResult.superSegName;
 
-                        schoolSegmentHandle = `${user.fname} @ ${school_Details.faculty}`
+                        schoolSegmentHandle = `${user.fname}@${school_Details.faculty}`
                     }
                 }
             }

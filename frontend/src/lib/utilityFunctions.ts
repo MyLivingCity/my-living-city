@@ -59,7 +59,10 @@ export const wipeLocalStorage = () => {
  * @returns A new string with the first character capitalized
  */
 export const capitalizeString = (s: string) => {
-	return s.charAt(0).toUpperCase() + s.slice(1);
+    if (s === null || s === undefined) {
+        return s;
+    }
+    return s.charAt(0).toUpperCase() + s.slice(1);
 };
 
 // Capitalize the first letter of string on each word

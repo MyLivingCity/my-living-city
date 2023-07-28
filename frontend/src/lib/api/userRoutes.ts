@@ -138,7 +138,11 @@ export const postRegisterUser = async (registerData: IRegisterInput, requestData
     userType,
     reachSegmentIds,
     verified,
+   
+
+
   } = registerData;
+  console.log("Reach Requests");
   let request3 = null;
   let request4 = null;
   let request5 = null;
@@ -157,30 +161,39 @@ export const postRegisterUser = async (registerData: IRegisterInput, requestData
   else {
     registerData.verified = false;
   }
-
-  const request = await axios.post<LoginResponse>(`${API_BASE_URL}/user/signup`, { email, password, confirmPassword, organizationName, fname, lname, address, geo, userType, verified });
-  const request2 = await axios({
+  console.log("Checked Created Requests");
+  const displayFName = fname;
+  const displayLName = address?.streetAddress || "";
+  console.log("Added Display Names");
+  const request = await axios.post<LoginResponse>(`${API_BASE_URL}/user/signup`, { email, password, confirmPassword, organizationName, fname, lname, address, geo, userType, verified, displayFName, displayLName});
+  console.log("Awaiting Request for user");
+  console.log(schoolDetails)
+  console.log("Requested USERID", request.data.user.address?.userId)
+  const request2 =  await  axios({
     method: "post",
     url: `${API_BASE_URL}/schoolDetails/create`,
     data: {
       schoolDetails: schoolDetails,
       userId: request.data.user.address?.userId,
+
+ 
     },
     headers: { "Access-Control-Allow-Origin": "*", "x-auth-token": request.data.token },
     withCredentials: true,
   })
-
+  console.log("Awaiting for School");
   await axios({
     method: "post",
     url: `${API_BASE_URL}/workDetails/create`,
     data: {
       workDetails: workDetails,
       userId: request.data.user.address?.userId,
+  
     },
     headers: { "Access-Control-Allow-Origin": "*", "x-auth-token": request.data.token },
     withCredentials: true,
   })
-
+  console.log("Awaiting for work");
   await axios({
     method: "post",
     url: `${API_BASE_URL}/userSegment/create`,
@@ -222,6 +235,7 @@ export const postRegisterUser = async (registerData: IRegisterInput, requestData
       })
     }
   }
+  console.log("Awaiting forusersegments");
   const request6 = avatar ? await postAvatarImage(avatar, request.data.token) : null;
 
   let request7: AxiosResponse<any>[] = [];
@@ -240,7 +254,7 @@ export const postRegisterUser = async (registerData: IRegisterInput, requestData
       request7.push(newUserReachReq);
     })
   }
-  let request8: AxiosResponse<any>[] = [];
+ 
  
 
 

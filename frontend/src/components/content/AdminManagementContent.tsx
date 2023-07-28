@@ -99,7 +99,8 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({ 
             organizationName: undefined,
             fname: formData.get('inputFirst') as string,
             lname: formData.get('inputLast') as string,
-            
+            displayFName: formData.get('inputFirst') as string,
+            displayLName: formData.get('inputLast') as string,
             address: {
                 streetAddress: "",
                 streetAddress2: "",

@@ -161,6 +161,7 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
             company: "",
           },
           schoolDetails: {
+
             streetAddress: "",
             postalCode: "",
             faculty: "",
@@ -194,6 +195,7 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
           // const {email, password, confirmPassword} = values;
           try {
             setIsLoading(true);
+            console.log(values, segmentRequests)
             await postRegisterUser(values, segmentRequests, true, avatar);
             if (userType === USER_TYPES.RESIDENTIAL) {
               wipeLocalStorage();
@@ -315,7 +317,7 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
             </BForm.Group>
             <BForm.Group>
               <BForm.Label>Contact First Name</BForm.Label>
-              <Field required name="fname">
+              <Field required name="fname ">
                 {({ field }: Props) => (
                   <BForm.Control
                     {...field}
@@ -1454,7 +1456,6 @@ export function FormikStepper({
             helpers.setFieldValue("geo.work_lon", markers.work.lon);
             helpers.setFieldValue("geo.school_lat", markers.school.lat);
             helpers.setFieldValue("geo.school_lon", markers.school.lon);
-
             helpers.setFieldValue("homeSegmentId", segIds[0] || null);
             helpers.setFieldValue("homeSubSegmentId", subIds[0] || null);
 

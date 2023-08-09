@@ -114,7 +114,7 @@ export const postCreateIdea = async (
   if (banned) {
     throw new Error("You cannot post while banned.");
   }
-
+  
   let formBody = new FormData();
 
   formBody.append("categoryId", categoryId.toString());

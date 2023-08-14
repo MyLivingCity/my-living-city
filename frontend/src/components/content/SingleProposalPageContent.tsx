@@ -715,7 +715,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                     {manufacturingImpact?.trim() ?
                       <tr>
                         <td className='px-4'><strong>Manufacturing and Waste:</strong></td>
-                        <td className='px-4'>capitalizeString(manufacturingImpact)</td>
+                        <td className='px-4'>{manufacturingImpact}</td>
                       </tr>
                       : null
                     }

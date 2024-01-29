@@ -1,1 +1,2 @@
 pg_dump -U postgres -h IP_ADDRESS_HERE -p PORT_HERE -W -F t mlc > c:\pgbackup\mlc_backup.tar
+pg_restore -U runuser --dbname=mlc --verbose C:\Users\User\Downloads\mlc_backup2.tar

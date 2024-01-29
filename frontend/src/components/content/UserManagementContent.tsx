@@ -484,6 +484,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                     <th scope="col" className="text-center align-middle">False Flags</th>
                     <th scope="col" className="text-center align-middle">Banned</th>
                     <th scope="col" className="text-center align-middle">Reviewed</th>
+                    <th scope="col" className="text-center align-middle">Verified</th>
                     <th scope="col" className="text-center align-middle">Controls</th>
                     </tr>
                 </thead>
@@ -502,6 +503,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                         <td className="text-center align-middle">{userFalseFlags![index].toString()}</td>
                         <td className="text-center align-middle">{req.banned ? "Yes" : "No" }</td> 
                         <td className="text-center align-middle">{req.reviewed ? "Yes" : "No"}</td>
+                        <td className="text-center align-middle">{req.verified ? "Yes" : "No"}</td>
                         </> :
                         <>
                         <td><Form.Control type="text" defaultValue={req.email} onChange={(e)=>req.email = e.target.value}/></td>
@@ -531,6 +533,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                             req.reviewed = e.target.checked;
                             }} id="reviewed-switch"/>
                         </td>    
+                        <td className="text-center align-middle">{req.verified ? "Yes" : "No"}</td>
                         </>
                         }
 
@@ -563,6 +566,23 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                                 })} >Ban History</Dropdown.Item>
                                 <Dropdown.Item onClick={() => removeFlagQuarantine(req.id)}>Remove Flag Quarantine</Dropdown.Item>
                                 <Dropdown.Item onClick={() => removePostCommentQuarantine(req.id)}>Remove Post Comment Quarantine</Dropdown.Item>
+                                {req.verified !== true && 
+                                    <Dropdown.Item onClick={async () => {
+                                        req.verified = true;
+                                        let response = await updateUser(req, token, user);
+                                        if (response?.user?.verified === true) {
+                                            setFilteredUsers(filteredUsers.map(oldUsers => {
+                                                if (oldUsers.id === req.id) {
+                                                    return {
+                                                        ...oldUsers,
+                                                        verified: true
+                                                    }
+                                                }
+                                                return oldUsers
+                                            }))
+                                        }
+                                    }}>Verify Email</Dropdown.Item>
+                                }
                                 <Dropdown.Item onClick={() => {
                                                     const confirmed = window.confirm("Are you sure you want to delete this user?");
                                                     if (confirmed) {

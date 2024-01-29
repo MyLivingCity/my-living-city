@@ -131,7 +131,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
 
     const toggleCreateAccountForm = () => {
         setShowCreateAccountForm(!showCreateAccountForm);
-        if (user?.userType == USER_TYPES.ADMIN) {
+        if (user?.userType === USER_TYPES.ADMIN) {
             setButtonText(showCreateAccountForm ? "User Creation Wizard" : "Hide Creation Wizard");
         } else {
             setButtonText(showCreateAccountForm ? "Municipal User Creation Wizard" : "Hide Creation Wizard");

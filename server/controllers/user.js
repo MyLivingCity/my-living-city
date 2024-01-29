@@ -795,7 +795,9 @@ userRouter.put(
 					// 	country,
 					// 	postalCode,
 					// },
-					banned
+					banned,
+					reviewed,
+					verified
 				} = req.body;
 
 				if(!id){
@@ -838,7 +840,9 @@ userRouter.put(
 						fname:fname,
 						lname:lname,
 						userType:userType,
-						banned:banned
+						banned:banned,
+						reviewed:reviewed,
+						verified:verified
 					}
 				});
 

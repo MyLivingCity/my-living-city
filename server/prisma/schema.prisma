@@ -178,6 +178,7 @@ model User {
   verifiedToken    String?  @default(cuid())
   displayFName      String?  @map("display_f_name")
   displayLName      String?  @map("display_l_name")
+  adminmodEmail     String?  @map("adminmod_email")
 
   // Relationships
   address             UserAddress?

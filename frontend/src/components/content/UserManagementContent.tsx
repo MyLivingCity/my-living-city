@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Table, Dropdown, Container, Button, Form, NavDropdown } from 'react-bootstrap';
-import { updateUser, getUserBanHistory, removeFlagQuarantine, removePostCommentQuarantine, deleteUser, postRegisterUser } from 'src/lib/api/userRoutes';
+import { updateUser, getUserBanHistory, removeFlagQuarantine, removePostCommentQuarantine, deleteUser, postRegisterUser, getUserWithEmail } from 'src/lib/api/userRoutes';
 import { USER_TYPES } from 'src/lib/constants';
 import { IComment } from 'src/lib/types/data/comment.type';
 import { ICommentFlag, IFlag } from 'src/lib/types/data/flag.type';
@@ -160,7 +160,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
             fname: formData.get('inputFirst') as string,
             lname: formData.get('inputLast') as string,
             displayFName: formData.get('inputFirst') as string,
-            displayLName: "Municipal",
+            displayLName: user?.userType === USER_TYPES.ADMIN ? formData.get('inputLast') as string : "Municipal",
             address: {
                 streetAddress: "",
                 streetAddress2: "",
@@ -189,8 +189,8 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
             },
 
             homeSegmentId: user?.userType === USER_TYPES.ADMIN ? newHomeID : user?.userSegments?.homeSegmentId,
-            workSegmentId: undefined,
-            schoolSegmentId: undefined,
+            workSegmentId: user?.userType === USER_TYPES.ADMIN ? newWorkID : undefined,
+            schoolSegmentId:user?.userType === USER_TYPES.ADMIN ? newSchoolID : undefined,
             homeSubSegmentId: undefined,
             workSubSegmentId: undefined,
             schoolSubSegmentId: undefined,
@@ -201,9 +201,13 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
 
 
         try {
-            await postRegisterUser(registerData, null, false, null);
-            console.log('User registered successfully!');
-            form.reset();    
+            if (await getUserWithEmail(registerData.email) === 200) {
+                setValidEmail(false);
+            } else {
+                await postRegisterUser(registerData, null, false, null);
+                console.log('User registered successfully!');
+                form.reset();    
+            }
         } catch (error) {
             console.error('Error registering user:', error);
         }
@@ -253,11 +257,27 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
 
     let newHomeID = 1;
     const [selectedUserType, setSelectedUserType] = useState("");
-    const [selectedRegion, setSelectedRegion] = useState("");
-    const handleRegionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const [selectedHomeRegion, setSelectedHomeRegion] = useState("");
+    const handleHomeRegionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedRegionName = event.target.value;
-        setSelectedRegion(selectedRegionName);
+        setSelectedHomeRegion(selectedRegionName);
     };
+
+    let newWorkID = 1;
+    const [selectedWorkRegion, setSelectedWorkRegion] = useState("");
+    const handleWorkRegionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedRegionName = event.target.value;
+        setSelectedWorkRegion(selectedRegionName);
+    };
+
+    let newSchoolID = 1;
+    const [selectedSchoolRegion, setSelectedSchoolRegion] = useState("");
+    const handleSchoolRegionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedRegionName = event.target.value;
+        setSelectedSchoolRegion(selectedRegionName);
+    };
+
+    const [validEmail, setValidEmail] = useState(true);
 
 
     if (user?.userType === USER_TYPES.MUNICIPAL_SEG_ADMIN) {
@@ -388,7 +408,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                 : null
                 }
 
-                <Form>
+
                 <div className="d-flex justify-content-between">
                     <h2 className="mb-4 mt-4">User Management</h2>
                     {user?.userType === USER_TYPES.ADMIN && (
@@ -414,27 +434,41 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                             </div>
                             <div className="form-row">
                                 <div className="form-group col-md-6">
-                                    <label htmlFor="inputFirst">First Name</label>
+                                    <label htmlFor="inputFirst">{selectedUserType !== USER_TYPES.RESIDENTIAL ? 'Contact ' : ''}First Name</label>
                                     <input type="text" className="form-control" id="inputFirst" name="inputFirst" placeholder="John" required />
                                 </div>
                                 <div className="form-group col-md-6">
-                                    <label htmlFor="inputLast">Last Name</label>
+                                    <label htmlFor="inputLast">{selectedUserType !== USER_TYPES.RESIDENTIAL ? 'Contact ' : ''}Last Name</label>
                                     <input type="text" className="form-control" id="inputLast" name="inputLast" placeholder="Doe" required />
                                 </div>
                             </div>
                             {(selectedUserType === USER_TYPES.BUSINESS || selectedUserType === USER_TYPES.COMMUNITY) && (
                                 <div className="form-row">
                                     <div className="form-group col-md-12">
-                                        <label htmlFor="inputOrg">Organization</label>
+                                        <label htmlFor="inputOrg">Organization Name</label>
                                         <input type="text" className="form-control" id="inputOrg" name="inputOrg" placeholder="" required />
                                     </div>
                                 </div>
                             )}
                             <div className="form-row">
-                                <div className="form-group col-md-6">
-                                    <label htmlFor="inputEmail">Email</label>
-                                    <input type="email" className="form-control" id="inputEmail" name="inputEmail" placeholder="Email" required />
-                                </div>
+                            <div className="form-group col-md-6">
+                                <label htmlFor="inputEmail">Email</label>
+                                <Form.Group>
+                                    <Form.Control
+                                        type="email"
+                                        className="form-control"
+                                        id="inputEmail"
+                                        name="inputEmail"
+                                        placeholder="Email"
+                                        required
+                                        isInvalid={!validEmail}
+                                        onChange={() => setValidEmail(true)}
+                                    />
+                                    <Form.Control.Feedback type="invalid">
+                                        Email is already in use.
+                                    </Form.Control.Feedback>
+                                </Form.Group>
+                            </div>
                                 <div className="form-group col-md-6">
                                     <label htmlFor="inputPassword">Password</label>
                                     <input type="password" className="form-control" id="inputPassword" name="inputPassword" placeholder="Password" required />
@@ -443,49 +477,107 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
         
                             <div className="form-row">
                                 <div className="form-group col-md-6">
-                                    <label htmlFor="inputRegion">Region</label>
-                                    <Form.Control as="select" required value={selectedRegion} onChange={handleRegionChange}>
+                                    <label htmlFor="InputHomeRegion">Home Region</label>
+                                    <Form.Control name="InputHomeRegion" as="select" required value={selectedHomeRegion} onChange={handleHomeRegionChange}>
                                         <option value="">Select Region</option>
                                         {segs?.map(seg => (
-                                            <option key={seg.superSegId} value={seg.name}>
+                                            <option key={seg.superSegId + "hr"} value={seg.name}>
                                                 {seg.name}
                                             </option>
                                         ))}
                                     </Form.Control>
                                 </div>
                                 <div className="form-group col-md-6">
-                                    <label htmlFor="inputCom">Community</label>
-                                    <Form.Control as="select" name="inputCommunity" onChange={(event) => { newHomeID = parseInt(event.target.value) }}>
+                                    <label htmlFor="inputCom">Home Community</label>
+                                    <Form.Control as="select" name="inputCom" onChange={(event) => { newHomeID = parseInt(event.target.value) }}>
                                         <option value="">Select Community</option>
                                         {subSeg && subSeg
-                                            .filter(seg => seg.superSegName?.toUpperCase() === selectedRegion.toUpperCase())
+                                            .filter(seg => seg.superSegName?.toUpperCase() === selectedHomeRegion.toUpperCase())
                                             .map(seg => (
-                                                <option key={seg.superSegId} value={seg.segId}>
+                                                <option key={seg.segId + "hc"} value={seg.segId}>
                                                     {capitalizeString(seg.name)}
                                                 </option>
                                             ))}
                                     </Form.Control>
                                 </div>
                             </div>
+                            {selectedUserType === USER_TYPES.RESIDENTIAL && (
+                                <>
+                                <div className="form-row">
+                                    <div className="form-group col-md-6">
+                                        <label htmlFor="inputWorkRegion">Work Region</label>
+                                        <Form.Control name="inputWorkRegion" as="select" value={selectedWorkRegion} onChange={handleWorkRegionChange}>
+                                            <option value="">Select Region</option>
+                                            {segs?.map(seg => (
+                                                <option key={seg.superSegId + "wr"} value={seg.name}>
+                                                    {seg.name}
+                                                </option>
+                                            ))}
+                                        </Form.Control>
+                                    </div>
+                                    <div className="form-group col-md-6">
+                                        <label htmlFor="inputWorkCommunity">Work Community</label>
+                                        <Form.Control as="select" name="inputWorkCommunity" onChange={(event) => { newWorkID = parseInt(event.target.value) }}>
+                                            <option value="">Select Community</option>
+                                            {subSeg && subSeg
+                                                .filter(seg => seg.superSegName?.toUpperCase() === selectedWorkRegion.toUpperCase())
+                                                .map(seg => (
+                                                    <option key={seg.segId + "wc"} value={seg.segId}>
+                                                        {capitalizeString(seg.name)}
+                                                    </option>
+                                                ))}
+                                        </Form.Control>
+                                    </div>
+                                </div>
+
+                                <div className="form-row">
+                                    <div className="form-group col-md-6">
+                                        <label htmlFor="InputSchoolRegion">School Region</label>
+                                        <Form.Control name="InputSchoolRegion" as="select" value={selectedSchoolRegion} onChange={handleSchoolRegionChange}>
+                                            <option value="">Select Region</option>
+                                            {segs?.map(seg => (
+                                                <option key={seg.superSegId + "sr"} value={seg.name}>
+                                                    {seg.name}
+                                                </option>
+                                            ))}
+                                        </Form.Control>
+                                    </div>
+                                    <div className="form-group col-md-6">
+                                        <label htmlFor="inputSchoolCommunity">School Community</label>
+                                        <Form.Control as="select" name="inputSchoolCommunity" onChange={(event) => { newSchoolID = parseInt(event.target.value) }}>
+                                            <option value="">Select Community</option>
+                                            {subSeg && subSeg
+                                                .filter(seg => seg.superSegName?.toUpperCase() === selectedSchoolRegion.toUpperCase())
+                                                .map(seg => (
+                                                    <option key={seg.segId + "sc"} value={seg.segId}>
+                                                        {capitalizeString(seg.name)}
+                                                    </option>
+                                                ))}
+                                        </Form.Control>
+                                    </div>
+                                </div>
+                                </>
+                            )}
         
                             <button type="submit" className="btn btn-primary mr-2 mb-2">Submit</button>
                         </Form>
                     )
                 }
+                <Form>
                 <Table bordered hover size="sm">
                 <thead className="table-active">
-                <tr>
-                    <th scope="col" className="text-center align-middle">Email</th>
-                    <th scope="col" className="text-center align-middle">Organization</th>
-                    <th scope="col" className="text-center align-middle">First</th>
-                    <th scope="col" className="text-center align-middle">Last</th>
-                    <th scope="col" className="text-center align-middle">User Type</th>
-                    <th scope="col" className="text-center align-middle">Total Flags</th>
-                    <th scope="col" className="text-center align-middle">False Flags</th>
-                    <th scope="col" className="text-center align-middle">Banned</th>
-                    <th scope="col" className="text-center align-middle">Reviewed</th>
-                    <th scope="col" className="text-center align-middle">Verified</th>
-                    <th scope="col" className="text-center align-middle">Controls</th>
+                    <tr>
+                        <th scope="col" className="text-center align-middle">Email</th>
+                        <th scope="col" className="text-center align-middle">Organization</th>
+                        <th scope="col" className="text-center align-middle">First</th>
+                        <th scope="col" className="text-center align-middle">Last</th>
+                        <th scope="col" className="text-center align-middle">User Type</th>
+                        <th scope="col" className="text-center align-middle">Total Flags</th>
+                        <th scope="col" className="text-center align-middle">False Flags</th>
+                        <th scope="col" className="text-center align-middle">Banned</th>
+                        <th scope="col" className="text-center align-middle">Reviewed</th>
+                        <th scope="col" className="text-center align-middle">Verified</th>
+                        <th scope="col" className="text-center align-middle">Controls</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -494,7 +586,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                     <tr key={req.id}>
                         {req.id !== hideControls ? 
                         <>
-                        <td className="align-middle">{req.email}</td>
+                        <td className="align-middle" style={{wordBreak: "break-word"}}>{req.email}</td>
                         <td className="text-center align-middle">{req.organizationName ? req.organizationName : "N/A"}</td>
                         <td className="text-center align-middle">{req.fname}</td>
                         <td className="text-center align-middle">{req.lname}</td>

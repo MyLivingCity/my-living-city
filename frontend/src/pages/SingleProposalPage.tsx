@@ -1,7 +1,7 @@
-import { useSingleProposal } from "src/hooks/proposalHooks";
-import SingleProposalPageContent from "../components/content/SingleProposalPageContent";
-import LoadingSpinner from "../components/ui/LoadingSpinner";
-import { useSingleIdea } from "../hooks/ideaHooks";
+import { useSingleProposal } from 'src/hooks/proposalHooks';
+import SingleProposalPageContent from '../components/content/SingleProposalPageContent';
+import LoadingSpinner from '../components/ui/LoadingSpinner';
+import { useSingleIdea } from '../hooks/ideaHooks';
 
 // TODO: Pages are responsible for fetching, error handling, and loading spinner
 
@@ -24,7 +24,7 @@ const SingleProposalPage = (props: any) => {
   if (!proposalIsLoading) {
     var ideaStringId = proposalData!.ideaId.toString();
   } else {
-    var ideaStringId = "";
+    var ideaStringId = '';
   }
 
   const { data, error: ideaError, isLoading: ideaIsLoading, isError: ideaIsError } = useSingleIdea(ideaStringId);

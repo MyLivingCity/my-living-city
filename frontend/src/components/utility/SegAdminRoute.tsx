@@ -33,7 +33,7 @@ interface SegAdminRouteProps {
         <Route
         {...routeProps}
         render={(props) =>
-            isLoggedIn && user!.userType === "SEG_ADMIN" ? (
+            isLoggedIn && user!.userType === 'SEG_ADMIN' ? (
             <ComponentToRender {...props} />
             ) : (
             <Redirect to={ redirectPath || ROUTES.LOGIN } />

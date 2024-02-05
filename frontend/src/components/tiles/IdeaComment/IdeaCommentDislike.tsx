@@ -55,7 +55,7 @@ const IdeaCommentDislike = ({ commentData }: IdeaCommentLikeProps) => {
           onClick={submitHandler}
         >
           <FaRegThumbsDown />
-          <span className="ml-1" style={{fontSize: "70%"}}>Dislike</span>
+          <span className="ml-1" style={{fontSize: '70%'}}>Dislike</span>
         </div>
       </div>
     </IconContext.Provider>

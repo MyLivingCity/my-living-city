@@ -1,5 +1,5 @@
-import { useFormik } from "formik";
-import React, { useContext, useEffect, useState } from "react";
+import { useFormik } from 'formik';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   Col,
   Container,
@@ -7,33 +7,33 @@ import {
   Form,
   Button,
   Alert,
-} from "react-bootstrap";
-import { useHistory } from "react-router-dom";
+} from 'react-bootstrap';
+import { useHistory } from 'react-router-dom';
 // import { getUserHomeSegmentInfo, getUserSchoolSegmentInfo, getUserWorkSegmentInfo } from 'src/lib/api/userSegmentRoutes';
-import { TEXT_INPUT_LIMIT } from "src/lib/constants";
+import { TEXT_INPUT_LIMIT } from 'src/lib/constants';
 import {
   ISegmentData,
-} from "src/lib/types/data/segment.type";
-import { UserProfileContext } from "../../contexts/UserProfile.Context";
-import { postCreateIdea } from "../../lib/api/ideaRoutes";
-import { ICategory } from "../../lib/types/data/category.type";
-import { ICreateIdeaInput } from "../../lib/types/input/createIdea.input";
-import { IFetchError } from "../../lib/types/types";
+} from 'src/lib/types/data/segment.type';
+import { UserProfileContext } from '../../contexts/UserProfile.Context';
+import { postCreateIdea } from '../../lib/api/ideaRoutes';
+import { ICategory } from '../../lib/types/data/category.type';
+import { ICreateIdeaInput } from '../../lib/types/input/createIdea.input';
+import { IFetchError } from '../../lib/types/types';
 import {
   capitalizeString,
   handlePotentialAxiosError,
-} from "../../lib/utilityFunctions";
-import { CONTENT, Toastie } from "../partials/LandingContent/CategoriesSection";
-import ImageUploader from "react-images-upload";
-import "react-image-crop/dist/ReactCrop.css";
+} from '../../lib/utilityFunctions';
+import { CONTENT, Toastie } from '../partials/LandingContent/CategoriesSection';
+import ImageUploader from 'react-images-upload';
+import 'react-image-crop/dist/ReactCrop.css';
 import {
   postCreateProposal,
-} from "src/lib/api/proposalRoutes";
-import SimpleMap from "../map/SimpleMap";
-import { MAP_KEY } from "../../lib/constants";
-import { getUserBanWithToken } from "../../lib/api/banRoutes";
-import { checkUser } from "src/lib/api/badPostingBehaviorRoutes";
-import { object } from "yup";
+} from 'src/lib/api/proposalRoutes';
+import SimpleMap from '../map/SimpleMap';
+import { MAP_KEY } from '../../lib/constants';
+import { getUserBanWithToken } from '../../lib/api/banRoutes';
+import { checkUser } from 'src/lib/api/badPostingBehaviorRoutes';
+import { object } from 'yup';
 
 interface SubmitDirectProposalPageContentProps {
   categories: ICategory[] | undefined;
@@ -83,11 +83,11 @@ const SubmitDirectProposalPageContent: React.FC<
   const emptyFeedbackList: string[] = [];
   const [feedbackList, setFeedbackList] = useState<string[]>(emptyFeedbackList);
   const emptyFeedbackTypeList: string[] = [
-    "YESNO",
-    "YESNO",
-    "YESNO",
-    "YESNO",
-    "YESNO",
+    'YESNO',
+    'YESNO',
+    'YESNO',
+    'YESNO',
+    'YESNO',
   ];
   const [feedbackTypeList, setFeedbackTypeList] = useState<string[]>(
     emptyFeedbackTypeList
@@ -135,7 +135,7 @@ const SubmitDirectProposalPageContent: React.FC<
     for (let i = index; i < formik.values.feedback!.length - 1; i++) {
       formik.values.feedback![i] = formik.values.feedback![i + 1];
     }
-    formik.values.feedback![formik.values.feedback!.length - 1] = "";
+    formik.values.feedback![formik.values.feedback!.length - 1] = '';
     setFeedbackList(newFeedbackList);
 
     const newFeedbackTypeList = [...feedbackTypeList];
@@ -146,7 +146,7 @@ const SubmitDirectProposalPageContent: React.FC<
     }
     formik.values.feedbackRatingType![
       formik.values.feedbackRatingType!.length - 1
-    ] = "YESNO";
+    ] = 'YESNO';
     setFeedbackTypeList(newFeedbackTypeList);
   };
 
@@ -160,20 +160,20 @@ const SubmitDirectProposalPageContent: React.FC<
   const handleCommunityChange = (index: number) => {
     if (Array.isArray(updatedSegData) && updatedSegData.length > index) {
       const selectedSegment = updatedSegData[index];
-      if (selectedSegment.segType === "Segment") {
-        formik.setFieldValue("segmentId", selectedSegment.id);
-        formik.setFieldValue("superSegmentId", undefined);
-        formik.setFieldValue("subSegmentId", undefined);
-      } else if (selectedSegment.segType === "Sub-Segment") {
-        formik.setFieldValue("subSegmentId", selectedSegment.id);
-        formik.setFieldValue("superSegmentId", undefined);
-        formik.setFieldValue("segmentId", undefined);
-      } else if (selectedSegment.segType === "Super-Segment") {
-        formik.setFieldValue("superSegmentId", selectedSegment.id);
-        formik.setFieldValue("subSegmentId", undefined);
-        formik.setFieldValue("segmentId", undefined);
+      if (selectedSegment.segType === 'Segment') {
+        formik.setFieldValue('segmentId', selectedSegment.id);
+        formik.setFieldValue('superSegmentId', undefined);
+        formik.setFieldValue('subSegmentId', undefined);
+      } else if (selectedSegment.segType === 'Sub-Segment') {
+        formik.setFieldValue('subSegmentId', selectedSegment.id);
+        formik.setFieldValue('superSegmentId', undefined);
+        formik.setFieldValue('segmentId', undefined);
+      } else if (selectedSegment.segType === 'Super-Segment') {
+        formik.setFieldValue('superSegmentId', selectedSegment.id);
+        formik.setFieldValue('subSegmentId', undefined);
+        formik.setFieldValue('segmentId', undefined);
       }
-      formik.setFieldValue("userType", selectedSegment.userType);
+      formik.setFieldValue('userType', selectedSegment.userType);
     }
   };
   const submitHandler = async (values: ICreateIdeaInput) => {
@@ -182,7 +182,7 @@ const SubmitDirectProposalPageContent: React.FC<
       try {
         setError(null);
         setIsLoading(true);
-        setTimeout(() => console.log("timeout"), 5000);
+        setTimeout(() => console.log('timeout'), 5000);
         //const ideaValues with <ICreateIdeaInput> interface
         const ideaValues: ICreateIdeaInput = {
           categoryId: values.categoryId,
@@ -211,12 +211,12 @@ const SubmitDirectProposalPageContent: React.FC<
           segmentId: values.segmentId,
           subSegmentId: values.subSegmentId,
           superSegmentId: values.superSegmentId,
-          state: "PROPOSAL",
+          state: 'PROPOSAL',
           imagePath: values.imagePath,
         };
         const banDetails = await getUserBanWithToken(token);
         let banned = true;
-        if (!user!.banned || !banDetails || banDetails.banType === "WARNING") {
+        if (!user!.banned || !banDetails || banDetails.banType === 'WARNING') {
           banned = false;
         }
         const idea = await postCreateIdea(ideaValues, banned, token);
@@ -239,11 +239,11 @@ const SubmitDirectProposalPageContent: React.FC<
         );
 
         setError(null);
-        history.push("/proposals/" + proposal.id);
+        history.push('/proposals/' + proposal.id);
         formik.resetForm();
       } catch (error) {
         const genericMessage =
-          "An error occured while trying to create a Proposal.";
+          'An error occured while trying to create a Proposal.';
         const errorObj = handlePotentialAxiosError(genericMessage, error);
         setError(errorObj);
       } finally {
@@ -251,7 +251,7 @@ const SubmitDirectProposalPageContent: React.FC<
       }
     } catch (error) {
       const genericMessage =
-        "You have too many bad posts / post flagged. Post was NOT submittted.";
+        'You have too many bad posts / post flagged. Post was NOT submittted.';
       const errorObj = handlePotentialAxiosError(genericMessage, error);
       setError(errorObj);
     } finally {
@@ -262,12 +262,12 @@ const SubmitDirectProposalPageContent: React.FC<
   function toggleElement(str: string, str2: string) {
     let x = document.getElementById(str)!;
     let y = document.getElementById(str2)!;
-    if (x.style.display === "none") {
-      x.style.display = "block";
-      y.style.display = "none";
+    if (x.style.display === 'none') {
+      x.style.display = 'block';
+      y.style.display = 'none';
     } else {
-      x.style.display = "none";
-      y.style.display = "block";
+      x.style.display = 'none';
+      y.style.display = 'block';
     }
   }
 
@@ -275,23 +275,23 @@ const SubmitDirectProposalPageContent: React.FC<
     initialValues: {
       // TODO: CatId when chosen is a string
       categoryId: categories ? categories[0].id : DEFAULT_CAT_ID,
-      title: "",
-      userType: segData && segData.length > 0 ? segData[0].userType : "Resident",
-      description: "",
-      proposal_role: "",
-      requirements: "",
-      proposal_benefits: "",
-      artsImpact: "",
-      communityImpact: "",
-      energyImpact: "",
-      manufacturingImpact: "",
-      natureImpact: "",
+      title: '',
+      userType: segData && segData.length > 0 ? segData[0].userType : 'Resident',
+      description: '',
+      proposal_role: '',
+      requirements: '',
+      proposal_benefits: '',
+      artsImpact: '',
+      communityImpact: '',
+      energyImpact: '',
+      manufacturingImpact: '',
+      natureImpact: '',
       address: {
-        streetAddress: "",
-        streetAddress2: "",
-        city: "",
-        postalCode: "",
-        country: "",
+        streetAddress: '',
+        streetAddress2: '',
+        city: '',
+        postalCode: '',
+        country: '',
       },
       geo: {
         lat: undefined,
@@ -305,9 +305,9 @@ const SubmitDirectProposalPageContent: React.FC<
       needDonations: false,
       needFeedback: false,
       needSuggestions: false,
-      location: "",
-      feedback: ["", "", "", "", ""],
-      feedbackRatingType: ["YESNO", "YESNO", "YESNO", "YESNO", "YESNO"],
+      location: '',
+      feedback: ['', '', '', '', ''],
+      feedbackRatingType: ['YESNO', 'YESNO', 'YESNO', 'YESNO', 'YESNO'],
     },
     onSubmit: submitHandler,
   });
@@ -321,18 +321,18 @@ const SubmitDirectProposalPageContent: React.FC<
   function reverseGeocode() {
     setIsLoading(true);
     fetch(
-      "https://maps.googleapis.com/maps/api/geocode/json?latlng=" +
-      (markers.home.lat ? markers.home.lat : "48.4284") +
-      "," +
-      (markers.home.lng ? markers.home.lng : "-123.3656") +
-      "&key=" +
+      'https://maps.googleapis.com/maps/api/geocode/json?latlng=' +
+      (markers.home.lat ? markers.home.lat : '48.4284') +
+      ',' +
+      (markers.home.lng ? markers.home.lng : '-123.3656') +
+      '&key=' +
       MAP_KEY
     )
       .then((response) => response.json())
       .then((data) => {
         let address = data.results[0].formatted_address;
 
-        formik.setFieldValue("location", address);
+        formik.setFieldValue('location', address);
         setIsLoading(false);
       })
       .catch((error) => {
@@ -355,8 +355,8 @@ const SubmitDirectProposalPageContent: React.FC<
       updatedSegData.push({
         id: parseInt(destructuredSegData[2][1].toString()),
         name: destructuredSegData[3][1].toString(),
-        segType: "Super-Segment",
-        userType: "Resident"
+        segType: 'Super-Segment',
+        userType: 'Resident'
       });
     }
 
@@ -371,8 +371,8 @@ const SubmitDirectProposalPageContent: React.FC<
       updatedSegData.push({
         id: parseInt(destructuredSegData[4][1].toString()),
         name: destructuredSegData[5][1].toString(),
-        segType: "Super-Segment",
-        userType: "Worker"
+        segType: 'Super-Segment',
+        userType: 'Worker'
       });
     }
 
@@ -387,8 +387,8 @@ const SubmitDirectProposalPageContent: React.FC<
       updatedSegData.push({
         id: parseInt(destructuredSegData[6][1].toString()),
         name: destructuredSegData[7][1].toString(),
-        segType: "Super-Segment",
-        userType: "Student"
+        segType: 'Super-Segment',
+        userType: 'Student'
       });
     }
 
@@ -403,8 +403,8 @@ const SubmitDirectProposalPageContent: React.FC<
       updatedSegData.push({
         id: parseInt(destructuredSegData[8][1].toString()),
         name: destructuredSegData[9][1].toString(),
-        segType: "Segment",
-        userType: "Resident"
+        segType: 'Segment',
+        userType: 'Resident'
       });
     }
 
@@ -419,8 +419,8 @@ const SubmitDirectProposalPageContent: React.FC<
       updatedSegData.push({
         id: parseInt(destructuredSegData[10][1].toString()),
         name: destructuredSegData[11][1].toString(),
-        segType: "Segment",
-        userType: "Worker"
+        segType: 'Segment',
+        userType: 'Worker'
       });
     }
 
@@ -435,8 +435,8 @@ const SubmitDirectProposalPageContent: React.FC<
       updatedSegData.push({
         id: parseInt(destructuredSegData[12][1].toString()),
         name: destructuredSegData[13][1].toString(),
-        segType: "Segment",
-        userType: "Student"
+        segType: 'Segment',
+        userType: 'Student'
       });
     }
 
@@ -451,8 +451,8 @@ const SubmitDirectProposalPageContent: React.FC<
       updatedSegData.push({
         id: parseInt(destructuredSegData[14][1].toString()),
         name: destructuredSegData[15][1].toString(),
-        segType: "Sub-Segment",
-        userType: "Resident"
+        segType: 'Sub-Segment',
+        userType: 'Resident'
       });
     }
 
@@ -467,8 +467,8 @@ const SubmitDirectProposalPageContent: React.FC<
       updatedSegData.push({
         id: parseInt(destructuredSegData[16][1].toString()),
         name: destructuredSegData[17][1].toString(),
-        segType: "Sub-Segment",
-        userType: "Worker"
+        segType: 'Sub-Segment',
+        userType: 'Worker'
       });
     }
 
@@ -483,8 +483,8 @@ const SubmitDirectProposalPageContent: React.FC<
       updatedSegData.push({
         id: parseInt(destructuredSegData[18][1].toString()),
         name: destructuredSegData[19][1].toString(),
-        segType: "Sub-Segment",
-        userType: "Student"
+        segType: 'Sub-Segment',
+        userType: 'Student'
       });
     }
 
@@ -505,7 +505,7 @@ const SubmitDirectProposalPageContent: React.FC<
             <Form.Group controlId="submitIdeaCategory">
               <h3
                 className="border-bottom mb-3"
-                style={{ paddingBottom: "1rem" }}
+                style={{ paddingBottom: '1rem' }}
               >
                 Direct Proposal Details
               </h3>
@@ -522,7 +522,7 @@ const SubmitDirectProposalPageContent: React.FC<
                       key={String(cat.id)}
                       value={Number(cat.id)}
                       style={{
-                        textTransform: "capitalize",
+                        textTransform: 'capitalize',
                       }}
                     >
                       {capitalizeString(cat.title)}
@@ -649,22 +649,22 @@ const SubmitDirectProposalPageContent: React.FC<
               <Form.Label>Proposal image</Form.Label>
               <ImageUploader
                 name="imagePath"
-                fileContainerStyle={{ backgroundColor: "#F8F9FA" }}
+                fileContainerStyle={{ backgroundColor: '#F8F9FA' }}
                 withPreview={true}
                 onChange={(picture) => {
-                  formik.setFieldValue("imagePath", picture);
+                  formik.setFieldValue('imagePath', picture);
                 }}
-                imgExtension={[".jpg", ".jpeg", ".png", ".webp"]}
+                imgExtension={['.jpg', '.jpeg', '.png', '.webp']}
                 buttonText="Select Proposal Image"
                 maxFileSize={10485760}
-                label={"Max file size 10mb, \n jpg, jpeg, png, webp"}
+                label={'Max file size 10mb, \n jpg, jpeg, png, webp'}
                 singleImage={true}
               />
             </Form.Group>
             <Form.Group>
               <h3
                 className="border-bottom mb-3"
-                style={{ paddingBottom: "1rem", paddingTop: "1rem" }}
+                style={{ paddingBottom: '1rem', paddingTop: '1rem' }}
               >
                 Impact Areas
               </h3>
@@ -672,16 +672,16 @@ const SubmitDirectProposalPageContent: React.FC<
                 <Col xs={12}>
                   <Row>
                     <div className="container">
-                      <div style={{ width: "fit-content", float: "left" }}>
+                      <div style={{ width: 'fit-content', float: 'left' }}>
                         <Form.Label>Community and Place</Form.Label>
                       </div>
                       <div
                         style={{
-                          marginTop: "-5px",
-                          marginLeft: "10px",
-                          float: "left",
-                          height: "2rem",
-                          width: "2rem",
+                          marginTop: '-5px',
+                          marginLeft: '10px',
+                          float: 'left',
+                          height: '2rem',
+                          width: '2rem',
                         }}
                       >
                         <a href="javascript:void(0)">
@@ -704,7 +704,7 @@ const SubmitDirectProposalPageContent: React.FC<
                     onChange={formik.handleChange}
                     value={formik.values.communityImpact}
                     placeholder=""
-                    style={{ marginTop: "0rem" }}
+                    style={{ marginTop: '0rem' }}
                     maxLength={TEXT_INPUT_LIMIT.IMPACT_AREAS}
                   />
                   <p className="text-right">
@@ -716,17 +716,17 @@ const SubmitDirectProposalPageContent: React.FC<
               <Row className="align-items-end">
                 <Col xs={12}>
                   <Row>
-                    <div className="container" style={{ marginTop: "1rem" }}>
-                      <div style={{ width: "fit-content", float: "left" }}>
+                    <div className="container" style={{ marginTop: '1rem' }}>
+                      <div style={{ width: 'fit-content', float: 'left' }}>
                         <Form.Label>Nature and Food Security</Form.Label>
                       </div>
                       <div
                         style={{
-                          marginTop: "-5px",
-                          marginLeft: "10px",
-                          float: "left",
-                          height: "2rem",
-                          width: "2rem",
+                          marginTop: '-5px',
+                          marginLeft: '10px',
+                          float: 'left',
+                          height: '2rem',
+                          width: '2rem',
                         }}
                       >
                         <a href="javascript:void(0)">
@@ -749,7 +749,7 @@ const SubmitDirectProposalPageContent: React.FC<
                     onChange={formik.handleChange}
                     value={formik.values.natureImpact}
                     placeholder=""
-                    style={{ marginTop: "0rem" }}
+                    style={{ marginTop: '0rem' }}
                     maxLength={TEXT_INPUT_LIMIT.IMPACT_AREAS}
                   />
                   <p className="text-right">
@@ -761,17 +761,17 @@ const SubmitDirectProposalPageContent: React.FC<
               <Row className="align-items-end">
                 <Col xs={12}>
                   <Row>
-                    <div className="container" style={{ marginTop: "1rem" }}>
-                      <div style={{ width: "fit-content", float: "left" }}>
+                    <div className="container" style={{ marginTop: '1rem' }}>
+                      <div style={{ width: 'fit-content', float: 'left' }}>
                         <Form.Label>Arts, Culture, and Education</Form.Label>
                       </div>
                       <div
                         style={{
-                          marginTop: "-5px",
-                          marginLeft: "10px",
-                          float: "left",
-                          height: "2rem",
-                          width: "2rem",
+                          marginTop: '-5px',
+                          marginLeft: '10px',
+                          float: 'left',
+                          height: '2rem',
+                          width: '2rem',
                         }}
                       >
                         <a href="javascript:void(0)">
@@ -794,7 +794,7 @@ const SubmitDirectProposalPageContent: React.FC<
                     onChange={formik.handleChange}
                     value={formik.values.artsImpact}
                     placeholder=""
-                    style={{ marginTop: "0rem" }}
+                    style={{ marginTop: '0rem' }}
                     maxLength={TEXT_INPUT_LIMIT.IMPACT_AREAS}
                   />
                   <p className="text-right">
@@ -806,17 +806,17 @@ const SubmitDirectProposalPageContent: React.FC<
               <Row className="align-items-end">
                 <Col xs={12}>
                   <Row>
-                    <div className="container" style={{ marginTop: "1rem" }}>
-                      <div style={{ width: "fit-content", float: "left" }}>
+                    <div className="container" style={{ marginTop: '1rem' }}>
+                      <div style={{ width: 'fit-content', float: 'left' }}>
                         <Form.Label>Water and Energy</Form.Label>
                       </div>
                       <div
                         style={{
-                          marginTop: "-5px",
-                          marginLeft: "10px",
-                          float: "left",
-                          height: "2rem",
-                          width: "2rem",
+                          marginTop: '-5px',
+                          marginLeft: '10px',
+                          float: 'left',
+                          height: '2rem',
+                          width: '2rem',
                         }}
                       >
                         <a href="javascript:void(0)">
@@ -839,7 +839,7 @@ const SubmitDirectProposalPageContent: React.FC<
                     onChange={formik.handleChange}
                     value={formik.values.energyImpact}
                     placeholder=""
-                    style={{ marginTop: "0rem" }}
+                    style={{ marginTop: '0rem' }}
                     maxLength={TEXT_INPUT_LIMIT.IMPACT_AREAS}
                   />
                   <p className="text-right">
@@ -851,17 +851,17 @@ const SubmitDirectProposalPageContent: React.FC<
               <Row className="align-items-end">
                 <Col xs={12}>
                   <Row>
-                    <div className="container" style={{ marginTop: "1rem" }}>
-                      <div style={{ width: "fit-content", float: "left" }}>
+                    <div className="container" style={{ marginTop: '1rem' }}>
+                      <div style={{ width: 'fit-content', float: 'left' }}>
                         <Form.Label>Manufacturing and Waste</Form.Label>
                       </div>
                       <div
                         style={{
-                          marginTop: "-5px",
-                          marginLeft: "10px",
-                          float: "left",
-                          height: "2rem",
-                          width: "2rem",
+                          marginTop: '-5px',
+                          marginLeft: '10px',
+                          float: 'left',
+                          height: '2rem',
+                          width: '2rem',
                         }}
                       >
                         <a href="javascript:void(0)">
@@ -884,7 +884,7 @@ const SubmitDirectProposalPageContent: React.FC<
                     onChange={formik.handleChange}
                     value={formik.values.manufacturingImpact}
                     placeholder=""
-                    style={{ marginTop: "0rem" }}
+                    style={{ marginTop: '0rem' }}
                     maxLength={TEXT_INPUT_LIMIT.IMPACT_AREAS}
                   />
                   <p className="text-right">
@@ -899,7 +899,7 @@ const SubmitDirectProposalPageContent: React.FC<
               <div className="checkbox">
                 <h3
                   className="border-bottom mb-3"
-                  style={{ paddingBottom: "1rem", paddingTop: "1rem" }}
+                  style={{ paddingBottom: '1rem', paddingTop: '1rem' }}
                 >
                   Community Solicitation
                 </h3>
@@ -958,10 +958,10 @@ const SubmitDirectProposalPageContent: React.FC<
                       return (
                         <div className="feedback-1">
                           <br />
-                          <Form.Label style={{ display: "flex" }}>
+                          <Form.Label style={{ display: 'flex' }}>
                             &nbsp;&nbsp;Specific Feedback {index + 1}
                             <Button
-                              style={{ marginLeft: "auto" }}
+                              style={{ marginLeft: 'auto' }}
                               color="danger"
                               size="sm"
                               onClick={() => removeFeedback(index)}
@@ -990,28 +990,28 @@ const SubmitDirectProposalPageContent: React.FC<
                             id={`inline-radio-1`}
                             checked={
                               formik.values.feedbackRatingType![index] ===
-                              "YESNO"
+                              'YESNO'
                             }
                             onClick={(event) => {
                               formik.values.feedbackRatingType![index] =
-                                "YESNO";
-                              updateFeedbackType("YESNO", index);
+                                'YESNO';
+                              updateFeedbackType('YESNO', index);
                             }}
                           />
                           <Form.Check
                             inline
                             label="Rating Scale"
                             name={`group-${index}`}
-                            type={"radio"}
+                            type={'radio'}
                             id={`inline-radio-2`}
                             checked={
                               formik.values.feedbackRatingType![index] ===
-                              "RATING"
+                              'RATING'
                             }
                             onClick={(event) => {
                               formik.values.feedbackRatingType![index] =
-                                "RATING";
-                              updateFeedbackType("RATING", index);
+                                'RATING';
+                              updateFeedbackType('RATING', index);
                             }}
                           />
                         </div>
@@ -1023,13 +1023,13 @@ const SubmitDirectProposalPageContent: React.FC<
             <Form.Group>
               <h3
                 className="border-bottom mb-3"
-                style={{ paddingBottom: "1rem", paddingTop: "1rem" }}
+                style={{ paddingBottom: '1rem', paddingTop: '1rem' }}
               >
                 Location (Optional)
               </h3>
               <input
                 type="checkbox"
-                onClick={() => toggleElement("location", "map")}
+                onClick={() => toggleElement('location', 'map')}
               />
               <Form.Label>&nbsp;&nbsp;Click the checkbox to use map</Form.Label>
               <div id="location">
@@ -1038,34 +1038,34 @@ const SubmitDirectProposalPageContent: React.FC<
                   name="location"
                   onChange={formik.handleChange}
                   placeholder="Please Enter The Address and The Postal Code of The Location (Optional)"
-                  style={{ marginBottom: "1rem" }}
+                  style={{ marginBottom: '1rem' }}
                 />
               </div>
 
               <div
                 id="map"
-                style={{ display: "none" }}
+                style={{ display: 'none' }}
                 onClick={() => reverseGeocode()}
               >
                 <SimpleMap
-                  iconName={"home"}
+                  iconName={'home'}
                   sendData={(markers: any) => sendData(markers)}
                 />
               </div>
             </Form.Group>
-            <div style={{ display: "flex" }}>
+            <div style={{ display: 'flex' }}>
               <Button
                 block
                 size="lg"
                 type="submit"
                 disabled={isLoading ? true : false}
                 style={{
-                  marginLeft: "auto",
-                  width: "19rem",
-                  marginTop: "2rem",
+                  marginLeft: 'auto',
+                  width: '19rem',
+                  marginTop: '2rem',
                 }}
               >
-                {isLoading ? "Saving..." : "Submit Your Direct Proposal"}
+                {isLoading ? 'Saving...' : 'Submit Your Direct Proposal'}
               </Button>
             </div>
           </Form>

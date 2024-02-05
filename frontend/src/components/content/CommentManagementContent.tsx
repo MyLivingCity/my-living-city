@@ -118,9 +118,9 @@ export const CommentManagementContent: React.FC<CommentManagementContentProps> =
                     <td>{<a href= {ideaURL + req.ideaId}>Link</a>}</td>
                     <td>{req.content}</td> 
                     <td>{commentNumFlags[index].toString()}</td>
-                    <td>{"CRD"}</td>
-                    <td>{req.active ? "Yes" : "No"}</td>
-                    <td>{req.reviewed ? "Yes" : "No"}</td>
+                    <td>{'CRD'}</td>
+                    <td>{req.active ? 'Yes' : 'No'}</td>
+                    <td>{req.reviewed ? 'Yes' : 'No'}</td>
                     <td>{(new Date(req.quarantined_at)).toLocaleDateString()}</td>
                     </> :<>
                         <td></td>

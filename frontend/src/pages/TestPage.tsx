@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Container, Jumbotron, Alert, Button } from "react-bootstrap";
+import React, { useState } from 'react';
+import { Container, Jumbotron, Alert, Button } from 'react-bootstrap';
 
 function AlertDimissibleExample() {
   const [show, setShow] = useState(false);
@@ -14,7 +14,7 @@ function AlertDimissibleExample() {
           my color is Teal!
         </Alert.Heading>
         <p>
-          By the way the button you just clicked is an{" "}
+          By the way the button you just clicked is an{' '}
           <span className="infoText">Info</span> button but is using the color
           Tomato. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
           Accusantium debitis deleniti distinctio impedit officia reprehenderit
@@ -40,7 +40,7 @@ export default function TestPage() {
         <AlertDimissibleExample />
         <hr />
         <p>
-          You can check further in information on the official Bootstrap docs{" "}
+          You can check further in information on the official Bootstrap docs{' '}
           <a
             href="https://getbootstrap.com/docs/4.3/getting-started/theming/#importing"
             target="_blank"

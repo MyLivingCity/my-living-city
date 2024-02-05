@@ -1,9 +1,9 @@
-import React from "react";
-import { useState,useEffect } from "react";
+import React from 'react';
+import { useState,useEffect } from 'react';
 import {
   ISegmentAggregateInfo,
   ISegment,
-} from "./../../lib/types/data/segment.type";
+} from './../../lib/types/data/segment.type';
 import {
   Col,
   Container,
@@ -12,16 +12,16 @@ import {
   ListGroup,
   DropdownButton,
   Dropdown,
-} from "react-bootstrap";
-import { capitalizeFirstLetterEachWord } from "./../../lib/utilityFunctions";
-import { IIdeaWithAggregations } from "src/lib/types/data/idea.type";
-import SpecifiedCommunitySectionTableView from "../partials/CommunityDashboardContent/SpecifiedCommunitySectionTableView";
-import SpecifiedCommunitySection from "../partials/CommunityDashboardContent/SpecifiedCommunitySection";
-import { UseQueryResult } from "react-query";
-import { IFetchError } from "src/lib/types/types";
-import LoadingSpinnerInline from "../ui/LoadingSpinnerInline";
-import ErrorMessage from "../ui/ErrorMessage";
-import { useParams } from "react-router-dom";
+} from 'react-bootstrap';
+import { capitalizeFirstLetterEachWord } from './../../lib/utilityFunctions';
+import { IIdeaWithAggregations } from 'src/lib/types/data/idea.type';
+import SpecifiedCommunitySectionTableView from '../partials/CommunityDashboardContent/SpecifiedCommunitySectionTableView';
+import SpecifiedCommunitySection from '../partials/CommunityDashboardContent/SpecifiedCommunitySection';
+import { UseQueryResult } from 'react-query';
+import { IFetchError } from 'src/lib/types/types';
+import LoadingSpinnerInline from '../ui/LoadingSpinnerInline';
+import ErrorMessage from '../ui/ErrorMessage';
+import { useParams } from 'react-router-dom';
 
 interface CommunityDashboardContentProps {
   allUserSegmentsQueryResult: UseQueryResult<any, IFetchError>;
@@ -73,7 +73,7 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
       ) {
         segmentsArray.push({
           id: segmentIdsObj.homeSegmentId,
-          name: segmentIdsObj.homeSegmentName + " 🏠",
+          name: segmentIdsObj.homeSegmentName + ' 🏠',
         });
       }
     
@@ -84,7 +84,7 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
       ) {
         segmentsArray.push({
           id: segmentIdsObj.workSegmentId,
-          name: segmentIdsObj.workSegmentName + " 🏢",
+          name: segmentIdsObj.workSegmentName + ' 🏢',
         });
       }
     
@@ -96,13 +96,13 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
       ) {
         segmentsArray.push({
           id: segmentIdsObj.schoolSegmentId,
-          name: segmentIdsObj.schoolSegmentName + " 🏫",
+          name: segmentIdsObj.schoolSegmentName + ' 🏫',
         });
       }
   }
 
   
-    const [currCommunityName, setCurrCommunityName] = useState<string>("");
+    const [currCommunityName, setCurrCommunityName] = useState<string>('');
     const [currCommunityPosts, setCurrCommunityPosts] = useState<IIdeaWithAggregations[]>([]);
 
     useEffect(() => {
@@ -218,7 +218,7 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
       <Row>
         <Col>
           <h2>User Statistics</h2>
-          <Card style={{ width: "25rem" }}>
+          <Card style={{ width: '25rem' }}>
             {isSegmentInfoAggregateLoading && <LoadingSpinnerInline />}
             {!isSegmentInfoAggregateLoading && isSegmentInfoAggregateError && (
               <ErrorMessage message="Unable to load user statistics." />
@@ -260,7 +260,7 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
         </Col>
         <Col>
           <h2>Post Statistics</h2>
-          <Card style={{ width: "25rem" }}>
+          <Card style={{ width: '25rem' }}>
             {isSegmentInfoAggregateLoading && <LoadingSpinnerInline />}
             {!isSegmentInfoAggregateLoading && isSegmentInfoAggregateError && (
               <ErrorMessage message="Unable to load post statistics." />
@@ -306,9 +306,9 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
         </Col>
       </Row>
 
-      <Row style={{ marginTop: "3rem" }}>
+      <Row style={{ marginTop: '3rem' }}>
         <Col>
-          <Card style={{ width: "18rem" }}>
+          <Card style={{ width: '18rem' }}>
             <Card.Header>
               <h4>Region</h4>
             </Card.Header>
@@ -325,7 +325,7 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
                     onClick={() =>
                       handleCommunityChange(
                         segmentInfoAggregateData!.superSegmentName,
-                        "SuperSegment"
+                        'SuperSegment'
                       )
                     }
                   >
@@ -338,7 +338,7 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
           </Card>
         </Col>
         <Col>
-          <Card style={{ width: "18rem" }}>
+          <Card style={{ width: '18rem' }}>
             <Card.Header>
               <h4>Municipality</h4>
             </Card.Header>
@@ -360,7 +360,7 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
                     action
                     active
                     onClick={() =>
-                      handleCommunityChange(segmentData!.name, "Segment")
+                      handleCommunityChange(segmentData!.name, 'Segment')
                     }
                   >
                     {capitalizeFirstLetterEachWord(segmentData!.name)}
@@ -370,7 +370,7 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
           </Card>
         </Col>
         <Col>
-          <Card style={{ width: "18rem" }}>
+          <Card style={{ width: '18rem' }}>
             <Card.Header>
               <h4>Neighbourhood</h4>
             </Card.Header>
@@ -387,7 +387,7 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
                     <ListGroup.Item
                       action
                       onClick={() =>
-                        handleCommunityChange(subSeg, "SubSegment")
+                        handleCommunityChange(subSeg, 'SubSegment')
                       }
                     >
                       {capitalizeFirstLetterEachWord(subSeg)}
@@ -402,7 +402,7 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
 
       </Row>
       
-      <Row style={{ marginTop: "3rem" }}>
+      <Row style={{ marginTop: '3rem' }}>
   <Col className="d-flex justify-content-end">
     <button className="btn btn-primary btn-lg" onClick={() => setIsTableView(!isTableView)}>
       {isTableView ? 'Switch to Card View' : 'Switch to Table View'}
@@ -411,7 +411,7 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
 </Row>
 
 {isTableView ? (
-  <Row style={{ marginTop: "3rem" }}>
+  <Row style={{ marginTop: '3rem' }}>
     <Col>
       <SpecifiedCommunitySectionTableView
         sectionTitle={currCommunityName}
@@ -422,7 +422,7 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
     </Col>
   </Row>
 ) : (
-  <Row style={{ marginTop: "3rem" }}>
+  <Row style={{ marginTop: '3rem' }}>
     <Col>
       <SpecifiedCommunitySection
         sectionTitle={currCommunityName}

@@ -34,7 +34,7 @@ export default function LoginPageContent() {
         setError(null);
         formik.resetForm();
       } catch (error) {
-        const genericMessage = "Error occured while logging in user.";
+        const genericMessage = 'Error occured while logging in user.';
         const errorObj = handlePotentialAxiosError(genericMessage, error);
         setError(errorObj);
         wipeLocalStorage();

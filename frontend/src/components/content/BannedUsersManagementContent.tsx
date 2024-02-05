@@ -35,15 +35,15 @@ export const BannedUsersManagementContent: React.FC<BannedUsersManagementContent
 
             // Format ban duration
             if (users[i].banDuration === 99999){
-                banDuration.push("Permanent");
+                banDuration.push('Permanent');
             } else if (users[i].banDuration === 365){
-                banDuration.push("1 year");
+                banDuration.push('1 year');
             } else if (users[i].banDuration === 180){
-                banDuration.push("6 months");
+                banDuration.push('6 months');
             } else if (users[i].banDuration === 90){
-                banDuration.push("3 months");
+                banDuration.push('3 months');
             } else {
-                banDuration.push(users[i].banDuration + " days");
+                banDuration.push(users[i].banDuration + ' days');
             }
         }
     }

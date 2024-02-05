@@ -1,4 +1,4 @@
-import { IIdea } from "./idea.type"
+import { IIdea } from './idea.type'
 
 export interface IBanPost {
     id: number,

@@ -51,7 +51,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
         setEmail(email);
         setId(id);
     }
-    const [buttonText, setButtonText] = useState(user?.userType === USER_TYPES.ADMIN ? "User Creation Wizard" : "Municipal User Creation Wizard");
+    const [buttonText, setButtonText] = useState(user?.userType === USER_TYPES.ADMIN ? 'User Creation Wizard' : 'Municipal User Creation Wizard');
     const [showCreateAccountForm, setShowCreateAccountForm] = useState(false);
     function formatBanHistory(banhistory: any){
 
@@ -132,15 +132,15 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
     const toggleCreateAccountForm = () => {
         setShowCreateAccountForm(!showCreateAccountForm);
         if (user?.userType === USER_TYPES.ADMIN) {
-            setButtonText(showCreateAccountForm ? "User Creation Wizard" : "Hide Creation Wizard");
+            setButtonText(showCreateAccountForm ? 'User Creation Wizard' : 'Hide Creation Wizard');
         } else {
-            setButtonText(showCreateAccountForm ? "Municipal User Creation Wizard" : "Hide Creation Wizard");
+            setButtonText(showCreateAccountForm ? 'Municipal User Creation Wizard' : 'Hide Creation Wizard');
         }
     };
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
-        console.log("Made it Submit")
+        console.log('Made it Submit')
 
 
         const form = event.target as HTMLFormElement;
@@ -160,13 +160,13 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
             fname: formData.get('inputFirst') as string,
             lname: formData.get('inputLast') as string,
             displayFName: formData.get('inputFirst') as string,
-            displayLName: "Municipal",
+            displayLName: 'Municipal',
             address: {
-                streetAddress: "",
-                streetAddress2: "",
-                city: "",
-                postalCode: "",
-                country: "",
+                streetAddress: '',
+                streetAddress2: '',
+                city: '',
+                postalCode: '',
+                country: '',
             },
             geo: {
                 lon: undefined,
@@ -177,14 +177,14 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                 school_lon: undefined,
             },
             workDetails: {
-                streetAddress: "",
-                postalCode: "",
-                company: "",
+                streetAddress: '',
+                postalCode: '',
+                company: '',
             },
             schoolDetails: {
-                streetAddress: "",
-                postalCode: "",
-                faculty: "",
+                streetAddress: '',
+                postalCode: '',
+                faculty: '',
                 programCompletionDate: new Date(),
             },
 
@@ -194,7 +194,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
             homeSubSegmentId: undefined,
             workSubSegmentId: undefined,
             schoolSubSegmentId: undefined,
-            userType: user?.userType === USER_TYPES.ADMIN ? selectedUserType : "MUNICIPAL",
+            userType: user?.userType === USER_TYPES.ADMIN ? selectedUserType : 'MUNICIPAL',
             reachSegmentIds: [],
             verified: true,
         };
@@ -252,8 +252,8 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
     }, [users]);
 
     let newHomeID = 1;
-    const [selectedUserType, setSelectedUserType] = useState("");
-    const [selectedRegion, setSelectedRegion] = useState("");
+    const [selectedUserType, setSelectedUserType] = useState('');
+    const [selectedRegion, setSelectedRegion] = useState('');
     const handleRegionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedRegionName = event.target.value;
         setSelectedRegion(selectedRegionName);
@@ -313,7 +313,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                         {req.id !== hideControls ? 
                         <>
                         <td className="align-middle">{req.email}</td>
-                        <td className="text-center align-middle">{req.organizationName ? req.organizationName : "N/A"}</td>
+                        <td className="text-center align-middle">{req.organizationName ? req.organizationName : 'N/A'}</td>
                         <td className="text-center align-middle">{req.fname}</td>
                         <td className="text-center align-middle">{req.lname}</td>
                         <td className="text-center align-middle">{req.userType}</td>
@@ -337,7 +337,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                                     setModalUser(req);
                                     }}>Edit</Dropdown.Item>
                                 <Dropdown.Item onClick={() => {
-                                                    const confirmed = window.confirm("Are you sure you want to delete this user?");
+                                                    const confirmed = window.confirm('Are you sure you want to delete this user?');
                                                     if (confirmed) {
                                                         handleDeleteUser(req.id);
                                                     }
@@ -490,20 +490,20 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                 </thead>
                 <tbody>
                 {filteredUsers?.map((req: IUser, index: number) => (
-                    req.userType !== "ADMIN" && req.userType !== "MOD" && req.userType !== "SEG_MOD" && req.userType !== "MUNICIPAL_SEG_ADMIN" && req.userType !== "SEG_ADMIN" ? (
+                    req.userType !== 'ADMIN' && req.userType !== 'MOD' && req.userType !== 'SEG_MOD' && req.userType !== 'MUNICIPAL_SEG_ADMIN' && req.userType !== 'SEG_ADMIN' ? (
                     <tr key={req.id}>
                         {req.id !== hideControls ? 
                         <>
                         <td className="align-middle">{req.email}</td>
-                        <td className="text-center align-middle">{req.organizationName ? req.organizationName : "N/A"}</td>
+                        <td className="text-center align-middle">{req.organizationName ? req.organizationName : 'N/A'}</td>
                         <td className="text-center align-middle">{req.fname}</td>
                         <td className="text-center align-middle">{req.lname}</td>
                         <td className="text-center align-middle">{req.userType}</td>
                         <td className="text-center align-middle">{userFlags![index].toString()}</td>
                         <td className="text-center align-middle">{userFalseFlags![index].toString()}</td>
-                        <td className="text-center align-middle">{req.banned ? "Yes" : "No" }</td> 
-                        <td className="text-center align-middle">{req.reviewed ? "Yes" : "No"}</td>
-                        <td className="text-center align-middle">{req.verified ? "Yes" : "No"}</td>
+                        <td className="text-center align-middle">{req.banned ? 'Yes' : 'No' }</td> 
+                        <td className="text-center align-middle">{req.reviewed ? 'Yes' : 'No'}</td>
+                        <td className="text-center align-middle">{req.verified ? 'Yes' : 'No'}</td>
                         </> :
                         <>
                         <td><Form.Control type="text" defaultValue={req.email} onChange={(e)=>req.email = e.target.value}/></td>
@@ -512,14 +512,14 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                         <td><Form.Control type="text" defaultValue={req.lname} onChange={(e)=>req.lname = e.target.value}/></td>
                         <td><Form.Control as="select" onChange={(e)=>{(req.userType as string) = e.target.value}}>
                             {userTypes
-                            .filter((type => type !== "ADMIN"))
-                            .filter((type => type !== "SEG_ADMIN"))
-                            .filter((type => type !== "MUNICIPAL_SEG_ADMIN"))
-                            .filter((type => type !== "DEVELOPER"))
-                            .filter((type => type !== "IN_PROGRESS"))
-                            .filter((type => type !== "ASSOCIATE"))
-                            .filter((type => type !== "MOD"))
-                            .filter((type => type !== "SEG_MOD"))
+                            .filter((type => type !== 'ADMIN'))
+                            .filter((type => type !== 'SEG_ADMIN'))
+                            .filter((type => type !== 'MUNICIPAL_SEG_ADMIN'))
+                            .filter((type => type !== 'DEVELOPER'))
+                            .filter((type => type !== 'IN_PROGRESS'))
+                            .filter((type => type !== 'ASSOCIATE'))
+                            .filter((type => type !== 'MOD'))
+                            .filter((type => type !== 'SEG_MOD'))
                             .map(item =>
                                 <option key={item}>{item}</option>
                             )}
@@ -527,13 +527,13 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                         </td>
                         <td className="text-center align-middle "><Button onClick={()=> setShowUserFlagsModal(true)}>Info</Button></td>
                         <td></td>
-                        <td className="text-center align-middle">{req.banned ? "Yes" : "No" }</td>
+                        <td className="text-center align-middle">{req.banned ? 'Yes' : 'No' }</td>
                         <td className="text-center align-middle" ><Form.Check type="switch" checked={reviewed} onChange={(e)=>{
                             setReviewed(e.target.checked)
                             req.reviewed = e.target.checked;
                             }} id="reviewed-switch"/>
                         </td>    
-                        <td className="text-center align-middle">{req.verified ? "Yes" : "No"}</td>
+                        <td className="text-center align-middle">{req.verified ? 'Yes' : 'No'}</td>
                         </>
                         }
 
@@ -584,7 +584,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                                     }}>Verify Email</Dropdown.Item>
                                 }
                                 <Dropdown.Item onClick={() => {
-                                                    const confirmed = window.confirm("Are you sure you want to delete this user?");
+                                                    const confirmed = window.confirm('Are you sure you want to delete this user?');
                                                     if (confirmed) {
                                                         handleDeleteUser(req.id);
                                                     }

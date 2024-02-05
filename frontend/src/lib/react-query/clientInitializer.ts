@@ -1,4 +1,4 @@
-import { QueryCache, QueryClient } from "react-query";
+import { QueryCache, QueryClient } from 'react-query';
 
 const SECOND = 1000;
 

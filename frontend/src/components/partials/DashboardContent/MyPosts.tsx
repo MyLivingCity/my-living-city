@@ -1,12 +1,12 @@
-import { Container, Col, Breadcrumb, Carousel } from "react-bootstrap";
-import { isError } from "react-query";
-import IdeaTile from "src/components/tiles/IdeaTile";
-import PlaceholderIdeaTile from "src/components/tiles/PlaceholderIdeaTile";
-import ProposalTile from "src/components/tiles/ProposalTile";
-import ErrorMessage from "src/components/ui/ErrorMessage";
-import LoadingSpinner from "src/components/ui/LoadingSpinner";
-import { IIdeaWithAggregations } from "src/lib/types/data/idea.type";
-import { IProposalWithAggregations } from "src/lib/types/data/proposal.type";
+import { Container, Col, Breadcrumb, Carousel } from 'react-bootstrap';
+import { isError } from 'react-query';
+import IdeaTile from 'src/components/tiles/IdeaTile';
+import PlaceholderIdeaTile from 'src/components/tiles/PlaceholderIdeaTile';
+import ProposalTile from 'src/components/tiles/ProposalTile';
+import ErrorMessage from 'src/components/ui/ErrorMessage';
+import LoadingSpinner from 'src/components/ui/LoadingSpinner';
+import { IIdeaWithAggregations } from 'src/lib/types/data/idea.type';
+import { IProposalWithAggregations } from 'src/lib/types/data/proposal.type';
 
 interface MyPostsProps {
   userIdeas?: IIdeaWithAggregations[];
@@ -36,15 +36,15 @@ const MyPosts: React.FC<MyPostsProps> = ({
     userIdeaPages = Math.ceil(userIdeas.length / 3)
   }
 
-  console.log("userIdeas", userIdeas)
+  console.log('userIdeas', userIdeas)
 
   return (
     <Container
       className="container"
       id="hanging-icons"
       style={{
-        padding: "2rem 1rem 1rem 1rem",
-        margin: "0 auto",
+        padding: '2rem 1rem 1rem 1rem',
+        margin: '0 auto',
       }}
     >
       {!isDashboard && (
@@ -81,11 +81,11 @@ const MyPosts: React.FC<MyPostsProps> = ({
           </style>
           <Breadcrumb
             style={{
-              backgroundColor: "fff",
+              backgroundColor: 'fff',
             }}
           >
             <Breadcrumb.Item
-              onClick={() => (window.location.href = "/dashboard")}
+              onClick={() => (window.location.href = '/dashboard')}
             >
               Dashboard
             </Breadcrumb.Item>
@@ -110,7 +110,7 @@ const MyPosts: React.FC<MyPostsProps> = ({
                     lg={4}
                     className="pt-3 align-items-stretch"
                   >
-                    {userProposals && idea.state === "PROPOSAL" ?
+                    {userProposals && idea.state === 'PROPOSAL' ?
                     userProposals.map((proposal) => {
                       if (proposal.ideaId === idea.id) {
                         return <ProposalTile
@@ -122,7 +122,7 @@ const MyPosts: React.FC<MyPostsProps> = ({
                             }
                           }
                           showFooter={true}
-                          postType={idea.state === "IDEA" ? "Idea" : "Proposal"}
+                          postType={idea.state === 'IDEA' ? 'Idea' : 'Proposal'}
                         />
                       }
                     })
@@ -130,7 +130,7 @@ const MyPosts: React.FC<MyPostsProps> = ({
                     <IdeaTile
                       ideaData={idea}
                       showFooter={true}
-                      postType={idea.state === "IDEA" ? "Idea" : "Proposal"}
+                      postType={idea.state === 'IDEA' ? 'Idea' : 'Proposal'}
                     />}
                   </Col>
                 ) : null})

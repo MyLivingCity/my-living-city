@@ -1,8 +1,8 @@
-import React from "react";
-import { RouteComponentProps } from "react-router-dom";
-import SingleIdeaPageContent from "../components/content/SingleIdeaPageContent";
-import LoadingSpinner from "../components/ui/LoadingSpinner";
-import { useSingleIdea } from "../hooks/ideaHooks";
+import React from 'react';
+import { RouteComponentProps } from 'react-router-dom';
+import SingleIdeaPageContent from '../components/content/SingleIdeaPageContent';
+import LoadingSpinner from '../components/ui/LoadingSpinner';
+import { useSingleIdea } from '../hooks/ideaHooks';
 
 // TODO: Pages are responsible for fetching, error handling, and loading spinner
 

@@ -1,17 +1,17 @@
-import axios from "axios";
-import { API_BASE_URL } from "../constants";
+import axios from 'axios';
+import { API_BASE_URL } from '../constants';
 import {
   IGetAllIdeasWithSort,
   getAllIdeasWithSortDefault,
   IIdeaOrderByAggregate,
-} from "../types/args/getAllIdeas.args";
+} from '../types/args/getAllIdeas.args';
 import {
   IIdeaWithAggregations,
   IIdeaWithRelationship,
-} from "../types/data/idea.type";
-import { ICreateIdeaInput } from "../types/input/createIdea.input";
-import { getAxiosJwtRequestOption } from "./axiosRequestOptions";
-import {IProposalWithAggregations} from "../types/data/proposal.type";
+} from '../types/data/idea.type';
+import { ICreateIdeaInput } from '../types/input/createIdea.input';
+import { getAxiosJwtRequestOption } from './axiosRequestOptions';
+import {IProposalWithAggregations} from '../types/data/proposal.type';
 
 export const getDirectProposal = async () => {
   const res = await axios.get(`${API_BASE_URL}/proposal/`);
@@ -88,13 +88,13 @@ export const postCreateProposal = async (
 
 
   const res = await axios({
-    method: "post",
+    method: 'post',
     url: `${API_BASE_URL}/proposal/create`,
     data: formBody,
     headers: {
-      "Content-Type": "application/json",
-      "x-auth-token": token,
-      "Access-Control-Allow-Origin": "*",
+      'Content-Type': 'application/json',
+      'x-auth-token': token,
+      'Access-Control-Allow-Origin': '*',
     },
     withCredentials: true,
   });

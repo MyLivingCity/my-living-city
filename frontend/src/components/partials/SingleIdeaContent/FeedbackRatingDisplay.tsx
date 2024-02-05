@@ -1,7 +1,7 @@
-import {  Container, Row } from "react-bootstrap";
+import {  Container, Row } from 'react-bootstrap';
 import { IFeedbackRatingScaleAggregateSummary,
      IFeedbackRatingYesNoAggregateSummary }
-      from "src/lib/types/data/feedbackRating.type";
+      from 'src/lib/types/data/feedbackRating.type';
 
 interface FeedbackRatingScaleDisplayProps {
     feedbackRatingScaleSummary: IFeedbackRatingScaleAggregateSummary;
@@ -20,7 +20,7 @@ const FeedbackRatingScaleDisplay = ({
     return (
         <Container className="">
             <Row className="">
-                <p style={{fontSize: "80%"}}>Average Rating: {ratingAvg}</p>
+                <p style={{fontSize: '80%'}}>Average Rating: {ratingAvg}</p>
             </Row>
         </Container>
     );
@@ -35,7 +35,7 @@ const FeedbackRatingYesNoDisplay = ({
     return (
         <Container className="">
             <Row className="">
-                <p style={{fontSize: "80%"}}> Yes to No: {yesToNo} </p>
+                <p style={{fontSize: '80%'}}> Yes to No: {yesToNo} </p>
             </Row>
         </Container>
     )

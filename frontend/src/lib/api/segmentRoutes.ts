@@ -1,6 +1,6 @@
-import axios from "axios"
-import { API_BASE_URL } from "../constants"
-import { ISegment, ISubSegment, ISuperSegment } from "../types/data/segment.type"
+import axios from 'axios'
+import { API_BASE_URL } from '../constants'
+import { ISegment, ISubSegment, ISuperSegment } from '../types/data/segment.type'
 
 export const getAllSegmentsWithSuperSegId = async (superSegId: any) => {
   const res = await axios.get<ISegment[]>(`${API_BASE_URL}/segment/getBySuperSegId/${superSegId}`);
@@ -14,7 +14,7 @@ export const getAllSegments = async () => {
 
 export const getAllSuperSegments = async () => {
   const res = await axios({
-    method: "get",
+    method: 'get',
     url: `${API_BASE_URL}/superSegment/getAll`,
   })
   return res.data;
@@ -28,10 +28,10 @@ export const createSegment = async (segData: any, token:any) =>{
   const parsedPayload = {...segData};
 
   const res = await axios({
-      method: "post",
+      method: 'post',
       url: `${API_BASE_URL}/segment/create`,
       data: parsedPayload,
-      headers: { "x-auth-token": token, "Access-Control-Allow-Origin": "*",},
+      headers: { 'x-auth-token': token, 'Access-Control-Allow-Origin': '*',},
       withCredentials: true
   })
   if(!(res.status===201 || res.status===200)){
@@ -44,10 +44,10 @@ export const createSubSegment = async (segData: any, token:any) =>{
 
 
   const res = await axios({
-      method: "post",
+      method: 'post',
       url: `${API_BASE_URL}/subSegment/create`,
       data: parsedPayload,
-      headers: { "x-auth-token": token, "Access-Control-Allow-Origin": "*",},
+      headers: { 'x-auth-token': token, 'Access-Control-Allow-Origin': '*',},
       withCredentials: true
   })
   if(!(res.status===201 || res.status===200)){
@@ -61,10 +61,10 @@ export const updateSegment = async (segData: any, token:any) =>{
   const parsedPayload = {...segData};
 
   const res = await axios({
-      method: "post",
+      method: 'post',
       url: `${API_BASE_URL}/segment/update/${segId}`,
       data: parsedPayload,
-      headers: { "x-auth-token": token, "Access-Control-Allow-Origin": "*",},
+      headers: { 'x-auth-token': token, 'Access-Control-Allow-Origin': '*',},
       withCredentials: true
   })
   //if not success, throw error which will stop form reset
@@ -86,10 +86,10 @@ export const updateSubSegment = async (subSegData: any, token:any) =>{
   const parsedPayload = {...subSegData};
  
   const res = await axios({
-      method: "post",
+      method: 'post',
       url: `${API_BASE_URL}/subSegment/update/${id}`,
       data: parsedPayload,
-      headers: { "x-auth-token": token, "Access-Control-Allow-Origin": "*",},
+      headers: { 'x-auth-token': token, 'Access-Control-Allow-Origin': '*',},
       withCredentials: true
   })
   //if not success, throw error which will stop form reset
@@ -101,11 +101,11 @@ export const updateSubSegment = async (subSegData: any, token:any) =>{
 
 export const findSegmentByName = async (segData: any) => {
   if(!segData.segName||!segData.province||!segData.country){
-    throw new Error("location parameters are needed");
+    throw new Error('location parameters are needed');
   }
   const parsedPayload = {...segData};
   const result = await axios({
-    method: "post",
+    method: 'post',
     url: `${API_BASE_URL}/segment/getByName`,
     data: parsedPayload
   });
@@ -115,11 +115,11 @@ export const findSegmentByName = async (segData: any) => {
 
 export const findSubsegmentsBySegmentId = async (segId:number) => {
   if(segId<0){
-    throw new Error("SegId is invalid!");
+    throw new Error('SegId is invalid!');
   }
 
   const result = await axios({
-    method: "get",
+    method: 'get',
     url: `${API_BASE_URL}/subSegment/getBySegmentId/${segId}`
   })
 
@@ -128,9 +128,9 @@ export const findSubsegmentsBySegmentId = async (segId:number) => {
 
 export const findSegmentRequests = async (token: string | null) => {
   const result = await axios({
-    method: "get",
+    method: 'get',
     url: `${API_BASE_URL}/userSegmentRequest/getAll`,
-    headers: { "x-auth-token": token, "Access-Control-Allow-Origin": "*",},
+    headers: { 'x-auth-token': token, 'Access-Control-Allow-Origin': '*',},
     withCredentials: true
   });
 
@@ -149,10 +149,10 @@ export const getSingleSubSegmentBySubSegmentId = async (SubSegmentId: number | u
 
 export const getUserReachSegmentsByUserId = async (userId: string | undefined, token: string | null) => {
   const res = await axios({
-    method: "post",
+    method: 'post',
     url: `${API_BASE_URL}/reach/getUserSegments`,
     data: {userId: userId},
-    headers: { "x-auth-token": token, "Access-Control-Allow-Origin": "*",},
+    headers: { 'x-auth-token': token, 'Access-Control-Allow-Origin': '*',},
     withCredentials: true,
   })
   return res.data;
@@ -160,7 +160,7 @@ export const getUserReachSegmentsByUserId = async (userId: string | undefined, t
 
 export const getSegmentAgggregateInfo = async (segmentId: number) => {
   const res = await axios({
-    method: "get",
+    method: 'get',
     url: `${API_BASE_URL}/segment/aggregateInfo/${segmentId}`,
   })
   return res.data;
@@ -168,7 +168,7 @@ export const getSegmentAgggregateInfo = async (segmentId: number) => {
 
 export const getSegmentByName = async (segmentName: string) => {
   const res = await axios({
-    method: "get",
+    method: 'get',
     url: `${API_BASE_URL}/segment/getByName/${segmentName}`,
   })
   return res.data;

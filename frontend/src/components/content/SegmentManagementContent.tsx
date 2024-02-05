@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   Table,
   Form,
@@ -9,26 +9,26 @@ import {
   Card,
   Alert,
   NavDropdown,
-} from "react-bootstrap";
-import { useState } from "react";
+} from 'react-bootstrap';
+import { useState } from 'react';
 import {
   ISegment,
   ISubSegment,
   ISegmentRequest,
-} from "../../lib/types/data/segment.type";
-import { IFetchError } from "../../lib/types/types";
-import { capitalizeString } from "../../lib/utilityFunctions";
+} from '../../lib/types/data/segment.type';
+import { IFetchError } from '../../lib/types/types';
+import { capitalizeString } from '../../lib/utilityFunctions';
 import {
   createSegment,
   createSubSegment,
   updateSegment,
   updateSubSegment,
-} from "../../lib/api/segmentRoutes";
-import { ShowSubSegmentsPage } from "src/pages/ShowSubSegmentsPage";
-import { UserSegmentRequestCard } from "../partials/UserSegmentRequestCard";
-import { COUNTRIES, PROVINCES } from "src/lib/constants";
-import { Dropdown } from "react-bootstrap";
-import { capitalizeFirstLetterEachWord } from "./../../lib/utilityFunctions";
+} from '../../lib/api/segmentRoutes';
+import { ShowSubSegmentsPage } from 'src/pages/ShowSubSegmentsPage';
+import { UserSegmentRequestCard } from '../partials/UserSegmentRequestCard';
+import { COUNTRIES, PROVINCES } from 'src/lib/constants';
+import { Dropdown } from 'react-bootstrap';
+import { capitalizeFirstLetterEachWord } from './../../lib/utilityFunctions';
 
 export interface ShowSubSegmentsProps {
   segId: number;
@@ -43,7 +43,7 @@ export const ShowSubSegments: React.FC<ShowSubSegmentsProps> = ({
   token,
 }) => {
   // const {data} = useAllSubSegmentsWithId(String(segId!));
-  const [hideControls, setHideControls] = useState("");
+  const [hideControls, setHideControls] = useState('');
   const [showNewSubSeg, setShowNewSubSeg] = useState(false);
   const [error, setError] = useState<IFetchError | null>(null);
   let createData = {} as ISubSegment;
@@ -51,26 +51,26 @@ export const ShowSubSegments: React.FC<ShowSubSegmentsProps> = ({
     try {
       if (updateData) {
         if (!updateData.name) {
-          setError(Error("Please enter a sub-segment name when updating"));
+          setError(Error('Please enter a sub-segment name when updating'));
           throw error;
         }
         if (!updateData.lat || !updateData.lon) {
-          setError(Error("Please enter lat and lon when updating sub-segment"));
+          setError(Error('Please enter lat and lon when updating sub-segment'));
           throw error;
         }
         if (!updateData.radius) {
-          setError(Error("Please enter a radius when updating sub-segment"));
+          setError(Error('Please enter a radius when updating sub-segment'));
           throw error;
         }
         await updateSubSegment(updateData, token);
       } else {
         if (!createData.name) {
-          setError(Error("Please enter a name when creating a sub-segment"));
+          setError(Error('Please enter a name when creating a sub-segment'));
           throw error;
         }
         if (!createData.lat || !createData.lon) {
           setError(
-            Error("Please enter a lat and long when creating a segment")
+            Error('Please enter a lat and long when creating a segment')
           );
           throw error;
         }
@@ -79,7 +79,7 @@ export const ShowSubSegments: React.FC<ShowSubSegmentsProps> = ({
             (element) => element.name === createData.name
           );
           if (found) {
-            setError(Error("A Sub-segment with this name already exists"));
+            setError(Error('A Sub-segment with this name already exists'));
             throw error;
           }
         }
@@ -102,7 +102,7 @@ export const ShowSubSegments: React.FC<ShowSubSegmentsProps> = ({
     <Card>
       {/* <img alt=""src={"http://localhost:3001/static/uploads/1621449457193-SampleAds1.png"} /> */}
       <Card.Header>
-        {capitalizeString(segName!)} Sub-Segments{" "}
+        {capitalizeString(segName!)} Sub-Segments{' '}
         <Button
           className="float-right"
           size="sm"
@@ -121,7 +121,7 @@ export const ShowSubSegments: React.FC<ShowSubSegmentsProps> = ({
               <th>Lat</th>
               <th>Lon</th>
               <th>Radius</th>
-              <th style={{ width: "10rem" }}>Controls</th>
+              <th style={{ width: '10rem' }}>Controls</th>
             </tr>
           </thead>
           <tbody>
@@ -130,7 +130,7 @@ export const ShowSubSegments: React.FC<ShowSubSegmentsProps> = ({
                 {String(segment.id) !== hideControls ? (
                   <>
                     <td>
-                      {segment.name ? capitalizeString(segment.name) : ""}
+                      {segment.name ? capitalizeString(segment.name) : ''}
                     </td>
                     <td>{segment.lat}</td>
                     <td>{segment.lon}</td>
@@ -188,7 +188,7 @@ export const ShowSubSegments: React.FC<ShowSubSegmentsProps> = ({
                         size="sm"
                         variant="outline-danger"
                         className="mr-2"
-                        onClick={() => setHideControls("")}
+                        onClick={() => setHideControls('')}
                       >
                         Cancel
                       </Button>
@@ -196,7 +196,7 @@ export const ShowSubSegments: React.FC<ShowSubSegmentsProps> = ({
                         size="sm"
                         onClick={() => {
                           handleSubSegSubmit(segment);
-                          setHideControls("");
+                          setHideControls('');
                         }}
                       >
                         Save
@@ -249,7 +249,7 @@ export const ShowSubSegments: React.FC<ShowSubSegmentsProps> = ({
                     }}
                   >
                     Add Sub-Segment
-                  </Button>{" "}
+                  </Button>{' '}
                 </td>
               </tr>
             )}
@@ -279,7 +279,7 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
   token,
   segReq,
 }) => {
-  const [hideControls, setHideControls] = useState("");
+  const [hideControls, setHideControls] = useState('');
   const [showNewSeg, setShowNewSeg] = useState(false);
   const [segId, setSegId] = useState<number | null>(null);
   const [segName, setSegName] = useState<string | null>(null);
@@ -296,20 +296,20 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
     try {
       if (updateData) {
         if (!updateData.name) {
-          setError(Error("Please enter a segment name when updating"));
+          setError(Error('Please enter a segment name when updating'));
           throw error;
         }
         await updateSegment(updateData, token);
       } else {
         if (!createData.name) {
-          setError(Error("Please enter a name when creating a segment"));
+          setError(Error('Please enter a name when creating a segment'));
           throw error;
         }
         const found = segments!.find(
           (element) => element.name === createData.name
         );
         if (found) {
-          setError(Error("A Segment with this name already exists"));
+          setError(Error('A Segment with this name already exists'));
           throw error;
         }
         createData.country = countryName;
@@ -379,7 +379,7 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
         <Col>
           <Card>
             <Card.Header>
-              {capitalizeString(provName!)} segments{" "}
+              {capitalizeString(provName!)} segments{' '}
               <Button
                 className="float-right"
                 size="sm"
@@ -408,14 +408,14 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
                           <td>
                             {segment.name
                               ? capitalizeFirstLetterEachWord(segment.name)
-                              : ""}
+                              : ''}
                           </td>
                           <td>
                             {segment.superSegName
                               ? capitalizeFirstLetterEachWord(
                                   segment.superSegName
                                 )
-                              : ""}
+                              : ''}
                           </td>
                           <td>
                             <NavDropdown title="Controls" id="nav-dropdown">
@@ -456,7 +456,7 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
                               defaultValue={
                                 segment.superSegName
                                   ? capitalizeString(segment.superSegName)
-                                  : ""
+                                  : ''
                               }
                               onChange={(e) => {
                                 segment.superSegName = e.target.value;
@@ -468,7 +468,7 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
                               size="sm"
                               className="mr-2"
                               variant="outline-danger"
-                              onClick={() => setHideControls("")}
+                              onClick={() => setHideControls('')}
                             >
                               Cancel
                             </Button>
@@ -476,7 +476,7 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
                               size="sm"
                               onClick={() => {
                                 handleSegSubmit(segment);
-                                setHideControls("");
+                                setHideControls('');
                               }}
                             >
                               Save
@@ -516,7 +516,7 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
                           }}
                         >
                           Add Segment
-                        </Button>{" "}
+                        </Button>{' '}
                       </td>
                     </tr>
                   )}
@@ -536,7 +536,7 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
               segName={segName}
               token={token}
             />
-          )}{" "}
+          )}{' '}
           <br />
           <UserSegmentRequestCard segReq={segReq} token={token} />
         </Col>

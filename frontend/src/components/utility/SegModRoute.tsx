@@ -33,7 +33,7 @@ interface SegModRouteProps {
         <Route
         {...routeProps}
         render={(props) =>
-            (isLoggedIn && user!.userType === "SEG_MOD") || (isLoggedIn && user!.userType === "MOD") ? (
+            (isLoggedIn && user!.userType === 'SEG_MOD') || (isLoggedIn && user!.userType === 'MOD') ? (
             <ComponentToRender {...props} />
             ) : (
             <Redirect to={ redirectPath || ROUTES.LOGIN } />

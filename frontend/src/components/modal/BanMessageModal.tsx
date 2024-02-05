@@ -27,7 +27,7 @@ export const BanMessageModal = () => {
                 centered>
                 <Modal.Header>
                     <Col></Col>
-                    <Col md={"auto"}>
+                    <Col md={'auto'}>
                         <h4>You have been Banned</h4>
                     </Col>
                     <Col></Col>
@@ -35,7 +35,7 @@ export const BanMessageModal = () => {
                 <Modal.Dialog/>
                 <Row>
                     <Col></Col>
-                    <Col md={"auto"}>
+                    <Col md={'auto'}>
                         <Spinner animation='border' className="loading-spinner" />
                     </Col>
                     <Col></Col>
@@ -43,7 +43,7 @@ export const BanMessageModal = () => {
                 <Modal.Dialog/>
                 <Modal.Footer>
                     <Col></Col>
-                    <Col md={"auto"}>
+                    <Col md={'auto'}>
                         <Button>Sign Out</Button>
                     </Col>
                     <Col></Col>
@@ -61,7 +61,7 @@ export const BanMessageModal = () => {
         >
             <Modal.Header>
                 <Col></Col>
-                <Col md={"auto"}>
+                <Col md={'auto'}>
                     <h4>You have been Banned</h4>
                 </Col>
                 <Col></Col>
@@ -69,7 +69,7 @@ export const BanMessageModal = () => {
             <Modal.Body>
                 <Row>
                     <Col></Col>
-                    <Col md={"auto"}>
+                    <Col md={'auto'}>
                         <b>Reason: </b>{data!.banReason}
                         <p />
                     </Col>
@@ -78,7 +78,7 @@ export const BanMessageModal = () => {
 
                 <Row>
                     <Col></Col>
-                    <Col md={"auto"}>
+                    <Col md={'auto'}>
                         <b>Details: </b>{data!.banMessage}
                         <p />
                     </Col>
@@ -87,7 +87,7 @@ export const BanMessageModal = () => {
 
                 <Row>
                     <Col></Col>
-                    <Col md={"auto"}>
+                    <Col md={'auto'}>
                         <b>Your ban will be removed on: </b>{new Date(data!.banUntil).toLocaleString()}
                         <p />
                     </Col>
@@ -96,7 +96,7 @@ export const BanMessageModal = () => {
             </Modal.Body>
             <Modal.Footer>
                 <Col></Col>
-                <Col md={"auto"}>
+                <Col md={'auto'}>
                     <Button onClick={() => logout()}>Sign Out</Button>
                 </Col>
                 <Col></Col>

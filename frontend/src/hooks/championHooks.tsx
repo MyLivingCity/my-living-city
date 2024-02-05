@@ -39,7 +39,7 @@ export const useSubmitChampionRequestMutation = (
   useEffect(() => {
     if (error) {
       const potentialAxiosError = handlePotentialAxiosError(
-        "An Error occured while trying request to Champion an idea.",
+        'An Error occured while trying request to Champion an idea.',
         error,
       );
       setParsedErrorObj(potentialAxiosError);

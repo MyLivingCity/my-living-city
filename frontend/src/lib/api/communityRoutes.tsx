@@ -1,16 +1,16 @@
-import axios from "axios";
-import { API_BASE_URL } from "../constants";
+import axios from 'axios';
+import { API_BASE_URL } from '../constants';
 import {
   IGetAllIdeasWithSort,
   getAllIdeasWithSortDefault,
   IIdeaOrderByAggregate,
-} from "../types/args/getAllIdeas.args";
+} from '../types/args/getAllIdeas.args';
 import {
   IIdeaWithAggregations,
   IIdeaWithRelationship,
-} from "../types/data/idea.type";
-import { ICreateIdeaInput } from "../types/input/createIdea.input";
-import { getAxiosJwtRequestOption } from "./axiosRequestOptions";
+} from '../types/data/idea.type';
+import { ICreateIdeaInput } from '../types/input/createIdea.input';
+import { getAxiosJwtRequestOption } from './axiosRequestOptions';
 
 export const postCreateCollabotator = async (
   proposalId: number,
@@ -21,11 +21,11 @@ export const postCreateCollabotator = async (
   const { experience, role, time, contactInfo } = collaboratorData;
 
   if (!experience || !role || !time || !contactInfo) {
-    throw new Error("Please fill out all fields");
+    throw new Error('Please fill out all fields');
   }
 
   if (!token) {
-    throw new Error("Your session has expired. Please relogin and try again.");
+    throw new Error('Your session has expired. Please relogin and try again.');
   }
 
   let formBody = {
@@ -39,13 +39,13 @@ export const postCreateCollabotator = async (
 
 
   const res = await axios({
-    method: "post",
+    method: 'post',
     url: `${API_BASE_URL}/community/create/collaborator`,
     data: formBody,
     headers: {
-      "Content-Type": "application/json",
-      "x-auth-token": token,
-      "Access-Control-Allow-Origin": "*",
+      'Content-Type': 'application/json',
+      'x-auth-token': token,
+      'Access-Control-Allow-Origin': '*',
     },
     withCredentials: true,
   });
@@ -66,11 +66,11 @@ export const postCreateVolunteer = async (
   const { experience, task, time, contactInfo } = volunteerData;
 
   if (!experience || !task || !time || !contactInfo) {
-    throw new Error("Please fill out all fields");
+    throw new Error('Please fill out all fields');
   }
 
   if (!token) {
-    throw new Error("Your session has expired. Please relogin and try again.");
+    throw new Error('Your session has expired. Please relogin and try again.');
   }
 
   let formBody = {
@@ -84,13 +84,13 @@ export const postCreateVolunteer = async (
  
 
   const res = await axios({
-    method: "post",
+    method: 'post',
     url: `${API_BASE_URL}/community/create/volunteer`,
     data: formBody,
     headers: {
-      "Content-Type": "application/json",
-      "x-auth-token": token,
-      "Access-Control-Allow-Origin": "*",
+      'Content-Type': 'application/json',
+      'x-auth-token': token,
+      'Access-Control-Allow-Origin': '*',
     },
     withCredentials: true,
   });
@@ -111,11 +111,11 @@ export const postCreateDonor = async (
   const { donations, contactInfo } = donorData;
 
   if (!donations || !contactInfo) {
-    throw new Error("Please fill out all fields");
+    throw new Error('Please fill out all fields');
   }
 
   if (!token) {
-    throw new Error("Your session has expired. Please relogin and try again.");
+    throw new Error('Your session has expired. Please relogin and try again.');
   }
 
   let formBody = {
@@ -127,13 +127,13 @@ export const postCreateDonor = async (
  
 
   const res = await axios({
-    method: "post",
+    method: 'post',
     url: `${API_BASE_URL}/community/create/donor`,
     data: formBody,
     headers: {
-      "Content-Type": "application/json",
-      "x-auth-token": token,
-      "Access-Control-Allow-Origin": "*",
+      'Content-Type': 'application/json',
+      'x-auth-token': token,
+      'Access-Control-Allow-Origin': '*',
     },
     withCredentials: true,
   });

@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect } from 'react';
 import {
   Card,
   Table, 
-} from "react-bootstrap";
+} from 'react-bootstrap';
 
 interface EndorsedUsersSectionProps {
   endorsedUsers: any[];
@@ -14,7 +14,7 @@ const EndorsedUsersSection: React.FC<EndorsedUsersSectionProps> = ({ endorsedUse
   }, [endorsedUsers]);
 
   return (
-    <div style={{ marginTop: "2rem" }}>
+    <div style={{ marginTop: '2rem' }}>
       <Card>
         <Card.Header>
           <div className="d-flex">
@@ -22,7 +22,7 @@ const EndorsedUsersSection: React.FC<EndorsedUsersSectionProps> = ({ endorsedUse
           </div>
         </Card.Header>
         <Card.Body>
-          <Table style={{margin: "0rem"}}>
+          <Table style={{margin: '0rem'}}>
             <tbody>
               {endorsedUsers.map((user) => (
                 <tr key={user.id}>

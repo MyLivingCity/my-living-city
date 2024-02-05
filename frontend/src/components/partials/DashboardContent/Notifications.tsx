@@ -1,23 +1,23 @@
-import React, { useContext, useState } from "react";
-import { Button, Container, Table } from "react-bootstrap";
-import { UserProfileContext } from "../../../contexts/UserProfile.Context";
-import { updateIdeaNotificationStatus } from "src/lib/api/ideaRoutes";
-import { IIdeaWithAggregations } from "src/lib/types/data/idea.type";
-import Notification from "./Notification";
-import { IBanUser } from "src/lib/types/data/banUser.type";
-import { IBanPost } from "src/lib/types/data/banPost.type";
-import { IBanComment } from "src/lib/types/data/banComment.type";
+import React, { useContext, useState } from 'react';
+import { Button, Container, Table } from 'react-bootstrap';
+import { UserProfileContext } from '../../../contexts/UserProfile.Context';
+import { updateIdeaNotificationStatus } from 'src/lib/api/ideaRoutes';
+import { IIdeaWithAggregations } from 'src/lib/types/data/idea.type';
+import Notification from './Notification';
+import { IBanUser } from 'src/lib/types/data/banUser.type';
+import { IBanPost } from 'src/lib/types/data/banPost.type';
+import { IBanComment } from 'src/lib/types/data/banComment.type';
 import {
   dismissBanPostNotification,
   updateUserBan,
   dismissBanCommentNotification,
-} from "src/lib/api/banRoutes";
-import { ICommentAggregations } from "src/lib/types/data/comment.type";
-import { updateCommentNotificationStatus } from "src/lib/api/commentRoutes";
-import { IQuarantineNotification } from "src/lib/types/data/quarantinePostNotification.type";
-import { dismissQuarantineNotification } from "src/lib/api/quarantinePostNotificationRoutes";
-import LoadingSpinner from "src/components/ui/LoadingSpinner";
-import ErrorMessage from "src/components/ui/ErrorMessage";
+} from 'src/lib/api/banRoutes';
+import { ICommentAggregations } from 'src/lib/types/data/comment.type';
+import { updateCommentNotificationStatus } from 'src/lib/api/commentRoutes';
+import { IQuarantineNotification } from 'src/lib/types/data/quarantinePostNotification.type';
+import { dismissQuarantineNotification } from 'src/lib/api/quarantinePostNotificationRoutes';
+import LoadingSpinner from 'src/components/ui/LoadingSpinner';
+import ErrorMessage from 'src/components/ui/ErrorMessage';
 
 interface NotificationPageContentProps {
   userIdeas: IIdeaWithAggregations[] | undefined;
@@ -61,7 +61,7 @@ const Notifications: React.FC<NotificationPageContentProps> = ({
       <Container
         className="system"
         id="hanging-icons"
-        style={{ padding: "3rem 1rem 0rem 1rem", margin: "0 auto" }}
+        style={{ padding: '3rem 1rem 0rem 1rem', margin: '0 auto' }}
       >
         <style>{styling}</style>
         <div className="d-flex justify-content-between border-bottom display-6">
@@ -73,7 +73,7 @@ const Notifications: React.FC<NotificationPageContentProps> = ({
           </div>
         </div>
 
-        <div style={{ marginTop: "1rem" }}>
+        <div style={{ marginTop: '1rem' }}>
           <Table>
             <tbody className="wrapper" key={Math.random()}>
               <LoadingSpinner />
@@ -89,7 +89,7 @@ const Notifications: React.FC<NotificationPageContentProps> = ({
       <Container
         className="system"
         id="hanging-icons"
-        style={{ padding: "3rem 1rem 0rem 1rem", margin: "0 auto" }}
+        style={{ padding: '3rem 1rem 0rem 1rem', margin: '0 auto' }}
       >
         <style>{styling}</style>
         <div className="d-flex justify-content-between border-bottom display-6">
@@ -101,7 +101,7 @@ const Notifications: React.FC<NotificationPageContentProps> = ({
           </div>
         </div>
 
-        <div style={{ marginTop: "1rem" }}>
+        <div style={{ marginTop: '1rem' }}>
           <ErrorMessage message="There was an error loading notifications." />
         </div>
       </Container>
@@ -165,7 +165,7 @@ const Notifications: React.FC<NotificationPageContentProps> = ({
 
     if (userQuarantineNotifications) {
       userQuarantineNotifications?.map(async (quarantineNotification) => {
-        console.log("IDS: ", quarantineNotification.userId, "\t", user!.id)
+        console.log('IDS: ', quarantineNotification.userId, '\t', user!.id)
         if (!quarantineNotification.seen &&
           quarantineNotification.userId === user!.id) {
           quarantineNotification!.seen = true;
@@ -215,7 +215,7 @@ const Notifications: React.FC<NotificationPageContentProps> = ({
   }
 
   if (userQuarantineNotifications) {
-    console.log("userQuarantineNotifications", userQuarantineNotifications);
+    console.log('userQuarantineNotifications', userQuarantineNotifications);
     userQuarantineNotifications!
       .filter(
         (quarantineNotification) =>
@@ -235,7 +235,7 @@ const Notifications: React.FC<NotificationPageContentProps> = ({
     <Container
       className="system"
       id="hanging-icons"
-      style={{ padding: "3rem 1rem 0rem 1rem", margin: "0 auto" }}
+      style={{ padding: '3rem 1rem 0rem 1rem', margin: '0 auto' }}
     >
       <style>
         {styling}
@@ -249,7 +249,7 @@ const Notifications: React.FC<NotificationPageContentProps> = ({
         </div>
       </div>
 
-      <div style={{ marginTop: "1rem" }}>
+      <div style={{ marginTop: '1rem' }}>
         {!isDismissed && (
           <Table>
             <tbody key={Math.random()}>

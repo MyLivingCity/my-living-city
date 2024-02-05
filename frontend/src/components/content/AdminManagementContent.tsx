@@ -37,7 +37,7 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({ 
     const [showUserBanHistoryModal, setShowUserBanHistoryModal] = useState<boolean>(false);
     const [modalUser, setModalUser] = useState<IUser>();
     const [showCreateAccountForm, setShowCreateAccountForm] = useState(false);
-    const [buttonText, setButtonText] = useState("Admin Creation Wizard");
+    const [buttonText, setButtonText] = useState('Admin Creation Wizard');
     const [banHistory, setBanHistory] = useState<any>();
     const UserSegmentHandler = (email: string, id: string) => {
         setShowUserSegmentCard((prevState) => !prevState);
@@ -46,8 +46,8 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({ 
     }
 
     let newHomeID = 1;
-    const [selectedUserType, setSelectedUserType] = useState("");
-    const [selectedRegion, setSelectedRegion] = useState("");
+    const [selectedUserType, setSelectedUserType] = useState('');
+    const [selectedRegion, setSelectedRegion] = useState('');
     const handleRegionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedRegionName = event.target.value;
 
@@ -61,7 +61,7 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({ 
 
     const toggleCreateAccountForm = () => {
         setShowCreateAccountForm(!showCreateAccountForm);
-        setButtonText(showCreateAccountForm ? "Admin Creation Wizard" : "Hide Creation Wizard");
+        setButtonText(showCreateAccountForm ? 'Admin Creation Wizard' : 'Hide Creation Wizard');
     };
 
 
@@ -82,7 +82,7 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({ 
       };
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
-        console.log("Made it Submit")
+        console.log('Made it Submit')
  
 
         const form = event.target as HTMLFormElement;
@@ -102,11 +102,11 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({ 
             displayFName: formData.get('inputFirst') as string,
             displayLName: formData.get('inputLast') as string,
             address: {
-                streetAddress: "",
-                streetAddress2: "",
-                city: "",
-                postalCode: "",
-                country: "",
+                streetAddress: '',
+                streetAddress2: '',
+                city: '',
+                postalCode: '',
+                country: '',
             },
             geo: {
                 lon: undefined,
@@ -117,14 +117,14 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({ 
                 school_lon: undefined,
             },
             workDetails: {
-                streetAddress: "",
-                postalCode: "",
-                company: "",
+                streetAddress: '',
+                postalCode: '',
+                company: '',
             },
             schoolDetails: {
-                streetAddress: "",
-                postalCode: "",
-                faculty: "",
+                streetAddress: '',
+                postalCode: '',
+                faculty: '',
                 programCompletionDate: new Date(),
             },
 
@@ -253,7 +253,7 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({ 
                 </thead>
                 <tbody>
                     {users?.map((req: IUser, index: number) => (
-                        req.userType === "ADMIN" || req.userType === "MUNICIPAL_SEG_ADMIN" || req.userType === "MOD" || req.userType === "SEG_MOD" || req.userType === "SEG_ADMIN" ? (
+                        req.userType === 'ADMIN' || req.userType === 'MUNICIPAL_SEG_ADMIN' || req.userType === 'MOD' || req.userType === 'SEG_MOD' || req.userType === 'SEG_ADMIN' ? (
                             <tr key={req.id}>
                                 {req.id !== hideControls ?
                                     <>
@@ -263,8 +263,8 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({ 
                                         <td className="text-left align-middle">{req.lname}</td>
                                         <td className="text-center align-middle">{req.userType}</td>
                                         <td className="text-center align-middle">
-                                            {req.userType === "ADMIN" ? (
-                                                "Full access"
+                                            {req.userType === 'ADMIN' ? (
+                                                'Full access'
                                             ) : (
                                                 <UserSegPlainText email={req.email} id={req.id} token={token} />
                                             )}
@@ -279,12 +279,12 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({ 
                                         <td className="text-left align-middle"><Form.Control as="select" onChange={(e) => { (req.userType as String) = e.target.value }}>
                                             <option className="text-center align-middle" >{req.userType}</option>
                                             {userTypes.filter(type => type !== req.userType)
-                                             .filter((type => type !== "DEVELOPER"))
-                                             .filter((type => type !== "IN_PROGRESS"))
-                                             .filter((type => type !== "ASSOCIATE"))
-                                             .filter((type => type !== "RESIDENTIAL"))
-                                             .filter((type => type !== "COMMUNITY"))
-                                             .filter((type => type !== "BUSINESS"))
+                                             .filter((type => type !== 'DEVELOPER'))
+                                             .filter((type => type !== 'IN_PROGRESS'))
+                                             .filter((type => type !== 'ASSOCIATE'))
+                                             .filter((type => type !== 'RESIDENTIAL'))
+                                             .filter((type => type !== 'COMMUNITY'))
+                                             .filter((type => type !== 'BUSINESS'))
                                             .map(item =>
                                                 <option key={item}>{item}</option>
                                             )}
@@ -293,8 +293,8 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({ 
                                         </td>
 
                                         <td className="text-center align-middle">
-                                            {req.userType === "ADMIN" ? (
-                                                "Full access"
+                                            {req.userType === 'ADMIN' ? (
+                                                'Full access'
                                             ) : (
                                                 <UserSegPlainText email={req.email} id={req.id} token={token} />
                                             )}
@@ -327,7 +327,7 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({ 
                                             }
 
                                             <Dropdown.Item onClick={() => {
-                                                const confirmed = window.confirm("Are you sure you want to delete this user?");
+                                                const confirmed = window.confirm('Are you sure you want to delete this user?');
                                                 if (confirmed) {
                                                     handleDeleteUser(req.id);
                                                 }

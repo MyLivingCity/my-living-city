@@ -1,4 +1,4 @@
-import { BAN_USER_TYPES } from "src/lib/constants";
+import { BAN_USER_TYPES } from 'src/lib/constants';
 
 export interface IBanUser {
     id: number,

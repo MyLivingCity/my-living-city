@@ -36,7 +36,7 @@ export const WarningMessageModal = ({
                 centered>
                 <Modal.Header>
                     <Col></Col>
-                    <Col md={"auto"}>
+                    <Col md={'auto'}>
                         <h4>You have been issued a Warning</h4>
                     </Col>
                     <Col></Col>
@@ -44,7 +44,7 @@ export const WarningMessageModal = ({
                 <Modal.Dialog/>
                 <Row>
                     <Col></Col>
-                    <Col md={"auto"}>
+                    <Col md={'auto'}>
                         <Spinner animation='border' className="loading-spinner" />
                     </Col>
                     <Col></Col>
@@ -52,7 +52,7 @@ export const WarningMessageModal = ({
                 <Modal.Dialog/>
                 <Modal.Footer>
                     <Col></Col>
-                    <Col md={"auto"}>
+                    <Col md={'auto'}>
                         <Button>Sign Out</Button>
                     </Col>
                     <Col></Col>
@@ -70,7 +70,7 @@ export const WarningMessageModal = ({
         >
             <Modal.Header>
                 <Col></Col>
-                <Col md={"auto"}>
+                <Col md={'auto'}>
                     <h4>You have been issued a Warning</h4>
                 </Col>
                 <Col></Col>
@@ -78,7 +78,7 @@ export const WarningMessageModal = ({
             <Modal.Body>
                 <Row>
                     <Col></Col>
-                    <Col md={"auto"}>
+                    <Col md={'auto'}>
                         <b>Reason: </b>{data?.banReason}
                         <p />
                     </Col>
@@ -87,7 +87,7 @@ export const WarningMessageModal = ({
 
                 <Row>
                     <Col></Col>
-                    <Col md={"auto"}>
+                    <Col md={'auto'}>
                         <b>Details: </b>{data?.banMessage}
                         <p />
                     </Col>
@@ -96,7 +96,7 @@ export const WarningMessageModal = ({
 
                 <Row>
                     <Col></Col>
-                    <Col md={"auto"}>
+                    <Col md={'auto'}>
                         Repeated offenses before <b>{data?.banUntil && new Date(data!.banUntil).toLocaleString()}</b> will result in a ban.
                         <p />
                     </Col>
@@ -105,10 +105,10 @@ export const WarningMessageModal = ({
             </Modal.Body>
             <Modal.Footer>
                 <Col></Col>
-                <Col md={"auto"}>
+                <Col md={'auto'}>
                     <Button onClick={closeModal}>I Understand</Button>
                 </Col>
-                <Col md={"auto"}>
+                <Col md={'auto'}>
                     <Button variant="secondary" onClick={() => logout()}>Sign Out</Button>
                 </Col>
                 <Col></Col>

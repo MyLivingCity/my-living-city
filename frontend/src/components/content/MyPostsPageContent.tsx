@@ -1,6 +1,6 @@
-import React from "react";
-import { Container, Row } from "react-bootstrap";
-import MyPosts from "../partials/DashboardContent/MyPosts";
+import React from 'react';
+import { Container, Row } from 'react-bootstrap';
+import MyPosts from '../partials/DashboardContent/MyPosts';
 
 
 interface LandingPageContentProps {

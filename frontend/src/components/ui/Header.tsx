@@ -1,22 +1,22 @@
-import { memo, useContext, useEffect, useState } from "react";
-import CSS from "csstype";
+import { memo, useContext, useEffect, useState } from 'react';
+import CSS from 'csstype';
 import {
   NavDropdown,
   Nav,
   Navbar,
-} from "react-bootstrap";
-import { useUserWithJwtVerbose } from "src/hooks/userHooks";
-import { UserProfileContext } from "../../contexts/UserProfile.Context";
+} from 'react-bootstrap';
+import { useUserWithJwtVerbose } from 'src/hooks/userHooks';
+import { UserProfileContext } from '../../contexts/UserProfile.Context';
 import { getUserSubscriptionStatus } from 'src/lib/api/userRoutes'
-import { BanMessageModal } from "../modal/BanMessageModal";
-import { FindBanDetailsWithToken } from "src/hooks/banHooks";
-import { FindBadPostingBehaviorDetails } from "src/hooks/badPostingBehaviorHooks";
-import { WarningMessageModal } from "../modal/WarningMessageModal";
+import { BanMessageModal } from '../modal/BanMessageModal';
+import { FindBanDetailsWithToken } from 'src/hooks/banHooks';
+import { FindBadPostingBehaviorDetails } from 'src/hooks/badPostingBehaviorHooks';
+import { WarningMessageModal } from '../modal/WarningMessageModal';
 import {useBadPostingThreshhold } from 'src/hooks/threshholdHooks';
 import { useAllUserSegments } from 'src/hooks/userSegmentHooks';
 
 function Header(){
-  const [stripeStatus, setStripeStatus] = useState("");
+  const [stripeStatus, setStripeStatus] = useState('');
   const { logout, user, token } = useContext(UserProfileContext);
   const { data } = useUserWithJwtVerbose({
     jwtAuthToken: token!,
@@ -76,10 +76,10 @@ function Header(){
  
 
   const paymentNotificationStyling: CSS.Properties = {
-    backgroundColor: "#f7e4ab",
-    justifyContent: "center",
-    padding: "0.2rem",
-    whiteSpace: "pre",
+    backgroundColor: '#f7e4ab',
+    justifyContent: 'center',
+    padding: '0.2rem',
+    whiteSpace: 'pre',
   }
 
   useEffect(() => {
@@ -133,7 +133,7 @@ function Header(){
 
 return (
     <div className="outer-header">
-      {stripeStatus !== "" && stripeStatus !== "active" &&
+      {stripeStatus !== '' && stripeStatus !== 'active' &&
         (<Nav style={paymentNotificationStyling}>
           You have not paid your account payment. To upgrade your account, please go to the <a href="/profile">profile</a> section.
         </Nav>)
@@ -151,12 +151,12 @@ return (
         </Navbar.Brand>
         {(user) ? (
           <>
-            {(user.userType === "BUSINESS" || user.userType === "MUNICIPAL" || user.userType === "COMMUNITY") && (
+            {(user.userType === 'BUSINESS' || user.userType === 'MUNICIPAL' || user.userType === 'COMMUNITY') && (
               <Nav.Link href="/profile" className="d-inline-block alight-top">
                 {data && `${data.organizationName}`}
               </Nav.Link>
             )}
-            {(user.userType !== "BUSINESS" && user.userType !== "MUNICIPAL" && user.userType !== "COMMUNITY") && (
+            {(user.userType !== 'BUSINESS' && user.userType !== 'MUNICIPAL' && user.userType !== 'COMMUNITY') && (
               <Nav.Link href="/profile" className="d-inline-block alight-top">
                 {data && `${data.fname}@${data!.address!.streetAddress}`}
               </Nav.Link>
@@ -172,11 +172,11 @@ return (
             <Nav.Link href="/ideas">Conversations</Nav.Link>
               {(user) ? (
                 <>
-                 {((banData && banData.banType === "WARNING") || !badPostingBehaviorData ||(!user.banned && (badPostingBehaviorData && (badPostingThreshholdData && ((badPostingBehaviorData.bad_post_count + badPostingBehaviorData.post_flag_count) < badPostingThreshholdData.number) && !badPostingBehaviorData.post_comment_ban)))) && (
+                 {((banData && banData.banType === 'WARNING') || !badPostingBehaviorData ||(!user.banned && (badPostingBehaviorData && (badPostingThreshholdData && ((badPostingBehaviorData.bad_post_count + badPostingBehaviorData.post_flag_count) < badPostingThreshholdData.number) && !badPostingBehaviorData.post_comment_ban)))) && (
                     <NavDropdown title="Submit" id="nav-dropdown">
                       <Nav.Link href="/submit">Submit Idea</Nav.Link>
 
-                      {((user.userType === "BUSINESS" || user.userType === "MUNICIPAL" || user.userType === "COMMUNITY")) && (
+                      {((user.userType === 'BUSINESS' || user.userType === 'MUNICIPAL' || user.userType === 'COMMUNITY')) && (
 
                         <Nav.Link href="/submit-direct-proposal">Submit Proposal</Nav.Link>
                       )}
@@ -187,7 +187,7 @@ return (
 
                   <Nav.Link href="/profile">Profile</Nav.Link>
 
-                  {user.userType === "ADMIN" && (
+                  {user.userType === 'ADMIN' && (
                     <NavDropdown title="Admin Tools" id="nav-dropdown">
                       <Nav.Link href="/advertisement/all">Ad Manager</Nav.Link>
                       <Nav.Link href="/segment/management">Segments</Nav.Link>
@@ -196,19 +196,19 @@ return (
                     </NavDropdown>
                   )}
 
-                  {user.userType === "MUNICIPAL_SEG_ADMIN" && (
+                  {user.userType === 'MUNICIPAL_SEG_ADMIN' && (
                     <Nav.Link href="/user/management">Municipal Manager</Nav.Link>
                   )}
 
-                  {(user.userType === "BUSINESS" || user.userType === "COMMUNITY") && (
+                  {(user.userType === 'BUSINESS' || user.userType === 'COMMUNITY') && (
                     <Nav.Link href="/advertisement/user">My Ads</Nav.Link>
                   )}
-                  {user.userType === "SEG_ADMIN" && (
+                  {user.userType === 'SEG_ADMIN' && (
                     <NavDropdown title="Seg-Admin Tools" id="nav-dropdown">
                       <Nav.Link href="/segment/management">Segments</Nav.Link>
                     </NavDropdown>
                   )}
-                  {user.userType === "MOD" && (
+                  {user.userType === 'MOD' && (
                     <NavDropdown title="Mod Tools" id="nav-dropdown">
                       <Nav.Link href="/mod/management">Mod Management</Nav.Link>
                       {/*Nav.Link href="/moderator/queue" */}
@@ -216,7 +216,7 @@ return (
                       {/*Nav.Link href="/moderator/management" */}
                     </NavDropdown>
                   )}
-                  {(user.userType === "RESIDENTIAL" || user.userType === "COMMUNITY" || user.userType === "BUSINESS") && (
+                  {(user.userType === 'RESIDENTIAL' || user.userType === 'COMMUNITY' || user.userType === 'BUSINESS') && (
                     <NavDropdown
                       title="Dashboard"
                       id="cdashboard-dropdown">
@@ -224,7 +224,7 @@ return (
                       <Nav.Link href={`/community-dashboard/${userSegId}`}>Community Dashboard</Nav.Link>
                     </NavDropdown>
                   )}
-                    {( user.userType === "MUNICIPAL" || user.userType === "MUNICIPAL_SEG_ADMIN") && (
+                    {( user.userType === 'MUNICIPAL' || user.userType === 'MUNICIPAL_SEG_ADMIN') && (
                     <NavDropdown
                       title="Dashboard"
                       id="mdashboard-dropdown">
@@ -245,8 +245,8 @@ return (
           </Nav>
         </Navbar.Collapse>
       </Navbar>
-      { user && user.banned && banData && banData.banType === "SYS_BAN" ? <BanMessageModal/> : null }
-      { user && user.banned && banData && banData.banType === "POST_BAN" ?
+      { user && user.banned && banData && banData.banType === 'SYS_BAN' ? <BanMessageModal/> : null }
+      { user && user.banned && banData && banData.banType === 'POST_BAN' ?
           <>
             <Navbar className="bg-warning text-dark justify-content-center" expand="sm">
               Account has been banned from posting
@@ -255,7 +255,7 @@ return (
           </>
           : null
       }
-      { user && user.banned && banData && banData.banType === "WARNING" ?
+      { user && user.banned && banData && banData.banType === 'WARNING' ?
         <>
           <Navbar className="bg-warning text-dark justify-content-center" expand="sm">
             Account has been issued a warning

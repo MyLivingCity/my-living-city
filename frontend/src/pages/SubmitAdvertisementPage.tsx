@@ -7,8 +7,8 @@ import { delay } from 'src/lib/utilityFunctions';
 import SubmitAdvertisementPageContent from '../components/content/SubmitAdvertisementPageContent';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import { useCategories } from '../hooks/categoryHooks';
-import { getAllSegments } from "./../lib/api/segmentRoutes";
-import { getMyUserSegmentInfo } from "./../lib/api/userSegmentRoutes";
+import { getAllSegments } from './../lib/api/segmentRoutes';
+import { getMyUserSegmentInfo } from './../lib/api/userSegmentRoutes';
 
 // Extends Route component props with advertisement title route param
 interface SubmitAdvertisementPageProps extends RouteComponentProps<{}> {

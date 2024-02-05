@@ -1,18 +1,18 @@
-import { Container, Col, Carousel, Modal, Collapse } from "react-bootstrap";
-import PlaceholderIdeaTile from "src/components/tiles/PlaceholderIdeaTile";
-import { IIdeaWithAggregations } from "../../../lib/types/data/idea.type";
-import IdeaTile from "../../tiles/IdeaTile";
-import { BsFilter } from "react-icons/bs";
-import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
-import CSS from "csstype";
-import React, { useState } from "react";
-import { useCategories } from "src/hooks/categoryHooks";
-import { useAllProposals } from "src/hooks/proposalHooks";
-import { capitalizeFirstLetterEachWord } from "./../../../lib/utilityFunctions";
-import { useAllSuperSegments, useAllSegments } from "./../../../hooks/segmentHooks";
-import ProposalTile from "../../tiles/ProposalTile";
-import LoadingSpinner from "src/components/ui/LoadingSpinner";
-import ErrorMessage from "src/components/ui/ErrorMessage";
+import { Container, Col, Carousel, Modal, Collapse } from 'react-bootstrap';
+import PlaceholderIdeaTile from 'src/components/tiles/PlaceholderIdeaTile';
+import { IIdeaWithAggregations } from '../../../lib/types/data/idea.type';
+import IdeaTile from '../../tiles/IdeaTile';
+import { BsFilter } from 'react-icons/bs';
+import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
+import CSS from 'csstype';
+import React, { useState } from 'react';
+import { useCategories } from 'src/hooks/categoryHooks';
+import { useAllProposals } from 'src/hooks/proposalHooks';
+import { capitalizeFirstLetterEachWord } from './../../../lib/utilityFunctions';
+import { useAllSuperSegments, useAllSegments } from './../../../hooks/segmentHooks';
+import ProposalTile from '../../tiles/ProposalTile';
+import LoadingSpinner from 'src/components/ui/LoadingSpinner';
+import ErrorMessage from 'src/components/ui/ErrorMessage';
 
 interface IIdeaWithAggregationsWithNew extends IIdeaWithAggregations {
   isNew?: boolean;
@@ -62,7 +62,7 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
   const { data: allSegments } = useAllSegments();
   const { data: allSuperSegments } = useAllSuperSegments();
   const { data: allProposals } = useAllProposals();
-  const postStatuses = ["IDEA", "PROPOSAL", "PROJECT"];
+  const postStatuses = ['IDEA', 'PROPOSAL', 'PROJECT'];
 
   const handleCategory = (e: any, value: any) => {
     let configCopy = { ...filterConfig };
@@ -183,23 +183,23 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
   const isError = sectionIsError || categoriesIsError;
 
   const titleStyle: CSS.Properties = {
-    display: "inline",
+    display: 'inline',
   };
 
   const filterButtonStyle: CSS.Properties = {
-    float: "right",
+    float: 'right',
   };
 
   const mouseHoverPointer = (e: any) => {
-    e.target.style.cursor = "pointer";
+    e.target.style.cursor = 'pointer';
   };
 
   const modalSectionTitle: CSS.Properties = {
-    display: "inline",
+    display: 'inline',
   };
 
   const modalSectionIcon: CSS.Properties = {
-    float: "right",
+    float: 'right',
   };
 
  
@@ -336,11 +336,11 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
                       lg={4}
                       className="pt-3 align-items-stretch"
                     >
-                      {idea.state === "IDEA" ? (
+                      {idea.state === 'IDEA' ? (
                         <IdeaTile
                           ideaData={idea}
                           showFooter={true}
-                          postType={"Idea"}
+                          postType={'Idea'}
                         />
                       ) : (
                         <ProposalTile
@@ -352,7 +352,7 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
                             idea,
                           }}
                           showFooter={true}
-                          postType={"Proposal"}
+                          postType={'Proposal'}
                         />
                       )}
                     </Col>
@@ -411,7 +411,7 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
                             }
                           />
                           <label
-                            style={{ paddingLeft: "10px" }}
+                            style={{ paddingLeft: '10px' }}
                             htmlFor={category.title}
                           >
                             {capitalizeFirstLetterEachWord(
@@ -442,18 +442,18 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
                   <div>
                     <input
                       defaultChecked={filterConfig.impactArea.includes(
-                        "communityImpact"
+                        'communityImpact'
                       )}
                       type="checkbox"
                       id="communityAndPlace"
                       name="communityAndPlace"
                       value="communityImpact"
                       onClick={(e) =>
-                        handleImpactArea(e, "communityImpact")
+                        handleImpactArea(e, 'communityImpact')
                       }
                     />
                     <label
-                      style={{ paddingLeft: "10px" }}
+                      style={{ paddingLeft: '10px' }}
                       htmlFor="communityAndPlace"
                     >
                       Community and Place
@@ -462,18 +462,18 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
                   <div>
                     <input
                       defaultChecked={filterConfig.impactArea.includes(
-                        "natureImpact"
+                        'natureImpact'
                       )}
                       type="checkbox"
                       id="natureAndFoodSecurity"
                       name="natureAndFoodSecurity"
                       value="natureImpact"
                       onClick={(e) =>
-                        handleImpactArea(e, "natureImpact")
+                        handleImpactArea(e, 'natureImpact')
                       }
                     />
                     <label
-                      style={{ paddingLeft: "10px" }}
+                      style={{ paddingLeft: '10px' }}
                       htmlFor="natureAndFoodSecurity"
                     >
                       Nature and Food Security
@@ -482,18 +482,18 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
                   <div>
                     <input
                       defaultChecked={filterConfig.impactArea.includes(
-                        "artsImpact"
+                        'artsImpact'
                       )}
                       type="checkbox"
                       id="artsCultureAndEducation"
                       name="artsCultureAndEducation"
                       value="artsImpact"
                       onClick={(e) =>
-                        handleImpactArea(e, "artsImpact")
+                        handleImpactArea(e, 'artsImpact')
                       }
                     />
                     <label
-                      style={{ paddingLeft: "10px" }}
+                      style={{ paddingLeft: '10px' }}
                       htmlFor="artsCultureAndEducation"
                     >
                       Arts, Culture, and Education
@@ -502,18 +502,18 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
                   <div>
                     <input
                       defaultChecked={filterConfig.impactArea.includes(
-                        "energyImpact"
+                        'energyImpact'
                       )}
                       type="checkbox"
                       id="waterAndEnergy"
                       name="waterAndEnergy"
                       value="energyImpact"
                       onClick={(e) =>
-                        handleImpactArea(e, "energyImpact")
+                        handleImpactArea(e, 'energyImpact')
                       }
                     />
                     <label
-                      style={{ paddingLeft: "10px" }}
+                      style={{ paddingLeft: '10px' }}
                       htmlFor="waterAndEnergy"
                     >
                       Water and Energy
@@ -522,18 +522,18 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
                   <div>
                     <input
                       defaultChecked={filterConfig.impactArea.includes(
-                        "manufacturingImpact"
+                        'manufacturingImpact'
                       )}
                       type="checkbox"
                       id="manufacturingAndWaste"
                       name="manufacturingAndWaste"
                       value="manufacturingImpact"
                       onClick={(e) =>
-                        handleImpactArea(e, "manufacturingImpact")
+                        handleImpactArea(e, 'manufacturingImpact')
                       }
                     />
                     <label
-                      style={{ paddingLeft: "10px" }}
+                      style={{ paddingLeft: '10px' }}
                       htmlFor="manufacturingAndWaste"
                     >
                       Manufacturing and Waste
@@ -573,7 +573,7 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
                             onClick={(e) => handleSuperSeg(e, superSeg.superSegId)}
                           />
                           <label
-                            style={{ paddingLeft: "10px" }}
+                            style={{ paddingLeft: '10px' }}
                             htmlFor={superSeg.name}
                           >
                             {capitalizeFirstLetterEachWord(superSeg.name)}
@@ -615,7 +615,7 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
                             onClick={(e) => handleSeg(e, seg.segId)}
                           />
                           <label
-                            style={{ paddingLeft: "10px" }}
+                            style={{ paddingLeft: '10px' }}
                             htmlFor={seg.name}
                           >
                             {capitalizeFirstLetterEachWord(seg.name)}
@@ -656,7 +656,7 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
                           onClick={(e) => handlePostStatus(e, status)}
                         />
                         <label
-                          style={{ paddingLeft: "10px" }}
+                          style={{ paddingLeft: '10px' }}
                           htmlFor={status}
                         >
                           {capitalizeFirstLetterEachWord(status)}

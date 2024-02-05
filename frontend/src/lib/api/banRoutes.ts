@@ -1,10 +1,10 @@
-import axios from "axios";
-import { API_BASE_URL } from "../constants";
-import { getAxiosJwtRequestOption } from "./axiosRequestOptions";
-import { IBanUserInput} from "../types/input/banUser.input";
-import { IBanPostInput } from "../types/input/banPost.input";
-import { IBanCommentInput } from "../types/input/banComment.input";
-import { IBanUser } from "../types/data/banUser.type";
+import axios from 'axios';
+import { API_BASE_URL } from '../constants';
+import { getAxiosJwtRequestOption } from './axiosRequestOptions';
+import { IBanUserInput} from '../types/input/banUser.input';
+import { IBanPostInput } from '../types/input/banPost.input';
+import { IBanCommentInput } from '../types/input/banComment.input';
+import { IBanUser } from '../types/data/banUser.type';
 
 export const postCreateUserBan = async (
     banData: IBanUserInput,
@@ -12,13 +12,13 @@ export const postCreateUserBan = async (
 ) => {
     const jsonBody = JSON.stringify(banData);
     const res = await axios({
-        method: "post",
+        method: 'post',
         url: `${API_BASE_URL}/banUser/create`,
         data: jsonBody,
         headers: {
-            "Content-Type": "application/json",
-            "x-auth-token": token,
-            "Access-Control-Allow-Origin": "*",
+            'Content-Type': 'application/json',
+            'x-auth-token': token,
+            'Access-Control-Allow-Origin': '*',
         },
         withCredentials: true
     });
@@ -36,13 +36,13 @@ export const postCreatePostBan = async (
 ) => {
     const jsonBody = JSON.stringify(banData);
     const res = await axios({
-        method: "post",
+        method: 'post',
         url: `${API_BASE_URL}/banPost/create`,
         data: jsonBody,
         headers: {
-            "Content-Type": "application/json",
-            "x-auth-token": token,
-            "Access-Control-Allow-Origin": "*",
+            'Content-Type': 'application/json',
+            'x-auth-token': token,
+            'Access-Control-Allow-Origin': '*',
         },
         withCredentials: true
     });
@@ -61,13 +61,13 @@ export const postCreateCommentBan = async (
 ) => {
     const jsonBody = JSON.stringify(banData);
     const res = await axios({
-        method: "post",
+        method: 'post',
         url: `${API_BASE_URL}/banComment/create`,
         data: jsonBody,
         headers: {
-            "Content-Type": "application/json",
-            "x-auth-token": token,
-            "Access-Control-Allow-Origin": "*",
+            'Content-Type': 'application/json',
+            'x-auth-token': token,
+            'Access-Control-Allow-Origin': '*',
         },
         withCredentials: true
     });
@@ -83,7 +83,7 @@ export const getUndismissedPostBans = async(
     userId: string
 ) => {
     const res = await axios({
-        method: "get",
+        method: 'get',
         url: `${API_BASE_URL}/banPost/getUndismissedNotification/${userId}`,
     })
     return res.data;
@@ -93,7 +93,7 @@ export const getUndismissedCommentBans = async(
     userId: string
 ) => {
     const res = await axios({
-        method: "get",
+        method: 'get',
         url: `${API_BASE_URL}/banComment/getUndismissedNotification/${userId}`,
     })
     return res.data;
@@ -103,7 +103,7 @@ export const getMostRecentUserBan = async (
     userId: string
 ) => {
     const res = await axios({
-        method: "get",
+        method: 'get',
         url: `${API_BASE_URL}/banUser/getMostRecent/${userId}`
     })
     return res.data;
@@ -120,7 +120,7 @@ export const getPostBan = async (
     postId: number
 ) => {
     const res = await axios({
-        method: "get",
+        method: 'get',
         url: `${API_BASE_URL}/banPost/getByPostId/${postId}`
     })
     return res.data;
@@ -130,7 +130,7 @@ export const getCommentBan = async (
     commentId: number
 ) => {
     const res = await axios({
-        method: "get",
+        method: 'get',
         url: `${API_BASE_URL}/banComment/getByCommentId/${commentId}`
     })
     return res.data;
@@ -146,13 +146,13 @@ export const updateUserBan = async (
     token: string | null
 ) => {
     const res = await axios({
-        method: "put",
+        method: 'put',
         url: `${API_BASE_URL}/banUser/update/${banData.userId}`,
         data: banData,
         headers: {
-            "Content-Type": "application/json",
-            "x-auth-token": token,
-            "Access-Control-Allow-Origin": "*",
+            'Content-Type': 'application/json',
+            'x-auth-token': token,
+            'Access-Control-Allow-Origin': '*',
         },
         withCredentials: true
     });
@@ -164,12 +164,12 @@ export const dismissBanPostNotification = async (
     token: string | null
 ) => {
     const res = await axios({
-        method: "put",
+        method: 'put',
         url: `${API_BASE_URL}/banPost/dismissNotification/${banPostId}`,
         headers: {
-            "Content-Type": "application/json",
-            "x-auth-token": token,
-            "Access-Control-Allow-Origin": "*",
+            'Content-Type': 'application/json',
+            'x-auth-token': token,
+            'Access-Control-Allow-Origin': '*',
         },
         withCredentials: true
     });
@@ -181,12 +181,12 @@ export const dismissBanCommentNotification = async (
     token: string | null
 ) => {
     const res = await axios({
-        method: "put",
+        method: 'put',
         url: `${API_BASE_URL}/banComment/dismissNotification/${banCommentId}`,
         headers: {
-            "Content-Type": "application/json",
-            "x-auth-token": token,
-            "Access-Control-Allow-Origin": "*",
+            'Content-Type': 'application/json',
+            'x-auth-token': token,
+            'Access-Control-Allow-Origin': '*',
         },
         withCredentials: true
     });
@@ -213,11 +213,11 @@ export const deleteExpiredUserBans = async (
     token: string | null
 ) => {
     const res = await axios({
-        method: "delete",
+        method: 'delete',
         url: `${API_BASE_URL}/banUser/deletePassedBanDate`,
         headers: {
-            "x-auth-token": token,
-            "Access-Control-Allow-Origin": "*",
+            'x-auth-token': token,
+            'Access-Control-Allow-Origin': '*',
         },
         withCredentials: true
     });
@@ -229,11 +229,11 @@ export const deletePostBan = async (
     token: string | null
 ) => {
     const res = await axios({
-        method: "delete",
+        method: 'delete',
         url: `${API_BASE_URL}/banPost/delete/${banPostId}`,
         headers: {
-            "x-auth-token": token,
-            "Access-Control-Allow-Origin": "*",
+            'x-auth-token': token,
+            'Access-Control-Allow-Origin': '*',
         },
         withCredentials: true
     });
@@ -245,11 +245,11 @@ export const deleteCommentBan = async (
     token: string | null
 ) => {
     const res = await axios({
-        method: "delete",
+        method: 'delete',
         url: `${API_BASE_URL}/banComment/delete/${banCommentId}`,
         headers: {
-            "x-auth-token": token,
-            "Access-Control-Allow-Origin": "*",
+            'x-auth-token': token,
+            'Access-Control-Allow-Origin': '*',
         },
         withCredentials: true
     });
@@ -258,7 +258,7 @@ export const deleteCommentBan = async (
 
 export const getExpiredUserBans = async () => {
     const res = await axios({
-        method: "get",
+        method: 'get',
         url: `${API_BASE_URL}/banUser/getAllPassedDate`
     });
     return res.data;
@@ -267,20 +267,20 @@ export const getExpiredUserBans = async () => {
 export const unbanUsersWithExpiredBans = async (token: string | null) => {
     //get all ids of users with expired bans
     const userIdsResponse = await axios({
-        method: "get",
+        method: 'get',
         url: `${API_BASE_URL}/banUser/getAllPassedDate`
     });
   
     //unban all users that have ids returned by expireBans
     await axios({
-        method: "patch",
+        method: 'patch',
         url: `${API_BASE_URL}/user/unbanUsers`,
         data: {
             userIds: userIdsResponse.data
         },
         headers: {
-            "x-auth-token": token,
-            "Access-Control-Allow-Origin": "*",
+            'x-auth-token': token,
+            'Access-Control-Allow-Origin': '*',
         },
         withCredentials: true
     });
@@ -290,11 +290,11 @@ export const unbanUsersWithExpiredBans = async (token: string | null) => {
 
 export const attemptUnbanUser = async (token: string | null) => {
     await axios({
-        method: "patch",
+        method: 'patch',
         url: `${API_BASE_URL}/user/unbanMe`,
         headers: {
-            "x-auth-token": token,
-            "Access-Control-Allow-Origin": "*",
+            'x-auth-token': token,
+            'Access-Control-Allow-Origin': '*',
         },
         withCredentials: true
     });

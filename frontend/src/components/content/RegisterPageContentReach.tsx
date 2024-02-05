@@ -1,7 +1,7 @@
-import React, { Dispatch} from "react"
-import { Form } from "react-bootstrap";
-import { capitalizeFirstLetterEachWord, getDuplicatesRemoved } from "./../../lib/utilityFunctions";
-import CSS from "csstype";
+import React, { Dispatch} from 'react'
+import { Form } from 'react-bootstrap';
+import { capitalizeFirstLetterEachWord, getDuplicatesRemoved } from './../../lib/utilityFunctions';
+import CSS from 'csstype';
 
 
 export type CheckBoxItem = {
@@ -128,7 +128,7 @@ export const CheckboxTree: React.FC<CheckBoxTreeProps> = ({data, parent, ...prop
     }
 
     const treeDiv: CSS.Properties = {
-        marginLeft: "20px",
+        marginLeft: '20px',
     }
 
     return (
@@ -137,7 +137,7 @@ export const CheckboxTree: React.FC<CheckBoxTreeProps> = ({data, parent, ...prop
                 return(
                     <div key={i}>
                         <input type="checkbox" id={item.value} onChange={(e) => {onChangeCallback(e, item.children, getSiblings(item))}}/>
-                        <Form.Label style={{paddingLeft: "10px"}}>{item.label && capitalizeFirstLetterEachWord(item.label)}</Form.Label>
+                        <Form.Label style={{paddingLeft: '10px'}}>{item.label && capitalizeFirstLetterEachWord(item.label)}</Form.Label>
                         {item.children && <CheckboxTree data={item.children} parent={item} selected={props.selected} setSelected={props.setSelected}/>}
                     </div>
                 )

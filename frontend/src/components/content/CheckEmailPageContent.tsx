@@ -1,11 +1,11 @@
-import React from "react";
-import { useHistory } from "react-router-dom";
+import React from 'react';
+import { useHistory } from 'react-router-dom';
 
 const CheckEmailPageContent = () => {
   const history = useHistory();
 
   const navigateToLogin = () => {
-    history.push("/login");
+    history.push('/login');
   };
 
   return (

@@ -1,14 +1,14 @@
-import { useContext, useEffect, useState } from "react";
-import { Alert, Button, Container, Row } from "react-bootstrap";
-import { UserProfileContext } from "../../../contexts/UserProfile.Context";
-import { useCreateCommentMutation } from "../../../hooks/commentHooks";
-import IdeaCommentTile from "../../tiles/IdeaComment/IdeaCommentTile";
-import LoadingSpinner from "../../ui/LoadingSpinner";
-import CommentSubmitModal from "./CommentSubmitModal";
-import "../../../scss/content/textlimit.scss";
-import { UseQueryResult } from "react-query";
-import { IFetchError } from "src/lib/types/types";
-import { IComment } from "src/lib/types/data/comment.type";
+import { useContext, useEffect, useState } from 'react';
+import { Alert, Button, Container, Row } from 'react-bootstrap';
+import { UserProfileContext } from '../../../contexts/UserProfile.Context';
+import { useCreateCommentMutation } from '../../../hooks/commentHooks';
+import IdeaCommentTile from '../../tiles/IdeaComment/IdeaCommentTile';
+import LoadingSpinner from '../../ui/LoadingSpinner';
+import CommentSubmitModal from './CommentSubmitModal';
+import '../../../scss/content/textlimit.scss';
+import { UseQueryResult } from 'react-query';
+import { IFetchError } from 'src/lib/types/types';
+import { IComment } from 'src/lib/types/data/comment.type';
 
 interface CommentsSectionProps {
   ideaId: string;
@@ -61,9 +61,9 @@ if(ideaComments){
 
   const buttonTextOutput = (): string => {
     // Unauthenticated
-    let buttonText = "Please login to comment";
-    if (isUserAuthenticated()) buttonText = "Submit Comment";
-    if (commentIsLoading) buttonText = "Saving Comment";
+    let buttonText = 'Please login to comment';
+    if (isUserAuthenticated()) buttonText = 'Submit Comment';
+    if (commentIsLoading) buttonText = 'Saving Comment';
     return buttonText;
   };
 
@@ -117,7 +117,7 @@ if(ideaComments){
           variant="danger"
         >
           {commentError?.message ??
-            "An Error occured while trying to create your comment."}
+            'An Error occured while trying to create your comment.'}
         </Alert>
       )}
       <Button

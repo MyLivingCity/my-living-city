@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { Modal, Form, Button, Toast } from "react-bootstrap";
-import { useFormik } from "formik";
-import { COUNTRIES, PROVINCES, TEXT_INPUT_LIMIT } from "src/lib/constants";
+import React, { useState } from 'react';
+import { Modal, Form, Button, Toast } from 'react-bootstrap';
+import { useFormik } from 'formik';
+import { COUNTRIES, PROVINCES, TEXT_INPUT_LIMIT } from 'src/lib/constants';
 interface RequestSegmentModalProps {
   showModal: boolean;
   setShowModal: any;
@@ -32,7 +32,7 @@ export const RequestSegmentModal: React.FC<RequestSegmentModalProps> = ({
   function submitHandler(values: IRequestSegment) {
     refactorSegRequests(index, values);
     setShowModal(false);
-    if (values.segmentName !== "") {
+    if (values.segmentName !== '') {
       setShow(true);
     }
   }
@@ -40,8 +40,8 @@ export const RequestSegmentModal: React.FC<RequestSegmentModalProps> = ({
     initialValues: {
       country: COUNTRIES[0],
       province: PROVINCES[0],
-      segmentName: "",
-      subSegmentName: "",
+      segmentName: '',
+      subSegmentName: '',
     },
 
     onSubmit: submitHandler,

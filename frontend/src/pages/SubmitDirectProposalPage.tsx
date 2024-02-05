@@ -1,13 +1,13 @@
-import React, { useContext } from "react";
-import { RouteComponentProps } from "react-router-dom";
-import { UserProfileContext } from "../contexts/UserProfile.Context";
-import SubmitDirectProposalPageContent from "../components/content/SubmitDirectProposalPageContent";
-import LoadingSpinner from "../components/ui/LoadingSpinner";
-import { useCategories } from "../hooks/categoryHooks";
+import React, { useContext } from 'react';
+import { RouteComponentProps } from 'react-router-dom';
+import { UserProfileContext } from '../contexts/UserProfile.Context';
+import SubmitDirectProposalPageContent from '../components/content/SubmitDirectProposalPageContent';
+import LoadingSpinner from '../components/ui/LoadingSpinner';
+import { useCategories } from '../hooks/categoryHooks';
 // import { getUserHomeSegmentInfo } from 'src/lib/api/userSegmentRoutes';
 import {
   useAllUserSegmentsRefined,
-} from "src/hooks/userSegmentHooks";
+} from 'src/hooks/userSegmentHooks';
 
 // Extends Route component props with idea title route param
 interface SubmitDirectProposalPageProps extends RouteComponentProps<{}> {

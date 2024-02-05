@@ -100,8 +100,8 @@ export const UserManagementContentLegacy: React.FC<UserManagementContentProps> =
                     <td>{req.userType}</td>
                     <td>{userFlags![index].toString()}</td>
                     <td>{userFalseFlags![index].toString()}</td>
-                    <td>{req.banned ? "Yes" : "No" }</td> 
-                    <td>{req.reviewed ? "Yes" : "No"}</td>
+                    <td>{req.banned ? 'Yes' : 'No' }</td> 
+                    <td>{req.reviewed ? 'Yes' : 'No'}</td>
                     </> :
                     <>
                     <td><Form.Control type="text" defaultValue={req.email} onChange={(e)=>req.email = e.target.value}/></td>

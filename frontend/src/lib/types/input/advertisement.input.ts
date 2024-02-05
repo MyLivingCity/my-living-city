@@ -1,4 +1,4 @@
-import { AdvertisementType } from "../data/advertisement.type";
+import { AdvertisementType } from '../data/advertisement.type';
 
 export interface CreateAdvertisementInput {
 	adTitle: string;

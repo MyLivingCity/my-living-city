@@ -70,13 +70,13 @@ export const capitalizeFirstLetterEachWord = (str: string) => {
 	if (!str) {  
         return ''; 
     }
-	let s = str.split(" ");
+	let s = str.split(' ');
 	
     for (var i = 0, x = s.length; i < x; i++) {
         s[i] = s[i][0].toUpperCase() + s[i].substr(1);
     }
 
-    return s.join(" ");
+    return s.join(' ');
 }
 
 /**

@@ -1,5 +1,5 @@
-import { IAddressInput } from "./address.input";
-import { IGeoInput } from "./geo.input";
+import { IAddressInput } from './address.input';
+import { IGeoInput } from './geo.input';
 
 export interface ICreateIdeaInput {
   categoryId: number;

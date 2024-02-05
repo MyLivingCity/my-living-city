@@ -11,8 +11,8 @@ export const dismissQuarantineNotification = async (
     method: 'PUT',
     url: `${API_BASE_URL}/dashboard/dismiss/${notificationId}`,
     headers: {
-      "x-auth-token": token,
-      "Access-Control-Allow-Origin": "*",
+      'x-auth-token': token,
+      'Access-Control-Allow-Origin': '*',
     },
 
     data: { notificationId: notificationId },

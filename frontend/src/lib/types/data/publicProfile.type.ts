@@ -1,12 +1,12 @@
 export enum LinkType {
-    WEBSITE = "WEBSITE",
-    TWITTER = "TWITTER",
-    FACEBOOK = "FACEBOOK",
-    INSTAGRAM = "INSTAGRAM",
-    LINKEDIN = "LINKEDIN",
-    YOUTUBE = "YOUTUBE",
-    TIKTOK = "TIKTOK",
-    OTHER = "OTHER",
+    WEBSITE = 'WEBSITE',
+    TWITTER = 'TWITTER',
+    FACEBOOK = 'FACEBOOK',
+    INSTAGRAM = 'INSTAGRAM',
+    LINKEDIN = 'LINKEDIN',
+    YOUTUBE = 'YOUTUBE',
+    TIKTOK = 'TIKTOK',
+    OTHER = 'OTHER',
 }
 
 export interface Link {

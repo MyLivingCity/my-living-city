@@ -1,6 +1,6 @@
-import React from "react";
-import { ShowSubSegments } from "src/components/content/SegmentManagementContent";
-import { useAllSubSegmentsWithId } from "src/hooks/segmentHooks";
+import React from 'react';
+import { ShowSubSegments } from 'src/components/content/SegmentManagementContent';
+import { useAllSubSegmentsWithId } from 'src/hooks/segmentHooks';
 
 export interface ShowSubSegmentsPageProps {
     segId: number;

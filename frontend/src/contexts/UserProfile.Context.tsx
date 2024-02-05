@@ -104,7 +104,7 @@ const UserProfileProvider: React.FC = ({ children }) => {
   useEffect(() => {
     if (!isTokenValid()) {
       logout();
-      setFetchError({ message: "Your session token has expired. Please login again." });
+      setFetchError({ message: 'Your session token has expired. Please login again.' });
       return;
     }
 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Button, Container, Form, Modal, Row, Col } from 'react-bootstrap';
 import { IIdeaWithAggregations } from 'src/lib/types/data/idea.type';
-import { useFormik } from "formik";
+import { useFormik } from 'formik';
 import { IBanPostInput } from 'src/lib/types/input/banPost.input';
 import { postCreatePostBan } from 'src/lib/api/banRoutes';
 import { updateIdeaStatus } from 'src/lib/api/ideaRoutes';
@@ -54,8 +54,8 @@ export const PostBanModal = ({
         initialValues: {
             postId: post.id,
             authorId: post.authorId,
-            banReason: "",
-            banMessage: "",
+            banReason: '',
+            banMessage: '',
         },
         onSubmit: submitHandler
     });
@@ -82,19 +82,19 @@ export const PostBanModal = ({
                 <Form onSubmit={formik.handleSubmit}>
                     <Modal.Body>
                         <Row>
-                            <Col md={"auto"}>
+                            <Col md={'auto'}>
                                 <b>Post Title: </b>{post.title}
                                 <p />
                             </Col>
                         </Row>
                         <Row>
-                            <Col md={"auto"}>
+                            <Col md={'auto'}>
                                 <b>Post Description: </b>{post.description}
                                 <p />
                             </Col>
                         </Row>
                         <Row>
-                            <Col md={"auto"}>
+                            <Col md={'auto'}>
                                 <b>Post Author Name: </b>{post.firstName}
                                 <p />
                             </Col>

@@ -1,20 +1,20 @@
-import React, { useContext, useEffect, useState } from "react";
-import { Container, Row } from "react-bootstrap";
-import { useCommentAggregateUnderIdea } from "src/hooks/commentHooks";
-import { UserProfileContext } from "../../../contexts/UserProfile.Context";
-import { useAllRatingsUnderIdea } from "../../../hooks/ratingHooks";
-import { IRating, IRatingAggregateSummary } from "../../../lib/types/data/rating.type";
+import React, { useContext, useEffect, useState } from 'react';
+import { Container, Row } from 'react-bootstrap';
+import { useCommentAggregateUnderIdea } from 'src/hooks/commentHooks';
+import { UserProfileContext } from '../../../contexts/UserProfile.Context';
+import { useAllRatingsUnderIdea } from '../../../hooks/ratingHooks';
+import { IRating, IRatingAggregateSummary } from '../../../lib/types/data/rating.type';
 import {
   checkIfUserHasRated,
   findUserRatingSubmission,
   getRatingAggregateSummary,
-} from "../../../lib/utilityFunctions";
-import LoadingSpinner from "../../ui/LoadingSpinner";
-import RatingDisplay from "./RatingDisplay";
-import RatingInput from "./RatingInput";
-import { UseQueryResult } from "react-query";
-import { IFetchError } from "src/lib/types/types";
-import { ICommentAggregateCount } from "src/lib/types/data/comment.type";
+} from '../../../lib/utilityFunctions';
+import LoadingSpinner from '../../ui/LoadingSpinner';
+import RatingDisplay from './RatingDisplay';
+import RatingInput from './RatingInput';
+import { UseQueryResult } from 'react-query';
+import { IFetchError } from 'src/lib/types/types';
+import { ICommentAggregateCount } from 'src/lib/types/data/comment.type';
 
 interface RatingsSectionProps {
   ideaId: string;

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Button, Container, Form, Modal, Row, Col } from 'react-bootstrap';
 import { IComment } from 'src/lib/types/data/comment.type';
-import { useFormik } from "formik";
+import { useFormik } from 'formik';
 import { IBanCommentInput } from 'src/lib/types/input/banComment.input';
 import { postCreateCommentBan } from 'src/lib/api/banRoutes';
 import { updateCommentStatus } from 'src/lib/api/commentRoutes';
@@ -58,8 +58,8 @@ export const CommentBanModal = ({
         initialValues: {
             commentId: comment.id,
             authorId: comment.authorId,
-            banReason: "",
-            banMessage: "",
+            banReason: '',
+            banMessage: '',
         },
         onSubmit: submitHandler
     });
@@ -88,17 +88,17 @@ export const CommentBanModal = ({
                 <Form onSubmit={formik.handleSubmit}>
                     <Modal.Body>
                         <Row>
-                            <Col md={"auto"}>
-                                <b>Comment Parent Post Link:</b> {<a href={postLink} target="_blank">Link</a>}
+                            <Col md={'auto'}>
+                                <b>Comment Parent Post Link:</b> {<a href={postLink} target="_blank" rel="noreferrer">Link</a>}
                             </Col>
                         </Row>
                         <Row>
-                            <Col md={"auto"}>
+                            <Col md={'auto'}>
                                 <b>Comment Content:</b> {comment.content}
                             </Col>
                         </Row>
                         <Row>
-                            <Col md={"auto"}>
+                            <Col md={'auto'}>
                                 <b>Comment Author Name:</b> {authorName}
                                 <p />
                             </Col>

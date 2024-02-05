@@ -18,7 +18,7 @@ function ResetPasswordModal(props:any, email:string){
   return (
     <>
     <div className = "text-center">
-      <Button type={"submit"} variant="link"onClick={()=>{
+      <Button type={'submit'} variant="link"onClick={()=>{
         handleShow();
         }}>
         Forgot your password?
@@ -36,14 +36,14 @@ function ResetPasswordModal(props:any, email:string){
             required
             type="email"
             name="email"
-            placeholder={"Enter email"}
+            placeholder={'Enter email'}
             onChange={e=>setInputVal(e.target.value)}
             />
           </Form.Group>
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button type={"submit"} variant="primary" onClick={()=>{
+          <Button type={'submit'} variant="primary" onClick={()=>{
             handleClose();
             sendEmail({email:inputVal.toLowerCase()});
             }}>
@@ -82,7 +82,7 @@ export default function LoginPageContent() {
       setError(null);
       formik.resetForm();
     } catch (error) {
-      const genericMessage = "Error occured while logging in user.";
+      const genericMessage = 'Error occured while logging in user.';
       const errorObj = handlePotentialAxiosError(genericMessage, error);
       setError(errorObj);
       wipeLocalStorage();

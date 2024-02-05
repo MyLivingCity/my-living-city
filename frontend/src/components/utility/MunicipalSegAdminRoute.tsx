@@ -33,7 +33,7 @@ interface MunicipalSegAdminRouteProps {
         <Route
         {...routeProps}
         render={(props) =>
-            isLoggedIn && user!.userType === "MUNICIPAL_SEG_ADMIN" ? (
+            isLoggedIn && user!.userType === 'MUNICIPAL_SEG_ADMIN' ? (
             <ComponentToRender {...props} />
             ) : (
             <Redirect to={ redirectPath || ROUTES.LOGIN } />

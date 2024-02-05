@@ -1,6 +1,6 @@
-import axios from "axios";
-import { API_BASE_URL } from "../constants";
-import { getAxiosJwtRequestOption } from "./axiosRequestOptions";
+import axios from 'axios';
+import { API_BASE_URL } from '../constants';
+import { getAxiosJwtRequestOption } from './axiosRequestOptions';
 
 //For commentFlags
 export const createThreshhold = async (
@@ -9,15 +9,15 @@ export const createThreshhold = async (
   ) => {
     if (!num || !token) {
       throw new Error(
-        "A num and valid JWT must be specified to update threshhold"
+        'A num and valid JWT must be specified to update threshhold'
       );
     }
     const res = await axios({
-        method: "post",
+        method: 'post',
         url: `${API_BASE_URL}/threshhold/create/${num}`,
         headers: {
-          "x-auth-token": token,
-          "Access-Control-Allow-Origin": "*",
+          'x-auth-token': token,
+          'Access-Control-Allow-Origin': '*',
         },
         withCredentials: true,
       })
@@ -31,15 +31,15 @@ export const createThreshhold = async (
   ) => {
     if(!num || !token){
       throw new Error(
-        "A num and valid JWT must be specified"
+        'A num and valid JWT must be specified'
       );
     }
     const res = await axios({
-      method: "put",
+      method: 'put',
       url: `${API_BASE_URL}/threshhold/update/${num}`,
       headers: {
-        "x-auth-token": token,
-        "Access-Control-Allow-Origin": "*",
+        'x-auth-token': token,
+        'Access-Control-Allow-Origin': '*',
       },
       withCredentials: true,
     })
@@ -67,15 +67,15 @@ export const createThreshhold = async (
   ) => {
     if(!num || !token){
       throw new Error(
-        "A num and valid JWT must be specified"
+        'A num and valid JWT must be specified'
       );
     }
     const res = await axios({
-      method: "put",
+      method: 'put',
       url: `${API_BASE_URL}/threshhold/updateFalseFlag/${num}`,
       headers: {
-        "x-auth-token": token,
-        "Access-Control-Allow-Origin": "*",
+        'x-auth-token': token,
+        'Access-Control-Allow-Origin': '*',
       },
       withCredentials: true,
     })
@@ -88,15 +88,15 @@ export const createThreshhold = async (
   ) => {
     if(!num || !token){
       throw new Error(
-        "A num and valid JWT must be specified"
+        'A num and valid JWT must be specified'
       );
     }
     const res = await axios({
-      method: "put",
+      method: 'put',
       url: `${API_BASE_URL}/threshhold/updateBadPosting/${num}`,
       headers: {
-        "x-auth-token": token,
-        "Access-Control-Allow-Origin": "*",
+        'x-auth-token': token,
+        'Access-Control-Allow-Origin': '*',
       },
       withCredentials: true,
     })

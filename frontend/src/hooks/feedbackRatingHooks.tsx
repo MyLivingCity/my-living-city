@@ -84,7 +84,7 @@ export const useCreateFeedbackRatingMutation = (feedbackId: number, proposalId: 
     useEffect(() => {
         if (error) {
             const parsedError = handlePotentialAxiosError(
-                "An error occurred while trying to submit your rating.",
+                'An error occurred while trying to submit your rating.',
                 error,
             );
             setParsedErrorObj(parsedError);

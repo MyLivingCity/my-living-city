@@ -1,14 +1,14 @@
-import axios, { AxiosResponse } from "axios";
-import { API_BASE_URL, USER_TYPES } from "../constants";
-import { IUser } from "../types/data/user.type";
-import { IRegisterInput, IUserRegisterData, IUserSegmentRequest } from "../types/input/register.input";
-import { delay, storeTokenExpiryInLocalStorage, storeUserAndTokenInLocalStorage } from "../utilityFunctions";
-import { postAvatarImage } from "./avatarRoutes";
-import { getAxiosJwtRequestOption } from "./axiosRequestOptions";
-import { IWorkDetailsInput } from "../types/input/workDetails.input";
-import { ISchoolDetailsInput } from "../types/input/schoolDetails.input";
-import { IHomeDetailsInput } from "../types/input/homeDetails.input";
-import { getUserIdeas } from "./ideaRoutes";
+import axios, { AxiosResponse } from 'axios';
+import { API_BASE_URL, USER_TYPES } from '../constants';
+import { IUser } from '../types/data/user.type';
+import { IRegisterInput, IUserRegisterData, IUserSegmentRequest } from '../types/input/register.input';
+import { delay, storeTokenExpiryInLocalStorage, storeUserAndTokenInLocalStorage } from '../utilityFunctions';
+import { postAvatarImage } from './avatarRoutes';
+import { getAxiosJwtRequestOption } from './axiosRequestOptions';
+import { IWorkDetailsInput } from '../types/input/workDetails.input';
+import { ISchoolDetailsInput } from '../types/input/schoolDetails.input';
+import { IHomeDetailsInput } from '../types/input/homeDetails.input';
+import { getUserIdeas } from './ideaRoutes';
 
 export interface LoginData {
   email: string;
@@ -26,7 +26,7 @@ export interface LoginResponse {
 }
 export const getUserById = async (userId: string | null) => {
   const res = await axios({
-    method: "get",
+    method: 'get',
     url: `${API_BASE_URL}/user/get/${userId}`
   })
   return res.data;
@@ -40,10 +40,10 @@ export const updateUser = async (userData: IUser, token: string | null, user: IU
 
   let userType = user?.userType
   const res = await axios({
-    method: "put",
+    method: 'put',
     url: `${API_BASE_URL}/user/${userType?.toLowerCase()}-update-profile`,
     data: userData,
-    headers: { "Access-Control-Allow-Origin": "*", "x-auth-token": token },
+    headers: { 'Access-Control-Allow-Origin': '*', 'x-auth-token': token },
     withCredentials: true
   })
   return res.data;
@@ -53,7 +53,7 @@ export const deleteUser = async (userId: string, token: string | null) => {
   try {
     const response = await axios.delete(`${API_BASE_URL}/user/${userId}`, {
       headers: {
-        "Access-Control-Allow-Origin": "*", "x-auth-token": token
+        'Access-Control-Allow-Origin': '*', 'x-auth-token': token
       },
     });
     return response.data;
@@ -64,7 +64,7 @@ export const deleteUser = async (userId: string, token: string | null) => {
 
 export const resetUserPassword = async (loginData: ResetPassword): Promise<ResetPassword> => {
   if (loginData.password !== loginData.confirmPassword) {
-    throw new Error("Passwords must match");
+    throw new Error('Passwords must match');
   }
   const queryString = window.location.search;
   loginData.email = loginData.email.toLowerCase();
@@ -142,17 +142,17 @@ export const postRegisterUser = async (registerData: IRegisterInput, requestData
 
 
   } = registerData;
-  console.log("Reach Requests");
+  console.log('Reach Requests');
   let request3 = null;
   let request4 = null;
   let request5 = null;
   // Verify Payload
   if (!email || !password) {
-    throw new Error("You must provide an email and password to sign up.")
+    throw new Error('You must provide an email and password to sign up.')
   }
 
   if (password !== confirmPassword) {
-    throw new Error("Both your passwords must match. Please ensure both passwords match to register.")
+    throw new Error('Both your passwords must match. Please ensure both passwords match to register.')
   }
 
   if (!logUser) {
@@ -161,16 +161,16 @@ export const postRegisterUser = async (registerData: IRegisterInput, requestData
   else {
     registerData.verified = false;
   }
-  console.log("Checked Created Requests");
+  console.log('Checked Created Requests');
   const displayFName = fname;
-  const displayLName = address?.streetAddress || "";
-  console.log("Added Display Names");
+  const displayLName = address?.streetAddress || '';
+  console.log('Added Display Names');
   const request = await axios.post<LoginResponse>(`${API_BASE_URL}/user/signup`, { email, password, confirmPassword, organizationName, fname, lname, address, geo, userType, verified, displayFName, displayLName});
-  console.log("Awaiting Request for user");
+  console.log('Awaiting Request for user');
   console.log(schoolDetails)
-  console.log("Requested USERID", request.data.user.address?.userId)
+  console.log('Requested USERID', request.data.user.address?.userId)
   const request2 =  await  axios({
-    method: "post",
+    method: 'post',
     url: `${API_BASE_URL}/schoolDetails/create`,
     data: {
       schoolDetails: schoolDetails,
@@ -178,24 +178,24 @@ export const postRegisterUser = async (registerData: IRegisterInput, requestData
 
  
     },
-    headers: { "Access-Control-Allow-Origin": "*", "x-auth-token": request.data.token },
+    headers: { 'Access-Control-Allow-Origin': '*', 'x-auth-token': request.data.token },
     withCredentials: true,
   })
-  console.log("Awaiting for School");
+  console.log('Awaiting for School');
   await axios({
-    method: "post",
+    method: 'post',
     url: `${API_BASE_URL}/workDetails/create`,
     data: {
       workDetails: workDetails,
       userId: request.data.user.address?.userId,
   
     },
-    headers: { "Access-Control-Allow-Origin": "*", "x-auth-token": request.data.token },
+    headers: { 'Access-Control-Allow-Origin': '*', 'x-auth-token': request.data.token },
     withCredentials: true,
   })
-  console.log("Awaiting for work");
+  console.log('Awaiting for work');
   await axios({
-    method: "post",
+    method: 'post',
     url: `${API_BASE_URL}/userSegment/create`,
     data: {
       homeSegmentId,
@@ -205,50 +205,50 @@ export const postRegisterUser = async (registerData: IRegisterInput, requestData
       workSubSegmentId,
       schoolSubSegmentId
     },
-    headers: { "Access-Control-Allow-Origin": "*", "x-auth-token": request.data.token },
+    headers: { 'Access-Control-Allow-Origin': '*', 'x-auth-token': request.data.token },
     withCredentials: true
   })
   if (requestData) {
     if (requestData[0]) {
       request3 = await axios({
-        method: "post",
+        method: 'post',
         url: `${API_BASE_URL}/userSegmentRequest/create`,
         data: requestData[0],
-        headers: { "Access-Control-Allow-Origin": "*", "x-auth-token": request.data.token },
+        headers: { 'Access-Control-Allow-Origin': '*', 'x-auth-token': request.data.token },
         withCredentials: true
       })
     } if (requestData[1]) {
       request4 = await axios({
-        method: "post",
+        method: 'post',
         url: `${API_BASE_URL}/userSegmentRequest/create`,
         data: requestData[1],
-        headers: { "Access-Control-Allow-Origin": "*", "x-auth-token": request.data.token },
+        headers: { 'Access-Control-Allow-Origin': '*', 'x-auth-token': request.data.token },
         withCredentials: true
       })
     } if (requestData[2]) {
       request5 = await axios({
-        method: "post",
+        method: 'post',
         url: `${API_BASE_URL}/userSegmentRequest/create`,
         data: requestData[2],
-        headers: { "Access-Control-Allow-Origin": "*", "x-auth-token": request.data.token },
+        headers: { 'Access-Control-Allow-Origin': '*', 'x-auth-token': request.data.token },
         withCredentials: true
       })
     }
   }
-  console.log("Awaiting forusersegments");
+  console.log('Awaiting forusersegments');
   const request6 = avatar ? await postAvatarImage(avatar, request.data.token) : null;
 
   let request7: AxiosResponse<any>[] = [];
   if (userType === USER_TYPES.IN_PROGRESS || userType === USER_TYPES.BUSINESS || userType === USER_TYPES.COMMUNITY) {
     reachSegmentIds?.forEach(async (segId) => {
       const newUserReachReq = await axios({
-        method: "post",
+        method: 'post',
         url: `${API_BASE_URL}/reach/create`,
         data: {
           segId: segId,
           userId: request.data.user.address?.userId,
         },
-        headers: { "Access-Control-Allow-Origin": "*", "x-auth-token": request.data.token },
+        headers: { 'Access-Control-Allow-Origin': '*', 'x-auth-token': request.data.token },
         withCredentials: true,
       });
       request7.push(newUserReachReq);
@@ -299,7 +299,7 @@ export const removeFlagQuarantine = async (userId: string | undefined) => {
       userId: userId
     }
   );
-  console.log("removeFlagQuarantine", res.data);
+  console.log('removeFlagQuarantine', res.data);
   return res.data;
 }
 
@@ -310,7 +310,7 @@ export const removePostCommentQuarantine = async (userId: string | undefined) =>
       userId: userId
     }
   );
-  console.log("removePostCommentQuarantine", res.data);
+  console.log('removePostCommentQuarantine', res.data);
   return res.data;
 }
 
@@ -318,7 +318,7 @@ export const deleteSchoolSegmentDetails = async (userId: string | undefined) => 
   const res = await axios.delete(
     `${API_BASE_URL}/schoolDetails/delete/${userId}`,
   );
-  console.log("deleteSchoolSegmentDetails", res.data);
+  console.log('deleteSchoolSegmentDetails', res.data);
   return res.data;
 }
 
@@ -326,7 +326,7 @@ export const deleteWorkSegmentDetails = async (userId: string | undefined) => {
   const res = await axios.delete(
     `${API_BASE_URL}/workDetails/delete/${userId}`,
   );
-  console.log("deleteWorkSegmentDetails", res.data);
+  console.log('deleteWorkSegmentDetails', res.data);
   return res.data;
 }
 
@@ -350,7 +350,7 @@ export const updateWorkSegmentDetails = async (userId: string | undefined, data:
     data
   );
 
-  console.log("updateWorkSegmentDetails", res.data);
+  console.log('updateWorkSegmentDetails', res.data);
 
   const res1 = await axios.patch(
     `${API_BASE_URL}/workDetails/updateCityNeighbourhood/${userId}`,
@@ -359,7 +359,7 @@ export const updateWorkSegmentDetails = async (userId: string | undefined, data:
       neighbourhood: data.neighbourhood
     }
   );
-  console.log("updateWorkSegmentDetails", res1.data);
+  console.log('updateWorkSegmentDetails', res1.data);
 
   return res.data;
 }
@@ -369,7 +369,7 @@ export const updateSchoolSegmentDetails = async (userId: string | undefined, dat
     `${API_BASE_URL}/schoolDetails/update/${userId}`,
     data
   );
-  console.log("updateSchoolSegmentDetails", res.data);
+  console.log('updateSchoolSegmentDetails', res.data);
 
   const res1 = await axios.patch(
     `${API_BASE_URL}/schoolDetails/updateCityNeighbourhood/${userId}`,
@@ -378,7 +378,7 @@ export const updateSchoolSegmentDetails = async (userId: string | undefined, dat
       neighbourhood: data.neighbourhood
     }
   );
-  console.log("updateSchoolSegmentDetails", res1.data);
+  console.log('updateSchoolSegmentDetails', res1.data);
 
   return res.data;
 }
@@ -408,9 +408,9 @@ export const updateHomeSegmentDetails = async (userId: string | undefined, data:
     }
   );
 
-  console.log("updateHomeSegmentDetails, part1", res1.data);
-  console.log("updateHomeSegmentDetails, part2", res2.data);
-  console.log("updateHomeSegmentDetails, part3", res3.data);
+  console.log('updateHomeSegmentDetails, part1', res1.data);
+  console.log('updateHomeSegmentDetails, part2', res2.data);
+  console.log('updateHomeSegmentDetails, part3', res3.data);
   // Combine data from both responses
   return { ...res1.data, ...res2.data };
 }
@@ -419,6 +419,6 @@ export const getUserGeoData = async (userId: string | undefined) => {
   const res = await axios.get(
     `${API_BASE_URL}/user/getGeoData/${userId}`,
   );
-  console.log("getUserGeoData", res.data);
+  console.log('getUserGeoData', res.data);
   return res.data;
 }

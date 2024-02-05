@@ -1,15 +1,15 @@
-import { useContext, useEffect, useState } from "react";
-import { Button, Col, Container, Row, Alert } from "react-bootstrap";
-import { UserProfileContext } from "../../../contexts/UserProfile.Context";
+import { useContext, useEffect, useState } from 'react';
+import { Button, Col, Container, Row, Alert } from 'react-bootstrap';
+import { UserProfileContext } from '../../../contexts/UserProfile.Context';
 // https://github.com/microsoft/TypeScript/issues/22217
 // https://github.com/ekeric13/react-ratings-declarative
-import { useCreateRatingMutation } from "src/hooks/ratingHooks";
+import { useCreateRatingMutation } from 'src/hooks/ratingHooks';
 import {
   FormControl,
   FormControlLabel,
   Radio,
   RadioGroup,
-} from "@mui/material";
+} from '@mui/material';
 
 interface RatingInputProps {
   userHasRated: boolean;
@@ -42,7 +42,7 @@ const RatingInput = ({
   const submitHandler = () => {
     const payload = {
       rating: ratingValue,
-      ratingExplanation: "",
+      ratingExplanation: '',
     };
     submitRatingMutation(payload);
   };
@@ -68,11 +68,11 @@ const RatingInput = ({
 
   const buttonTextOutput = (): string => {
     // Unauthenticated
-    let buttonText = "Please login to comment";
-    if (tokenExists()) buttonText = "Submit";
-    if (isLoading) buttonText = "Saving Comment";
-    if (userHasRated) buttonText = "Submit";
-    if (!user) buttonText = "You must sign in to rate an idea";
+    let buttonText = 'Please login to comment';
+    if (tokenExists()) buttonText = 'Submit';
+    if (isLoading) buttonText = 'Saving Comment';
+    if (userHasRated) buttonText = 'Submit';
+    if (!user) buttonText = 'You must sign in to rate an idea';
     return buttonText;
   };
 
@@ -92,14 +92,14 @@ const RatingInput = ({
         <Col>
           <div>
             <FormControl
-              style={{ width: "100%", padding: "0rem 8rem 0rem 8rem" }}
+              style={{ width: '100%', padding: '0rem 8rem 0rem 8rem' }}
             >
               <RadioGroup
                 row
                 aria-labelledby="demo-form-control-label-placement"
                 name="position"
                 defaultValue="top"
-                style={{ justifyContent: "space-between" }}
+                style={{ justifyContent: 'space-between' }}
                 onChange={(e) => setRatingValue(parseInt(e.target.value))}
               >
                 <FormControlLabel
@@ -151,7 +151,7 @@ const RatingInput = ({
               variant="danger"
             >
               {error?.message ??
-                "An Error occured while trying to submit your rating."}
+                'An Error occured while trying to submit your rating.'}
             </Alert>
           )}
           {!userHasRated && (

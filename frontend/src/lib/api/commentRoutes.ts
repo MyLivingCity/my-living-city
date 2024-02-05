@@ -1,8 +1,8 @@
-import axios from "axios";
-import { API_BASE_URL } from "../constants";
-import { IComment, ICommentAggregateCount } from "../types/data/comment.type";
-import { ICreateCommentInput } from "../types/input/createComment.input";
-import { getAxiosJwtRequestOption } from "./axiosRequestOptions";
+import axios from 'axios';
+import { API_BASE_URL } from '../constants';
+import { IComment, ICommentAggregateCount } from '../types/data/comment.type';
+import { ICreateCommentInput } from '../types/input/createComment.input';
+import { getAxiosJwtRequestOption } from './axiosRequestOptions';
 
 export const getAllComments = async (): Promise<IComment[]> => {
   const res = await axios.get<IComment[]>(`${API_BASE_URL}/comment/getall`);
@@ -28,7 +28,7 @@ export const getCommentsUnderIdea = async (
   }
 */
   const res = await axios.get<IComment[]>(
-    `${API_BASE_URL}/comment/getall/${ideaId ? ideaId : "7"}`,
+    `${API_BASE_URL}/comment/getall/${ideaId ? ideaId : '7'}`,
     getAxiosJwtRequestOption(token!)
   );
 
@@ -58,7 +58,7 @@ export const getCommentAggregateUnderIdea = async (ideaId: string) => {
   }
 */
   const res = await axios.get<ICommentAggregateCount>(
-    `${API_BASE_URL}/comment/aggregate/${ideaId ? ideaId : "7"}`
+    `${API_BASE_URL}/comment/aggregate/${ideaId ? ideaId : '7'}`
   );
   return res.data;
 };
@@ -70,7 +70,7 @@ export const createCommentUnderIdea = async (
 ): Promise<IComment> => {
   if (!ideaId || !token) {
     throw new Error(
-      "An ideaId and valid JWT must be specified to create a comment."
+      'An ideaId and valid JWT must be specified to create a comment.'
     );
   }
 
@@ -85,11 +85,11 @@ export const createCommentUnderIdea = async (
 
 export const updateCommentStatus = async(token: String | null, commentId: string|null, active: boolean|null, reviewed: boolean|null, banned: boolean|null, quarantined_at: Date) => {
   const res = await axios({
-    method: "put",
+    method: 'put',
     url: `${API_BASE_URL}/comment/updateState/${commentId}`,
     headers: {
-      "x-auth-token": token,
-      "Access-Control-Allow-Origin": "*",
+      'x-auth-token': token,
+      'Access-Control-Allow-Origin': '*',
     },
     data: {commentId: commentId, active: active, reviewed: reviewed, banned: banned, quarantined_at },
     withCredentials: true,
@@ -101,11 +101,11 @@ export const updateCommentNotificationStatus = async(token: String | null, userI
 
   
   const res = await axios({
-    method: "put",
+    method: 'put',
     url: `${API_BASE_URL}/comment/updateNotificationState/${commentId}`,
     headers: {
-      "x-auth-token": token,
-      "Access-Control-Allow-Origin": "*",
+      'x-auth-token': token,
+      'Access-Control-Allow-Origin': '*',
     },
     data: {userId: userId, commentId: commentId, notification_dismissed },
     withCredentials: true,

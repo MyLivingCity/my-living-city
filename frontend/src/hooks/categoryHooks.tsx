@@ -1,7 +1,7 @@
-import { useQuery } from "react-query"
-import { ICategory } from "../lib/types/data/category.type"
-import { IFetchError } from "../lib/types/types"
-import { getAllCategories, getSingleCategory } from "../lib/api/categoryRoutes"
+import { useQuery } from 'react-query'
+import { ICategory } from '../lib/types/data/category.type'
+import { IFetchError } from '../lib/types/types'
+import { getAllCategories, getSingleCategory } from '../lib/api/categoryRoutes'
 
 export const useCategories = () => {
   return useQuery<ICategory[], IFetchError>(

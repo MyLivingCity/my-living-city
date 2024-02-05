@@ -1,10 +1,10 @@
-import MyPostsPageContent from "../components/content/MyPostsPageContent";
-import { useUserIdeas } from "../hooks/ideaHooks";
+import MyPostsPageContent from '../components/content/MyPostsPageContent';
+import { useUserIdeas } from '../hooks/ideaHooks';
 
 export default function MyPostsPage() {
   //doesnt get loaded before useUserIdeas is called
 
-  const stringifiedUser = localStorage.getItem("logged-user");
+  const stringifiedUser = localStorage.getItem('logged-user');
   const loggedInUser = JSON.parse(stringifiedUser!);
 
 

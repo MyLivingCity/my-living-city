@@ -1,29 +1,29 @@
-import { Button, Card } from "react-bootstrap";
-import { BsPeople, BsHeartHalf } from "react-icons/bs";
-import { AiOutlineStar } from "react-icons/ai";
-import Skeleton from "react-loading-skeleton";
-import "react-loading-skeleton/dist/skeleton.css";
+import { Button, Card } from 'react-bootstrap';
+import { BsPeople, BsHeartHalf } from 'react-icons/bs';
+import { AiOutlineStar } from 'react-icons/ai';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 
 const PlaceholderIdeaTile = () => {
   return (
     // <Card style={{ width: '18rem' }}>
-    <Card style={{ position: "relative" }}>
+    <Card style={{ position: 'relative' }}>
       <Card.Body>
-        <div style={{ textAlign: "left", color: "gray" }}>
-          <Skeleton width={"25%"} />
+        <div style={{ textAlign: 'left', color: 'gray' }}>
+          <Skeleton width={'25%'} />
         </div>
         <Card.Title>
-          <Skeleton width={"75%"} />
+          <Skeleton width={'75%'} />
         </Card.Title>
         <Card.Text>
           <Skeleton
             count={2}
             inline={true}
-            width={"44%"}
-            height={"90%"}
-            style={{ marginRight: "0.5rem" }}
+            width={'44%'}
+            height={'90%'}
+            style={{ marginRight: '0.5rem' }}
           />
-          <Skeleton width={"90%"} height={"90%"} />
+          <Skeleton width={'90%'} height={'90%'} />
         </Card.Text>
         <div className="button-breakdown mt-3 d-flex justify-content-between align-items-center">
           <Button variant="primary" disabled>
@@ -54,7 +54,7 @@ const PlaceholderIdeaTile = () => {
       </Card.Body>
       <Card.Footer>
         <small className="text-muted user-select-none">
-          <Skeleton width={"50%"} />
+          <Skeleton width={'50%'} />
         </small>
         {/* <small className='text-muted'>, {capitalizeFirstLetterEachWord(segmentName)}{subSegmentName ? ` at ${capitalizeFirstLetterEachWord(subSegmentName)}`: ""}</small> */}
         {/* <small className='text-muted'>-- {firstName}@{streetAddress}</small> */}

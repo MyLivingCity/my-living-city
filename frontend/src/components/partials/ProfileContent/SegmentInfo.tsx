@@ -73,7 +73,7 @@ export const SegmentInfo: React.FC<SegmentInfoProps> = ({ user, token, title, ty
 
     const [markers, sendData]:any = useState({home: {lat: null, lon: null},work: {lat: null, lon: null},school: {lat: null, lon: null}});
 
-    const [selectedSegment, setSelectedSegment] = useState<string>("");
+    const [selectedSegment, setSelectedSegment] = useState<string>('');
     const [subSegments, setSubSegments] = useState<ISubSegment[]>([]);
 
     const [formCity, setFormCity] = useState<string>(segmentData.city);
@@ -114,7 +114,7 @@ return (
 
     <Card style={{ width: '50rem', padding: '1.5rem'}}>
         <Row>
-        <Col style={{maxWidth: "10rem"}}>
+        <Col style={{maxWidth: '10rem'}}>
             <Card.Title className='text-center'>{title}</Card.Title>
         </Col>
         {edit ? 
@@ -157,7 +157,7 @@ return (
                         <Button 
                         variant='info' 
                         className='btn-sm' 
-                        style={{marginLeft: "1rem"}}
+                        style={{marginLeft: '1rem'}}
                         onClick={handleShow}
                         > Change City </Button>
                         </Form.Label>
@@ -172,7 +172,7 @@ return (
                         <Button 
                         variant='info' 
                         className='btn-sm' 
-                        style={{marginLeft: "1rem"}}
+                        style={{marginLeft: '1rem'}}
                         onClick={handleShow}
                         > Change Neighbourhood </Button></Form.Label>
                         <Form.Control name="neighbourhood" type='text' placeholder='Neighborhood' value={capitalizeString(formNeighborhood)} readOnly plaintext></Form.Control>
@@ -200,7 +200,7 @@ return (
                         <ListGroupItem>{segmentData.postalCode.toUpperCase()}</ListGroupItem>
                         <ListGroupItem>{capitalizeString(formNeighborhood)}</ListGroupItem>
                     </ListGroup>
-                    <Col style={{maxWidth: "10rem"}}>
+                    <Col style={{maxWidth: '10rem'}}>
                     <Button 
                     variant='primary' 
                     className=''
@@ -254,7 +254,7 @@ return (
               handleSelectClose();
             }}
             >
-            <Form.Group controlId={type + "Segment"}>
+            <Form.Group controlId={type + 'Segment'}>
               <Form.Label>Select your {type} Municipality</Form.Label>
               <Form.Control 
               readOnly 
@@ -273,7 +273,7 @@ return (
                 }
               </Form.Control>
             </Form.Group>
-            <Form.Group controlId={type + "SubSegment"}>
+            <Form.Group controlId={type + 'SubSegment'}>
               <Form.Label>Select your Neighbourhood</Form.Label>
               <Form.Control
                 as="select"

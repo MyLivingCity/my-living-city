@@ -56,8 +56,8 @@ export interface IUserSegment {
 export interface ISegmentData {
   id: number;
   name: string;
-  segType: "Segment" | "Sub-Segment" | "Super-Segment";
-  userType: "Resident" | "Worker" | "Student";
+  segType: 'Segment' | 'Sub-Segment' | 'Super-Segment';
+  userType: 'Resident' | 'Worker' | 'Student';
 }
 
 export interface ISegmentAggregateInfo {

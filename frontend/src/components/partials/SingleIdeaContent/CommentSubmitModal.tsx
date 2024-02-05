@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-import { Button, Container,  Modal, Row } from "react-bootstrap";
-import IdeaCommentTile from "src/components/tiles/IdeaComment/IdeaCommentTile";
-import { getUserBanWithToken } from "../../../lib/api/banRoutes";
-import { ICreateCommentInput } from "src/lib/types/input/createComment.input";
-import { IComment } from "../../../lib/types/data/comment.type";
-import { TEXT_INPUT_LIMIT } from "src/lib/constants";
+import React, { useState } from 'react';
+import { Button, Container,  Modal, Row } from 'react-bootstrap';
+import IdeaCommentTile from 'src/components/tiles/IdeaComment/IdeaCommentTile';
+import { getUserBanWithToken } from '../../../lib/api/banRoutes';
+import { ICreateCommentInput } from 'src/lib/types/input/createComment.input';
+import { IComment } from '../../../lib/types/data/comment.type';
+import { TEXT_INPUT_LIMIT } from 'src/lib/constants';
 
 interface CommentSubmitModalProps {
   setShow: React.Dispatch<React.SetStateAction<boolean>>;
@@ -30,24 +30,24 @@ const CommentSubmitModal = ({
   token,
 }: CommentSubmitModalProps) => {
   const handleClose = () => setShow(false);
-  const [commentText, setCommentText] = useState("");
+  const [commentText, setCommentText] = useState('');
   const [error, setError] = useState<string | null>(null);
   const submitHandler = async (values: ICreateCommentInput) => {
     const banDetails = await getUserBanWithToken(token);
     let isBanned = true;
-    if (!banned || !banDetails || banDetails.banType === "WARNING") {
+    if (!banned || !banDetails || banDetails.banType === 'WARNING') {
       isBanned = false;
     }
     setError(null);
     try {
       if (isBanned === true) {
         setShowCommentSubmitError(true);
-        setError("You are banned");
-        alert("You are banned!");
+        setError('You are banned');
+        alert('You are banned!');
         throw error;
       }
       submitComment(values);
-      setCommentText("");
+      setCommentText('');
     } catch (error) {
       console.log(error);
     } finally {

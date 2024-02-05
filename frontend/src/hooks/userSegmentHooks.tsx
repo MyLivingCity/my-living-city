@@ -1,6 +1,6 @@
-import { useQuery } from "react-query"
-import { getMyUserSegmentInfo, getMyUserSegmentInfoRefined} from "src/lib/api/userSegmentRoutes"
-import { IFetchError } from "../lib/types/types"
+import { useQuery } from 'react-query'
+import { getMyUserSegmentInfo, getMyUserSegmentInfoRefined} from 'src/lib/api/userSegmentRoutes'
+import { IFetchError } from '../lib/types/types'
 export const useAllUserSegments = (token: string | null, userId: string | null) => {
     return useQuery<any, IFetchError>(
       ['segments', token],

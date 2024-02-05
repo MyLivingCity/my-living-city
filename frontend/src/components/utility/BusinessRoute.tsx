@@ -33,7 +33,7 @@ interface BusinessRoute {
         <Route
         {...routeProps}
         render={(props) =>
-            isLoggedIn && user!.userType === "BUSINESS" ? (
+            isLoggedIn && user!.userType === 'BUSINESS' ? (
             <ComponentToRender {...props} />
             ) : (
             <Redirect to={ redirectPath || ROUTES.LOGIN } />

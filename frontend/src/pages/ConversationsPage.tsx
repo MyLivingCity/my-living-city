@@ -1,8 +1,8 @@
-import ConversationsPageContent from "../components/content/ConversationsPageContent";
-import LoadingSpinner from "../components/ui/LoadingSpinner";
-import { useProposalsWithBreakdown } from "src/hooks/proposalHooks";
-import { useIdeasWithBreakdown } from "src/hooks/ideaHooks";
-import { IIdeaWithAggregations } from "../lib/types/data/idea.type";
+import ConversationsPageContent from '../components/content/ConversationsPageContent';
+import LoadingSpinner from '../components/ui/LoadingSpinner';
+import { useProposalsWithBreakdown } from 'src/hooks/proposalHooks';
+import { useIdeasWithBreakdown } from 'src/hooks/ideaHooks';
+import { IIdeaWithAggregations } from '../lib/types/data/idea.type';
 
 export default function ConversationsPage() {
   const {

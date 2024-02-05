@@ -1,6 +1,6 @@
 
-import { Formik} from "formik";
-import React, { useContext, useState } from "react";
+import { Formik} from 'formik';
+import React, { useContext, useState } from 'react';
 import {
   Col,
   Container,
@@ -9,21 +9,21 @@ import {
   Button,
   Alert,
   Modal,
-} from "react-bootstrap";
-import { CreateAdvertisementInput } from "src/lib/types/input/advertisement.input";
-import { UserProfileContext } from "../../contexts/UserProfile.Context";
-import { postCreateAdvertisement } from "src/lib/api/advertisementRoutes";
-import { IFetchError } from "../../lib/types/types";
+} from 'react-bootstrap';
+import { CreateAdvertisementInput } from 'src/lib/types/input/advertisement.input';
+import { UserProfileContext } from '../../contexts/UserProfile.Context';
+import { postCreateAdvertisement } from 'src/lib/api/advertisementRoutes';
+import { IFetchError } from '../../lib/types/types';
 import {
   handlePotentialAxiosError,
   capitalizeFirstLetterEachWord,
-} from "../../lib/utilityFunctions";
-import ImageUploader from "react-images-upload";
-import * as Yup from "yup";
+} from '../../lib/utilityFunctions';
+import ImageUploader from 'react-images-upload';
+import * as Yup from 'yup';
 
-import "../../scss/content/_createAds.scss";
-import { ISegment } from "src/lib/types/data/segment.type";
-import { TEXT_INPUT_LIMIT } from "src/lib/constants";
+import '../../scss/content/_createAds.scss';
+import { ISegment } from 'src/lib/types/data/segment.type';
+import { TEXT_INPUT_LIMIT } from 'src/lib/constants';
 
 //TODO: need to include segment property in formik (may not have server route yet) 2022/11/24
 
@@ -33,19 +33,19 @@ interface SubmitAdvertisementPageContentProps {
 //formik form input validation schema
 const schema = Yup.object().shape({
   adTitle: Yup.string()
-    .min(TEXT_INPUT_LIMIT.MIN_AD_TITLE, "title is too short!")
-    .max(TEXT_INPUT_LIMIT.MAX_AD_TITLE, "title is too long!")
-    .required("title is needed!"),
+    .min(TEXT_INPUT_LIMIT.MIN_AD_TITLE, 'title is too short!')
+    .max(TEXT_INPUT_LIMIT.MAX_AD_TITLE, 'title is too long!')
+    .required('title is needed!'),
   adPosition: Yup.string()
     .min(1, "position name can't be that short!")
-    .max(85, "position name is too long!")
-    .required("target position is needed!"),
+    .max(85, 'position name is too long!')
+    .required('target position is needed!'),
   published: Yup.bool().required(
-    "you need to choose whether you want to publish your advertisement"
+    'you need to choose whether you want to publish your advertisement'
   ),
   externalLink: Yup.string()
-    .url("please type in a valid url")
-    .required("external link is needed!"),
+    .url('please type in a valid url')
+    .required('external link is needed!'),
 });
 
 const SubmitAdvertisementPageContent: React.FC<
@@ -69,7 +69,7 @@ const SubmitAdvertisementPageContent: React.FC<
       setError(null);
       setIsLoading(true);
       //timeout period
-      setTimeout(() => console.log("timeout"), 5000);
+      setTimeout(() => console.log('timeout'), 5000);
       //api component call
       const res = await postCreateAdvertisement(values, token);
 
@@ -80,7 +80,7 @@ const SubmitAdvertisementPageContent: React.FC<
       setError(null);
       //reset the form
     } catch (error) {
-      const genericMessage = "An error occured while trying to create an Idea.";
+      const genericMessage = 'An error occured while trying to create an Idea.';
       const errorObj = handlePotentialAxiosError(genericMessage, error);
       setSuccessModal(false);
       setError(errorObj);
@@ -90,13 +90,13 @@ const SubmitAdvertisementPageContent: React.FC<
   };
   //initial values for form
   const initialValues: CreateAdvertisementInput = {
-    adType: "BASIC",
-    adTitle: "",
-    adPosition: "",
+    adType: 'BASIC',
+    adTitle: '',
+    adPosition: '',
     duration: 0,
     published: false,
-    externalLink: "",
-    imagePath: "",
+    externalLink: '',
+    imagePath: '',
   };
 
   return (
@@ -114,13 +114,13 @@ const SubmitAdvertisementPageContent: React.FC<
                 actions.setSubmitting(false);
                 actions.resetForm({
                   values: {
-                    adType: "BASIC",
-                    adTitle: "",
-                    adPosition: "",
+                    adType: 'BASIC',
+                    adTitle: '',
+                    adPosition: '',
                     duration: 0,
                     published: false,
-                    externalLink: "",
-                    imagePath: "",
+                    externalLink: '',
+                    imagePath: '',
                   },
                 });
               });
@@ -198,7 +198,7 @@ const SubmitAdvertisementPageContent: React.FC<
                   </Form.Control.Feedback>
                 </Form.Group>
 
-                {String(values.adType) === "BASIC" ? null : (
+                {String(values.adType) === 'BASIC' ? null : (
                   <>
                     <Form.Group controlId="validateDuration">
                       <Form.Label>Advertisement Duration in Days</Form.Label>
@@ -241,9 +241,9 @@ const SubmitAdvertisementPageContent: React.FC<
                     name="imagePath"
                     withPreview={true}
                     onChange={(picture) => {
-                      setFieldValue("imagePath", picture);
+                      setFieldValue('imagePath', picture);
                     }}
-                    imgExtension={[".jpg", ".jpeg", ".png", ".webp"]}
+                    imgExtension={['.jpg', '.jpeg', '.png', '.webp']}
                     buttonText="Choose your advertisement image"
                     maxFileSize={10485760}
                     label="Max file size 10mb, accepted:jpg, jpeg, png, webp"
@@ -269,7 +269,7 @@ const SubmitAdvertisementPageContent: React.FC<
                   type="submit"
                   disabled={isLoading ? true : false}
                 >
-                  {isLoading ? "Saving..." : "Submit your Advertisement!"}
+                  {isLoading ? 'Saving...' : 'Submit your Advertisement!'}
                 </Button>
                 <Modal
                   show={successModal}

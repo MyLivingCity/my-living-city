@@ -1,17 +1,17 @@
-import { Container, Table, Card, Button } from "react-bootstrap";
-import { IIdeaWithAggregations } from "../../../lib/types/data/idea.type";
-import { BsFilter } from "react-icons/bs";
-import CSS from "csstype";
-import React, { useState, useEffect, useContext } from "react";
-import { useAllProposals } from "src/hooks/proposalHooks";
-import { capitalizeFirstLetterEachWord } from "./../../../lib/utilityFunctions";
-import { BsPeople, BsHeartHalf } from "react-icons/bs";
-import { AiOutlineStar } from "react-icons/ai";
-import { getAllSuperSegments } from "./../../../lib/api/segmentRoutes";
-import { ISuperSegment } from "./../../../lib/types/data/segment.type";
-import { useAllCommentsUnderMultipleIdeas } from "src/hooks/commentHooks";
-import { useGetEndorsedMunicpalUsersByIdea } from "src/hooks/ideaHooks";
-import { UserProfileContext } from "src/contexts/UserProfile.Context";
+import { Container, Table, Card, Button } from 'react-bootstrap';
+import { IIdeaWithAggregations } from '../../../lib/types/data/idea.type';
+import { BsFilter } from 'react-icons/bs';
+import CSS from 'csstype';
+import React, { useState, useEffect, useContext } from 'react';
+import { useAllProposals } from 'src/hooks/proposalHooks';
+import { capitalizeFirstLetterEachWord } from './../../../lib/utilityFunctions';
+import { BsPeople, BsHeartHalf } from 'react-icons/bs';
+import { AiOutlineStar } from 'react-icons/ai';
+import { getAllSuperSegments } from './../../../lib/api/segmentRoutes';
+import { ISuperSegment } from './../../../lib/types/data/segment.type';
+import { useAllCommentsUnderMultipleIdeas } from 'src/hooks/commentHooks';
+import { useGetEndorsedMunicpalUsersByIdea } from 'src/hooks/ideaHooks';
+import { UserProfileContext } from 'src/contexts/UserProfile.Context';
 
 
 
@@ -82,15 +82,15 @@ const SpecifiedMunicipalSectionTableView: React.FC<SpecifiedMunicipalSectionTabl
     }
 
     const titleStyle: CSS.Properties = {
-        display: "inline",
+        display: 'inline',
     }
 
     const filterButtonStyle: CSS.Properties = {
-        float: "right"
+        float: 'right'
     }
 
     const mouseHoverPointer = (e: any) => {
-        e.target.style.cursor = "pointer"
+        e.target.style.cursor = 'pointer'
     }
 
 
@@ -129,7 +129,7 @@ const SpecifiedMunicipalSectionTableView: React.FC<SpecifiedMunicipalSectionTabl
     if (allComments && topIdeas) {
         topIdeas.forEach((idea, index) => {
             const municipalCommentExists = allComments[index].some(
-                (comment) => comment.ideaId === idea.id && (comment.author.userType === "MUNICIPAL" || comment.author.userType === "MUNICIPAL_SEG_ADMIN")
+                (comment) => comment.ideaId === idea.id && (comment.author.userType === 'MUNICIPAL' || comment.author.userType === 'MUNICIPAL_SEG_ADMIN')
             );
             checkmarks[index] = municipalCommentExists;
         });
@@ -140,7 +140,7 @@ const SpecifiedMunicipalSectionTableView: React.FC<SpecifiedMunicipalSectionTabl
     if (allEndorsedPosts && topIdeas) {
         topIdeas.forEach((idea, index) => {
           const municipalEndorsementExists = allEndorsedPosts[index].some(
-            (endorsed: any) =>  endorsed.userType === "MUNICIPAL"
+            (endorsed: any) =>  endorsed.userType === 'MUNICIPAL'
           );
           checkmarksEndorsed[index] = municipalEndorsementExists;
         });
@@ -149,7 +149,7 @@ const SpecifiedMunicipalSectionTableView: React.FC<SpecifiedMunicipalSectionTabl
     return (
         <Container className="system" id="hanging-icons">
             <div className="pb-1 border-bottom display-6 text-left">
-                <h2 style={titleStyle}>{sectionTitle ? capitalizeFirstLetterEachWord(sectionTitle) : ""} Posts</h2>
+                <h2 style={titleStyle}>{sectionTitle ? capitalizeFirstLetterEachWord(sectionTitle) : ''} Posts</h2>
                 {showCustomFilter === false ? null : <BsFilter onMouseOver={mouseHoverPointer} style={filterButtonStyle} onClick={() => { setShowModal(!showModal) }} size={30} />}
 
             </div>

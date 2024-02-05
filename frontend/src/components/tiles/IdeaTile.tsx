@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react'
-import { Button, Card } from "react-bootstrap";
-import { IIdeaWithAggregations } from "../../lib/types/data/idea.type";
+import { Button, Card } from 'react-bootstrap';
+import { IIdeaWithAggregations } from '../../lib/types/data/idea.type';
 import {
   timeDifference,
   truncateString,
-} from "../../lib/utilityFunctions";
-import { BsPeople, BsHeartHalf } from "react-icons/bs";
-import { AiOutlineRadiusBottomright, AiOutlineStar } from "react-icons/ai";
-import {getAllSuperSegments} from "../../lib/api/segmentRoutes";
-import { ISuperSegment } from "../../lib/types/data/segment.type";
+} from '../../lib/utilityFunctions';
+import { BsPeople, BsHeartHalf } from 'react-icons/bs';
+import { AiOutlineRadiusBottomright, AiOutlineStar } from 'react-icons/ai';
+import {getAllSuperSegments} from '../../lib/api/segmentRoutes';
+import { ISuperSegment } from '../../lib/types/data/segment.type';
 
 
 interface ideaTileProps {
@@ -86,7 +86,7 @@ const superSegmentName = superSegments.find(superSegment => superSegment.superSe
 
   return (
     // <Card style={{ width: '18rem' }}>
-    <Card style={{ position: "relative" }}>
+    <Card style={{ position: 'relative' }}>
       {/* <Card.Img variant="top" src="https://via.placeholder.com/300x150" /> */}
       <style>
         {`
@@ -103,7 +103,7 @@ const superSegmentName = superSegments.find(superSegment => superSegment.superSe
       </style>
       {isNew && <div className="new-banner p-1">NEW</div>}
       <Card.Body>
-        <div className="mb-1" style={{ textAlign: "left", color: "gray" }}>{postType}</div>
+        <div className="mb-1" style={{ textAlign: 'left', color: 'gray' }}>{postType}</div>
         <Card.Title>{truncateString(title, 50)}</Card.Title>
         <Card.Text>{truncateString(description, 100)}</Card.Text>
         <div className="button-breakdown mt-3 d-flex justify-content-between align-items-center">
@@ -145,7 +145,7 @@ const superSegmentName = superSegments.find(superSegment => superSegment.superSe
        <small className='text-muted user-select-none'>
               {subSegmentName ? ` ${capitalizeString(segmentName)}\/${capitalizeString(subSegmentName)}` :
                 segmentName ? ` ${capitalizeString(segmentName)}` :
-                  superSegmentName ? ` ${capitalizeString(superSegmentName)}` : ""}
+                  superSegmentName ? ` ${capitalizeString(superSegmentName)}` : ''}
             </small>
        </div>
      </Card.Footer>

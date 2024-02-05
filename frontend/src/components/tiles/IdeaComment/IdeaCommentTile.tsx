@@ -9,9 +9,9 @@ import IdeaCommentDislike from './IdeaCommentDislike';
 import IdeaCommentLike from './IdeaCommentLike';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
-import React, { useEffect, useState } from "react";
-import { useCheckFlagBan } from "src/hooks/flagHooks";
-import { capitalizeFirstLetterEachWord, capitalizeString } from "../../../lib/utilityFunctions";
+import React, { useEffect, useState } from 'react';
+import { useCheckFlagBan } from 'src/hooks/flagHooks';
+import { capitalizeFirstLetterEachWord, capitalizeString } from '../../../lib/utilityFunctions';
 
 
 interface IdeaCommentTileProps {
@@ -23,10 +23,10 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
   const [showFlagButton, setShowFlagButton] = useState(true);
   const [show, setShow] = useState(false);
   const [showOther, setShowOther] = useState(false);
-  const [flagReason, setFlagReason] = useState("");
-  const [otherFlagReason, setOtherFlagReason] = useState("");
+  const [flagReason, setFlagReason] = useState('');
+  const [otherFlagReason, setOtherFlagReason] = useState('');
   function getOtherFlagReason(val: any) {
-    setOtherFlagReason("OTHER: " + val.target.value)
+    setOtherFlagReason('OTHER: ' + val.target.value)
 
   }
 
@@ -41,7 +41,7 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
 
 
   const { token, user, isUserAuthenticated } = useContext(UserProfileContext);
-  const { data: flagBanData, isLoading: flagBanDataLoading } = useCheckFlagBan(token, (user ? user.id : ""));
+  const { data: flagBanData, isLoading: flagBanDataLoading } = useCheckFlagBan(token, (user ? user.id : ''));
 
   const {
     id,
@@ -74,44 +74,44 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
 
     // }
 
-    let userName = "Unknown";
+    let userName = 'Unknown';
 
     let colour = '';
     if (userType === 'ADMIN') {
-      userName = homeSegHandle + " as Admin";
+      userName = homeSegHandle + ' as Admin';
       colour = 'text-danger';
     } else if (userType === 'MOD') {
-      userName = homeSegHandle + " as Mod";
+      userName = homeSegHandle + ' as Mod';
       colour = 'text-warning';
     } else if (userType === 'MUNICIPAL_SEG_ADMIN') {
-      userName = "Municipal Admin";
+      userName = 'Municipal Admin';
       colour = 'text-danger';
     } else if (userType === 'MUNICIPAL') {
-      userName = "Municipal Account";
+      userName = 'Municipal Account';
       colour = 'text-warning';
     } else if (userType === 'BUSINESS') {
-      userName = organizationName + "@" + address?.streetAddress + " as Business Member";
+      userName = organizationName + '@' + address?.streetAddress + ' as Business Member';
       colour = 'text-primary'
     } else if (userType === 'Community') {
-      userName = organizationName + "@" + address?.streetAddress + " as Community Member";
+      userName = organizationName + '@' + address?.streetAddress + ' as Community Member';
       colour = 'text-primary'
     } else {
       switch (ideaId) {
         case homeId:
-          userName = homeSegHandle + " as Resident"
+          userName = homeSegHandle + ' as Resident'
           colour = 'text-primary'
           break;
         case workId:
-          userName = workSegHandle + " as Worker"
+          userName = workSegHandle + ' as Worker'
           colour = 'text-next'
           break;
         case schoolId:
-          userName = schoolSegHandle + " as Student"
+          userName = schoolSegHandle + ' as Student'
           colour = 'text-next'
           break;
       }
     }
-    return (<span className={`name d-block font-weight-bold ${colour}`} style={{ fontSize: "70%" }}>{userName}</span>)
+    return (<span className={`name d-block font-weight-bold ${colour}`} style={{ fontSize: '70%' }}>{userName}</span>)
   }
 
   // const flagFunc = async(ideaId: number, token: string, userId: string, ideaActive: boolean, reason: string, quarantined_at: Date) => {
@@ -173,7 +173,7 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
             <h3>{content}</h3>
             <br></br>
           </div>
-          <div className="d-flex flex-column justify-content-start" style={{ fontSize: "120%" }}>
+          <div className="d-flex flex-column justify-content-start" style={{ fontSize: '120%' }}>
             {superSegmentId ? colouredUserNameHandle(superSegmentId, homeSuperSegmentId, workSuperSegmentId, schoolSuperSegmentId)
               : <>
                 {subSegmentId ?
@@ -186,10 +186,10 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
 
           </div>
             <div className="d-flex flex-column justify-content-start">
-          <div className="py-1" style={{ fontSize: "70%" }}>
+          <div className="py-1" style={{ fontSize: '70%' }}>
             Likes and Dislikes: {likes} / {dislikes}
           </div>
-          <span className="date text-black-50" style={{ fontSize: "70%" }}>
+          <span className="date text-black-50" style={{ fontSize: '70%' }}>
             Shared publicly - {timeDifference(new Date(), new Date(createdAt))}
           </span>
           </div>
@@ -204,7 +204,7 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
               ) : null} */}
               {!reviewed ? (
                 <ButtonGroup className="mr-2 mt-3">
-                  {showFlagButton ? (<DropdownButton id="dropdown-basic-button d-flex" style={{ fontSize: "10px", font: "10px sans-serif" }} title="Flag" size="sm">
+                  {showFlagButton ? (<DropdownButton id="dropdown-basic-button d-flex" style={{ fontSize: '10px', font: '10px sans-serif' }} title="Flag" size="sm">
                     <Dropdown.Item eventKey="Abusive or Inappropriate Language" onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Abusive or Inappropriate Language</Dropdown.Item>
                     <Dropdown.Item eventKey="Submission in Wrong Community" onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Submission in Wrong Community</Dropdown.Item>
                     <Dropdown.Item eventKey="Spam/Unsolicited Advertisement" onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Spam/Unsolicited Advertisement</Dropdown.Item>

@@ -1,8 +1,8 @@
-import { useContext, useState } from "react";
-import { useUserWithJwtVerbose } from "src/hooks/userHooks";
-import { UserProfileContext } from "src/contexts/UserProfile.Context";
-import DashboardPageContent from "../components/content/DashboardPageContent";
-import LoadingSpinner from "src/components/ui/LoadingSpinner";
+import { useContext, useState } from 'react';
+import { useUserWithJwtVerbose } from 'src/hooks/userHooks';
+import { UserProfileContext } from 'src/contexts/UserProfile.Context';
+import DashboardPageContent from '../components/content/DashboardPageContent';
+import LoadingSpinner from 'src/components/ui/LoadingSpinner';
 
 export default function Dashboard() {
   const { token } = useContext(UserProfileContext);

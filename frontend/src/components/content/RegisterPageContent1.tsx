@@ -1,21 +1,21 @@
-import React, { useContext, useState } from "react";
-import { Form, Button, Alert, Card } from "react-bootstrap";
+import React, { useContext, useState } from 'react';
+import { Form, Button, Alert, Card } from 'react-bootstrap';
 import {
   Formik,
   FormikConfig,
   FormikValues,
   Field,
-} from "formik";
-import { UserProfileContext } from "../../contexts/UserProfile.Context";
-import { IFetchError } from "../../lib/types/types";
+} from 'formik';
+import { UserProfileContext } from '../../contexts/UserProfile.Context';
+import { IFetchError } from '../../lib/types/types';
 import {
   capitalizeString,
-} from "../../lib/utilityFunctions";
-import { IUserRole } from "../../lib/types/data/userRole.type";
-import SimpleMap from "../map/SimpleMap";
-import { ISegment, ISubSegment } from "src/lib/types/data/segment.type";
+} from '../../lib/utilityFunctions';
+import { IUserRole } from '../../lib/types/data/userRole.type';
+import SimpleMap from '../map/SimpleMap';
+import { ISegment, ISubSegment } from 'src/lib/types/data/segment.type';
 //import SelectSegmentPage from 'src/pages/SelectSegmentPage';
-import { TEXT_INPUT_LIMIT } from "src/lib/constants";
+import { TEXT_INPUT_LIMIT } from 'src/lib/constants';
 
 interface SegmentsDropdownProps {
   segments: ISegment | undefined;
@@ -193,7 +193,7 @@ const RegisterPageContent: React.FC<RegisterPageContentProps> = ({
   const NextMap: React.FC<NextMapProps> = ({ name, showMap }) => {
     const [map, setShowMap] = useState(showMap);
     let title: any;
-    if (name === "home") {
+    if (name === 'home') {
       title = (
         <>
           <Card.Title>Show us on the map where your {name} is</Card.Title>
@@ -203,7 +203,7 @@ const RegisterPageContent: React.FC<RegisterPageContentProps> = ({
         </>
       );
     }
-    if (name === "work") {
+    if (name === 'work') {
       title = (
         <>
           {!map ? (
@@ -216,10 +216,10 @@ const RegisterPageContent: React.FC<RegisterPageContentProps> = ({
                 }}
               >
                 Yes
-              </Button>{" "}
+              </Button>{' '}
               <Button
                 onClick={() => {
-                  console.log("test button");
+                  console.log('test button');
                 }}
               >
                 No
@@ -236,7 +236,7 @@ const RegisterPageContent: React.FC<RegisterPageContentProps> = ({
         </>
       );
     }
-    if (name === "school") {
+    if (name === 'school') {
       title = (
         <>
           {!map ? (
@@ -249,10 +249,10 @@ const RegisterPageContent: React.FC<RegisterPageContentProps> = ({
                 }}
               >
                 Yes
-              </Button>{" "}
+              </Button>{' '}
               <Button
                 onClick={() => {
-                  console.log("test button");
+                  console.log('test button');
                 }}
               >
                 No
@@ -377,18 +377,18 @@ const RegisterPageContent: React.FC<RegisterPageContentProps> = ({
           <FormikStepper
             initialValues={{
               // userRoleId: userRoles ? userRoles[0].id : undefined,
-              userRoleId: "",
-              email: "",
-              password: "",
-              confirmPassword: "",
-              fname: "",
-              lname: "",
+              userRoleId: '',
+              email: '',
+              password: '',
+              confirmPassword: '',
+              fname: '',
+              lname: '',
               address: {
-                streetAddress: "",
-                streetAddress2: "",
-                city: "",
-                postalCode: "",
-                country: "",
+                streetAddress: '',
+                streetAddress2: '',
+                city: '',
+                postalCode: '',
+                country: '',
               },
               geo: {
                 lon: null,
@@ -406,7 +406,7 @@ const RegisterPageContent: React.FC<RegisterPageContentProps> = ({
               schoolSubSegmentId: null,
             }}
             onSubmit={async (values) => {
-              console.log("values: ", values);
+              console.log('values: ', values);
             }}
           >
             {/* <Form onSubmit={formik.handleSubmit}> */}
@@ -545,7 +545,7 @@ const RegisterPageContent: React.FC<RegisterPageContentProps> = ({
                 <Form.Control
                   readOnly
                   name="homeSegmentId"
-                  defaultValue={capitalizeString("testReplace")}
+                  defaultValue={capitalizeString('testReplace')}
                 ></Form.Control>
               </Form.Group>
               <Form.Group controlId="homeSubSegment">
@@ -585,7 +585,7 @@ const RegisterPageContent: React.FC<RegisterPageContentProps> = ({
                 <Form.Control
                   readOnly
                   name="workSegmentId"
-                  defaultValue={capitalizeString("testReplace")}
+                  defaultValue={capitalizeString('testReplace')}
                 ></Form.Control>
               </Form.Group>
               <Form.Group controlId="workSubSegment">
@@ -625,7 +625,7 @@ const RegisterPageContent: React.FC<RegisterPageContentProps> = ({
                 <Form.Control
                   readOnly
                   name="schoolSegmentId"
-                  defaultValue={capitalizeString("testReplace")}
+                  defaultValue={capitalizeString('testReplace')}
                 ></Form.Control>
               </Form.Group>
               <Form.Group controlId="schoolSubSegment">
@@ -661,7 +661,7 @@ const RegisterPageContent: React.FC<RegisterPageContentProps> = ({
   );
 };
 export interface FormikStepProps
-  extends Pick<FormikConfig<FormikValues>, "children"> {}
+  extends Pick<FormikConfig<FormikValues>, 'children'> {}
 
 export function FormikStep({ children }: FormikStepProps) {
   return <>{children}</>;
@@ -700,7 +700,7 @@ export function FormikStepper({
             Back
           </Button>
         ) : null}
-        <Button type="submit">{isLastStep() ? "Submit" : "Next"}</Button>
+        <Button type="submit">{isLastStep() ? 'Submit' : 'Next'}</Button>
       </Form>
     </Formik>
   );

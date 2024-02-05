@@ -1,8 +1,8 @@
-import axios, { AxiosResponse } from "axios";
-import { API_BASE_URL, USER_TYPES } from "../constants";
-import { IUser } from "../types/data/user.type";
-import { PublicCommunityBusinessProfile, PublicMunicipalProfile, PublicStandardProfile } from "../types/data/publicProfile.type";
-import { getAxiosJwtRequestOption } from "./axiosRequestOptions";
+import axios, { AxiosResponse } from 'axios';
+import { API_BASE_URL, USER_TYPES } from '../constants';
+import { IUser } from '../types/data/user.type';
+import { PublicCommunityBusinessProfile, PublicMunicipalProfile, PublicStandardProfile } from '../types/data/publicProfile.type';
+import { getAxiosJwtRequestOption } from './axiosRequestOptions';
 
 
 export const getCommunityBusinessProfile = async (
@@ -10,12 +10,12 @@ export const getCommunityBusinessProfile = async (
     token: string | null
     ) => {
     const res = await axios({
-        method: "get",
+        method: 'get',
         url: `${API_BASE_URL}/publicProfile/communityBusinessProfile/${userId}`,
         headers: {
-            "Content-Type": "application/json",
-            "x-auth-token": token,
-            "Access-Control-Allow-Origin": "*",
+            'Content-Type': 'application/json',
+            'x-auth-token': token,
+            'Access-Control-Allow-Origin': '*',
         },
     });
     
@@ -27,13 +27,13 @@ export const updateCommunityBusinessProfile = async (
     token: string | null
 ) => {
     const res = await axios({
-        method: "put",
+        method: 'put',
         url: `${API_BASE_URL}/publicProfile/communityBusinessProfile` + `/${publicProfileData.userId}`,
         data: publicProfileData,
         headers: {
-            "Content-Type": "application/json",
-            "x-auth-token": token,
-            "Access-Control-Allow-Origin": "*",
+            'Content-Type': 'application/json',
+            'x-auth-token': token,
+            'Access-Control-Allow-Origin': '*',
         },
         withCredentials: true
     });
@@ -45,12 +45,12 @@ export const getCommunityBusinessLinks = async (
     token: string | null
     ) => {
     const res = await axios({
-        method: "get",
+        method: 'get',
         url: `${API_BASE_URL}/publicProfile/communityBusinessProfile/${profileId}/links`,
         headers: {
-            "Content-Type": "application/json",
-            "x-auth-token": token,
-            "Access-Control-Allow-Origin": "*",
+            'Content-Type': 'application/json',
+            'x-auth-token': token,
+            'Access-Control-Allow-Origin': '*',
         },
     });
 
@@ -62,12 +62,12 @@ export const getMunicipalProfile = async (
     token: string | null
     ) => {
     const res = await axios({
-        method: "get",
+        method: 'get',
         url: `${API_BASE_URL}/publicProfile/municipalProfile/${userId}`,
         headers: {
-            "Content-Type": "application/json",
-            "x-auth-token": token,
-            "Access-Control-Allow-Origin": "*",
+            'Content-Type': 'application/json',
+            'x-auth-token': token,
+            'Access-Control-Allow-Origin': '*',
         },
     });
 
@@ -79,13 +79,13 @@ export const updateMunicipalProfile = async (
     token: string | null
     ) => {
     const res = await axios({
-        method: "put",
+        method: 'put',
         url: `${API_BASE_URL}/publicProfile/municipalProfile` + `/${publicProfileData.userId}`,
         data: publicProfileData,
         headers: {
-            "Content-Type": "application/json",
-            "x-auth-token": token,
-            "Access-Control-Allow-Origin": "*",
+            'Content-Type': 'application/json',
+            'x-auth-token': token,
+            'Access-Control-Allow-Origin': '*',
         },
         withCredentials: true
     });
@@ -97,12 +97,12 @@ export const getMunicipalLinks = async (
     token: string | null
     ) => {
     const res = await axios({
-        method: "get",
+        method: 'get',
         url: `${API_BASE_URL}/publicProfile/municipalProfile/${profileId}/links`,
         headers: {
-            "Content-Type": "application/json",
-            "x-auth-token": token,
-            "Access-Control-Allow-Origin": "*",
+            'Content-Type': 'application/json',
+            'x-auth-token': token,
+            'Access-Control-Allow-Origin': '*',
         },
     });
 
@@ -114,12 +114,12 @@ export const getStandardProfile = async (
     token: string | null
     ) => {
     const res = await axios({
-        method: "get",
+        method: 'get',
         url: `${API_BASE_URL}/publicProfile/standardProfile/${userId}`,
         headers: {
-            "Content-Type": "application/json",
-            "x-auth-token": token,
-            "Access-Control-Allow-Origin": "*",
+            'Content-Type': 'application/json',
+            'x-auth-token': token,
+            'Access-Control-Allow-Origin': '*',
         },
     });
 
@@ -131,13 +131,13 @@ export const updateStandardProfile = async (
     token: string | null
     ) => {
     const res = await axios({
-        method: "put",
+        method: 'put',
         url: `${API_BASE_URL}/publicProfile/standardProfile` + `/${publicProfileData.id}`,
         data: publicProfileData,
         headers: {
-            "Content-Type": "application/json",
-            "x-auth-token": token,
-            "Access-Control-Allow-Origin": "*",
+            'Content-Type': 'application/json',
+            'x-auth-token': token,
+            'Access-Control-Allow-Origin': '*',
         },
         withCredentials: true
     });

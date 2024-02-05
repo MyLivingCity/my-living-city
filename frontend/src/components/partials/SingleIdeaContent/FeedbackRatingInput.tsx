@@ -1,13 +1,13 @@
-import { useContext, useEffect, useState } from "react";
-import { Button, Container, Row, Alert } from "react-bootstrap";
-import { UserProfileContext } from "src/contexts/UserProfile.Context";
-import { useCreateFeedbackRatingMutation } from "src/hooks/feedbackRatingHooks";
+import { useContext, useEffect, useState } from 'react';
+import { Button, Container, Row, Alert } from 'react-bootstrap';
+import { UserProfileContext } from 'src/contexts/UserProfile.Context';
+import { useCreateFeedbackRatingMutation } from 'src/hooks/feedbackRatingHooks';
 import {
     FormControl,
     FormControlLabel,
     Radio,
     RadioGroup,
-} from "@mui/material";
+} from '@mui/material';
 
 interface FeedbackRatingInputProps {
     userHasRated: boolean;
@@ -50,7 +50,7 @@ const FeedbackRatingYesNoInput = ({
     const submitHandler = () => {
         const payload = {
             rating: ratingValue,
-            ratingExplanation: "",
+            ratingExplanation: '',
         };
         submitRatingMutation(payload);
     };
@@ -68,10 +68,10 @@ const FeedbackRatingYesNoInput = ({
     };
 
     const buttonTextOutput = (): string => {
-        let buttonText = "Please login to submit rating";
-        if (tokenExists()) buttonText = "Submit";
-        if (isLoading) buttonText = "Submitting...";
-        if (userHasRated) buttonText = "You have already rated this feedback";
+        let buttonText = 'Please login to submit rating';
+        if (tokenExists()) buttonText = 'Submit';
+        if (isLoading) buttonText = 'Submitting...';
+        if (userHasRated) buttonText = 'You have already rated this feedback';
         return buttonText;
     };
 
@@ -93,14 +93,14 @@ const FeedbackRatingYesNoInput = ({
             <Row>
                 <FormControl
                     component="fieldset"
-                    style={{ width: "100%", padding: "0rem 0rem 0rem 0rem" }}>
+                    style={{ width: '100%', padding: '0rem 0rem 0rem 0rem' }}>
                     <RadioGroup
                         row
                         aria-label="rating"
                         name="rating"
                         value={ratingValue}
                         onChange={(e) => setRatingValue(parseInt(e.target.value))}
-                        sx={{ width: "70%", height: "70%" }}
+                        sx={{ width: '70%', height: '70%' }}
                     >
                         <FormControlLabel
                             value={1}
@@ -139,7 +139,7 @@ const FeedbackRatingYesNoInput = ({
                                 variant="danger"
                             >
                                 {error?.message ??
-                                    "An error occurred while submitting your rating"}
+                                    'An error occurred while submitting your rating'}
                             </Alert>
                         )}
                         {!userHasRated && (
@@ -193,7 +193,7 @@ const FeedbackRatingScaleInput = ({
     const submitHandler = () => {
         const payload = {
             rating: ratingValue,
-            ratingExplanation: "",
+            ratingExplanation: '',
         };
         submitRatingMutation(payload);
     }
@@ -211,10 +211,10 @@ const FeedbackRatingScaleInput = ({
     };
 
     const buttonTextOutput = (): string => {
-        let buttonText = "Please login to submit rating";
-        if (tokenExists()) buttonText = "Submit";
-        if (isLoading) buttonText = "Submitting...";
-        if (userHasRated) buttonText = "You have already rated this feedback";
+        let buttonText = 'Please login to submit rating';
+        if (tokenExists()) buttonText = 'Submit';
+        if (isLoading) buttonText = 'Submitting...';
+        if (userHasRated) buttonText = 'You have already rated this feedback';
         return buttonText;
     };
 
@@ -223,14 +223,14 @@ const FeedbackRatingScaleInput = ({
             <Row>
                 <FormControl
                     component="fieldset"
-                    style={{ width: "100%", padding: "0rem 0rem 0rem 0rem" }}>
+                    style={{ width: '100%', padding: '0rem 0rem 0rem 0rem' }}>
                     <RadioGroup
                         row
                         aria-label="rating"
                         name="rating"
                         value={ratingValue}
                         onChange={(e) => setRatingValue(parseInt(e.target.value))}
-                        sx={{ width: "70%", height: "70%" }}
+                        sx={{ width: '70%', height: '70%' }}
                     >
                         <FormControlLabel
                             value={1}
@@ -311,7 +311,7 @@ const FeedbackRatingScaleInput = ({
                                 variant="danger"
                             >
                                 {error?.message ??
-                                    "An error occurred while submitting your rating"}
+                                    'An error occurred while submitting your rating'}
                             </Alert>
                         )}
                         {!userHasRated && (

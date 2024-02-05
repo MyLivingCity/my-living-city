@@ -1,5 +1,5 @@
-import React from "react";
-import CheckEmailPageContent from "src/components/content/CheckEmailPageContent";
+import React from 'react';
+import CheckEmailPageContent from 'src/components/content/CheckEmailPageContent';
 
 function CheckEmailPage() {
   return (

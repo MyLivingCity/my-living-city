@@ -24,7 +24,7 @@ export const useUserWithJwt = ({ jwtAuthToken, shouldTrigger}: UseUserWithJwtInp
 
 export const useUserWithUserId = (userId: string) => {
   return useQuery<IUser, IFetchError>(
-    ["userDetails", userId],
+    ['userDetails', userId],
     () => getUserById(userId)
   )
 }

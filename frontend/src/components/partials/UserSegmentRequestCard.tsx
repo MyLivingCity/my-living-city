@@ -14,7 +14,7 @@ export const UserSegmentRequestCard: React.FC<UserSegmentCardRequestProps> = ({s
     const [update, setUpdate] = useState(false);
         return (
         <Card>
-            <Card.Header>Segment and SubSegment Requests<Button onClick={()=>{setShowReq(b=>!b)}}className="float-right" size="sm">{showReq ? "Hide Requests": "View Requests"}</Button></Card.Header>
+            <Card.Header>Segment and SubSegment Requests<Button onClick={()=>{setShowReq(b=>!b)}}className="float-right" size="sm">{showReq ? 'Hide Requests': 'View Requests'}</Button></Card.Header>
             {showReq && 
             <Card.Body>
             <Table bordered hover>

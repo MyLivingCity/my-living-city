@@ -1,14 +1,14 @@
-import axios, { AxiosError } from "axios"
-import { useMutation, useQuery, useQueryClient } from "react-query"
-import { getAxiosJwtRequestOption } from "src/lib/api/axiosRequestOptions"
-import { API_BASE_URL } from "src/lib/constants"
-import { IUser } from "src/lib/types/data/user.type"
-import { ICreateRatingInput } from "../lib/types/input/createRating.input"
-import { getAllRatingsUnderIdea, getAllRatingsUnderIdeaWithAggregations } from "../lib/api/ratingRoutes"
-import { IRating, IRatingAggregateResponse } from "../lib/types/data/rating.type"
-import { IFetchError } from "../lib/types/types"
-import { useEffect, useState } from "react"
-import { handlePotentialAxiosError } from "src/lib/utilityFunctions"
+import axios, { AxiosError } from 'axios'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
+import { getAxiosJwtRequestOption } from 'src/lib/api/axiosRequestOptions'
+import { API_BASE_URL } from 'src/lib/constants'
+import { IUser } from 'src/lib/types/data/user.type'
+import { ICreateRatingInput } from '../lib/types/input/createRating.input'
+import { getAllRatingsUnderIdea, getAllRatingsUnderIdeaWithAggregations } from '../lib/api/ratingRoutes'
+import { IRating, IRatingAggregateResponse } from '../lib/types/data/rating.type'
+import { IFetchError } from '../lib/types/types'
+import { useEffect, useState } from 'react'
+import { handlePotentialAxiosError } from 'src/lib/utilityFunctions'
 
 export const useAllRatingsUnderIdea = (ideaId: string) => {
   return useQuery<IRating[], IFetchError>(
@@ -96,7 +96,7 @@ export const useCreateRatingMutation = (
   useEffect(() => {
     if (error) {
       const potentialAxiosError = handlePotentialAxiosError(
-        "An error occured while trying to submit your rating.",
+        'An error occured while trying to submit your rating.',
         error,
       );
       setParsedErrorObj(potentialAxiosError);

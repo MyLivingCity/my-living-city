@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react'
-import { Button, Card } from "react-bootstrap";
-import { IProposalWithAggregations } from "../../lib/types/data/proposal.type";
+import { Button, Card } from 'react-bootstrap';
+import { IProposalWithAggregations } from '../../lib/types/data/proposal.type';
 import {
   timeDifference,
   truncateString,
-} from "../../lib/utilityFunctions";
-import { BsPeople, BsHeartHalf } from "react-icons/bs";
-import { AiOutlineStar } from "react-icons/ai";
-import { getAllSuperSegments } from "../../lib/api/segmentRoutes";
-import { ISuperSegment } from "../../lib/types/data/segment.type";
+} from '../../lib/utilityFunctions';
+import { BsPeople, BsHeartHalf } from 'react-icons/bs';
+import { AiOutlineStar } from 'react-icons/ai';
+import { getAllSuperSegments } from '../../lib/api/segmentRoutes';
+import { ISuperSegment } from '../../lib/types/data/segment.type';
 // import { FaRegThumbsUp, FaRegThumbsDown } from 'react-icons/fa'
 const capitalizeString = (s: string) => {
   return s.charAt(0).toUpperCase() + s.slice(1);
@@ -72,8 +72,8 @@ const superSegmentName = superSegments.find(superSegment => superSegment.superSe
       </style>
       {isNew && <div className="new-banner p-1">NEW</div>}
       <Card.Body>
-        <div className="mb-1" style={{ textAlign: "left", color: "gray" }}>{postType}</div>
-        <Card.Title>{idea ? truncateString(idea.title, 50) : "N/A"}</Card.Title>
+        <div className="mb-1" style={{ textAlign: 'left', color: 'gray' }}>{postType}</div>
+        <Card.Title>{idea ? truncateString(idea.title, 50) : 'N/A'}</Card.Title>
         <Card.Text>{truncateString(idea.description, 100)}</Card.Text>
         <div className="button-breakdown mt-3 d-flex justify-content-between align-items-center">
           <Card.Link href={`/proposals/${id}`}>
@@ -116,7 +116,7 @@ const superSegmentName = superSegments.find(superSegment => superSegment.superSe
             <small className='text-muted user-select-none'>
               {idea.subSegmentName ? ` ${capitalizeString(idea.segmentName)}\/${capitalizeString(idea.subSegmentName)}` :
                 idea.segmentName ? ` ${capitalizeString(idea.segmentName)}` :
-                  superSegmentName ? ` ${capitalizeString(superSegmentName)}` : ""}
+                  superSegmentName ? ` ${capitalizeString(superSegmentName)}` : ''}
             </small>
           </div>
         </Card.Footer>

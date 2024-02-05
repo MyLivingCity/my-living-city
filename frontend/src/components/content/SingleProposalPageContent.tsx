@@ -10,16 +10,16 @@ import {
   Modal,
   Alert,
   Table, ButtonGroup,
-} from "react-bootstrap";
-import { IIdeaWithRelationship } from "../../lib/types/data/idea.type";
+} from 'react-bootstrap';
+import { IIdeaWithRelationship } from '../../lib/types/data/idea.type';
 import {
   capitalizeFirstLetterEachWord,
   capitalizeString,
-} from "../../lib/utilityFunctions";
+} from '../../lib/utilityFunctions';
 import LoadingSpinnerInline from '../ui/LoadingSpinnerInline';
-import CommentsSection from "../partials/SingleIdeaContent/CommentsSection";
-import RatingsSection from "../partials/SingleIdeaContent/RatingsSection";
-import { FeedbackRatingScaleSection, FeedbackRatingYesNoSection } from "../partials/SingleIdeaContent/FeedbackRatingSection";
+import CommentsSection from '../partials/SingleIdeaContent/CommentsSection';
+import RatingsSection from '../partials/SingleIdeaContent/RatingsSection';
+import { FeedbackRatingScaleSection, FeedbackRatingYesNoSection } from '../partials/SingleIdeaContent/FeedbackRatingSection';
 import {
   FacebookShareButton,
   FacebookIcon,
@@ -33,39 +33,39 @@ import {
   EmailIcon,
   WhatsappShareButton,
   WhatsappIcon,
-} from "react-share";
-import ChampionSubmit from "../partials/SingleIdeaContent/ChampionSubmit";
-import React, { useContext, useEffect, useState } from "react";
-import { API_BASE_URL, USER_TYPES } from "src/lib/constants";
-import { UserProfileContext } from "../../contexts/UserProfile.Context";
-import { IFetchError } from "../../lib/types/types";
-import { useFormik } from "formik";
-import "react-image-crop/dist/ReactCrop.css";
-import { handlePotentialAxiosError } from "../../lib/utilityFunctions";
+} from 'react-share';
+import ChampionSubmit from '../partials/SingleIdeaContent/ChampionSubmit';
+import React, { useContext, useEffect, useState } from 'react';
+import { API_BASE_URL, USER_TYPES } from 'src/lib/constants';
+import { UserProfileContext } from '../../contexts/UserProfile.Context';
+import { IFetchError } from '../../lib/types/types';
+import { useFormik } from 'formik';
+import 'react-image-crop/dist/ReactCrop.css';
+import { handlePotentialAxiosError } from '../../lib/utilityFunctions';
 import {
   followIdeaByUser,
   unfollowIdeaByUser,
   updateIdeaStatus,
   endorseIdeaByUser,
   unendorseIdeaByUser,
-} from "src/lib/api/ideaRoutes";
+} from 'src/lib/api/ideaRoutes';
 import { incrementPostFlagCount } from 'src/lib/api/badPostingBehaviorRoutes';
-import { useCheckIdeaFollowedByUser, useCheckIdeaEndorsedByUser, useCheckIdeaFlaggedByUser, useGetEndorsedUsersByIdea, useAllIdeas } from "src/hooks/ideaHooks";
-import { useAllRatingsUnderIdea } from "src/hooks/ratingHooks";
-import { useCommentAggregateUnderIdea, useAllCommentsUnderIdea } from "src/hooks/commentHooks";
+import { useCheckIdeaFollowedByUser, useCheckIdeaEndorsedByUser, useCheckIdeaFlaggedByUser, useGetEndorsedUsersByIdea, useAllIdeas } from 'src/hooks/ideaHooks';
+import { useAllRatingsUnderIdea } from 'src/hooks/ratingHooks';
+import { useCommentAggregateUnderIdea, useAllCommentsUnderIdea } from 'src/hooks/commentHooks';
 import {
   postCreateCollabotator,
   postCreateVolunteer,
   postCreateDonor,
-} from "src/lib/api/communityRoutes";
-import { createFlagUnderIdea, compareIdeaFlagsWithThreshold } from "src/lib/api/flagRoutes";
+} from 'src/lib/api/communityRoutes';
+import { createFlagUnderIdea, compareIdeaFlagsWithThreshold } from 'src/lib/api/flagRoutes';
 import { useCheckFlagBan } from 'src/hooks/flagHooks';
 import EndorsedUsersSection from '../partials/SingleIdeaContent/EndorsedUsersSection';
-import { IUserSegment } from "../../lib/types/data/segment.type";
-import { getMyUserSegmentInfo } from "../../lib/api/userSegmentRoutes";
+import { IUserSegment } from '../../lib/types/data/segment.type';
+import { getMyUserSegmentInfo } from '../../lib/api/userSegmentRoutes';
 import { useAllUserSegments } from 'src/hooks/userSegmentHooks';
-import { BsPeople, BsHeartHalf } from "react-icons/bs";
-import { AiOutlineRadiusBottomright, AiOutlineStar } from "react-icons/ai";
+import { BsPeople, BsHeartHalf } from 'react-icons/bs';
+import { AiOutlineRadiusBottomright, AiOutlineStar } from 'react-icons/ai';
 
 
 interface SingleIdeaPageContentProps {
@@ -75,7 +75,7 @@ interface SingleIdeaPageContentProps {
 }
 
 const getSegmentName = (segment: string | undefined): string => {
-  return segment ? capitalizeFirstLetterEachWord(segment) : "N/A";
+  return segment ? capitalizeFirstLetterEachWord(segment) : 'N/A';
 }
 
 const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
@@ -152,7 +152,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
    * @returns { boolean } Project information and state is valid
    */
   const confirmProjectState = (): boolean => {
-    return state === "PROJECT" && !!projectInfo;
+    return state === 'PROJECT' && !!projectInfo;
   };
 
   const shouldDisplayChampionButton = (): boolean => {
@@ -222,10 +222,10 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
   const [showFlagButton, setShowFlagButton] = useState(true);
   const [show, setShow] = useState(false);
   const [showOther, setShowOther] = useState(false);
-  const [flagReason, setFlagReason] = useState("");
-  const [otherFlagReason, setOtherFlagReason] = useState("");
+  const [flagReason, setFlagReason] = useState('');
+  const [otherFlagReason, setOtherFlagReason] = useState('');
   function getOtherFlagReason(val: any) {
-    setOtherFlagReason("OTHER: " + val.target.value)
+    setOtherFlagReason('OTHER: ' + val.target.value)
 
   }
 
@@ -244,7 +244,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
       setError(null);
       setIsLoading(true);
-      setTimeout(() => console.log("timeout"), 5000);
+      setTimeout(() => console.log('timeout'), 5000);
       await postCreateCollabotator(
         proposalId,
         values,
@@ -257,7 +257,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
       window.location.reload();
     } catch (error) {
       const genericMessage =
-        "An error occured while trying to create an Proposal.";
+        'An error occured while trying to create an Proposal.';
       const errorObj = handlePotentialAxiosError(genericMessage, error);
       setError(errorObj);
     } finally {
@@ -271,7 +271,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
       setError(null);
       setIsLoading(true);
-      setTimeout(() => console.log("timeout"), 5000);
+      setTimeout(() => console.log('timeout'), 5000);
       await postCreateVolunteer(
         proposalId,
         values,
@@ -283,7 +283,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
       formikVolunteer.resetForm();
       window.location.reload();
     } catch (error) {
-      const genericMessage = "An error occured while trying to create an Idea.";
+      const genericMessage = 'An error occured while trying to create an Idea.';
       const errorObj = handlePotentialAxiosError(genericMessage, error);
       setError(errorObj);
     } finally {
@@ -297,7 +297,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
       setError(null);
       setIsLoading(true);
-      setTimeout(() => console.log("timeout"), 5000);
+      setTimeout(() => console.log('timeout'), 5000);
       await postCreateDonor(
         proposalId,
         values,
@@ -309,7 +309,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
       formikDonor.resetForm();
       window.location.reload();
     } catch (error) {
-      const genericMessage = "An error occured while trying to create an Idea.";
+      const genericMessage = 'An error occured while trying to create an Idea.';
       const errorObj = handlePotentialAxiosError(genericMessage, error);
       setError(errorObj);
     } finally {
@@ -319,28 +319,28 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
   const formikCollaborator = useFormik({
     initialValues: {
-      experience: "",
-      role: "",
-      time: "",
-      contactInfo: "",
+      experience: '',
+      role: '',
+      time: '',
+      contactInfo: '',
     },
     onSubmit: collaboratorSubmitHandler,
   });
 
   const formikVolunteer = useFormik({
     initialValues: {
-      experience: "",
-      task: "",
-      time: "",
-      contactInfo: "",
+      experience: '',
+      task: '',
+      time: '',
+      contactInfo: '',
     },
     onSubmit: volunteerSubmitHandler,
   });
 
   const formikDonor = useFormik({
     initialValues: {
-      donations: "",
-      contactInfo: "",
+      donations: '',
+      contactInfo: '',
     },
     onSubmit: donorSubmitHandler
   });
@@ -355,7 +355,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
   // API hooks for this component
   const { data: isFollowingPost, isLoading: isFollowingPostLoading } = useCheckIdeaFollowedByUser(token, (user ? user.id : user), ideaId);
   const { data: isEndorsingPost, isLoading: isEndorsingPostLoading } = useCheckIdeaEndorsedByUser(token, (user ? user.id : user), ideaId);
-  const { data: flagBanData, isLoading: flagBanDataLoading } = useCheckFlagBan(token, (user ? user.id : ""));
+  const { data: flagBanData, isLoading: flagBanDataLoading } = useCheckFlagBan(token, (user ? user.id : ''));
   const { data: isFlagged, isLoading: isFlaggedLoading } = useCheckIdeaFlaggedByUser(token, (user ? user.id : user), ideaId);
   const { data: endorsedUsersData, isLoading: isEndorsedUsersDataLoading } = useGetEndorsedUsersByIdea(token, ideaId);
 
@@ -415,9 +415,9 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
   useEffect(() => {
     if (!isFlaggedLoading) {
-      console.log("isFlagged", isFlagged?.valueOf());
+      console.log('isFlagged', isFlagged?.valueOf());
       if (isFlagged) {
-        console.log("isFlaggedRAWR", isFlagged?.valueOf());
+        console.log('isFlaggedRAWR', isFlagged?.valueOf());
         handleHideFlagButton();
       }
     }
@@ -504,7 +504,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
         {imagePath ? (
           <Image
             src={imagePath}
-            style={{ objectFit: "cover", height: "400px" }}
+            style={{ objectFit: 'cover', height: '400px' }}
           ></Image>
         ) : null}
         <Row>
@@ -513,14 +513,14 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
               <div className="d-flex flex-column justify-content-between">
                 <h1 className="h1">{
                   titleText.length > 75 ?
-                    titleText.substring(0, 75) + "..." :
+                    titleText.substring(0, 75) + '...' :
                     titleText
                 }</h1>
-                <div style={{ display: "flex", minWidth: "16rem", justifyContent: "left", marginTop: "0.5rem" }}>
+                <div style={{ display: 'flex', minWidth: '16rem', justifyContent: 'left', marginTop: '0.5rem' }}>
                   <div>
                     {flagBanDataLoading ? <LoadingSpinnerInline /> : showFlagButton ? (<ButtonGroup className="mr-2">
                       {!reviewed ? (
-                        <DropdownButton id="dropdown-basic-button d-flex" style={{ fontSize: "16px", font: "16px sans-serif" }} title="Flag">
+                        <DropdownButton id="dropdown-basic-button d-flex" style={{ fontSize: '16px', font: '16px sans-serif' }} title="Flag">
                           <Dropdown.Item eventKey="Abusive or Inappropriate Language" onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Abusive or Inappropriate Language</Dropdown.Item>
                           <Dropdown.Item eventKey="Submission in Wrong Community" onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Submission in Wrong Community</Dropdown.Item>
                           <Dropdown.Item eventKey="Spam/Unsolicited Advertisement" onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Spam/Unsolicited Advertisement</Dropdown.Item>
@@ -535,14 +535,14 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                       {user && token && showFollowButton ? <Button
                         onClick={async () => await handleFollowUnfollow()}
                       >
-                        {followingPost ? "Unfollow" : "Follow"}
+                        {followingPost ? 'Unfollow' : 'Follow'}
                       </Button> : null}
                     </ButtonGroup>
                     <ButtonGroup className="mr-2">
                       {user && token && showEndorseButton && canEndorse ? <Button
                         onClick={async () => await handleEndorseUnendorse()}
                       >
-                        {endorsingPost ? "Unendorse" : "Endorse"}
+                        {endorsingPost ? 'Unendorse' : 'Endorse'}
                       </Button> : null}
                     </ButtonGroup>
                   </div>
@@ -611,24 +611,24 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                   {/* <h4 className='h5'>As: {userType}</h4> */}
                   {superSegment ? (
                     <h4 className="h5">
-                      District:{" "}
+                      District:{' '}
                       {superSegment
                         ? capitalizeFirstLetterEachWord(superSegment.name)
-                        : "N/A"}
+                        : 'N/A'}
                     </h4>
                   ) : null}
                   {segment ? (
                     <h4 className="h5">
-                      Municipality:{" "}
+                      Municipality:{' '}
                       {getSegmentName(segment.name)}
                     </h4>
                   ) : null}
                   {subSegment ? (
                     <h4 className="h5">
-                      Neighborhood:{" "}
+                      Neighborhood:{' '}
                       {subSegment
                         ? capitalizeFirstLetterEachWord(subSegment.name)
-                        : "N/A"}
+                        : 'N/A'}
                     </h4>
                   ) : null}
                   {location ? (
@@ -743,7 +743,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
               <h2>Project Information:</h2>
               <p>
                 {projectInfo?.description ||
-                  "Project has been initialized. Please describe the project!"}
+                  'Project has been initialized. Please describe the project!'}
               </p>
             </Col>
           )}
@@ -803,7 +803,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                   <EmailIcon size={32} round />
                 </EmailShareButton>
               </div>
-              {author?.userType === "RESIDENTIAL" ?
+              {author?.userType === 'RESIDENTIAL' ?
                 <div>{author?.fname}@{author?.address?.streetAddress} as {userType}</div> :
                 <div>{author?.organizationName}@{author?.address?.streetAddress}</div>
               }
@@ -813,7 +813,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
       </Card>
 
       {needCollaborators && (
-        <div style={{ marginTop: "2rem" }}>
+        <div style={{ marginTop: '2rem' }}>
           <Card>
             <Card.Header>
               <div className="d-flex justify-content-between">
@@ -845,7 +845,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                       <Modal.Body>
                         <Form onSubmit={formikCollaborator.handleSubmit}>
                           <Form.Group>
-                            <p style={{ fontSize: "1rem" }}>Contact</p>
+                            <p style={{ fontSize: '1rem' }}>Contact</p>
                             <Form.Control
                               type="text"
                               name="contactInfo"
@@ -854,7 +854,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                               placeholder="What is your contact information (e-mail and/or phone number)?"
                             />
                             <br />
-                            <p style={{ fontSize: "1rem" }}>Time</p>
+                            <p style={{ fontSize: '1rem' }}>Time</p>
                             <Form.Control
                               type="text"
                               name="time"
@@ -864,7 +864,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                 available?"
                             />
                             <br />
-                            <p style={{ fontSize: "1rem" }}>Experience</p>
+                            <p style={{ fontSize: '1rem' }}>Experience</p>
                             <Form.Control
                               type="text"
                               name="experience"
@@ -875,7 +875,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                             />
                             <br />
 
-                            <p style={{ fontSize: "1rem" }}>Role</p>
+                            <p style={{ fontSize: '1rem' }}>Role</p>
                             <Form.Control
                               type="text"
                               name="role"
@@ -896,7 +896,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                             type="submit"
                             disabled={isLoading ? true : false}
                           >
-                            {isLoading ? "Saving..." : "Submit"}
+                            {isLoading ? 'Saving...' : 'Submit'}
                           </Button>
                         </Form>
                       </Modal.Body>
@@ -908,7 +908,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
             {isPostAuthor ? (
               <Card.Body>
                 {collaborations.length > 0 ? (
-                  <Table style={{ margin: "0rem" }} hover>
+                  <Table style={{ margin: '0rem' }} hover>
                     <thead>
                       <tr>
                         <th>Collaborator</th>
@@ -923,7 +923,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                         (collaboration: any, index: number) => (
                           <tr>
                             <td>
-                              {collaboration.author.fname}{" "}
+                              {collaboration.author.fname}{' '}
                               {collaboration.author.lname}
                             </td>
                             <td>{collaboration.contactInfo}</td>
@@ -936,7 +936,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                     </tbody>
                   </Table>
                 ) : (
-                  <p style={{ margin: "0rem", textAlign: "center" }}>
+                  <p style={{ margin: '0rem', textAlign: 'center' }}>
                     No collaborators yet, be the first!
                   </p>
                 )}
@@ -944,7 +944,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
             ) : (
               <Card.Body>
                 {collaborations.length > 0 ? (
-                  <Table style={{ margin: "0rem" }} hover>
+                  <Table style={{ margin: '0rem' }} hover>
                     <thead>
                       <tr>
                         <th>Collaborator</th>
@@ -955,7 +955,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                         (collaboration: any, index: number) => (
                           <tr>
                             <td>
-                              {collaboration.author.fname}{" "}
+                              {collaboration.author.fname}{' '}
                               {collaboration.author.lname}
                             </td>
                           </tr>
@@ -964,7 +964,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                     </tbody>
                   </Table>
                 ) : (
-                  <p style={{ margin: "0rem", textAlign: "center" }}>
+                  <p style={{ margin: '0rem', textAlign: 'center' }}>
                     No collaborators yet, be the first!
                   </p>
                 )}
@@ -974,7 +974,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
         </div>
       )}
       {needVolunteers && (
-        <div style={{ marginTop: "2rem" }}>
+        <div style={{ marginTop: '2rem' }}>
           <Card>
             <Card.Header>
               <div className="d-flex justify-content-between">
@@ -1006,7 +1006,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                       <Modal.Body>
                         <Form onSubmit={formikVolunteer.handleSubmit}>
                           <Form.Group>
-                            <p style={{ fontSize: "1rem" }}>Contact</p>
+                            <p style={{ fontSize: '1rem' }}>Contact</p>
                             <Form.Control
                               type="text"
                               name="contactInfo"
@@ -1015,7 +1015,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                               placeholder="What is your contact information (e-mail and/or phone number)?"
                             />
                             <br />
-                            <p style={{ fontSize: "1rem" }}>Time</p>
+                            <p style={{ fontSize: '1rem' }}>Time</p>
                             <Form.Control
                               type="text"
                               name="time"
@@ -1025,7 +1025,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                             />
                             <br />
 
-                            <p style={{ fontSize: "1rem" }}>Experience</p>
+                            <p style={{ fontSize: '1rem' }}>Experience</p>
 
                             <Form.Control
                               type="text"
@@ -1036,7 +1036,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                             />
                             <br />
 
-                            <p style={{ fontSize: "1rem" }}>Task</p>
+                            <p style={{ fontSize: '1rem' }}>Task</p>
                             <Form.Control
                               type="text"
                               name="task"
@@ -1057,7 +1057,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                             type="submit"
                             disabled={isLoading ? true : false}
                           >
-                            {isLoading ? "Saving..." : "Submit"}
+                            {isLoading ? 'Saving...' : 'Submit'}
                           </Button>
                         </Form>
                       </Modal.Body>
@@ -1069,7 +1069,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
             {isPostAuthor ? (
               <Card.Body>
                 {volunteers.length > 0 ? (
-                  <Table style={{ margin: "0rem" }} hover>
+                  <Table style={{ margin: '0rem' }} hover>
                     <thead>
                       <tr>
                         <th>Volunteer</th>
@@ -1094,7 +1094,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                     </tbody>
                   </Table>
                 ) : (
-                  <p style={{ margin: "0rem", textAlign: "center" }}>
+                  <p style={{ margin: '0rem', textAlign: 'center' }}>
                     No volunteers yet, be the first!
                   </p>
                 )}
@@ -1102,7 +1102,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
             ) : (
               <Card.Body>
                 {volunteers.length > 0 ? (
-                  <Table style={{ margin: "0rem" }} hover>
+                  <Table style={{ margin: '0rem' }} hover>
                     <thead>
                       <tr>
                         <th>Volunteer</th>
@@ -1119,7 +1119,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                     </tbody>
                   </Table>
                 ) : (
-                  <p style={{ margin: "0rem", textAlign: "center" }}>
+                  <p style={{ margin: '0rem', textAlign: 'center' }}>
                     No volunteers yet, be the first!
                   </p>
                 )}
@@ -1130,7 +1130,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
       )}
 
       {needDonations && (
-        <div style={{ marginTop: "2rem" }}>
+        <div style={{ marginTop: '2rem' }}>
           <Card>
             <Card.Header>
               <div className="d-flex justify-content-between">
@@ -1162,7 +1162,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                       <Modal.Body>
                         <Form onSubmit={formikDonor.handleSubmit}>
                           <Form.Group>
-                            <p style={{ fontSize: "1rem" }}>Donation</p>
+                            <p style={{ fontSize: '1rem' }}>Donation</p>
                             <Form.Control
                               type="text"
                               name="donations"
@@ -1171,7 +1171,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                               placeholder="What would you like to contribute?"
                             />
                             <br />
-                            <p style={{ fontSize: "1rem" }}>Contact</p>
+                            <p style={{ fontSize: '1rem' }}>Contact</p>
                             <Form.Control
                               type="text"
                               name="contactInfo"
@@ -1191,7 +1191,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                             type="submit"
                             disabled={isLoading ? true : false}
                           >
-                            {isLoading ? "Saving..." : "Submit"}
+                            {isLoading ? 'Saving...' : 'Submit'}
                           </Button>
                         </Form>
                       </Modal.Body>
@@ -1203,7 +1203,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
             {isPostAuthor ? (
               <Card.Body>
                 {donors.length > 0 ? (
-                  <Table style={{ margin: "0rem" }} hover>
+                  <Table style={{ margin: '0rem' }} hover>
                     <thead>
                       <tr>
                         <th>Donor</th>
@@ -1224,7 +1224,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                     </tbody>
                   </Table>
                 ) : (
-                  <p style={{ margin: "0rem", textAlign: "center" }}>
+                  <p style={{ margin: '0rem', textAlign: 'center' }}>
                     No donors yet, be the first!
                   </p>
                 )}
@@ -1232,7 +1232,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
             ) : (
               <Card.Body>
                 {donors.length > 0 ? (
-                  <Table style={{ margin: "0rem" }} hover>
+                  <Table style={{ margin: '0rem' }} hover>
                     <thead>
                       <tr>
                         <th>Donor</th>
@@ -1249,7 +1249,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                     </tbody>
                   </Table>
                 ) : (
-                  <p style={{ margin: "0rem", textAlign: "center" }}>
+                  <p style={{ margin: '0rem', textAlign: 'center' }}>
                     No donors yet, be the first!
                   </p>
                 )}
@@ -1260,7 +1260,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
       )}
 
       {needSuggestions && (
-        <div style={{ marginTop: "2rem" }}>
+        <div style={{ marginTop: '2rem' }}>
           <Card>
             {showProposalSegmentError ? (
               <Alert
@@ -1285,7 +1285,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
             </Card.Header>
             <Card.Body>
               {suggestedIdeas.length > 0 ? (
-                <Table style={{ margin: "0rem" }} hover>
+                <Table style={{ margin: '0rem' }} hover>
                   <thead>
                     <tr>
                       <th>Author</th>
@@ -1342,7 +1342,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                           </td>
 
                           <td>
-                            <a href={"/ideas/" + suggestion.id}>
+                            <a href={'/ideas/' + suggestion.id}>
                               {suggestion.title}
                             </a>
                           </td>
@@ -1355,7 +1355,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                   </tbody>
                 </Table>
               ) : (
-                <p style={{ margin: "0rem", textAlign: "center" }}>
+                <p style={{ margin: '0rem', textAlign: 'center' }}>
                   No suggestions yet, be the first!
                 </p>
               )}
@@ -1365,7 +1365,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
       )}
 
       {feedback1 && (
-        <div style={{ marginTop: "2rem" }}>
+        <div style={{ marginTop: '2rem' }}>
           <Card>
             <Card.Header>
               <div className="d-flex justify-content-between">
@@ -1384,17 +1384,17 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                     <p>
                       <strong>Specific Feedback 1: </strong> {feedback1}
                     </p>
-                    {feedbackType1 === "YESNO" ? (
+                    {feedbackType1 === 'YESNO' ? (
                       <FeedbackRatingYesNoSection
-                        feedbackId={"1"}
+                        feedbackId={'1'}
                         proposalId={proposalId}
 
                       >
                       </FeedbackRatingYesNoSection>
                     ) : null}
-                    {feedbackType1 === "RATING" ? (
+                    {feedbackType1 === 'RATING' ? (
                       <FeedbackRatingScaleSection
-                        feedbackId={"1"}
+                        feedbackId={'1'}
                         proposalId={proposalId}
                       >
                       </FeedbackRatingScaleSection>
@@ -1410,16 +1410,16 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                     <p>
                       <strong>Specific Feedback 2: </strong> {feedback2}
                     </p>
-                    {feedbackType2 === "YESNO" ? (
+                    {feedbackType2 === 'YESNO' ? (
                       <FeedbackRatingYesNoSection
-                        feedbackId={"2"}
+                        feedbackId={'2'}
                         proposalId={proposalId}
                       >
                       </FeedbackRatingYesNoSection>
                     ) : null}
-                    {feedbackType2 === "RATING" ? (
+                    {feedbackType2 === 'RATING' ? (
                       <FeedbackRatingScaleSection
-                        feedbackId={"2"}
+                        feedbackId={'2'}
                         proposalId={proposalId}
                       >
                       </FeedbackRatingScaleSection>
@@ -1435,16 +1435,16 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                     <p>
                       <strong>Specific Feedback 3: </strong> {feedback3}
                     </p>
-                    {feedbackType3 === "YESNO" ? (
+                    {feedbackType3 === 'YESNO' ? (
                       <FeedbackRatingYesNoSection
-                        feedbackId={"3"}
+                        feedbackId={'3'}
                         proposalId={proposalId}
                       >
                       </FeedbackRatingYesNoSection>
                     ) : null}
-                    {feedbackType3 === "RATING" ? (
+                    {feedbackType3 === 'RATING' ? (
                       <FeedbackRatingScaleSection
-                        feedbackId={"3"}
+                        feedbackId={'3'}
                         proposalId={proposalId}
                       >
                       </FeedbackRatingScaleSection>
@@ -1460,16 +1460,16 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                     <p>
                       <strong>Specific Feedback 4: </strong> {feedback4}
                     </p>
-                    {feedbackType4 === "YESNO" ? (
+                    {feedbackType4 === 'YESNO' ? (
                       <FeedbackRatingYesNoSection
-                        feedbackId={"4"}
+                        feedbackId={'4'}
                         proposalId={proposalId}
                       >
                       </FeedbackRatingYesNoSection>
                     ) : null}
-                    {feedbackType4 === "RATING" ? (
+                    {feedbackType4 === 'RATING' ? (
                       <FeedbackRatingScaleSection
-                        feedbackId={"4"}
+                        feedbackId={'4'}
                         proposalId={proposalId}
                       >
                       </FeedbackRatingScaleSection>
@@ -1485,16 +1485,16 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                     <p>
                       <strong>Specific Feedback 5: </strong> {feedback5}
                     </p>
-                    {feedbackType5 === "YESNO" ? (
+                    {feedbackType5 === 'YESNO' ? (
                       <FeedbackRatingYesNoSection
-                        feedbackId={"5"}
+                        feedbackId={'5'}
                         proposalId={proposalId}
                       >
                       </FeedbackRatingYesNoSection>
                     ) : null}
-                    {feedbackType5 === "RATING" ? (
+                    {feedbackType5 === 'RATING' ? (
                       <FeedbackRatingScaleSection
-                        feedbackId={"5"}
+                        feedbackId={'5'}
                         proposalId={proposalId}
                       >
                       </FeedbackRatingScaleSection>

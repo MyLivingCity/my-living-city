@@ -166,7 +166,7 @@ export const useCreateCommentMutation = (
   useEffect(() => {
     if (error) {
       const potentialAxiosError = handlePotentialAxiosError(
-        "An Error occured while trying to submit a comment.",
+        'An Error occured while trying to submit a comment.',
         error,
       );
       setParsedErrorObj(potentialAxiosError);

@@ -1,4 +1,4 @@
-import { BooleanLiteral } from "typescript";
+import { BooleanLiteral } from 'typescript';
 
 export interface IFlag {
 	id: number;

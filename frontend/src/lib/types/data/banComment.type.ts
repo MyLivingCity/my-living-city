@@ -1,4 +1,4 @@
-import { IComment } from "./comment.type"
+import { IComment } from './comment.type'
 
 export interface IBanComment {
     id: number,

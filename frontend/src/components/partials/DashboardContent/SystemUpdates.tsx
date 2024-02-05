@@ -1,11 +1,11 @@
-import { Container, Row, Col, Carousel } from "react-bootstrap";
-import IdeaTile from "src/components/tiles/IdeaTile";
-import PlaceholderIdeaTile from "src/components/tiles/PlaceholderIdeaTile";
-import { IIdeaWithAggregations } from "src/lib/types/data/idea.type";
-import ProposalTile from "src/components/tiles/ProposalTile";
-import { IProposalWithAggregations } from "src/lib/types/data/proposal.type";
-import LoadingSpinner from "src/components/ui/LoadingSpinner";
-import ErrorMessage from "src/components/ui/ErrorMessage";
+import { Container, Row, Col, Carousel } from 'react-bootstrap';
+import IdeaTile from 'src/components/tiles/IdeaTile';
+import PlaceholderIdeaTile from 'src/components/tiles/PlaceholderIdeaTile';
+import { IIdeaWithAggregations } from 'src/lib/types/data/idea.type';
+import ProposalTile from 'src/components/tiles/ProposalTile';
+import { IProposalWithAggregations } from 'src/lib/types/data/proposal.type';
+import LoadingSpinner from 'src/components/ui/LoadingSpinner';
+import ErrorMessage from 'src/components/ui/ErrorMessage';
 interface SystemUpdatesProps {
   header: string;
   userIdeas: IIdeaWithAggregations[];
@@ -73,7 +73,7 @@ const SystemUpdates: React.FC<SystemUpdatesProps> = ({
                             lg={4}
                             className="pt-3 align-items-stretch"
                           >
-                            {proposals && idea.state === "PROPOSAL" ? (
+                            {proposals && idea.state === 'PROPOSAL' ? (
                               proposals.map((proposal) => {
                                 if (proposal.ideaId === idea.id) {
                                   return (
@@ -85,9 +85,9 @@ const SystemUpdates: React.FC<SystemUpdatesProps> = ({
                                       }}
                                       showFooter={true}
                                       postType={
-                                        idea.state === "IDEA"
-                                          ? "Idea"
-                                          : "Proposal"
+                                        idea.state === 'IDEA'
+                                          ? 'Idea'
+                                          : 'Proposal'
                                       }
                                     />
                                   );
@@ -98,7 +98,7 @@ const SystemUpdates: React.FC<SystemUpdatesProps> = ({
                                 ideaData={idea}
                                 showFooter={true}
                                 postType={
-                                  idea.state === "IDEA" ? "Idea" : "Proposal"
+                                  idea.state === 'IDEA' ? 'Idea' : 'Proposal'
                                 }
                               />
                             )}

@@ -1,9 +1,9 @@
-import axios from "axios";
-import { API_BASE_URL } from "../constants";
-import { IComment, ICommentAggregateCount } from "../types/data/comment.type";
-import { ICreateCommentInput } from "../types/input/createComment.input";
-import { getAxiosJwtRequestOption } from "./axiosRequestOptions";
-import { getThreshhold } from "./threshholdRoutes";
+import axios from 'axios';
+import { API_BASE_URL } from '../constants';
+import { IComment, ICommentAggregateCount } from '../types/data/comment.type';
+import { ICreateCommentInput } from '../types/input/createComment.input';
+import { getAxiosJwtRequestOption } from './axiosRequestOptions';
+import { getThreshhold } from './threshholdRoutes';
 
 //For IdeaFlags
 export const createFlagUnderIdea = async (
@@ -13,16 +13,16 @@ export const createFlagUnderIdea = async (
   ) => {
     if (!ideaId || !token) {
       throw new Error(
-        "An ideaId and valid JWT must be specified to flag."
+        'An ideaId and valid JWT must be specified to flag.'
       );
     }
     const res = await axios({
-        method: "post",
+        method: 'post',
         url: `${API_BASE_URL}/flag/create/${ideaId}`,
         headers: {
-          "Content-Type": "application/json",
-          "x-auth-token": token,
-          "Access-Control-Allow-Origin": "*",
+          'Content-Type': 'application/json',
+          'x-auth-token': token,
+          'Access-Control-Allow-Origin': '*',
         },
         data: {flagReason: flagReason},
         withCredentials: true,
@@ -37,15 +37,15 @@ export const createFlagUnderIdea = async (
   ) => {
     if(!ideaId || !token){
       throw new Error(
-        "An ideaId and valid JWT must be specified"
+        'An ideaId and valid JWT must be specified'
       );
     }
     const res = await axios({
-      method: "put",
+      method: 'put',
       url: `${API_BASE_URL}/flag/falseFlagMany/${ideaId}`,
       headers: {
-        "x-auth-token": token,
-        "Access-Control-Allow-Origin": "*",
+        'x-auth-token': token,
+        'Access-Control-Allow-Origin': '*',
       },
       data: {isFalse: isFalse},
       withCredentials: true,
@@ -71,15 +71,15 @@ export const createFlagUnderIdea = async (
   ) => {
     if (!ideaId || !token) {
       throw new Error(
-        "An ideaId and valid JWT must be specified to compare flag count with threshold."
+        'An ideaId and valid JWT must be specified to compare flag count with threshold.'
       );
     }
     const flagCount = await axios({
-      method: "get",
+      method: 'get',
       url: `${API_BASE_URL}/flag/getFlags/${ideaId}`,
       headers: {
-        "x-auth-token": token,
-        "Access-Control-Allow-Origin": "*",
+        'x-auth-token': token,
+        'Access-Control-Allow-Origin': '*',
       },
       withCredentials: true,
     })
@@ -95,16 +95,16 @@ export const createCommentFlagUnderIdea = async (
 ) => {
   if (!commentId || !token) {
     throw new Error(
-      "A commentId and valid JWT must be specified to flag."
+      'A commentId and valid JWT must be specified to flag.'
     );
   }
 
   const res = await axios({
-      method: "post",
+      method: 'post',
       url: `${API_BASE_URL}/commentFlag/create/${commentId}`,
       headers: {
-        "x-auth-token": token,
-        "Access-Control-Allow-Origin": "*",
+        'x-auth-token': token,
+        'Access-Control-Allow-Origin': '*',
       },
       data: {flagReason: flagReason},
       withCredentials: true,
@@ -120,15 +120,15 @@ export const updateFalseFlagComment = async (
 ) => {
   if(!commentId || !token){
     throw new Error(
-      "A commentId and valid JWT must be specified"
+      'A commentId and valid JWT must be specified'
     );
   }
   const res = await axios({
-    method: "put",
+    method: 'put',
     url: `${API_BASE_URL}/commentFlag/falseFlagMany/${commentId}`,
     headers: {
-      "x-auth-token": token,
-      "Access-Control-Allow-Origin": "*",
+      'x-auth-token': token,
+      'Access-Control-Allow-Origin': '*',
     },
     data: {isFalse: isFalse},
     withCredentials: true,
@@ -154,15 +154,15 @@ export const updateFalseFlagComment = async (
     ) => {
       if (!commentId || !token) {
         throw new Error(
-          "An commentId and valid JWT must be specified to compare commentFlag count with threshold."
+          'An commentId and valid JWT must be specified to compare commentFlag count with threshold.'
         );
       }
       const flagCount = await axios({
-        method: "get",
+        method: 'get',
         url: `${API_BASE_URL}/commentFlag/getFlags/${commentId}`,
         headers: {
-          "x-auth-token": token,
-          "Access-Control-Allow-Origin": "*",
+          'x-auth-token': token,
+          'Access-Control-Allow-Origin': '*',
         },
         withCredentials: true,
       })
@@ -173,11 +173,11 @@ export const updateFalseFlagComment = async (
   // Check if user has a flag ban
   export const checkFlagBan = async (token: string | null, user: string) => {
     const res = await axios({
-      method: "get",
+      method: 'get',
       url: `${API_BASE_URL}/flag/checkFlagBan/${user}`,
       headers: {
-        "x-auth-token": token,
-        "Access-Control-Allow-Origin": "*",
+        'x-auth-token': token,
+        'Access-Control-Allow-Origin': '*',
       },
       withCredentials: true,
     })

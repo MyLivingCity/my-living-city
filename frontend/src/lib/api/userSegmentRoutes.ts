@@ -1,8 +1,8 @@
-import axios from "axios";
-import { API_BASE_URL } from "../constants";
-import { ISegment, ISegmentData, ISubSegment } from "../types/data/segment.type";
-import { IRegisterInput } from "../types/input/register.input";
-import { getAxiosJwtRequestOption } from "./axiosRequestOptions";
+import axios from 'axios';
+import { API_BASE_URL } from '../constants';
+import { ISegment, ISegmentData, ISubSegment } from '../types/data/segment.type';
+import { IRegisterInput } from '../types/input/register.input';
+import { getAxiosJwtRequestOption } from './axiosRequestOptions';
 export interface ISegData {
     segment: ISegment | null;
     subSegment: ISubSegment | null;
@@ -18,10 +18,10 @@ export const postUserSegmentInfo = async (registerData: IRegisterInput, token:st
     } = registerData;
     // Verify Payload
     if (!homeSegmentId) {
-        throw new Error("You must have at least home segment to sign up!")
+        throw new Error('You must have at least home segment to sign up!')
     }
     const res = await axios({
-        method: "post",
+        method: 'post',
         url: `${API_BASE_URL}/userSegment/create`,
         data: { 
             homeSegmentId,
@@ -31,7 +31,7 @@ export const postUserSegmentInfo = async (registerData: IRegisterInput, token:st
             workSubSegmentId,
             schoolSubSegmentId
         },
-        headers: {"Access-Control-Allow-Origin": "*", "x-auth-token": token},
+        headers: {'Access-Control-Allow-Origin': '*', 'x-auth-token': token},
         withCredentials: true
     })
   

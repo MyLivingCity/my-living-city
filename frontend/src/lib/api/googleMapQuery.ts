@@ -1,5 +1,5 @@
-import axios from "axios";
-import { API_BASE_URL } from "../constants";
+import axios from 'axios';
+import { API_BASE_URL } from '../constants';
 
 //const GoogleLocationSearchURLPrefix='https://maps.googleapis.com/maps/api/place/textsearch/json?query=';
 //const GoogleLocationDetialSearchURLPrefix = 'https://maps.googleapis.com/maps/api/place/details/json?placeid=';
@@ -13,7 +13,7 @@ export const searchForLocation = async (coords: any) =>{
     // let cities: string[] = [];
     //if lat or lon is not valid
     if(!coords.lat||!coords.lon){
-        throw new Error("lat or lon variable is missing");
+        throw new Error('lat or lon variable is missing');
     }
     //const parsedPayload = {'lat':lat,'lon':lon};
     //Google place search api call
@@ -21,7 +21,7 @@ export const searchForLocation = async (coords: any) =>{
         method: 'post',
         url: `${API_BASE_URL}/location/searchLocation`,
         data: coords,
-        headers: {"Access-Control-Allow-Origin": "*"},
+        headers: {'Access-Control-Allow-Origin': '*'},
         withCredentials:false
     });
     if(!searchRes){
@@ -36,7 +36,7 @@ export const searchForLocation = async (coords: any) =>{
         const detailRes = await axios({
             method: 'get',
             url: `${API_BASE_URL}/location/locationDetails/${placeId}`,
-            headers: {"Access-Control-Allow-Origin": "*"},
+            headers: {'Access-Control-Allow-Origin': '*'},
             withCredentials: false
         });
        

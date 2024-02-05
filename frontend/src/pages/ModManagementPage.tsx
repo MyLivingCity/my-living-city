@@ -20,7 +20,7 @@ import { Button } from 'react-bootstrap';
 import { updateThreshhold, updateFalseFlagThreshold, updateBadPostingThreshhold } from 'src/lib/api/threshholdRoutes';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
-import { ButtonGroup } from "react-bootstrap";
+import { ButtonGroup } from 'react-bootstrap';
 import { useAllBanDetails, useRemoveAllExpiredBans } from 'src/hooks/banHooks';
 import { BannedUsersManagementContent } from 'src/components/content/BannedUsersManagementContent';
 import { FalseFlagManagementContent } from 'src/components/content/FalseFlagManagementContent';
@@ -52,7 +52,7 @@ const ModManagementPage: React.FC<ModManagementProps> = ({ }) => {
   const {data: falseFlagData, isLoading: falseFlagLoading} = useAllFalseFlaggingUsers();
   const {data: badPostingData, isLoading: badPostingLoading} = useAllBadPostingUsers();
   const { isLoading: banRemovalLoading } = useRemoveAllExpiredBans(token);
-  const [pageState, setPageState] = useState<String>("quarantine");
+  const [pageState, setPageState] = useState<String>('quarantine');
   const [filteredDay, setfilteredDay] = useState('');
   const [filteredDayProposal, setfilteredDayProposal] = useState('');
   const [filteredDayComment, setfilteredDayComment] = useState('');
@@ -275,7 +275,7 @@ const ModManagementPage: React.FC<ModManagementProps> = ({ }) => {
       await updateFalseFlagThreshold(newFalseFlagThreshhold, token!)
       await checkFalseFlaggingBehavior()
     } catch (err) {
-      console.log("Error: ", err);
+      console.log('Error: ', err);
     } finally {
       window.location.reload();
     }
@@ -287,35 +287,35 @@ const ModManagementPage: React.FC<ModManagementProps> = ({ }) => {
       await updateBadPostingThreshhold(newBadPostingThreshhold, token!)
       await checkThreshhold()
     } catch (err) {
-      console.log("Error: ", err);
+      console.log('Error: ', err);
     } finally {
       window.location.reload();
     }
 
   }
 
-  if (pageState === "quarantine") {
+  if (pageState === 'quarantine') {
     return (
       <div>
         <div className='mt-3' style={{ width: 200, float: 'left', height: 240, marginLeft: '12%' }}>
           <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40 }} onClick={() => { window.scrollTo({ top: 0, left: 0, behavior: 'smooth' }); }}>Dashboard</Button>
           <br></br>
-          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("quarantine")}>Quarantine List</Button>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState('quarantine')}>Quarantine List</Button>
           <br></br>
-          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("user")}>User View</Button>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState('user')}>User View</Button>
           <br></br>
-          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("banned_users")}>Banned Users View</Button>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState('banned_users')}>Banned Users View</Button>
           <br></br>
-          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("idea")}>Idea View</Button>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState('idea')}>Idea View</Button>
           <br></br>
-          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("proposal")}>Proposal View</Button>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState('proposal')}>Proposal View</Button>
           <br></br>
-          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black' }} onClick={() => loadState("comment")}>Comment View</Button>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black' }} onClick={() => loadState('comment')}>Comment View</Button>
         </div>
         <div style={{ width: '80%', marginLeft: '22%' }}>
           <div style={{ float: 'right', marginRight: '10.7%' }}>
             <p style={{ textAlign: 'right', fontSize: 18, fontWeight: 'bold' }} className='ml-10 mr-2 display-6 mb-2'>User False Flagging Behavior Threshold: {falseFlagThreshhold.toString()}</p>
-            <input type="number" onChange={(val) => changeFalseFlagThresholdData(val)} style={{ textAlign: 'left', right: "0" }} className='ml-10 mr-2 display-6' />
+            <input type="number" onChange={(val) => changeFalseFlagThresholdData(val)} style={{ textAlign: 'left', right: '0' }} className='ml-10 mr-2 display-6' />
             <Button onClick={changeFalseFlagThreshold}>Update</Button>
           </div>
           <br></br>
@@ -323,22 +323,22 @@ const ModManagementPage: React.FC<ModManagementProps> = ({ }) => {
           <br></br>
           <div style={{ float: 'right', marginRight: '12.3%' }}>
           <p style={{ textAlign: 'right', fontSize: 18, fontWeight: 'bold' }} className='ml-10 mr-2 display-6 mb-2'>User Bad Posting Behavior Threshold: {badPostingThreshhold.toString()}</p>
-            <input type="number" onChange={(val) => changeBadPostingThreshholdData(val)} style={{ textAlign: 'left', right: "0" }} className='ml-10 mr-2 display-6' />
+            <input type="number" onChange={(val) => changeBadPostingThreshholdData(val)} style={{ textAlign: 'left', right: '0' }} className='ml-10 mr-2 display-6' />
             <Button onClick={changeBadPostingThreshhold}>Update</Button>
           </div>
           <BadPostingManagementContent users={userData} token={token} user={user} flags={flagData} commentFlags={commentFlagData} ideas={ideaData} proposals={proposalData} comments={commentData} bans={banData} badPostingUsers={badPostingData}/>
           <br></br>
           <div style={{ float: 'right', marginRight: '17.7%' }}>
           <p style={{ textAlign: 'right', fontSize: 18, fontWeight: 'bold' }} className='ml-10 mr-2 display-6 mb-2'>Bad Posting Threshold: {threshhold.toString()}</p>
-            <input type="number" onChange={(val) => changeThresholdData(val)} style={{ textAlign: 'left', right: "0" }} className='ml-10 mr-2 display-6' />
+            <input type="number" onChange={(val) => changeThresholdData(val)} style={{ textAlign: 'left', right: '0' }} className='ml-10 mr-2 display-6' />
             <Button onClick={changeThreshold}>Update</Button>
           </div>
           <br></br>
           <div className="d-flex" >
             {(filteredDay === '' || filteredDay === 'all') ? (<IdeaManagementContent users={userData!} token={token} user={user} ideas={quarantineIdea!} flags={flagData} />) : <IdeaManagementContent users={userData!} token={token} user={user} ideas={agedQuarantinedIdeas!} flags={flagData} />}
             <div style={{ float: 'left', marginRight: '13.7%' }}>
-              <ButtonGroup className="mr-2" style={{marginLeft: "-107%", alignContent: "left"}} >
-                <DropdownButton id="dropdown-basic-button" title="Sort" style={{marginTop: "20%"}}>
+              <ButtonGroup className="mr-2" style={{marginLeft: '-107%', alignContent: 'left'}} >
+                <DropdownButton id="dropdown-basic-button" title="Sort" style={{marginTop: '20%'}}>
                   <Dropdown.Item eventKey="all" onSelect={(eventKey) => handleSelect(eventKey!)}>See all</Dropdown.Item>
                   <Dropdown.Item eventKey="7" onSelect={(eventKey) => handleSelect(eventKey!)}>Quarantined over 7 days</Dropdown.Item>
                   <Dropdown.Item eventKey="14" onSelect={(eventKey) => handleSelect(eventKey!)}>Quarantined over 14 days</Dropdown.Item>
@@ -351,8 +351,8 @@ const ModManagementPage: React.FC<ModManagementProps> = ({ }) => {
           <div className="d-flex">
             {(filteredDayProposal === '' || filteredDayProposal === 'all') ? (<ProposalManagementContent users={userData!} token={token} user={user} proposals={quarantineProposal!} ideas={quarantineProposal!} flags={flagData} />) : <ProposalManagementContent users={userData!} token={token} user={user} proposals={agedQuarantinedProposals!} ideas={agedQuarantinedProposals!} flags={flagData} />}
             <div style={{ float: 'right', marginRight: '13.7%' }}>
-              <ButtonGroup className="mr-2" style={{marginLeft: "-107%", alignContent: "left"}} >
-                <DropdownButton id="dropdown-basic-button" title="Sort" style={{marginTop: "20%"}} >
+              <ButtonGroup className="mr-2" style={{marginLeft: '-107%', alignContent: 'left'}} >
+                <DropdownButton id="dropdown-basic-button" title="Sort" style={{marginTop: '20%'}} >
                   <Dropdown.Item eventKey="all" onSelect={(eventKey) => handleSelectProposal(eventKey!)}>See all</Dropdown.Item>
                   <Dropdown.Item eventKey="7" onSelect={(eventKey) => handleSelectProposal(eventKey!)}>Quarantined over 7 days</Dropdown.Item>
                   <Dropdown.Item eventKey="14" onSelect={(eventKey) => handleSelectProposal(eventKey!)}>Quarantined over 14 days</Dropdown.Item>
@@ -365,8 +365,8 @@ const ModManagementPage: React.FC<ModManagementProps> = ({ }) => {
           <div className="d-flex">
             {(filteredDayComment === '' || filteredDayComment === 'all') ? (<CommentManagementContent users={userData!} token={token} user={user} comments={quarantineComment} ideas={ideaData!} commentFlags={commentFlagData} />) : <CommentManagementContent users={userData!} token={token} user={user} comments={agedQuarantinedComments} ideas={ideaData!} commentFlags={commentFlagData} />}
             <div style={{ float: 'right', marginRight: '13.7%' }}>
-              <ButtonGroup className="mr-2" style={{marginLeft: "-107%", alignContent: "left"}}>
-                <DropdownButton id="dropdown-basic-button" title="Sort" style={{marginTop: "20%"}}  >
+              <ButtonGroup className="mr-2" style={{marginLeft: '-107%', alignContent: 'left'}}>
+                <DropdownButton id="dropdown-basic-button" title="Sort" style={{marginTop: '20%'}}  >
                   <Dropdown.Item eventKey="all" onSelect={(eventKey) => handleSelectComment(eventKey!)}>See all</Dropdown.Item>
                   <Dropdown.Item eventKey="7" onSelect={(eventKey) => handleSelectComment(eventKey!)}>Quarantined over 7 days</Dropdown.Item>
                   <Dropdown.Item eventKey="14" onSelect={(eventKey) => handleSelectComment(eventKey!)}>Quarantined over 14 days</Dropdown.Item>
@@ -379,23 +379,23 @@ const ModManagementPage: React.FC<ModManagementProps> = ({ }) => {
       </div>
     );
   }
-  if (pageState === "user") {
+  if (pageState === 'user') {
     return (
       <div>
         <div style={{ width: 200, float: 'left', height: 240, marginLeft: '12%' }}>
           <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40 }} onClick={() => { window.scrollTo({ top: 0, left: 0, behavior: 'smooth' }); }}>Dashboard</Button>
           <br></br>
-          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("quarantine")}>Quarantine List</Button>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState('quarantine')}>Quarantine List</Button>
           <br></br>
-          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("user")}>User View</Button>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState('user')}>User View</Button>
           <br></br>
-          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("banned_users")}>Banned Users View</Button>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState('banned_users')}>Banned Users View</Button>
           <br></br>
-          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("idea")}>Idea View</Button>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState('idea')}>Idea View</Button>
           <br></br>
-          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("proposal")}>Proposal View</Button>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState('proposal')}>Proposal View</Button>
           <br></br>
-          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black' }} onClick={() => loadState("comment")}>Comment View</Button>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black' }} onClick={() => loadState('comment')}>Comment View</Button>
         </div>
         <div style={{ width: '80%', marginLeft: '22%' }}>
           <UserManagementContent users={userData!} token={token} user={user} flags={flagData} commentFlags={commentFlagData} ideas={ideaData} proposals={proposalData} comments={commentData} bans={banData} />
@@ -403,23 +403,23 @@ const ModManagementPage: React.FC<ModManagementProps> = ({ }) => {
       </div>
     );
   }
-  if (pageState === "idea") {
+  if (pageState === 'idea') {
     return (
       <div>
         <div style={{ width: 200, float: 'left', height: 240, marginLeft: '12%' }}>
           <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40 }} onClick={() => { window.scrollTo({ top: 0, left: 0, behavior: 'smooth' }); }}>Dashboard</Button>
           <br></br>
-          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("quarantine")}>Quarantine List</Button>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState('quarantine')}>Quarantine List</Button>
           <br></br>
-          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("user")}>User View</Button>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState('user')}>User View</Button>
           <br></br>
-          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("banned_users")}>Banned Users View</Button>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState('banned_users')}>Banned Users View</Button>
           <br></br>
-          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("idea")}>Idea View</Button>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState('idea')}>Idea View</Button>
           <br></br>
-          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("proposal")}>Proposal View</Button>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState('proposal')}>Proposal View</Button>
           <br></br>
-          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black' }} onClick={() => loadState("comment")}>Comment View</Button>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black' }} onClick={() => loadState('comment')}>Comment View</Button>
         </div>
         <div style={{ width: '80%', marginLeft: '22%' }}>
           <IdeaManagementContent users={userData!} token={token} user={user} ideas={ideasAndProposals!} flags={flagData} />
@@ -427,23 +427,23 @@ const ModManagementPage: React.FC<ModManagementProps> = ({ }) => {
       </div>
     );
   }
-  if (pageState === "proposal") {
+  if (pageState === 'proposal') {
     return (
       <div>
         <div style={{ width: 200, float: 'left', height: 240, marginLeft: '12%' }}>
           <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40 }} onClick={() => { window.scrollTo({ top: 0, left: 0, behavior: 'smooth' }); }}>Dashboard</Button>
           <br></br>
-          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("quarantine")}>Quarantine List</Button>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState('quarantine')}>Quarantine List</Button>
           <br></br>
-          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("user")}>User View</Button>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState('user')}>User View</Button>
           <br></br>
-          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("banned_users")}>Banned Users View</Button>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState('banned_users')}>Banned Users View</Button>
           <br></br>
-          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("idea")}>Idea View</Button>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState('idea')}>Idea View</Button>
           <br></br>
-          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("proposal")}>Proposal View</Button>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState('proposal')}>Proposal View</Button>
           <br></br>
-          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black' }} onClick={() => loadState("comment")}>Comment View</Button>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black' }} onClick={() => loadState('comment')}>Comment View</Button>
         </div>
         <div style={{ width: '80%', marginLeft: '22%' }}>
           <ProposalManagementContent users={userData!} token={token} user={user} proposals={allProposals!} ideas={propIdeaData!} flags={flagData} />
@@ -451,23 +451,23 @@ const ModManagementPage: React.FC<ModManagementProps> = ({ }) => {
       </div>
     );
   }
-  if (pageState === "comment") {
+  if (pageState === 'comment') {
     return (
       <div>
         <div style={{ width: 200, float: 'left', height: 240, marginLeft: '12%' }}>
           <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40 }} onClick={() => { window.scrollTo({ top: 0, left: 0, behavior: 'smooth' }); }}>Dashboard</Button>
           <br></br>
-          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("quarantine")}>Quarantine List</Button>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState('quarantine')}>Quarantine List</Button>
           <br></br>
-          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("user")}>User View</Button>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState('user')}>User View</Button>
           <br></br>
-          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("banned_users")}>Banned Users View</Button>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState('banned_users')}>Banned Users View</Button>
           <br></br>
-          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("idea")}>Idea View</Button>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState('idea')}>Idea View</Button>
           <br></br>
-          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("proposal")}>Proposal View</Button>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState('proposal')}>Proposal View</Button>
           <br></br>
-          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black' }} onClick={() => loadState("comment")}>Comment View</Button>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black' }} onClick={() => loadState('comment')}>Comment View</Button>
         </div>
         <div style={{ width: '80%', marginLeft: '22%' }}>
           <CommentManagementContent users={userData!} token={token} user={user} comments={commentData} ideas={ideaData!} commentFlags={commentFlagData} />
@@ -476,23 +476,23 @@ const ModManagementPage: React.FC<ModManagementProps> = ({ }) => {
     );
   }
 
-  if (pageState === "banned_users") {
+  if (pageState === 'banned_users') {
     return (
       <div>
         <div style={{ width: 200, float: 'left', height: 240, marginLeft: '12%' }}>
           <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40 }} onClick={() => { window.scrollTo({ top: 0, left: 0, behavior: 'smooth' }); }}>Dashboard</Button>
           <br></br>
-          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("quarantine")}>Quarantine List</Button>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState('quarantine')}>Quarantine List</Button>
           <br></br>
-          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("user")}>User View</Button>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState('user')}>User View</Button>
           <br></br>
-          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("banned_users")}>Banned Users View</Button>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState('banned_users')}>Banned Users View</Button>
           <br></br>
-          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("idea")}>Idea View</Button>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState('idea')}>Idea View</Button>
           <br></br>
-          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("proposal")}>Proposal View</Button>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState('proposal')}>Proposal View</Button>
           <br></br>
-          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black' }} onClick={() => loadState("comment")}>Comment View</Button>
+          <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black' }} onClick={() => loadState('comment')}>Comment View</Button>
         </div>
         <div style={{ width: '80%', marginLeft: '22%' }}>
           <BannedUsersManagementContent users={bannedUsersData!} />
@@ -507,17 +507,17 @@ const ModManagementPage: React.FC<ModManagementProps> = ({ }) => {
     <div style={{width: 200, float:'left', height:240, marginLeft:'12%'}}>
       <Button style={{border: 'none', width: 200, textAlign: 'left', height: 40}}  onClick={() => {window.scrollTo({top: 0, left: 0, behavior: 'smooth'});}}>Dashboard</Button>
       <br></br>
-      <Button style={{border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black'}} onClick={() => loadState("quarantine")}>Quarantine List</Button>
+      <Button style={{border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black'}} onClick={() => loadState('quarantine')}>Quarantine List</Button>
       <br></br>
-      <Button style={{border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black'}} onClick={() => loadState("user")}>User View</Button>
+      <Button style={{border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black'}} onClick={() => loadState('user')}>User View</Button>
       <br></br>
-      <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState("banned_users")}>Banned Users View</Button>
+      <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState('banned_users')}>Banned Users View</Button>
       <br></br>
-      <Button style={{border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black'}} onClick={() => loadState("idea")}>Idea View</Button>
+      <Button style={{border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black'}} onClick={() => loadState('idea')}>Idea View</Button>
       <br></br>
-      <Button style={{border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black'}} onClick={() => loadState("proposal")}>Proposal View</Button>
+      <Button style={{border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black'}} onClick={() => loadState('proposal')}>Proposal View</Button>
       <br></br>
-      <Button style={{border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black'}} onClick={() => loadState("comment")}>Comment View</Button>
+      <Button style={{border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black'}} onClick={() => loadState('comment')}>Comment View</Button>
     </div>
     <div style={{width: '80%', marginLeft:'22%'}}>
       <UserManagementContent users={userData!} token={token} user={user} flags={flagData} commentFlags={commentFlagData} ideas={ideaData} proposals={proposalData} comments={commentData} bans={banData}/>

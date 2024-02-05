@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   Card,
   Table,
@@ -7,20 +7,20 @@ import {
   Button,
   Form,
   NavDropdown,
-} from "react-bootstrap";
-import { deletePostBan } from "src/lib/api/banRoutes";
-import { updateFalseFlagIdea } from "src/lib/api/flagRoutes";
-import { updateIdeaStatus } from "src/lib/api/ideaRoutes";
-import { updateUser } from "src/lib/api/userRoutes";
-import { incrementBadPostCount } from "src/lib/api/badPostingBehaviorRoutes";
-import { USER_TYPES } from "src/lib/constants";
-import { IFlag } from "src/lib/types/data/flag.type";
-import { IIdeaWithAggregations } from "src/lib/types/data/idea.type";
-import { IProposalWithAggregations } from "src/lib/types/data/proposal.type";
-import { IUser } from "src/lib/types/data/user.type";
-import { PostBanModal } from "../modal/PostBanModal";
-import { PostUnbanModal } from "../modal/PostUnbanModal";
-import { UserSegmentInfoCard } from "../partials/UserSegmentInfoCard";
+} from 'react-bootstrap';
+import { deletePostBan } from 'src/lib/api/banRoutes';
+import { updateFalseFlagIdea } from 'src/lib/api/flagRoutes';
+import { updateIdeaStatus } from 'src/lib/api/ideaRoutes';
+import { updateUser } from 'src/lib/api/userRoutes';
+import { incrementBadPostCount } from 'src/lib/api/badPostingBehaviorRoutes';
+import { USER_TYPES } from 'src/lib/constants';
+import { IFlag } from 'src/lib/types/data/flag.type';
+import { IIdeaWithAggregations } from 'src/lib/types/data/idea.type';
+import { IProposalWithAggregations } from 'src/lib/types/data/proposal.type';
+import { IUser } from 'src/lib/types/data/user.type';
+import { PostBanModal } from '../modal/PostBanModal';
+import { PostUnbanModal } from '../modal/PostUnbanModal';
+import { UserSegmentInfoCard } from '../partials/UserSegmentInfoCard';
 
 // THIS IS STILL TO DO // THIS IS STILL TO DO // THIS IS STILL TO DO // THIS IS STILL TO DO // THIS IS STILL TO DO // THIS IS STILL TO DO // THIS IS STILL TO DO
 // THIS IS STILL TO DO // THIS IS STILL TO DO // THIS IS STILL TO DO // THIS IS STILL TO DO // THIS IS STILL TO DO // THIS IS STILL TO DO
@@ -37,10 +37,10 @@ interface ProposalManagementContentProps {
 export const ProposalManagementContent: React.FC<
   ProposalManagementContentProps
 > = ({ users, token, user, proposals, ideas, flags }) => {
-  const [hideControls, setHideControls] = useState("");
+  const [hideControls, setHideControls] = useState('');
   const [showUserSegmentCard, setShowUserSegmentCard] = useState(false);
-  const [email, setEmail] = useState("");
-  const [id, setId] = useState("");
+  const [email, setEmail] = useState('');
+  const [id, setId] = useState('');
   const [banModalProposalData, setBanModalProposalData] =
     useState<IIdeaWithAggregations>();
   const [showProposalBanModal, setShowProposalBanModal] =
@@ -55,14 +55,14 @@ export const ProposalManagementContent: React.FC<
     setEmail(email);
     setId(id);
   };
-  const ProposalURL = "/proposals/";
+  const ProposalURL = '/proposals/';
   const userTypes = Object.keys(USER_TYPES);
   let userEmails: String[] = [];
   let proposalIdeas: IIdeaWithAggregations[] = [];
   let proposalFlags: number[] = [];
   if (ideas) {
     for (let i = 0; i < ideas.length; i++) {
-      if (ideas[i].state === "PROPOSAL") {
+      if (ideas[i].state === 'PROPOSAL') {
         proposalIdeas.push(ideas[i]);
       }
     }
@@ -88,7 +88,7 @@ export const ProposalManagementContent: React.FC<
     }
   }
   return (
-    <Container style={{ maxWidth: "80%", marginLeft: 50 }}>
+    <Container style={{ maxWidth: '80%', marginLeft: 50 }}>
       {showProposalBanModal ? (
         <PostBanModal
           show={showProposalBanModal}
@@ -139,8 +139,8 @@ export const ProposalManagementContent: React.FC<
                     </td>
                     <td>{proposalFlags[index].toString()}</td>
                     <td>{proposalIdeas[index].segmentName}</td>
-                    <td>{req.active ? "Yes" : "No"}</td>
-                    <td>{req.reviewed ? "Yes" : "No"}</td>
+                    <td>{req.active ? 'Yes' : 'No'}</td>
+                    <td>{req.reviewed ? 'Yes' : 'No'}</td>
                     <td>{new Date(req.quarantined_at).toLocaleDateString()}</td>
                   </>
                 ) : (
@@ -257,14 +257,14 @@ export const ProposalManagementContent: React.FC<
                         size="sm"
                         variant="outline-danger"
                         className="mr-2 mb-2"
-                        onClick={() => setHideControls("")}
+                        onClick={() => setHideControls('')}
                       >
                         Cancel
                       </Button>
                       <Button
                         size="sm"
                         onClick={() => {
-                          setHideControls("");
+                          setHideControls('');
                           if (req.active === true && req.reviewed === true) {
                             updateFalseFlagIdea(
                               parseInt(req.id.toString()),

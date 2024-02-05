@@ -1,16 +1,16 @@
-import React from "react";
-import { Container, Row, Button} from "react-bootstrap";
-import NewAndTrendingSection from "../partials/LandingContent/NewAndTrendingSection";
-import MyPosts from "../partials/DashboardContent/MyPosts";
-import Notifications from "../partials/DashboardContent/Notifications";
-import SystemUpdates from "../partials/DashboardContent/SystemUpdates";
-import { useIdeasWithBreakdown, useIdeasHomepage, useUserFollowedIdeas, useUserIdeas, useUserEndorsedIdeas } from "../../hooks/ideaHooks";
-import { IUser } from "src/lib/types/data/user.type";
-import { FindBanDetails, FindUndismissedPostBans, FindUndismissedCommentBans } from "src/hooks/banHooks";
-import { useAllComments } from "src/hooks/commentHooks";
-import { USER_TYPES } from "src/lib/constants";
-import { useQuarantinePostNotifications } from "src/hooks/quarantinePostNotificationHooks";
-import { useProposalsWithBreakdown } from "src/hooks/proposalHooks";
+import React from 'react';
+import { Container, Row, Button} from 'react-bootstrap';
+import NewAndTrendingSection from '../partials/LandingContent/NewAndTrendingSection';
+import MyPosts from '../partials/DashboardContent/MyPosts';
+import Notifications from '../partials/DashboardContent/Notifications';
+import SystemUpdates from '../partials/DashboardContent/SystemUpdates';
+import { useIdeasWithBreakdown, useIdeasHomepage, useUserFollowedIdeas, useUserIdeas, useUserEndorsedIdeas } from '../../hooks/ideaHooks';
+import { IUser } from 'src/lib/types/data/user.type';
+import { FindBanDetails, FindUndismissedPostBans, FindUndismissedCommentBans } from 'src/hooks/banHooks';
+import { useAllComments } from 'src/hooks/commentHooks';
+import { USER_TYPES } from 'src/lib/constants';
+import { useQuarantinePostNotifications } from 'src/hooks/quarantinePostNotificationHooks';
+import { useProposalsWithBreakdown } from 'src/hooks/proposalHooks';
 
 interface LandingPageContentProps {
   user: IUser
@@ -139,9 +139,9 @@ const DashboardPageContent: React.FC<LandingPageContentProps> = ({user, token}) 
           numPosts={6}
           isDashboard={true}
         />
-        <div className="" style={{ margin: "0rem 1rem 3rem 1rem" }}>
+        <div className="" style={{ margin: '0rem 1rem 3rem 1rem' }}>
           <Button
-            onClick={() => (window.location.href = "/dashboard/my-posts")}
+            onClick={() => (window.location.href = '/dashboard/my-posts')}
             size="lg"
             disabled={pLoading || uLoading}
           >

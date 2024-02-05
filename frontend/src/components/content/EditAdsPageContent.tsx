@@ -50,7 +50,7 @@ const EditAdsPageContent: React.FC<EditAdsPageContentProps> = ({adsData}) => {
         setError(null);
         setIsLoading(true);
         //timeout period
-        setTimeout(() => console.log("timeout"), 5000);
+        setTimeout(() => console.log('timeout'), 5000);
         //api component call
         const res = await updateAdvertisement(values, token, id);
         
@@ -145,7 +145,7 @@ const EditAdsPageContent: React.FC<EditAdsPageContentProps> = ({adsData}) => {
             </Form.Group>
             <Form.Group>
               <Form.Check type="checkbox" label="Publish your advertisement" name="published" onChange={handleChange} isInvalid={!!errors.published} feedback={errors.published}/>
-              <Form.Text className="text-muted">"{adsData?.published ? "Yes": "No"}"</Form.Text>
+              <Form.Text className="text-muted">"{adsData?.published ? 'Yes': 'No'}"</Form.Text>
               
             </Form.Group>
             <Button
@@ -154,7 +154,7 @@ const EditAdsPageContent: React.FC<EditAdsPageContentProps> = ({adsData}) => {
               type='submit'
               disabled={isLoading ? true : false}
             >
-              {isLoading ? "Saving..." : "Submit your Advertisement!"}
+              {isLoading ? 'Saving...' : 'Submit your Advertisement!'}
             </Button>
             <Modal show={successModal} onHide={handleClose}>
               <Modal.Header closeButton>

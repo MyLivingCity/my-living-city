@@ -1,8 +1,8 @@
-import { useQuery } from "react-query"
-import { ISegment, ISubSegment, ISegmentRequest, ISuperSegment, ISegmentAggregateInfo } from "../lib/types/data/segment.type"
-import { IFetchError } from "../lib/types/types"
-import { findSegmentRequests, getAllSegments, getSingleSegmentBySegmentId, getSingleSubSegmentBySubSegmentId, getAllSuperSegments, getSegmentAgggregateInfo, findSegmentByName} from "../lib/api/segmentRoutes"
-import {getAllSubSegmentsWithId} from "../lib/api/segmentRoutes"
+import { useQuery } from 'react-query'
+import { ISegment, ISubSegment, ISegmentRequest, ISuperSegment, ISegmentAggregateInfo } from '../lib/types/data/segment.type'
+import { IFetchError } from '../lib/types/types'
+import { findSegmentRequests, getAllSegments, getSingleSegmentBySegmentId, getSingleSubSegmentBySubSegmentId, getAllSuperSegments, getSegmentAgggregateInfo, findSegmentByName} from '../lib/api/segmentRoutes'
+import {getAllSubSegmentsWithId} from '../lib/api/segmentRoutes'
 
 export const useAllSegments= () => {
     return useQuery<ISegment[], IFetchError>('segments', getAllSegments,);
@@ -41,13 +41,13 @@ export const useSingleSubSegmentBySubSegmentId = (subSegmentId: number | undefin
 }
 
 export const useSegmentInfoAggregate = (segmentId: number) => {
-    return useQuery<ISegmentAggregateInfo, IFetchError>("segment-aggregate-info", () => 
+    return useQuery<ISegmentAggregateInfo, IFetchError>('segment-aggregate-info', () => 
     getSegmentAgggregateInfo(segmentId));
 }
 
 export const useSingleSegmentByName = (data: any, trigger: boolean) => {
     return useQuery<any, IFetchError>(
-        "segment-by-segment-name",
+        'segment-by-segment-name',
         () => findSegmentByName(data),
         {
             enabled: trigger

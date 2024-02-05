@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Button, Container, Form, Modal, Row } from 'react-bootstrap';
 import { IUser } from 'src/lib/types/data/user.type';
-import { useFormik } from "formik";
+import { useFormik } from 'formik';
 import { IBanUserInput } from 'src/lib/types/input/banUser.input';
 import { postCreateUserBan } from 'src/lib/api/banRoutes';
 import { updateUser } from 'src/lib/api/userRoutes';
@@ -57,8 +57,8 @@ export const UserManagementBanModal = ({
             userId: modalUser.id,
             banType: BAN_USER_TYPES.WARNING,
             banDuration: 0,
-            banReason: "",
-            banMessage: "",
+            banReason: '',
+            banMessage: '',
         },
         onSubmit: submitHandler
     });

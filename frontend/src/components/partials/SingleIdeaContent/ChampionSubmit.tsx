@@ -1,8 +1,8 @@
-import { useContext, useEffect, useState } from "react";
-import { Button, Alert } from "react-bootstrap"
-import { useParams } from "react-router";
-import { UserProfileContext } from "src/contexts/UserProfile.Context";
-import { useSubmitChampionRequestMutation } from "src/hooks/championHooks";
+import { useContext, useEffect, useState } from 'react';
+import { Button, Alert } from 'react-bootstrap'
+import { useParams } from 'react-router';
+import { UserProfileContext } from 'src/contexts/UserProfile.Context';
+import { useSubmitChampionRequestMutation } from 'src/hooks/championHooks';
 
 interface ChampionSubmitProps {
   
@@ -42,7 +42,7 @@ const ChampionSubmit = (props: ChampionSubmitProps) => {
           variant='danger'
         >
           {/* {'An error occured while trying to champion an idea'} */}
-          {error?.message ?? "An error occured while trying to champion an idea."}
+          {error?.message ?? 'An error occured while trying to champion an idea.'}
         </Alert>
       )}
       <Button 

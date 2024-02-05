@@ -1,6 +1,6 @@
-import axios from "axios";
-import { API_BASE_URL } from "../constants";
-import { getAxiosJwtRequestOption } from "./axiosRequestOptions";
+import axios from 'axios';
+import { API_BASE_URL } from '../constants';
+import { getAxiosJwtRequestOption } from './axiosRequestOptions';
 
 // get all users from false flagging behavior table
 export const getAllFalseFlaggingUsers = async () => {
@@ -9,7 +9,7 @@ export const getAllFalseFlaggingUsers = async () => {
 }
 
 export const checkFalseFlaggingBehavior = async () => {
-    console.log("checkFalseFlaggingBehavior")
+    console.log('checkFalseFlaggingBehavior')
     const res = await axios.get(`${API_BASE_URL}/falseFlaggingBehavior/checkFalseFlaggingBehavior`);
     return res.data;
 }

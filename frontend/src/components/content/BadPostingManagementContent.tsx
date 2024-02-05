@@ -54,15 +54,15 @@ export const BadPostingManagementContent: React.FC<BadPostingManagementContentPr
     // }
 
     
-    console.log("users: ", users)
-    console.log("flags: ", flags)
-    console.log("Bad Posting Users:  ", badPostingUsers)
+    console.log('users: ', users)
+    console.log('flags: ', flags)
+    console.log('Bad Posting Users:  ', badPostingUsers)
 
     let userBadPostingData: any = [];
     if(users && badPostingUsers){
         userBadPostingData = users.map((user) => {
             const badPostingUser = badPostingUsers.find((badPostingUser) => badPostingUser.userId === user.id);
-            console.log("badPostingUser: ", badPostingUser)
+            console.log('badPostingUser: ', badPostingUser)
             if(badPostingUser){
                 return {
                     id: user.id,
@@ -83,7 +83,7 @@ export const BadPostingManagementContent: React.FC<BadPostingManagementContentPr
         // Remove null values from the array
         userBadPostingData = userBadPostingData.filter((user: any) => user !== null);
     }
-    console.log("badPostingData: ", userBadPostingData);
+    console.log('badPostingData: ', userBadPostingData);
 
 
     function formatBanHistory(banhistory: any){
@@ -173,14 +173,14 @@ export const BadPostingManagementContent: React.FC<BadPostingManagementContentPr
                             {req.id !== hideControls ? 
                             <>
                             <td>{req.email}</td>
-                            <td>{req.organization ? req.organization : "N/A"}</td>
+                            <td>{req.organization ? req.organization : 'N/A'}</td>
                             <td>{req.firstName}</td>
                             <td>{req.lastName}</td>
                             <td>{req.userType}</td>
                             <td>{req.badPostCount} </td> 
                             <td>{req.postFlagCount} </td>
-                            <td>{req.banned ? "Yes" : "No" }</td>
-                            <td>{req.bannedUntil ? req.bannedUntil : "N/A"}</td>
+                            <td>{req.banned ? 'Yes' : 'No' }</td>
+                            <td>{req.bannedUntil ? req.bannedUntil : 'N/A'}</td>
                             </> :
                             <>
                             <td><Form.Control type="text" defaultValue={req.email} onChange={(e)=>req.email = e.target.value}/></td>
@@ -195,7 +195,7 @@ export const BadPostingManagementContent: React.FC<BadPostingManagementContentPr
                             </td>
                             <td><Button onClick={()=> setShowUserFlagsModal(true)}>More Details</Button></td>
                             <td></td>
-                            <td>{req.banned ? "Yes" : "No" }</td>
+                            <td>{req.banned ? 'Yes' : 'No' }</td>
                             <td><Form.Check type="switch" checked={reviewed} onChange={(e)=>{
                                 setReviewed(e.target.checked)
                                 req.reviewed = e.target.checked;

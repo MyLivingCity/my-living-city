@@ -1,21 +1,21 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   Table,
   Dropdown,
   Container,
   Form,
   NavDropdown,
-} from "react-bootstrap";
-import { updateFalseFlagIdea } from "src/lib/api/flagRoutes";
-import { updateIdeaStatus } from "src/lib/api/ideaRoutes";
-import { incrementBadPostCount, resetBadPostCount } from "src/lib/api/badPostingBehaviorRoutes"
-import { USER_TYPES } from "src/lib/constants";
-import { IFlag } from "src/lib/types/data/flag.type";
-import { IIdeaWithAggregations } from "src/lib/types/data/idea.type";
-import { IUser } from "src/lib/types/data/user.type";
-import { UserSegmentInfoCard } from "../partials/UserSegmentInfoCard";
-import { PostBanModal } from "../modal/PostBanModal";
-import { PostUnbanModal } from "../modal/PostUnbanModal";
+} from 'react-bootstrap';
+import { updateFalseFlagIdea } from 'src/lib/api/flagRoutes';
+import { updateIdeaStatus } from 'src/lib/api/ideaRoutes';
+import { incrementBadPostCount, resetBadPostCount } from 'src/lib/api/badPostingBehaviorRoutes'
+import { USER_TYPES } from 'src/lib/constants';
+import { IFlag } from 'src/lib/types/data/flag.type';
+import { IIdeaWithAggregations } from 'src/lib/types/data/idea.type';
+import { IUser } from 'src/lib/types/data/user.type';
+import { UserSegmentInfoCard } from '../partials/UserSegmentInfoCard';
+import { PostBanModal } from '../modal/PostBanModal';
+import { PostUnbanModal } from '../modal/PostUnbanModal';
 
 // THIS IS STILL TO DO // THIS IS STILL TO DO // THIS IS STILL TO DO // THIS IS STILL TO DO // THIS IS STILL TO DO // THIS IS STILL TO DO // THIS IS STILL TO DO
 // THIS IS STILL TO DO // THIS IS STILL TO DO // THIS IS STILL TO DO // THIS IS STILL TO DO // THIS IS STILL TO DO // THIS IS STILL TO DO
@@ -34,10 +34,10 @@ export const IdeaManagementContent: React.FC<IdeaManagementContentProps> = ({
   ideas,
   flags,
 }) => {
-  const [hideControls, setHideControls] = useState("");
+  const [hideControls, setHideControls] = useState('');
   const [showUserSegmentCard, setShowUserSegmentCard] = useState(false);
-  const [email, setEmail] = useState("");
-  const [id, setId] = useState("");
+  const [email, setEmail] = useState('');
+  const [id, setId] = useState('');
   const [banModalIdeaData, setBanModalIdeaData] =
     useState<IIdeaWithAggregations>();
   const [showIdeaBanModal, setShowIdeaBanModal] = useState<boolean>(false);
@@ -49,13 +49,13 @@ export const IdeaManagementContent: React.FC<IdeaManagementContentProps> = ({
     setEmail(email);
     setId(id);
   };
-  const ideaURL = "/ideas/";
+  const ideaURL = '/ideas/';
   const userTypes = Object.keys(USER_TYPES);
   let userEmails: String[] = [];
   let ideaFlags: number[] = [];
   if (ideas) {
     for (let i = 0; i < ideas.length; i++) {
-      if (ideas[i].state === "PROPOSAL") {
+      if (ideas[i].state === 'PROPOSAL') {
         //ideas.splice(i, 1);
       }
     }
@@ -83,7 +83,7 @@ export const IdeaManagementContent: React.FC<IdeaManagementContentProps> = ({
   }
 
   return (
-    <Container style={{ maxWidth: "80%", marginLeft: 50 }}>
+    <Container style={{ maxWidth: '80%', marginLeft: 50 }}>
       {showIdeaBanModal ? (
         <PostBanModal
           show={showIdeaBanModal}
@@ -132,8 +132,8 @@ export const IdeaManagementContent: React.FC<IdeaManagementContentProps> = ({
                     </td>
                     <td>{ideaFlags[index].toString()}</td>
                     <td>{req.segmentName}</td>
-                    <td>{req.active ? "Yes" : "No"}</td>
-                    <td>{req.reviewed ? "Yes" : "No"}</td>
+                    <td>{req.active ? 'Yes' : 'No'}</td>
+                    <td>{req.reviewed ? 'Yes' : 'No'}</td>
                     <td>{new Date(req.quarantined_at).toLocaleDateString()}</td>
                   </>
                 ) : (

@@ -1,6 +1,6 @@
-import { Button } from "react-bootstrap";
-import axios from "axios";
-import { API_BASE_URL } from "src/lib/constants";
+import { Button } from 'react-bootstrap';
+import axios from 'axios';
+import { API_BASE_URL } from 'src/lib/constants';
 
 const StripeCheckoutButton: React.FC<any> = (params) => {
   const { status, user } = params;
@@ -20,7 +20,7 @@ const StripeCheckoutButton: React.FC<any> = (params) => {
 
   return (
     <>
-      {status === "active" ? (
+      {status === 'active' ? (
         <Button onClick={updateAccountCall}>Modify</Button>
       ) : (
         <Button onClick={activateAccountCall}>Activate</Button>

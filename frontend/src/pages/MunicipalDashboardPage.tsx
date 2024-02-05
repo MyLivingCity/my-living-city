@@ -1,11 +1,11 @@
-import { RouteComponentProps } from "react-router-dom";
-import MunicipalDashboardContent from "./../components/content/MunicipalDashboardContent";
-import LoadingSpinner from "../components/ui/LoadingSpinner";
-import { useSegmentInfoAggregate, useSingleSegmentBySegmentId } from "./../hooks/segmentHooks";
-import { useIdeasHomepage } from "src/hooks/ideaHooks";
-import { useContext } from "react";
-import { UserProfileContext } from "src/contexts/UserProfile.Context";
-import { useAllUserSegments } from "src/hooks/userSegmentHooks";
+import { RouteComponentProps } from 'react-router-dom';
+import MunicipalDashboardContent from './../components/content/MunicipalDashboardContent';
+import LoadingSpinner from '../components/ui/LoadingSpinner';
+import { useSegmentInfoAggregate, useSingleSegmentBySegmentId } from './../hooks/segmentHooks';
+import { useIdeasHomepage } from 'src/hooks/ideaHooks';
+import { useContext } from 'react';
+import { UserProfileContext } from 'src/contexts/UserProfile.Context';
+import { useAllUserSegments } from 'src/hooks/userSegmentHooks';
 
 interface MunicipalDashboardProps extends RouteComponentProps<{
     segId: string;
@@ -29,7 +29,7 @@ const MunicipalDashboardPage: React.FC<MunicipalDashboardProps> = (props) => {
       window.location.reload();
     }
 
-    if (segId === "0") {
+    if (segId === '0') {
         return (
             <div className="wrapper">
                 <LoadingSpinner />

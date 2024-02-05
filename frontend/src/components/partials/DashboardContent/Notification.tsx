@@ -1,16 +1,16 @@
-import { useContext, useEffect, useState } from "react";
-import { Button } from "react-bootstrap";
-import { UserProfileContext } from "../../../contexts/UserProfile.Context"
-import { updateIdeaNotificationStatus } from "src/lib/api/ideaRoutes";
-import { IIdea } from "src/lib/types/data/idea.type";
-import { IBanUser } from "src/lib/types/data/banUser.type";
-import { dismissBanPostNotification, updateUserBan, dismissBanCommentNotification } from "src/lib/api/banRoutes";
-import { IComment } from "src/lib/types/data/comment.type";
-import { updateCommentNotificationStatus } from "src/lib/api/commentRoutes";
-import { IBanPost } from "src/lib/types/data/banPost.type";
-import { IBanComment } from "src/lib/types/data/banComment.type";
-import { IQuarantineNotification } from "src/lib/types/data/quarantinePostNotification.type";
-import { dismissQuarantineNotification } from "src/lib/api/quarantinePostNotificationRoutes";
+import { useContext, useEffect, useState } from 'react';
+import { Button } from 'react-bootstrap';
+import { UserProfileContext } from '../../../contexts/UserProfile.Context'
+import { updateIdeaNotificationStatus } from 'src/lib/api/ideaRoutes';
+import { IIdea } from 'src/lib/types/data/idea.type';
+import { IBanUser } from 'src/lib/types/data/banUser.type';
+import { dismissBanPostNotification, updateUserBan, dismissBanCommentNotification } from 'src/lib/api/banRoutes';
+import { IComment } from 'src/lib/types/data/comment.type';
+import { updateCommentNotificationStatus } from 'src/lib/api/commentRoutes';
+import { IBanPost } from 'src/lib/types/data/banPost.type';
+import { IBanComment } from 'src/lib/types/data/banComment.type';
+import { IQuarantineNotification } from 'src/lib/types/data/quarantinePostNotification.type';
+import { dismissQuarantineNotification } from 'src/lib/api/quarantinePostNotificationRoutes';
 
 interface NotificationProps {
     userIdea?: IIdea | undefined;
@@ -23,23 +23,23 @@ interface NotificationProps {
 
 const Notification: React.FC<NotificationProps> = ({ userIdea, userBanInfo, userComment, userPostBan, userCommentBan, userQuarantineNotification }) => {
     const [isDismissed, setIsDismissed] = useState(false);
-    const [notificationType, setNotificationType] = useState("");
+    const [notificationType, setNotificationType] = useState('');
     const { user, token } = useContext(UserProfileContext);
     
     // Set the notification type
     const notiType = (userIdea: IIdea | undefined, userBanInfo: IBanUser | undefined, userComment: IComment | undefined, userPostBan: IBanPost | undefined, userCommentBan: IBanComment | undefined, userQuarantineNotification: IQuarantineNotification | undefined) => {
         if (userIdea) {
-            setNotificationType("userIdea");
+            setNotificationType('userIdea');
         } if (userBanInfo) {
-            setNotificationType("userBanInfo")
+            setNotificationType('userBanInfo')
         } if (userComment) {
-            setNotificationType("userComment")
+            setNotificationType('userComment')
         } if (userPostBan) {
-            setNotificationType("userPostBan")
+            setNotificationType('userPostBan')
         } if (userCommentBan) {
-            setNotificationType("userCommentBan")
+            setNotificationType('userCommentBan')
         } if (userQuarantineNotification) {
-            setNotificationType("userQuarantineNotification")
+            setNotificationType('userQuarantineNotification')
         }
     }
     // Render only once
@@ -49,12 +49,12 @@ const Notification: React.FC<NotificationProps> = ({ userIdea, userBanInfo, user
 
     const banType = () => {
         switch (userBanInfo?.banType) {
-            case "WARNING":
-                return "Warned";
-            case "POST_BAN":
-                return "Banned from posting";
-            case "SYS_BAN":
-                return "Banned from the system";
+            case 'WARNING':
+                return 'Warned';
+            case 'POST_BAN':
+                return 'Banned from posting';
+            case 'SYS_BAN':
+                return 'Banned from the system';
         }
     }
 
@@ -102,16 +102,16 @@ const Notification: React.FC<NotificationProps> = ({ userIdea, userBanInfo, user
     }
 
     switch (notificationType) {
-        case "userIdea":
+        case 'userIdea':
             return (
                 <tr >
                     {!isDismissed ? (
                         <td className="col-md">
                             <div className="d-flex align align-items-center justify-content-between">
                                 <span>
-                                    {"Your post named "} <b>{userIdea?.title}</b> {" has been quarantined pending moderator review."}
+                                    {'Your post named '} <b>{userIdea?.title}</b> {' has been quarantined pending moderator review.'}
                                 </span>
-                                <div className={"float-right"}>
+                                <div className={'float-right'}>
                                     <Button onClick={async () => await dismissIdeaNotification(userIdea!.id, token!, user!.id, true)}>Dismiss</Button>
                                 </div>
                             </div>
@@ -121,14 +121,14 @@ const Notification: React.FC<NotificationProps> = ({ userIdea, userBanInfo, user
                     }
                 </tr>
             )
-        case "userBanInfo":
+        case 'userBanInfo':
             return (
                 <tr>
                     {!isDismissed ? (
                         <td className="col-md">
                             <div className="d-flex align align-items-center justify-content-between">
                                 <span>
-                                    {"You have been "} <b>{banType()}</b> {" until "} <b>{(userBanInfo?.banUntil && new Date(userBanInfo!.banUntil).toLocaleString())}</b>.
+                                    {'You have been '} <b>{banType()}</b> {' until '} <b>{(userBanInfo?.banUntil && new Date(userBanInfo!.banUntil).toLocaleString())}</b>.
                                     <br/><b>Mod Message:</b> {userBanInfo?.banMessage}
                                     <br/><b>Ban Reason:</b> {userBanInfo?.banReason}
                                 </span>
@@ -144,14 +144,14 @@ const Notification: React.FC<NotificationProps> = ({ userIdea, userBanInfo, user
                     }
                 </tr>
             )
-        case "userComment":
+        case 'userComment':
             return (
                 <tr>
                     {!isDismissed ? (
                         <td className="col-md">
                             <div className="d-flex align align-items-center justify-content-between">
                                 <span>
-                                    {"Your comment "} <b>{userComment?.content}</b> {" has been quarantined pending moderator review."}
+                                    {'Your comment '} <b>{userComment?.content}</b> {' has been quarantined pending moderator review.'}
                                 </span>
                                 <div className="float-right">
                                     <Button onClick={async () => await dismissCommentNotification(token!, user!.id, userComment!.id,  true)}>Dismiss</Button>
@@ -166,14 +166,14 @@ const Notification: React.FC<NotificationProps> = ({ userIdea, userBanInfo, user
                 </tr>
             )
 
-        case "userPostBan":
+        case 'userPostBan':
             return (
                 <tr>
                     {!isDismissed ? (
                         <td className="col-md">
                             <div className="d-flex align align-items-center justify-content-between">
                                 <span>
-                                    {"Your post "}<b>{userPostBan?.post?.title}</b> {" has been reviewed and banned by a moderator"}
+                                    {'Your post '}<b>{userPostBan?.post?.title}</b> {' has been reviewed and banned by a moderator'}
                                     <br/><b>Ban Reason:</b> {userPostBan?.banReason}
                                     <br/><b>Mod Message:</b> {userPostBan?.banMessage}
                                 </span>
@@ -191,14 +191,14 @@ const Notification: React.FC<NotificationProps> = ({ userIdea, userBanInfo, user
                 </tr>
             )
         
-        case "userCommentBan":
+        case 'userCommentBan':
             return (
                 <tr>
                     {!isDismissed ? (
                         <td className="col-md">
                             <div className="d-flex align align-items-center justify-content-between">
                                 <span>
-                                    {"Your comment "}<b>{userCommentBan?.comment?.content}</b> {" has been reviewed and banned by a moderator"}
+                                    {'Your comment '}<b>{userCommentBan?.comment?.content}</b> {' has been reviewed and banned by a moderator'}
                                     <br/><b>Ban Reason:</b> {userCommentBan?.banReason}
                                     <br/><b>Mod Message:</b> {userCommentBan?.banMessage}
                                 </span>
@@ -215,15 +215,15 @@ const Notification: React.FC<NotificationProps> = ({ userIdea, userBanInfo, user
                     }
                 </tr>
             )
-        case "userQuarantineNotification":
+        case 'userQuarantineNotification':
             return (
                 <tr>
                     {!isDismissed ? (
                         <td className="col-md">
                             <div className="d-flex align align-items-center justify-content-between">
                                 <span>
-                                    {"Your post "}<b>{userQuarantineNotification?.ideaTitle}</b> {" has been reviewed and released from quarantine by a moderator"}
-                                    <br />{"Day unquarantined: "}<b>{(userQuarantineNotification?.createdAt)?.toString().replace('Z','').replace('T','').substring(0, 10)}</b>
+                                    {'Your post '}<b>{userQuarantineNotification?.ideaTitle}</b> {' has been reviewed and released from quarantine by a moderator'}
+                                    <br />{'Day unquarantined: '}<b>{(userQuarantineNotification?.createdAt)?.toString().replace('Z','').replace('T','').substring(0, 10)}</b>
                                 </span>
                                 <div className="float-right">
                                     <Button onClick={async () => await dismissPostQuarantineNotification()}>Dismiss</Button>

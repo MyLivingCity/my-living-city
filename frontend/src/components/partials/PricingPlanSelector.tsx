@@ -1,43 +1,43 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import { USER_TYPES } from 'src/lib/constants';
 
 const PricingPlanSelector: React.FC<any> = (params) => {
   const [selected, setSelected] = useState(USER_TYPES.RESIDENTIAL)
   const planContents = [
     {
-      header: "Standard",
+      header: 'Standard',
       price: 0,
       features: [
-        "Submit ideas",
-        "Rate ideas",
-        "Submit proposals",
-        "Access to the community",
+        'Submit ideas',
+        'Rate ideas',
+        'Submit proposals',
+        'Access to the community',
       ],
-      buttonLabel: "Sign up for free",
+      buttonLabel: 'Sign up for free',
       outline: selected !== USER_TYPES.RESIDENTIAL,
       type: USER_TYPES.RESIDENTIAL
     },
     {
-      header: "Community",
+      header: 'Community',
       price: 50,
       features: [
-        "Community organizations and nonprofits",
-        "Rate ideas",
-        "Submit proposals",
+        'Community organizations and nonprofits',
+        'Rate ideas',
+        'Submit proposals',
       ],
-      buttonLabel: "Get started",
+      buttonLabel: 'Get started',
       outline: selected !== USER_TYPES.COMMUNITY,
       type: USER_TYPES.COMMUNITY
     },
     {
-      header: "Business",
+      header: 'Business',
       price: 100,
       features: [
-          "Businesses to engage with the community",
-          "Rate ideas",
-          "Submit proposals",
+          'Businesses to engage with the community',
+          'Rate ideas',
+          'Submit proposals',
         ],
-        buttonLabel: "Join now",
+        buttonLabel: 'Join now',
         outline: selected !== USER_TYPES.BUSINESS,
         type: USER_TYPES.BUSINESS,
     },
@@ -51,9 +51,9 @@ const PricingPlanSelector: React.FC<any> = (params) => {
 
   const Plan = (props: any) => {
     return (
-      <div className={`card shadow-sm ${props.outline ? "m-4":"m-2"} `} onClick={() => {props.onClickHandler(props.type)}}>
-        <div className={`card-header opacity-50 ${props.outline ? "":"bg-primary"}`} >
-          <h4 className={`my-0 font-weight-normal ${props.outline ? "":"text-white"}`}>{props.header}</h4>
+      <div className={`card shadow-sm ${props.outline ? 'm-4':'m-2'} `} onClick={() => {props.onClickHandler(props.type)}}>
+        <div className={`card-header opacity-50 ${props.outline ? '':'bg-primary'}`} >
+          <h4 className={`my-0 font-weight-normal ${props.outline ? '':'text-white'}`}>{props.header}</h4>
         </div>
         <div className="card-body">
           <h1 className="card-title pricing-card-title">

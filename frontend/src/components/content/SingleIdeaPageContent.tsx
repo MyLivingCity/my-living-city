@@ -1,14 +1,14 @@
-import {Button, Card, Col, Row, Image, ButtonGroup, Table} from "react-bootstrap";
-import { IIdeaWithRelationship } from "../../lib/types/data/idea.type";
-import { incrementPostFlagCount } from "src/lib/api/badPostingBehaviorRoutes";
-import { useSingleProposal } from "src/hooks/proposalHooks";
-import { useSingleIdea } from "src/hooks/ideaHooks";
+import {Button, Card, Col, Row, Image, ButtonGroup, Table} from 'react-bootstrap';
+import { IIdeaWithRelationship } from '../../lib/types/data/idea.type';
+import { incrementPostFlagCount } from 'src/lib/api/badPostingBehaviorRoutes';
+import { useSingleProposal } from 'src/hooks/proposalHooks';
+import { useSingleIdea } from 'src/hooks/ideaHooks';
 import {
   capitalizeFirstLetterEachWord,
   capitalizeString,
-} from "../../lib/utilityFunctions";
-import CommentsSection from "../partials/SingleIdeaContent/CommentsSection";
-import RatingsSection from "../partials/SingleIdeaContent/RatingsSection";
+} from '../../lib/utilityFunctions';
+import CommentsSection from '../partials/SingleIdeaContent/CommentsSection';
+import RatingsSection from '../partials/SingleIdeaContent/RatingsSection';
 import {
   FacebookShareButton,
   FacebookIcon,
@@ -22,30 +22,30 @@ import {
   EmailIcon,
   WhatsappShareButton,
   WhatsappIcon,
-} from "react-share";
-import ChampionSubmit from "../partials/SingleIdeaContent/ChampionSubmit";
-import LoadingSpinner from "../ui/LoadingSpinner";
-import LoadingSpinnerInline from "../ui/LoadingSpinnerInline";
-import React, { useContext, useEffect, useState } from "react";
-import { API_BASE_URL, USER_TYPES } from "src/lib/constants";
-import { UserProfileContext } from "src/contexts/UserProfile.Context";
-import { createFlagUnderIdea, compareIdeaFlagsWithThreshold } from "src/lib/api/flagRoutes";
+} from 'react-share';
+import ChampionSubmit from '../partials/SingleIdeaContent/ChampionSubmit';
+import LoadingSpinner from '../ui/LoadingSpinner';
+import LoadingSpinnerInline from '../ui/LoadingSpinnerInline';
+import React, { useContext, useEffect, useState } from 'react';
+import { API_BASE_URL, USER_TYPES } from 'src/lib/constants';
+import { UserProfileContext } from 'src/contexts/UserProfile.Context';
+import { createFlagUnderIdea, compareIdeaFlagsWithThreshold } from 'src/lib/api/flagRoutes';
 import { 
   followIdeaByUser, 
   unfollowIdeaByUser, 
   updateIdeaStatus, 
   endorseIdeaByUser, 
   unendorseIdeaByUser,
-} from "src/lib/api/ideaRoutes";
-import { useCheckIdeaFollowedByUser, useCheckIdeaEndorsedByUser, useGetEndorsedUsersByIdea, useCheckIdeaFlaggedByUser } from "src/hooks/ideaHooks";
-import { useAllRatingsUnderIdea } from "src/hooks/ratingHooks";
-import { useAllCommentsUnderIdea, useCommentAggregateUnderIdea } from "src/hooks/commentHooks";
+} from 'src/lib/api/ideaRoutes';
+import { useCheckIdeaFollowedByUser, useCheckIdeaEndorsedByUser, useGetEndorsedUsersByIdea, useCheckIdeaFlaggedByUser } from 'src/hooks/ideaHooks';
+import { useAllRatingsUnderIdea } from 'src/hooks/ratingHooks';
+import { useAllCommentsUnderIdea, useCommentAggregateUnderIdea } from 'src/hooks/commentHooks';
 import Modal from 'react-bootstrap/Modal';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 
 import Form from 'react-bootstrap/Form';
-import { useCheckFlagBan } from "src/hooks/flagHooks";
+import { useCheckFlagBan } from 'src/hooks/flagHooks';
 import EndorsedUsersSection from '../partials/SingleIdeaContent/EndorsedUsersSection';
 
 interface SingleIdeaPageContentProps {
@@ -97,7 +97,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
    * @returns { boolean } Proposal information and state is valid
    */
   const confirmProposalState = (): boolean => {
-    return state === "PROPOSAL";
+    return state === 'PROPOSAL';
   };
 
   /**
@@ -106,7 +106,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
    * @returns { boolean } Project information and state is valid
    */
   const confirmProjectState = (): boolean => {
-    return state === "PROJECT" && !!projectInfo;
+    return state === 'PROJECT' && !!projectInfo;
   };
 
   const shouldDisplayChampionButton = (): boolean => {
@@ -125,9 +125,9 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
   const {data: isFollowingPost, isLoading: isFollowingPostLoading} = useCheckIdeaFollowedByUser(token, (user ? user.id : user), ideaId);
   const {data: isEndorsingPost, isLoading: isEndorsingPostLoading} = useCheckIdeaEndorsedByUser(token, (user ? user.id : user), ideaId);
   const {data: endorsedUsersData, isLoading: isEndorsedUsersDataLoading} = useGetEndorsedUsersByIdea(token, ideaId);
-  const {data: proposal} = useSingleProposal("" + (supportedProposal ? supportedProposal!.id : ""));
-  const {data: proposalIdea } = useSingleIdea("" + (supportedProposal ? supportedProposal!.ideaId : ""));
-  const {data: flagBanData, isLoading: flagBanDataLoading} = useCheckFlagBan(token, (user ? user.id : ""));
+  const {data: proposal} = useSingleProposal('' + (supportedProposal ? supportedProposal!.id : ''));
+  const {data: proposalIdea } = useSingleIdea('' + (supportedProposal ? supportedProposal!.ideaId : ''));
+  const {data: flagBanData, isLoading: flagBanDataLoading} = useCheckFlagBan(token, (user ? user.id : ''));
   const {data: isFlagged, isLoading: isFlaggedLoading} = useCheckIdeaFlaggedByUser(token, (user ? user.id : user), ideaId);
   // API hooks for children components
   const allRatingsUnderIdea = useAllRatingsUnderIdea(ideaId);
@@ -137,10 +137,10 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
   const [showFlagButton, setShowFlagButton] = useState(true);
   const [show, setShow] = useState(false);
   const [showOther, setShowOther] = useState(false);
-  const [flagReason, setFlagReason] = useState("");
-  const [otherFlagReason, setOtherFlagReason] = useState("");
+  const [flagReason, setFlagReason] = useState('');
+  const [otherFlagReason, setOtherFlagReason] = useState('');
   function getOtherFlagReason(val: any) {
-    setOtherFlagReason("OTHER: " + val.target.value)
+    setOtherFlagReason('OTHER: ' + val.target.value)
     
   }
  console.log(proposalIdea)
@@ -259,7 +259,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
         {imagePath ? (
           <Image
             src={imagePath}
-            style={{ objectFit: "cover", height: "400px" }}
+            style={{ objectFit: 'cover', height: '400px' }}
           ></Image>
         ) : null}
         <Row>
@@ -268,15 +268,15 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
               <div className="d-flex flex-column">
                 <h1 className="h1 p-2 flex-grow-1">
                   {title && title.length > 75
-                    ? title.substring(0, 75) + "..."
+                    ? title.substring(0, 75) + '...'
                     : title}
                 </h1>
                 <div
                   style={{
-                    display: "flex",
-                    minWidth: "16rem",
-                    justifyContent: "left",
-                    marginTop: "0.5rem",
+                    display: 'flex',
+                    minWidth: '16rem',
+                    justifyContent: 'left',
+                    marginTop: '0.5rem',
                   }}
                 >
                   <div>
@@ -287,8 +287,8 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                           <DropdownButton
                             id="dropdown-basic-button d-flex"
                             style={{
-                              fontSize: "16px",
-                              font: "16px sans-serif",
+                              fontSize: '16px',
+                              font: '16px sans-serif',
                             }}
                             title="Flag"
                           >
@@ -355,7 +355,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                           <Button
                             onClick={async () => await handleFollowUnfollow()}
                           >
-                            {followingPost ? "Unfollow" : "Follow"}
+                            {followingPost ? 'Unfollow' : 'Follow'}
                           </Button>
                         ) : null}
                       </ButtonGroup>
@@ -368,7 +368,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                           <Button
                             onClick={async () => await handleEndorseUnendorse()}
                           >
-                            {endorsingPost ? "Unendorse" : "Endorse"}
+                            {endorsingPost ? 'Unendorse' : 'Endorse'}
                           </Button>
                         ) : null}
                       </ButtonGroup>
@@ -385,7 +385,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
               <Modal.Body>Are you sure about flagging this post?</Modal.Body>
               <Modal.Footer>
                 <Button
-                  style={{ background: "red" }}
+                  style={{ background: 'red' }}
                   variant="primary"
                   onClick={() => {
                     submitFlagReasonHandler(
@@ -436,7 +436,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                   Cancel
                 </Button>
                 <Button
-                  style={{ background: "red" }}
+                  style={{ background: 'red' }}
                   variant="primary"
                   onClick={() =>
                     submitOtherFlagReasonHandler(
@@ -483,7 +483,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                   Cancel
                 </Button>
                 <Button
-                  style={{ background: "red" }}
+                  style={{ background: 'red' }}
                   variant="primary"
                   onClick={() =>
                     submitOtherFlagReasonHandler(
@@ -526,26 +526,26 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                   {/* <h4 className='h5'>As: {userType}</h4> */}
                   {superSegment ? (
                     <h4 className="h5">
-                      District:{" "}
+                      District:{' '}
                       {superSegment
                         ? capitalizeFirstLetterEachWord(superSegment.name)
-                        : "N/A"}
+                        : 'N/A'}
                     </h4>
                   ) : null}
                   {segment ? (
                     <h4 className="h5">
-                      Municipality:{" "}
+                      Municipality:{' '}
                       {segment
                         ? capitalizeFirstLetterEachWord(segment.name)
-                        : "N/A"}
+                        : 'N/A'}
                     </h4>
                   ) : null}
                   {subSegment ? (
                     <h4 className="h5">
-                      Neighborhood:{" "}
+                      Neighborhood:{' '}
                       {subSegment
                         ? capitalizeFirstLetterEachWord(subSegment.name)
-                        : "N/A"}
+                        : 'N/A'}
                     </h4>
                   ) : null}
                   {!!ideaData.champion && (
@@ -616,7 +616,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
             <Col sm={12} className="my-3">
               <h2>Proposal Information</h2>
               <p>
-                {"Proposal has been initialized. Please describe the proposal!"}
+                {'Proposal has been initialized. Please describe the proposal!'}
               </p>
             </Col>
           )}
@@ -627,7 +627,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
               <h2>Project Information:</h2>
               <p>
                 {projectInfo?.description ||
-                  "Project has been initialized. Please describe the project!"}
+                  'Project has been initialized. Please describe the project!'}
               </p>
             </Col>
           )}
@@ -687,7 +687,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                   <EmailIcon size={32} round />
                 </EmailShareButton>
               </div>
-              { author?.userType === "RESIDENTIAL" ?
+              { author?.userType === 'RESIDENTIAL' ?
                 author?.displayFName ?
                 <div>{author?.displayFName}@{author?.displayLName} as {userType}</div> :
                 <div>{author?.fname}@{author?.address?.streetAddress} as {userType}</div>
@@ -700,19 +700,19 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
       </Card>
 
       {proposal && proposalIdea && (
-        <div style={{ marginTop: "2rem" }}>
+        <div style={{ marginTop: '2rem' }}>
           <Card>
             <Card.Header>
               <div className="d-flex">
                 <h4 className="h4 p-2 flex-grow-1">Originating Proposal</h4>
                 <div
                   className="p-2"
-                  style={{ marginLeft: "auto", height: "3rem", minWidth: 150 }}
+                  style={{ marginLeft: 'auto', height: '3rem', minWidth: 150 }}
                 ></div>
               </div>
             </Card.Header>
             <Card.Body>
-              <Table style={{ margin: "0rem" }} hover>
+              <Table style={{ margin: '0rem' }} hover>
                 <thead>
                   <tr>
                     <th>Author</th>
@@ -726,7 +726,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                       {proposalIdea!.author!.address?.streetAddress}
                     </td>
                     <td>
-                      <a href={"/proposals/" + proposal!.id}>
+                      <a href={'/proposals/' + proposal!.id}>
                         {proposalIdea!.title}
                       </a>
                     </td>

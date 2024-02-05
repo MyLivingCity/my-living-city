@@ -31,7 +31,7 @@ export const UserSegmentInfoCard: React.FC<UserSegmentInfoCardProps> = ({email, 
         return (
 
         <Card>
-            <Card.Header>{capitalizeString(email)}'s Segment Info<Button onClick={()=>{setShowReq(b=>!b)}}className="float-right" size="sm">{showReq ? "Hide Details": "View Details"}</Button></Card.Header>
+            <Card.Header>{capitalizeString(email)}'s Segment Info<Button onClick={()=>{setShowReq(b=>!b)}}className="float-right" size="sm">{showReq ? 'Hide Details': 'View Details'}</Button></Card.Header>
             {showReq && 
             <Card.Body>
             <Table bordered hover>

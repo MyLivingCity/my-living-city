@@ -1,10 +1,10 @@
 import { IComment } from '../lib/types/data/comment.type'
-import { useMutation, useQueryClient } from "react-query";
+import { useMutation, useQueryClient } from 'react-query';
 import { v4 as uuidv4 } from 'uuid';
-import axios from "axios";
-import { API_BASE_URL } from "../lib/constants";
-import { getAxiosJwtRequestOption } from "../lib/api/axiosRequestOptions";
-import { delay } from "../lib/utilityFunctions";
+import axios from 'axios';
+import { API_BASE_URL } from '../lib/constants';
+import { getAxiosJwtRequestOption } from '../lib/api/axiosRequestOptions';
+import { delay } from '../lib/utilityFunctions';
 
 export const useCommentLikeMutation = (
   commentId: number,

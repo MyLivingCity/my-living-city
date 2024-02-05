@@ -1,5 +1,5 @@
-import { useFormik } from "formik";
-import React, { useContext, useEffect, useState } from "react";
+import { useFormik } from 'formik';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   Col,
   Container,
@@ -7,25 +7,25 @@ import {
   Form,
   Button,
   Alert,
-} from "react-bootstrap";
-import { useHistory } from "react-router-dom";
-import { TEXT_INPUT_LIMIT } from "src/lib/constants";
+} from 'react-bootstrap';
+import { useHistory } from 'react-router-dom';
+import { TEXT_INPUT_LIMIT } from 'src/lib/constants';
 import {
   ISegmentData,
-} from "src/lib/types/data/segment.type";
-import { UserProfileContext } from "../../contexts/UserProfile.Context";
-import { postCreateIdea } from "../../lib/api/ideaRoutes";
-import { getUserBanWithToken } from "../../lib/api/banRoutes";
-import { checkUser } from "src/lib/api/badPostingBehaviorRoutes";
-import { ICategory } from "../../lib/types/data/category.type";
-import { ICreateIdeaInput } from "../../lib/types/input/createIdea.input";
-import { IFetchError } from "../../lib/types/types";
+} from 'src/lib/types/data/segment.type';
+import { UserProfileContext } from '../../contexts/UserProfile.Context';
+import { postCreateIdea } from '../../lib/api/ideaRoutes';
+import { getUserBanWithToken } from '../../lib/api/banRoutes';
+import { checkUser } from 'src/lib/api/badPostingBehaviorRoutes';
+import { ICategory } from '../../lib/types/data/category.type';
+import { ICreateIdeaInput } from '../../lib/types/input/createIdea.input';
+import { IFetchError } from '../../lib/types/types';
 import {
   capitalizeString,
   handlePotentialAxiosError,
-} from "../../lib/utilityFunctions";
-import { CONTENT, Toastie } from "../partials/LandingContent/CategoriesSection";
-import ImageUploader from "react-images-upload";
+} from '../../lib/utilityFunctions';
+import { CONTENT, Toastie } from '../partials/LandingContent/CategoriesSection';
+import ImageUploader from 'react-images-upload';
 
 interface SubmitIdeaPageContentProps {
   categories: ICategory[] | undefined;
@@ -48,22 +48,22 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
   const [crop, setCrop] = useState({ aspect: 16 / 9 });
   const history = useHistory();
   const handleCommunityChange = (index: number) => {
-    if (updatedSegData[index].segType === "Segment") {
-      formik.setFieldValue("segmentId", updatedSegData[index].id);
-      formik.setFieldValue("superSegmentId", undefined);
-      formik.setFieldValue("subSegmentId", undefined);
+    if (updatedSegData[index].segType === 'Segment') {
+      formik.setFieldValue('segmentId', updatedSegData[index].id);
+      formik.setFieldValue('superSegmentId', undefined);
+      formik.setFieldValue('subSegmentId', undefined);
     }
-    if (updatedSegData[index].segType === "Sub-Segment") {
-      formik.setFieldValue("subSegmentId", updatedSegData[index].id);
-      formik.setFieldValue("superSegmentId", undefined);
-      formik.setFieldValue("segmentId", undefined);
+    if (updatedSegData[index].segType === 'Sub-Segment') {
+      formik.setFieldValue('subSegmentId', updatedSegData[index].id);
+      formik.setFieldValue('superSegmentId', undefined);
+      formik.setFieldValue('segmentId', undefined);
     }
-    if (updatedSegData[index].segType === "Super-Segment") {
-      formik.setFieldValue("superSegmentId", updatedSegData[index].id);
-      formik.setFieldValue("subSegmentId", undefined);
-      formik.setFieldValue("segmentId", undefined);
+    if (updatedSegData[index].segType === 'Super-Segment') {
+      formik.setFieldValue('superSegmentId', updatedSegData[index].id);
+      formik.setFieldValue('subSegmentId', undefined);
+      formik.setFieldValue('segmentId', undefined);
     }
-    formik.setFieldValue("userType", updatedSegData[index].userType);
+    formik.setFieldValue('userType', updatedSegData[index].userType);
   };
   const submitHandler = async (values: ICreateIdeaInput) => {
     try {
@@ -71,20 +71,20 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
       try {
         setError(null);
         setIsLoading(true);
-        setTimeout(() => console.log("timeout"), 5000);
+        setTimeout(() => console.log('timeout'), 5000);
         const banDetails = await getUserBanWithToken(token);
         let banned = true;
-        if (!user!.banned || !banDetails || banDetails.banType === "WARNING") {
+        if (!user!.banned || !banDetails || banDetails.banType === 'WARNING') {
           banned = false;
         }
         const res = await postCreateIdea(values, banned, token);
 
         setError(null);
-        history.push("/ideas/" + res.id);
+        history.push('/ideas/' + res.id);
         formik.resetForm();
       } catch (error) {
         const genericMessage =
-          "An error occured while trying to create an Proposal.";
+          'An error occured while trying to create an Proposal.';
         const errorObj = handlePotentialAxiosError(genericMessage, error);
         setError(errorObj);
       } finally {
@@ -93,7 +93,7 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
     } catch (error) {
       //print the error message attached to the error object
       const genericMessage =
-        "You have too many bad posts / post flagged. Post was NOT submittted.";
+        'You have too many bad posts / post flagged. Post was NOT submittted.';
       const errorObj = handlePotentialAxiosError(genericMessage, error);
       setError(errorObj);
     } finally {
@@ -103,8 +103,8 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
 
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
-  const supportedProposal = urlParams.get("supportedProposal");
-  const communityOfInterest = urlParams.get("communityOfInterest");
+  const supportedProposal = urlParams.get('supportedProposal');
+  const communityOfInterest = urlParams.get('communityOfInterest');
   const parsedProposalId = parseInt(supportedProposal!);
   let updatedSegData : ISegmentData[] = []
    const destructuredSegData = Object.entries(segData)
@@ -121,8 +121,8 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
       updatedSegData.push({
         id: parseInt(destructuredSegData[2][1].toString()),
         name: destructuredSegData[3][1].toString(),
-        segType: "Super-Segment",
-        userType: "Resident"
+        segType: 'Super-Segment',
+        userType: 'Resident'
       });
     }
     if (
@@ -136,8 +136,8 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
       updatedSegData.push({
         id: parseInt(destructuredSegData[8][1].toString()),
         name: destructuredSegData[9][1].toString(),
-        segType: "Segment",
-        userType: "Resident"
+        segType: 'Segment',
+        userType: 'Resident'
       });
     }
 
@@ -153,8 +153,8 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
       updatedSegData.push({
         id: parseInt(destructuredSegData[10][1].toString()),
         name: destructuredSegData[11][1].toString(),
-        segType: "Segment",
-        userType: "Worker"
+        segType: 'Segment',
+        userType: 'Worker'
       });
     }
 
@@ -170,8 +170,8 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
       updatedSegData.push({
         id: parseInt(destructuredSegData[12][1].toString()),
         name: destructuredSegData[13][1].toString(),
-        segType: "Segment",
-        userType: "Student"
+        segType: 'Segment',
+        userType: 'Student'
       });
     }
 
@@ -186,8 +186,8 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
       updatedSegData.push({
         id: parseInt(destructuredSegData[14][1].toString()),
         name: destructuredSegData[15][1].toString(),
-        segType: "Sub-Segment",
-        userType: "Resident"
+        segType: 'Sub-Segment',
+        userType: 'Resident'
       });
     }
 
@@ -203,8 +203,8 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
       updatedSegData.push({
         id: parseInt(destructuredSegData[16][1].toString()),
         name: destructuredSegData[17][1].toString(),
-        segType: "Sub-Segment",
-        userType: "Worker"
+        segType: 'Sub-Segment',
+        userType: 'Worker'
       });
     }
 
@@ -220,8 +220,8 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
       updatedSegData.push({
         id: parseInt(destructuredSegData[18][1].toString()),
         name: destructuredSegData[19][1].toString(),
-        segType: "Sub-Segment",
-        userType: "Student"
+        segType: 'Sub-Segment',
+        userType: 'Student'
       });
     }
   }
@@ -244,23 +244,23 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
     initialValues: {
       // TODO: CatId when chosen is a string value
       categoryId: categories ? categories[0].id : DEFAULT_CAT_ID,
-      title: "",
-      userType: updatedSegData ? updatedSegData[0].userType : "Resident",
-      description: "",
-      proposal_role: "",
-      requirements: "",
-      proposal_benefits: "",
-      artsImpact: "",
-      communityImpact: "",
-      energyImpact: "",
-      manufacturingImpact: "",
-      natureImpact: "",
+      title: '',
+      userType: updatedSegData ? updatedSegData[0].userType : 'Resident',
+      description: '',
+      proposal_role: '',
+      requirements: '',
+      proposal_benefits: '',
+      artsImpact: '',
+      communityImpact: '',
+      energyImpact: '',
+      manufacturingImpact: '',
+      natureImpact: '',
       address: {
-        streetAddress: "",
-        streetAddress2: "",
-        city: "",
-        postalCode: "",
-        country: "",
+        streetAddress: '',
+        streetAddress2: '',
+        city: '',
+        postalCode: '',
+        country: '',
       },
       geo: {
         lat: undefined,
@@ -280,8 +280,8 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
       handleCommunityChange(0);
     }
   }, []);
-  console.log("Structured", updatedSegData )
-  console.log("DeStructured", destructuredSegData)
+  console.log('Structured', updatedSegData )
+  console.log('DeStructured', destructuredSegData)
   return (
     <Container className="submit-idea-page-content">
       <Row className="mb-4 mt-4 justify-content-center">
@@ -305,7 +305,7 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
                       key={String(cat.id)}
                       value={Number(cat.id)}
                       style={{
-                        textTransform: "capitalize",
+                        textTransform: 'capitalize',
                       }}
                     >
                       {capitalizeString(cat.title)}
@@ -355,15 +355,15 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
               <Form.Label>Idea image</Form.Label>
               <ImageUploader
                 name="imagePath"
-                fileContainerStyle={{ backgroundColor: "#F8F9FA" }}
+                fileContainerStyle={{ backgroundColor: '#F8F9FA' }}
                 withPreview={true}
                 onChange={(picture) => {
-                  formik.setFieldValue("imagePath", picture);
+                  formik.setFieldValue('imagePath', picture);
                 }}
-                imgExtension={[".jpg", ".jpeg", ".png", ".webp"]}
+                imgExtension={['.jpg', '.jpeg', '.png', '.webp']}
                 buttonText="Select Idea Image"
                 maxFileSize={10485760}
-                label={"Max file size 10mb, \n jpg, jpeg, png, webp"}
+                label={'Max file size 10mb, \n jpg, jpeg, png, webp'}
                 singleImage={true}
               />
             </Form.Group>
@@ -506,7 +506,7 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
               type="submit"
               disabled={isLoading ? true : false}
             >
-              {isLoading ? "Saving..." : "Submit your idea!"}
+              {isLoading ? 'Saving...' : 'Submit your idea!'}
             </Button>
           </Form>
 

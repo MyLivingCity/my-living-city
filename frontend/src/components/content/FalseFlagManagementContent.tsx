@@ -50,9 +50,9 @@ export const FalseFlagManagementContent: React.FC<FalseFlagManagementContentProp
     //     setShowUserFlagsModal(true);
     // }
 
-    console.log("users: ", users)
-    console.log("flags: ", flags)
-    console.log("False Flagging Users:  ", falseFlaggingUsers)
+    console.log('users: ', users)
+    console.log('flags: ', flags)
+    console.log('False Flagging Users:  ', falseFlaggingUsers)
 
     // Using users and falseFlaggingUsers create an array with the following structure:
     // [
@@ -73,8 +73,8 @@ export const FalseFlagManagementContent: React.FC<FalseFlagManagementContentProp
     if (users && falseFlaggingUsers) {
         userFalseFlaggingData = users.map((user) => {
             const falseFlaggingUser = falseFlaggingUsers.find((falseFlaggingUser) => falseFlaggingUser.userId === user.id)
-            console.log("falseFlaggingUser: ", falseFlaggingUser)
-            console.log("User", user)
+            console.log('falseFlaggingUser: ', falseFlaggingUser)
+            console.log('User', user)
             if (falseFlaggingUser) {
             return {
                 id: user.id,
@@ -95,7 +95,7 @@ export const FalseFlagManagementContent: React.FC<FalseFlagManagementContentProp
         // Remove null values from the array
         userFalseFlaggingData = userFalseFlaggingData.filter((user: any) => user !== null)
     }
-    console.log("userFalseFlaggingData: ", userFalseFlaggingData)
+    console.log('userFalseFlaggingData: ', userFalseFlaggingData)
 
 
 
@@ -214,13 +214,13 @@ export const FalseFlagManagementContent: React.FC<FalseFlagManagementContentProp
                     {req.id !== hideControls ? 
                     <>
                     <td>{req.email}</td>
-                    <td>{req.organization ? req.organization : "N/A"}</td>
+                    <td>{req.organization ? req.organization : 'N/A'}</td>
                     <td>{req.firstName}</td>
                     <td>{req.lastName}</td>
                     <td>{req.userType}</td>
                     <td>{req.falseFlags}</td>
-                    <td>{req.banned ? "Yes" : "No" }</td> 
-                    <td>{req.bannedUntil ? req.bannedUntil : "N/A"}</td>
+                    <td>{req.banned ? 'Yes' : 'No' }</td> 
+                    <td>{req.bannedUntil ? req.bannedUntil : 'N/A'}</td>
                     </> :
                     <>
                     <td><Form.Control type="text" defaultValue={req.email} onChange={(e)=>req.email = e.target.value}/></td>
@@ -235,7 +235,7 @@ export const FalseFlagManagementContent: React.FC<FalseFlagManagementContentProp
                     </td>
                     <td><Button onClick={()=> setShowUserFlagsModal(true)}>More Details</Button></td>
                     <td></td>
-                    <td>{req.banned ? "Yes" : "No" }</td>
+                    <td>{req.banned ? 'Yes' : 'No' }</td>
                     <td><Form.Check type="switch" checked={reviewed} onChange={(e)=>{
                         setReviewed(e.target.checked)
                         req.reviewed = e.target.checked;

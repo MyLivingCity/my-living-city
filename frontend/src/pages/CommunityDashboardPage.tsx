@@ -1,11 +1,11 @@
-import { RouteComponentProps } from "react-router-dom";
-import CommunityDashboardContent from "./../components/content/CommunityDashboardContent";
-import LoadingSpinner from "../components/ui/LoadingSpinner";
-import { useSegmentInfoAggregate, useSingleSegmentBySegmentId } from "./../hooks/segmentHooks";
-import { useIdeasHomepage } from "src/hooks/ideaHooks";
-import { useContext } from "react";
-import { UserProfileContext } from "src/contexts/UserProfile.Context";
-import { useAllUserSegments } from "src/hooks/userSegmentHooks";
+import { RouteComponentProps } from 'react-router-dom';
+import CommunityDashboardContent from './../components/content/CommunityDashboardContent';
+import LoadingSpinner from '../components/ui/LoadingSpinner';
+import { useSegmentInfoAggregate, useSingleSegmentBySegmentId } from './../hooks/segmentHooks';
+import { useIdeasHomepage } from 'src/hooks/ideaHooks';
+import { useContext } from 'react';
+import { UserProfileContext } from 'src/contexts/UserProfile.Context';
+import { useAllUserSegments } from 'src/hooks/userSegmentHooks';
 
 interface CommunityDashboardPageProps extends RouteComponentProps<{
     segId: string;
@@ -29,7 +29,7 @@ const CommunityDashboardPage: React.FC<CommunityDashboardPageProps> = (props) =>
       window.location.reload();
     }
 
-    if (segId === "0") {
+    if (segId === '0') {
         return (
             <div className="wrapper">
                 <LoadingSpinner />

@@ -7,25 +7,25 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const nodemailer = require('nodemailer');
 
 passport.use(
-  'signup',
+  "signup",
   new localStrategy.Strategy(
     {
-      usernameField: 'email',
-      passwordField: 'password',
+      usernameField: "email",
+      passwordField: "password",
       passReqToCallback: true,
     },
     async (req, email, password, done) => {
       try {
-        const { 
-          confirmPassword, 
+        const {
+          confirmPassword,
           //userRoleId,
         } = req.body;
         if (!email) {
-          return done({ message: "You must supply an email." })
+          return done({ message: "You must supply an email." });
         }
 
         if (!password) {
-          return done({ message: "You must supply a password."})
+          return done({ message: "You must supply a password." });
         }
 
         console.log("Request body create user");
@@ -37,27 +37,29 @@ passport.use(
         // Check if confirmPassword and password are the same
         const passwordConfirmation = password === confirmPassword;
         if (!passwordConfirmation) {
-          return done({ message: "Both password and password confirmation must be the same. Please try again."})
+          return done({
+            message:
+              "Both password and password confirmation must be the same. Please try again.",
+          });
         }
 
         // Check if user exists
         const userExists = await prisma.user.findUnique({
-          where: { email }
-        })
+          where: { email },
+        });
         if (userExists && userExists.verified === true) {
-
-          return done(null, false, { message: "User already exists." })
+          return done(null, false, { message: "User already exists." });
         }
 
         if (userExists && userExists.verified === false) {
           // Send email verification
-          sendEmailVerification(userExists)
-          return done(null, userExists)
+          sendEmailVerification(userExists);
+          return done(null, userExists);
         }
         // Parse body
         const geoData = { ...req.body.geo };
         const addressData = { ...req.body.address };
-        const parsedMainData = { 
+        const parsedMainData = {
           ...req.body,
           //...userRoleId && { userRoleId: Number(userRoleId) }
         };
@@ -70,10 +72,10 @@ passport.use(
         const createdUser = await prisma.user.create({
           data: {
             geo: {
-              create: geoData
+              create: geoData,
             },
             address: {
-              create: addressData
+              create: addressData,
             },
             ...parsedMainData,
             password: hashedPassword,
@@ -83,31 +85,57 @@ passport.use(
             geo: true,
             address: true,
             //userRole: true,
-          }
+          },
         });
+
+        let adminmodEmail;
+        if (
+          [
+            "ADMIN",
+            "MOD",
+            "SEG_ADMIN",
+            "SEG_MOD",
+            "MUNICIPAL_SEG_ADMIN",
+          ].includes(createdUser.userType)
+        ) {
+          const randomDigits = Math.floor(Math.random() * 100)
+            .toString()
+            .padStart(2, "0");
+          const randomChars = Math.random().toString(36).substring(2, 4);
+          adminmodEmail = `admin${randomDigits}${randomChars}@mylivingcity.org`;
+        }
+        // Update the user record with the new adminmodEmail
+        await prisma.user.update({
+          where: { id: createdUser.id },
+          data: { adminmodEmail: adminmodEmail },
+        });
+
+        createdUser.adminmodEmail = adminmodEmail;
         //Check to only create Stripe account for paid accounts.
-        if(parsedMainData.userType === "BUSINESS" || parsedMainData.userType === "COMMUNITY"){
+        if (
+          parsedMainData.userType === "BUSINESS" ||
+          parsedMainData.userType === "COMMUNITY"
+        ) {
           const newStripCustomer = await stripe.customers.create({
-            email: createdUser.email
+            email: createdUser.email,
           });
           await prisma.userStripe.create({
             data: {
-                userId: createdUser.id,
-                stripeId: newStripCustomer.id,
-                status: 'incomplete'
-            }
-          })
+              userId: createdUser.id,
+              stripeId: newStripCustomer.id,
+              status: "incomplete",
+            },
+          });
         }
 
         if (createdUser.verified === false) {
-          sendEmailVerification(createdUser)
+          sendEmailVerification(createdUser);
           // stop here if user is not verified
           return done(null, createdUser);
         }
 
         return done(null, createdUser);
       } catch (error) {
-        // console.log("ERROR")
         console.error(error);
         done(error);
       } finally {
@@ -118,45 +146,77 @@ passport.use(
 );
 
 passport.use(
-  'login',
+  "login",
   new localStrategy.Strategy(
     {
-      usernameField: 'email',
-      passwordField: 'password',
+      usernameField: "email",
+      passwordField: "password",
       passReqToCallback: true,
     },
-    async (req, email, password, done) => {
+    async (_req, email, password, done) => {
       try {
-        const foundUser = await prisma.user.findUnique({
-          where: { email: email.toLowerCase() },
+        const foundUser = await prisma.user.findFirst({
+          where: {
+            OR: [
+              { email: email.toLowerCase() },
+              { adminmodEmail: email.toLowerCase() },
+            ],
+          },
           // TODO: May cause unnecessary queries to database
           include: {
             geo: true,
             address: true,
             //userRole: true,
-          }
+          },
         });
 
         if (!foundUser) {
           console.log("User not found");
-          return done(null, false, { message: `User with email ${email} could not be found!` });
+          return done(null, false, {
+            message: `User with email ${email} could not be found!`,
+          });
         }
 
+        const adminTypes = [
+          "ADMIN",
+          "MOD",
+          "SEG_ADMIN",
+          "SEG_MOD",
+          "MUNICIPAL_SEG_ADMIN",
+        ];
+        // Check the userType of the found user
+        if (
+          adminTypes.includes(foundUser.userType) &&
+          foundUser.adminmodEmail !== email.toLowerCase()
+        ) {
+          console.log("Admin or Mod user must use adminmodEmail to login");
+          return done(null, false, {
+            message: `Admin or Mod user must use generated email: adminXXXX@mylivingcity.org to login!`,
+          });
+        }
         // const validPassword = await foundUser.validatePassword(password);
         // console.log(validPassword);
-        const validPassword = await argon2ConfirmHash(password, foundUser.password);
+        const validPassword = await argon2ConfirmHash(
+          password,
+          foundUser.password
+        );
         if (!validPassword) {
-          return done(null, false, { message: "Invalid password. Please try again."})
+          return done(null, false, {
+            message: "Invalid password. Please try again.",
+          });
         }
 
         const parsedUser = {
           ...foundUser,
           password: null,
-        }
+        };
 
         if (parsedUser.verified === false) {
-          sendEmailVerification(parsedUser)
-          done(null, false, { message: "User is not verified. Please check your email for verification link." })
+          sendEmailVerification(parsedUser);
+          done(null, false, {
+            message:
+              "User is not verified. Please check your email for verification link.",
+          });
         }
 
         if (parsedUser.status === false) {
@@ -165,14 +225,14 @@ passport.use(
 
         return done(null, parsedUser, { message: "Logged in succesfully" });
       } catch (error) {
-        console.log("Error is thrown", error)
+        console.log("Error is thrown", error);
         return done(error);
       } finally {
         await prisma.$disconnect();
       }
     }
   )
-)
+);
 
 const JWTStrategy = require('passport-jwt').Strategy;
 const ExtractJWT = require('passport-jwt').ExtractJwt;

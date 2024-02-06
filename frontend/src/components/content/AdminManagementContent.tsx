@@ -1,18 +1,6 @@
 import React, { useState, useEffect } from "react";
-import {
-  Table,
-  Dropdown,
-  Container,
-  Button,
-  Form,
-  NavDropdown,
-} from "react-bootstrap";
-import {
-  updateUser,
-  getUserBanHistory,
-  postRegisterUser,
-  deleteUser,
-} from "src/lib/api/userRoutes";
+import { Table, Dropdown, Container, Button, Form, NavDropdown } from "react-bootstrap";
+import { updateUser, getUserBanHistory, postRegisterUser, deleteUser } from "src/lib/api/userRoutes";
 import { USER_TYPES } from "src/lib/constants";
 import { IUser } from "src/lib/types/data/user.type";
 import { UserSegmentInfoCard } from "../partials/UserSegmentInfoCard";
@@ -34,25 +22,17 @@ interface AdminManagementContentProps {
   subSeg: ISegment[];
 }
 
-export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
-  users: initialUsers,
-  token,
-  user,
-  segs,
-  bans,
-  subSeg,
-}) => {
+export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({ users: initialUsers, token, user, segs, bans, subSeg }) => {
   const [users, setUsers] = useState<IUser[] | undefined>(initialUsers);
   const [hideControls, setHideControls] = useState("");
   const [showUserSegmentCard, setShowUserSegmentCard] = useState(false);
   const [email, setEmail] = useState("");
   const [id, setId] = useState("");
   const [reviewed, setReviewed] = useState<boolean>(false);
-  const [status, setStatus] = useState<boolean>(false);
+  const [status, setStatus] = useState<boolean>(true);
   const [showUserBanModal, setShowUserBanModal] = useState<boolean>(false);
   const [showUserUnbanModal, setShowUserUnbanModal] = useState<boolean>(false);
-  const [showUserBanHistoryModal, setShowUserBanHistoryModal] =
-    useState<boolean>(false);
+  const [showUserBanHistoryModal, setShowUserBanHistoryModal] = useState<boolean>(false);
   const [modalUser, setModalUser] = useState<IUser>();
   const [showCreateAccountForm, setShowCreateAccountForm] = useState(false);
   const [buttonText, setButtonText] = useState("Admin Creation Wizard");
@@ -183,14 +163,12 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
               <label htmlFor="inputData">User Type</label>
               <Form.Control as="select" required name="inputType">
                 <option value="">Select User Type</option>
-                {userTypes
-                  .filter(
-                    (item) =>
-                      item === USER_TYPES.ADMIN ||
-                      item === USER_TYPES.MUNICIPAL_SEG_ADMIN ||
-                      item === USER_TYPES.SEG_ADMIN ||
-                      item === USER_TYPES.MOD ||
-                      item === USER_TYPES.SEG_MOD
+                {userTypes.filter((item) =>
+                    item === USER_TYPES.ADMIN ||
+                    item === USER_TYPES.MUNICIPAL_SEG_ADMIN ||
+                    item === USER_TYPES.SEG_ADMIN ||
+                    item === USER_TYPES.MOD ||
+                    item === USER_TYPES.SEG_MOD
                   )
                   .map((item) => (
                     <option key={item}>{item}</option>
@@ -201,49 +179,21 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
           <div className="form-row">
             <div className="form-group col-md-6">
               <label htmlFor="inputFirst">First Name</label>
-              <input
-                type="text"
-                className="form-control"
-                id="inputFirst"
-                name="inputFirst"
-                placeholder="John"
-                required
-              />
+              <input type="text" className="form-control" id="inputFirst" name="inputFirst" placeholder="John" required />
             </div>
             <div className="form-group col-md-6">
               <label htmlFor="inputLast">Last Name</label>
-              <input
-                type="text"
-                className="form-control"
-                id="inputLast"
-                name="inputLast"
-                placeholder="Doe"
-                required
-              />
+              <input type="text" className="form-control" id="inputLast" name="inputLast" placeholder="Doe" required />
             </div>
           </div>
           <div className="form-row">
             <div className="form-group col-md-6">
               <label htmlFor="inputEmail">Email</label>
-              <input
-                type="email"
-                className="form-control"
-                id="inputEmail"
-                name="inputEmail"
-                placeholder="Email"
-                required
-              />
+              <input type="email" className="form-control" id="inputEmail" name="inputEmail" placeholder="Email" required />
             </div>
             <div className="form-group col-md-6">
               <label htmlFor="inputPassword">Password</label>
-              <input
-                type="password"
-                className="form-control"
-                id="inputPassword"
-                name="inputPassword"
-                placeholder="Password"
-                required
-              />
+              <input type="password" className="form-control" id="inputPassword" name="inputPassword" placeholder="Password" required />
             </div>
           </div>
 
@@ -251,12 +201,7 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
             <div className="form-group col-md-6">
               <label htmlFor="inputRegion">Region</label>
 
-              <Form.Control
-                as="select"
-                required
-                value={selectedRegion}
-                onChange={handleRegionChange}
-              >
+              <Form.Control as="select" required value={selectedRegion} onChange={handleRegionChange}>
                 <option value="">Select Region</option>
                 {segs.map((seg) => (
                   <option key={seg.superSegId} value={seg.name}>
@@ -267,21 +212,11 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
             </div>
             <div className="form-group col-md-6">
               <label htmlFor="inputCom">Community</label>
-              <Form.Control
-                as="select"
-                name="inputCommunity"
-                onChange={(event) => {
-                  newHomeID = parseInt(event.target.value);
-                }}
-              >
+              <Form.Control as="select" name="inputCommunity" onChange={(event) => { newHomeID = parseInt(event.target.value) }}>
                 <option value="">Select Community</option>
                 {subSeg
-                  .filter(
-                    (seg) =>
-                      seg.superSegName?.toUpperCase() ===
-                      selectedRegion.toUpperCase()
-                  )
-                  .map((seg) => (
+                  .filter(seg => seg.superSegName?.toUpperCase() === selectedRegion.toUpperCase())
+                  .map(seg => (
                     <option key={seg.superSegId} value={seg.segId}>
                       {capitalizeString(seg.name)}
                     </option>
@@ -290,43 +225,21 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
             </div>
           </div>
 
-          <button type="submit" className="btn btn-primary mr-2 mb-2">
-            Submit
-          </button>
+          <button type="submit" className="btn btn-primary mr-2 mb-2">Submit</button>
         </Form>
       )}
 
       <Table bordered hover size="sm">
         <thead className="table-active">
           <tr>
-            <th
-              data-sortable
-              scope="col"
-              className="col-3 text-center align-middle"
-            >
-              Email
-            </th>
-            <th scope="col" className="col-2 text-center align-middle">
-              First
-            </th>
-            <th scope="col" className="col-2 text-center align-middle">
-              Last
-            </th>
-            <th scope="col" className="col-2 text-center align-middle ">
-              User Type
-            </th>
-            <th scope="col" className="col-3 text-center align-middle">
-              Area of Access
-            </th>
-            <th scope="col" className="col-3 text-center align-middle">
-              Date Created
-            </th>
-            <th scope="col" className="col-3 text-center align-middle">
-              Status
-            </th>
-            <th scope="col" className="col-1 text-center align-middle">
-              Controls
-            </th>
+            <th data-sortable scope="col" className="col-3 text-center align-middle">Email</th>
+            <th scope="col" className="col-2 text-center align-middle">First</th>
+            <th scope="col" className="col-2 text-center align-middle">Last</th>
+            <th scope="col" className="col-2 text-center align-middle ">User Type</th>
+            <th scope="col" className="col-3 text-center align-middle">Area of Access</th>
+            <th scope="col" className="col-3 text-center align-middle">Date Created</th>
+            <th scope="col" className="col-3 text-center align-middle">Status</th>
+            <th scope="col" className="col-1 text-center align-middle">Controls</th>
           </tr>
         </thead>
         <tbody>
@@ -347,50 +260,18 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
                       {req.userType === "ADMIN" ? (
                         "Full access"
                       ) : (
-                        <UserSegPlainText
-                          email={req.email}
-                          id={req.id}
-                          token={token}
-                        />
+                        <UserSegPlainText email={req.email} id={req.id} token={token}/>
                       )}
                     </td>
-                    <td className="text-center align-middle">
-                      {new Date(req.createdAt).toISOString().split("T")[0]}
-                    </td>
-                    <td className="text-left align-middle">
-                      {req.verified ? "Active" : "Inactive"}
-                    </td>
+                    <td className="text-center align-middle">{new Date(req.createdAt).toISOString().split("T")[0]}</td>
+                    <td className="text-left align-middle">{req.status ? "Active" : "Inactive"}</td>
                   </>
                 ) : (
                   <>
-                    <td className="text-left align-middle">
-                      <Form.Control
-                        type="text"
-                        defaultValue={req.email}
-                        onChange={(e) => (req.email = e.target.value)}
-                      />
-                    </td>
-                    <td className="text-left align-middle">
-                      <Form.Control
-                        type="text"
-                        defaultValue={req.fname}
-                        onChange={(e) => (req.fname = e.target.value)}
-                      />
-                    </td>
-                    <td className="text-left align-middle">
-                      <Form.Control
-                        type="text"
-                        defaultValue={req.lname}
-                        onChange={(e) => (req.lname = e.target.value)}
-                      />
-                    </td>
-                    <td className="text-left align-middle">
-                      <Form.Control
-                        as="select"
-                        onChange={(e) => {
-                          (req.userType as String) = e.target.value;
-                        }}
-                      >
+                    <td className="text-left align-middle"><Form.Control type="text" defaultValue={req.email} onChange={(e) => (req.email = e.target.value)}/></td>
+                    <td className="text-left align-middle"><Form.Control type="text" defaultValue={req.fname} onChange={(e) => (req.fname = e.target.value)}/></td>
+                    <td className="text-left align-middle"><Form.Control type="text" defaultValue={req.lname} onChange={(e) => (req.lname = e.target.value)}/></td>
+                    <td className="text-left align-middle"><Form.Control as="select" onChange={(e) => {(req.userType as String) = e.target.value;}}>
                         <option className="text-center align-middle">
                           {req.userType}
                         </option>
@@ -412,32 +293,20 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
                       {req.userType === "ADMIN" ? (
                         "Full access"
                       ) : (
-                        <UserSegPlainText
-                          email={req.email}
-                          id={req.id}
-                          token={token}
-                        />
+                        <UserSegPlainText email={req.email} id={req.id} token={token}/>
                       )}
                     </td>
+                    <td className="text-center align-middle">{new Date(req.createdAt).toISOString().split("T")[0]}</td>
                     <td className="text-center align-middle">
-                      {new Date(req.createdAt).toISOString().split("T")[0]}
-                    </td>
-
-                    <td className="text-left align-middle">
-                      <Form.Control
-                        as="select"
+                      <Form.Check
+                        type="switch"
+                        checked={status}
                         onChange={(e) => {
-                          req.verified =
-                            e.target.value === "Active" ? true : false;
+                          setStatus(e.target.checked);
+                          req.status = e.target.checked;
                         }}
-                      >
-                        <option value={req.verified ? "Active" : "Inactive"}>
-                          {req.verified ? "Active" : "Inactive"}
-                        </option>
-                        <option value={req.verified ? "Inactive" : "Active"}>
-                          {req.verified ? "Inactive" : "Active"}
-                        </option>
-                      </Form.Control>
+                        id="status-switch"
+                      />
                     </td>
                   </>
                 )}
@@ -496,22 +365,13 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
                   ) : (
                     <>
                       <div className="d-flex justify-content-between">
-                        <Button
-                          size="sm"
-                          variant="outline-danger"
-                          className="mr-2 mb-2 "
-                          onClick={() => setHideControls("")}
-                        >
+                        <Button size="sm" variant="outline-danger" className="mr-2 mb-2 " onClick={() => setHideControls("")}>
                           Cancel
                         </Button>
-                        <Button
-                          size="sm"
-                          className="mr-2 mb-2"
-                          onClick={() => {
+                        <Button size="sm" className="mr-2 mb-2" onClick={() => {
                             setHideControls("");
                             updateUser(req, token, user);
-                          }}
-                        >
+                          }}>
                           Save
                         </Button>
                       </div>

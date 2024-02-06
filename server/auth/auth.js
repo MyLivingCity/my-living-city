@@ -159,6 +159,10 @@ passport.use(
           done(null, false, { message: "User is not verified. Please check your email for verification link." })
         }
 
+        if (parsedUser.status === false) {
+          done(null, false, { message: "Account is deactivated. Please contact Admin for assitance" })
+        }
+
         return done(null, parsedUser, { message: "Logged in succesfully" });
       } catch (error) {
         console.log("Error is thrown", error)

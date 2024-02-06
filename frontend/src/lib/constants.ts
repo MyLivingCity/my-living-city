@@ -63,6 +63,7 @@ export const ROUTES = {
   USER_PROFILE: "/profile",
   TEST_PAGE: "/test",
   TEAM404: "/*",
+  ADMIN_MOD_EMAIL_GENERATE: "/adminmod-email-generate",
   SUBMIT_ADVERTISEMENT: "/advertisement/submit",
   ALL_ADVERTISEMENT: "/advertisement/all", //
   USER_ADVERTISEMENTS: "/advertisement/user", //

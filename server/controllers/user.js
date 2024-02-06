@@ -419,7 +419,6 @@ userRouter.post("/signup", async (req, res, next) => {
       user: {
         ...user,
         password: null,
-        adminmodEmail: user.adminmodEmail,
       },
       token,
     });

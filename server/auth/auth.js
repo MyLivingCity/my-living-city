@@ -219,6 +219,10 @@ passport.use(
           });
         }
 
+        if (parsedUser.status === false) {
+          done(null, false, { message: "Account is deactivated. Please contact Admin for assitance" })
+        }
+
         return done(null, parsedUser, { message: "Logged in succesfully" });
       } catch (error) {
         console.log("Error is thrown", error);

@@ -797,7 +797,8 @@ userRouter.put(
 					// },
 					banned,
 					reviewed,
-					verified
+					verified,
+					status
 				} = req.body;
 
 				if(!id){
@@ -842,7 +843,8 @@ userRouter.put(
 						userType:userType,
 						banned:banned,
 						reviewed:reviewed,
-						verified:verified
+						verified:verified,
+						status:status
 					}
 				});
 

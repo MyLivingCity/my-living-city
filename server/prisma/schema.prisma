@@ -179,6 +179,9 @@ model User {
   displayFName      String?  @map("display_f_name")
   displayLName      String?  @map("display_l_name")
   adminmodEmail     String?  @map("adminmod_email")
+  status           Boolean  @default(true)
+
+
 
   // Relationships
   address             UserAddress?

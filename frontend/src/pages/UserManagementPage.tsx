@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { UserManagementContent } from 'src/components/content/UserManagementContent';
 import { UserProfileContext } from '../contexts/UserProfile.Context';
@@ -40,16 +40,16 @@ const UserManagementPage: React.FC<UserManagementPropsLegacy> = ({ }) => {
     let flaggedUser: number[] = [];
     if (userLoading || ideaLoading || proposalLoading || commentLoading || flagLoading || commentFlagLoading || banLoading || segLoading || subSegLoading) {
         return (
-            <div className="wrapper">
+            <div className='wrapper'>
                 <LoadingSpinner />
             </div>
-        )
+        );
     }
 
     // TODO: Create non blocking error handling
 
     return (
-        <div className="wrapper">
+        <div className='wrapper'>
             <UserManagementContent
                 users={userData!}
                 token={token}
@@ -65,6 +65,6 @@ const UserManagementPage: React.FC<UserManagementPropsLegacy> = ({ }) => {
             />
         </div>
     );
-}
+};
 
-export default UserManagementPage
+export default UserManagementPage;

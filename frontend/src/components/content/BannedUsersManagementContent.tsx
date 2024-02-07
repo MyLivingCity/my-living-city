@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import { Card, Table, Dropdown, Container, Button, Form, NavDropdown } from 'react-bootstrap';
 import { IBanUserInfo } from 'src/lib/types/data/banUser.type';
 
@@ -35,61 +35,61 @@ export const BannedUsersManagementContent: React.FC<BannedUsersManagementContent
 
             // Format ban duration
             if (users[i].banDuration === 99999){
-                banDuration.push("Permanent");
+                banDuration.push('Permanent');
             } else if (users[i].banDuration === 365){
-                banDuration.push("1 year");
+                banDuration.push('1 year');
             } else if (users[i].banDuration === 180){
-                banDuration.push("6 months");
+                banDuration.push('6 months');
             } else if (users[i].banDuration === 90){
-                banDuration.push("3 months");
+                banDuration.push('3 months');
             } else {
-                banDuration.push(users[i].banDuration + " days");
+                banDuration.push(users[i].banDuration + ' days');
             }
         }
     }
 
-        return (
-            <Container style={{maxWidth: '80%', marginLeft: 50}}>
+    return (
+        <Container style={{maxWidth: '80%', marginLeft: 50}}>
             <Form>
-            <h2 className="mb-4 mt-4">Banned Users Management</h2>
-            <Table bordered hover size="sm">
-            <thead className="table-active">
-                <tr>
-                <th scope="col">Email</th>
-                <th scope="col">First</th>
-                <th scope="col">Last</th>
-                <th scope="col">User Type</th>
-                <th scope="col">Ban Type</th>
-                <th scope="col">Ban Reason</th>
-                <th scope="col">Ban Message</th>
-                <th scope="col">Ban Date</th>
-                <th scope="col">Banned Until</th>
-                <th scope="col">Ban Duration</th>
-                </tr>
-            </thead>
-            <tbody>
-            {users?.map((req: IBanUserInfo, index: number) => (
-                <tr key={req.id}>
-                    {
-                    <>
-                    <td>{userEmail[index]}</td>
-                    <td>{userFirstName[index]}</td>
-                    <td>{userLastName[index]}</td>
-                    <td>{userType[index]}</td>
-                    <td>{banType[index]}</td>
-                    <td>{banReason[index]}</td>
-                    <td>{banMessage[index]}</td>
-                    <td>{(new Date(banDate[index]).toLocaleDateString())}</td>
-                    <td>{(new Date(banEndDate[index])).toLocaleDateString()}</td>
-                    <td>{banDuration[index]}</td>
-                    </>
-                }
-                </tr>
-                ))}
-            </tbody>
-            </Table>
-        </Form>
-        <br></br>
+                <h2 className='mb-4 mt-4'>Banned Users Management</h2>
+                <Table bordered hover size='sm'>
+                    <thead className='table-active'>
+                        <tr>
+                            <th scope='col'>Email</th>
+                            <th scope='col'>First</th>
+                            <th scope='col'>Last</th>
+                            <th scope='col'>User Type</th>
+                            <th scope='col'>Ban Type</th>
+                            <th scope='col'>Ban Reason</th>
+                            <th scope='col'>Ban Message</th>
+                            <th scope='col'>Ban Date</th>
+                            <th scope='col'>Banned Until</th>
+                            <th scope='col'>Ban Duration</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {users?.map((req: IBanUserInfo, index: number) => (
+                            <tr key={req.id}>
+                                {
+                                    <>
+                                        <td>{userEmail[index]}</td>
+                                        <td>{userFirstName[index]}</td>
+                                        <td>{userLastName[index]}</td>
+                                        <td>{userType[index]}</td>
+                                        <td>{banType[index]}</td>
+                                        <td>{banReason[index]}</td>
+                                        <td>{banMessage[index]}</td>
+                                        <td>{(new Date(banDate[index]).toLocaleDateString())}</td>
+                                        <td>{(new Date(banEndDate[index])).toLocaleDateString()}</td>
+                                        <td>{banDuration[index]}</td>
+                                    </>
+                                }
+                            </tr>
+                        ))}
+                    </tbody>
+                </Table>
+            </Form>
+            <br></br>
         </Container>
-        );
-}
+    );
+};

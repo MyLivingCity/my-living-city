@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import { Button, Container, Card, Modal, Row } from 'react-bootstrap';
 import { IUser } from 'src/lib/types/data/user.type';
 import { FindBanDetailsWithStaleTime } from 'src/hooks/banHooks';
@@ -43,7 +43,7 @@ export const UserManagementModifyWarningModal = ({
         } finally {
             setIsSubmitting(false);
         }
-    }
+    };
 
     const banUser = async () => {
         try {
@@ -52,19 +52,19 @@ export const UserManagementModifyWarningModal = ({
             setIsSubmitting(true);
             modalUser.banned = true;
             await updateUser(modalUser, token, currentUser);
-            await updateUserBan(modalUserBanData!, token)
+            await updateUserBan(modalUserBanData!, token);
             handleClose();
         } catch (error) {
             console.log(error);
         } finally {
             setIsSubmitting(false);
         }
-    }
+    };
 
     if (isError) {
         console.log(error);
         return (
-            <div className="wrapper">
+            <div className='wrapper'>
                 <p>
                     Error occured while trying to retrieve warning details. Please try again later.
                 </p>
@@ -76,7 +76,7 @@ export const UserManagementModifyWarningModal = ({
         return (
             <Modal
                 show={show}
-                size="lg"
+                size='lg'
                 centered>
             </Modal>
         );
@@ -87,7 +87,7 @@ export const UserManagementModifyWarningModal = ({
             <Modal
                 show={show}
                 onHide={handleClose}
-                backdrop="static" // Disallow clicking outside of modal to close modal
+                backdrop='static' // Disallow clicking outside of modal to close modal
                 centered
                 size='lg'
                 keyboard={false} // Disallow esc key to close modal
@@ -130,21 +130,21 @@ export const UserManagementModifyWarningModal = ({
                     <div className='w-100 d-flex justify-content-end'>
                         <Button
                             className='mr-3'
-                            variant="danger"
+                            variant='danger'
                             onClick={banUser}
                             disabled={isSubmitting ? true : false}
                         >Ban
                         </Button>
                         <Button
                             className='mr-3'
-                            variant="warning"
+                            variant='warning'
                             onClick={removeWarningUser}
                             disabled={isSubmitting ? true : false}
                         >Remove Warning
                         </Button>
                         <Button
                             className='mr-3'
-                            variant="secondary"
+                            variant='secondary'
                             onClick={handleClose}
                         >Cancel
                         </Button>
@@ -152,5 +152,5 @@ export const UserManagementModifyWarningModal = ({
                 </Modal.Footer>
             </Modal>
         </>
-    )
-}
+    );
+};

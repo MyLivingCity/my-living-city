@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import { Button, Container, Card, Modal, Row } from 'react-bootstrap';
 import { IUser } from 'src/lib/types/data/user.type';
 import { FindBanDetailsWithStaleTime } from 'src/hooks/banHooks';
@@ -33,8 +33,8 @@ export const UserManagementUnbanModal = ({
         try {
             setIsSubmitting(true);
             modalUser.banned = false;
-            modalUserData!.banUntil = new Date(Date.now())
-            await updateUserBan(modalUserData!, token)
+            modalUserData!.banUntil = new Date(Date.now());
+            await updateUserBan(modalUserData!, token);
             await updateUser(modalUser, token, currentUser);
             handleClose();
         } catch (error) {
@@ -42,11 +42,11 @@ export const UserManagementUnbanModal = ({
         } finally {
             setIsSubmitting(false);
         }
-    }
+    };
 
     if (modalUserIsError) {
         return (
-            <div className="wrapper">
+            <div className='wrapper'>
                 <p>
                     Error occured while trying to retrieve ban details. Please try again later.
                 </p>
@@ -58,7 +58,7 @@ export const UserManagementUnbanModal = ({
         return (
             <Modal
                 show={show}
-                size="lg"
+                size='lg'
                 centered>
             </Modal>
         );
@@ -69,7 +69,7 @@ export const UserManagementUnbanModal = ({
             <Modal
                 show={show}
                 onHide={handleClose}
-                backdrop="static" // Disallow clicking outside of modal to close modal
+                backdrop='static' // Disallow clicking outside of modal to close modal
                 centered
                 size='lg'
                 keyboard={false} // Disallow esc key to close modal
@@ -126,7 +126,7 @@ export const UserManagementUnbanModal = ({
                         </Button>
                         <Button
                             className='mr-3'
-                            variant="secondary"
+                            variant='secondary'
                             onClick={handleClose}
                         >Cancel
                         </Button>
@@ -134,5 +134,5 @@ export const UserManagementUnbanModal = ({
                 </Modal.Footer>
             </Modal>
         </>
-    )
-}
+    );
+};

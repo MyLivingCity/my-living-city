@@ -23,7 +23,7 @@ export const UserManagementBanHistoryModal = ({
         <Modal
             show={show}
             onHide={handleClose}
-            backdrop="static"
+            backdrop='static'
             centered
             size='xl'
             keyboard={false}>
@@ -40,15 +40,15 @@ export const UserManagementBanHistoryModal = ({
                 </Table>
             </Modal.Body>
             <Modal.Footer>
-                <div className="w-100 d-flex justify-content-center">
+                <div className='w-100 d-flex justify-content-center'>
                     <Button 
-                    className = "mr-3"
-                    variant="secondary" 
-                    onClick={handleClose}>
+                        className = 'mr-3'
+                        variant='secondary' 
+                        onClick={handleClose}>
                         Close
                     </Button>
                 </div>
             </Modal.Footer>
         </Modal>
-    )
-}
+    );
+};

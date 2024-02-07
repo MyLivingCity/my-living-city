@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import { Table, Dropdown, Container, Button, Form, NavDropdown } from 'react-bootstrap';
 import { updateUser, getUserBanHistory, removeFlagQuarantine, removePostCommentQuarantine } from 'src/lib/api/userRoutes';
 import { USER_TYPES } from 'src/lib/constants';
@@ -47,22 +47,22 @@ export const BadPostingManagementContent: React.FC<BadPostingManagementContentPr
         setShowUserSegmentCard(true);
         setEmail(email);
         setId(id);
-    }
+    };
     const {data: badPostingThreshholdData, isLoading: badPostingThreshholdLoading} = useBadPostingThreshhold(token);
     // function userModalInfo(users: IUser[], user: IUser, flags: IFlag[], commentFlags: ICommentFlag[] ){
     //     setShowUserFlagsModal(true);
     // }
 
     
-    console.log("users: ", users)
-    console.log("flags: ", flags)
-    console.log("Bad Posting Users:  ", badPostingUsers)
+    console.log('users: ', users);
+    console.log('flags: ', flags);
+    console.log('Bad Posting Users:  ', badPostingUsers);
 
     let userBadPostingData: any = [];
     if(users && badPostingUsers){
         userBadPostingData = users.map((user) => {
             const badPostingUser = badPostingUsers.find((badPostingUser) => badPostingUser.userId === user.id);
-            console.log("badPostingUser: ", badPostingUser)
+            console.log('badPostingUser: ', badPostingUser);
             if(badPostingUser){
                 return {
                     id: user.id,
@@ -75,15 +75,15 @@ export const BadPostingManagementContent: React.FC<BadPostingManagementContentPr
                     postFlagCount: badPostingUser?.post_flag_count,
                     banned: badPostingUser?.post_comment_ban,
                     bannedUntil: badPostingUser?.bannedUntil,
-                }
+                };
             } else {
-                return null
+                return null;
             }
-        })
+        });
         // Remove null values from the array
         userBadPostingData = userBadPostingData.filter((user: any) => user !== null);
     }
-    console.log("badPostingData: ", userBadPostingData);
+    console.log('badPostingData: ', userBadPostingData);
 
 
     function formatBanHistory(banhistory: any){
@@ -100,7 +100,7 @@ export const BadPostingManagementContent: React.FC<BadPostingManagementContentPr
                         <td>Banned At: {ban.createdAt}</td>
                         <td>Banned Until: {ban.userBannedUntil}</td>
                     </tr>
-                )
+                );
             } else if (ban.type === 'COMMENT'){
                 return (
                     <tr>
@@ -109,7 +109,7 @@ export const BadPostingManagementContent: React.FC<BadPostingManagementContentPr
                         <td>Moderator ID: {ban.modId}</td>
                         <td>Banned At: {ban.createdAt}</td>
                     </tr>
-                )
+                );
             } else if (ban.type === 'IDEA'){
                 return (
                     <tr>
@@ -118,7 +118,7 @@ export const BadPostingManagementContent: React.FC<BadPostingManagementContentPr
                         <td>Moderator ID: {ban.modId}</td>
                         <td>Banned At: {ban.createdAt}</td>
                     </tr>
-                )
+                );
             } else {
                 return<tr><td>Invalid</td></tr>;
             }
@@ -127,136 +127,147 @@ export const BadPostingManagementContent: React.FC<BadPostingManagementContentPr
     }
 
     const userTypes = Object.keys(USER_TYPES);
-        return (
-            <Container style={{maxWidth: '80%', marginLeft: 50}}>
+    return (
+        <Container style={{maxWidth: '80%', marginLeft: 50}}>
             {showUserFlagsModal ?
-            <UserFlagsModal show={showUserFlagsModal} setShow={setShowUserFlagsModal} user={modalUser!} flags={flags} commentFlags={commentFlags} ideas={ideas} proposals={proposals} comments={comments}/>
-            : null
-             }
+                <UserFlagsModal show={showUserFlagsModal} setShow={setShowUserFlagsModal} user={modalUser!} flags={flags} commentFlags={commentFlags} ideas={ideas} proposals={proposals} comments={comments}/>
+                : null
+            }
             {showUserBanModal ?
-            <UserManagementBanModal show={showUserBanModal} setShow={setShowUserBanModal} modalUser={modalUser!} currentUser={user!} token={token}/>
-            : null
+                <UserManagementBanModal show={showUserBanModal} setShow={setShowUserBanModal} modalUser={modalUser!} currentUser={user!} token={token}/>
+                : null
             }
             {showUserUnbanModal ?
-            <UserManagementUnbanModal show={showUserUnbanModal} setShow={setShowUserUnbanModal} modalUser={modalUser!} currentUser={user!} token={token} />
-            : null
+                <UserManagementUnbanModal show={showUserUnbanModal} setShow={setShowUserUnbanModal} modalUser={modalUser!} currentUser={user!} token={token} />
+                : null
             }
             {showUserBanHistoryModal ?
-            <UserManagementBanHistoryModal show={showUserBanHistoryModal} setShow={setShowUserBanHistoryModal} modalUser={modalUser!} currentUser={user!} token={token} data={banHistory!}/>
-            : null
+                <UserManagementBanHistoryModal show={showUserBanHistoryModal} setShow={setShowUserBanHistoryModal} modalUser={modalUser!} currentUser={user!} token={token} data={banHistory!}/>
+                : null
             }
 
             <Form>
-            <h2 className="mb-4 mt-4">Bad Posting Management</h2>
-            <Table bordered hover size="sm">
-            <thead className="table-active">
-            <tr>
-                <th scope="col">Email</th>
-                <th scope="col">Organization</th>
-                <th scope="col">F Name</th>
-                <th scope="col">L Name</th>
-                <th scope="col">User Type</th>
-                <th scope="col">Bad Posts</th>
-                <th scope="col">Posts Flagged</th>
-                <th scope="col">Banned</th>
-                <th scope="col">Banned Until</th>
-                <th scope="col">Controls</th>
-                </tr>
-            </thead>
-            <tbody>
-                {/* only show the user if they are banned */}
-                {userBadPostingData?.map((req: any, index: number) => {
-                    if(badPostingThreshholdData) {
-                        if((req.badPostCount + req.postFlagCount) >= badPostingThreshholdData.number || req.banned){
-                                return (
-                                    <tr key={req.id}>
-                            {req.id !== hideControls ? 
-                            <>
-                            <td>{req.email}</td>
-                            <td>{req.organization ? req.organization : "N/A"}</td>
-                            <td>{req.firstName}</td>
-                            <td>{req.lastName}</td>
-                            <td>{req.userType}</td>
-                            <td>{req.badPostCount} </td> 
-                            <td>{req.postFlagCount} </td>
-                            <td>{req.banned ? "Yes" : "No" }</td>
-                            <td>{req.bannedUntil ? req.bannedUntil : "N/A"}</td>
-                            </> :
-                            <>
-                            <td><Form.Control type="text" defaultValue={req.email} onChange={(e)=>req.email = e.target.value}/></td>
-                            <td><Form.Control type="text" defaultValue={req.fname} onChange={(e)=>req.fname = e.target.value}/></td>
-                            <td><Form.Control type="text" defaultValue={req.lname} onChange={(e)=>req.lname = e.target.value}/></td>
-                            <td><Form.Control as="select" onChange={(e)=>{(req.userType as String) = e.target.value}}>
-                                <option>{req.userType}</option>
-                                {userTypes.filter(type => type !== req.userType).map(item =>
-                                    <option key={item}>{item}</option>
-                                )}
-                                </Form.Control>
-                            </td>
-                            <td><Button onClick={()=> setShowUserFlagsModal(true)}>More Details</Button></td>
-                            <td></td>
-                            <td>{req.banned ? "Yes" : "No" }</td>
-                            <td><Form.Check type="switch" checked={reviewed} onChange={(e)=>{
-                                setReviewed(e.target.checked)
-                                req.reviewed = e.target.checked;
-                                }} id="reviewed-switch"/>
-                            </td>    
-                            </>
-                            }
-
-                            <td>
-                            {req.id !== hideControls ? 
-                                <NavDropdown title="Controls" id="nav-dropdown">
-                                    <Dropdown.Item onClick={()=>{
-                                        setHideControls(req.id);
-                                        setReviewed(req.reviewed);
-                                        setModalUser(req);
-                                        }}>Edit</Dropdown.Item>
-                                    <Dropdown.Item onClick={()=>
-                                        UserSegmentHandler(req.email, req.id)
-                                        }>View Segments</Dropdown.Item>
-                                    {req.banned ? 
-                                        <Dropdown.Item onClick={()=> {
-                                            setModalUser(req);
-                                            setShowUserUnbanModal(true);
-                                        }}>Modify Ban</Dropdown.Item>
-                                        :
-                                        <Dropdown.Item onClick={()=> {
-                                            setModalUser(req);
-                                            setShowUserBanModal(true);
-                                        }}>Ban User</Dropdown.Item>
-                                    }
-                                    <Dropdown.Item onClick={() => getUserBanHistory(req.id).then(data => {
-                                        setModalUser(req);
-                                        setBanHistory(formatBanHistory(data));
-                                        setShowUserBanHistoryModal(true);
-                                    })} >Ban History</Dropdown.Item>
-                                    <Dropdown.Item onClick={() => removeFlagQuarantine(req.id)}>Remove Flag Quarantine</Dropdown.Item>
-                                    <Dropdown.Item onClick={() => removePostCommentQuarantine(req.id)}>Remove Post Comment Quarantine</Dropdown.Item>
-                                </NavDropdown>
-                                : <>
-                                <Button size="sm" variant="outline-danger" className="mr-2 mb-2" onClick={()=>setHideControls('')}>Cancel</Button>
-                                <Button size="sm" onClick={()=>{
-                                    setHideControls('');
-                                    
-                                    updateUser(req, token, user);
-                                    }}>Save</Button>
-                                </>
-                            }
-
-                            </td>
+                <h2 className='mb-4 mt-4'>Bad Posting Management</h2>
+                <Table bordered hover size='sm'>
+                    <thead className='table-active'>
+                        <tr>
+                            <th scope='col'>Email</th>
+                            <th scope='col'>Organization</th>
+                            <th scope='col'>F Name</th>
+                            <th scope='col'>L Name</th>
+                            <th scope='col'>User Type</th>
+                            <th scope='col'>Bad Posts</th>
+                            <th scope='col'>Posts Flagged</th>
+                            <th scope='col'>Banned</th>
+                            <th scope='col'>Banned Until</th>
+                            <th scope='col'>Controls</th>
                         </tr>
-                                )
+                    </thead>
+                    <tbody>
+                        {/* only show the user if they are banned */}
+                        {userBadPostingData?.map((req: any, index: number) => {
+                            if(badPostingThreshholdData) {
+                                if((req.badPostCount + req.postFlagCount) >= badPostingThreshholdData.number || req.banned){
+                                    return (
+                                        <tr key={req.id}>
+                                            {req.id !== hideControls ? 
+                                                <>
+                                                    <td>{req.email}</td>
+                                                    <td>{req.organization ? req.organization : 'N/A'}</td>
+                                                    <td>{req.firstName}</td>
+                                                    <td>{req.lastName}</td>
+                                                    <td>{req.userType}</td>
+                                                    <td>{req.badPostCount} </td> 
+                                                    <td>{req.postFlagCount} </td>
+                                                    <td>{req.banned ? 'Yes' : 'No' }</td>
+                                                    <td>{req.bannedUntil ? req.bannedUntil : 'N/A'}</td>
+                                                </> :
+                                                <>
+                                                    <td><Form.Control type='text' defaultValue={req.email} onChange={(e)=>req.email = e.target.value}/></td>
+                                                    <td><Form.Control type='text' defaultValue={req.fname} onChange={(e)=>req.fname = e.target.value}/></td>
+                                                    <td><Form.Control type='text' defaultValue={req.lname} onChange={(e)=>req.lname = e.target.value}/></td>
+                                                    <td><Form.Control as='select' onChange={(e)=>{(req.userType as String) = e.target.value;}}>
+                                                        <option>{req.userType}</option>
+                                                        {userTypes.filter(type => type !== req.userType).map(item =>
+                                                            <option key={item}>{item}</option>
+                                                        )}
+                                                    </Form.Control>
+                                                    </td>
+                                                    <td><Button onClick={()=> setShowUserFlagsModal(true)}>More Details</Button></td>
+                                                    <td></td>
+                                                    <td>{req.banned ? 'Yes' : 'No' }</td>
+                                                    <td><Form.Check
+                                                        type='switch'
+                                                        checked={reviewed}
+                                                        onChange={(e)=>{
+                                                            setReviewed(e.target.checked);
+                                                            req.reviewed = e.target.checked;
+                                                        }}
+                                                        id='reviewed-switch'/>
+                                                    </td>    
+                                                </>
+                                            }
+
+                                            <td>
+                                                {req.id !== hideControls ? 
+                                                    <NavDropdown title='Controls' id='nav-dropdown'>
+                                                        <Dropdown.Item
+                                                            onClick={()=>{
+                                                                setHideControls(req.id);
+                                                                setReviewed(req.reviewed);
+                                                                setModalUser(req);
+                                                            }}>Edit</Dropdown.Item>
+                                                        <Dropdown.Item
+                                                            onClick={()=>
+                                                                UserSegmentHandler(req.email, req.id)
+                                                            }>View Segments</Dropdown.Item>
+                                                        {req.banned ? 
+                                                            <Dropdown.Item
+                                                                onClick={()=> {
+                                                                    setModalUser(req);
+                                                                    setShowUserUnbanModal(true);
+                                                                }}>Modify Ban</Dropdown.Item>
+                                                            :
+                                                            <Dropdown.Item
+                                                                onClick={()=> {
+                                                                    setModalUser(req);
+                                                                    setShowUserBanModal(true);
+                                                                }}>Ban User</Dropdown.Item>
+                                                        }
+                                                        <Dropdown.Item
+                                                            onClick={() => getUserBanHistory(req.id).then(data => {
+                                                                setModalUser(req);
+                                                                setBanHistory(formatBanHistory(data));
+                                                                setShowUserBanHistoryModal(true);
+                                                            })} >Ban History</Dropdown.Item>
+                                                        <Dropdown.Item onClick={() => removeFlagQuarantine(req.id)}>Remove Flag Quarantine</Dropdown.Item>
+                                                        <Dropdown.Item onClick={() => removePostCommentQuarantine(req.id)}>Remove Post Comment Quarantine</Dropdown.Item>
+                                                    </NavDropdown>
+                                                    : <>
+                                                        <Button size='sm' variant='outline-danger' className='mr-2 mb-2' onClick={()=>setHideControls('')}>Cancel</Button>
+                                                        <Button
+                                                            size='sm'
+                                                            onClick={()=>{
+                                                                setHideControls('');
+                                    
+                                                                updateUser(req, token, user);
+                                                            }}>Save</Button>
+                                                    </>
+                                                }
+
+                                            </td>
+                                        </tr>
+                                    );
+                                }
                             }
-                    }
                     
-                })}
-            </tbody>
-            </Table>
-        </Form>
-        <br></br>
-        {/* <UserSegmentHandler/> */}
-        {showUserSegmentCard && <UserSegmentInfoCard email={email} id={id} token={token}/>}
+                        })}
+                    </tbody>
+                </Table>
+            </Form>
+            <br></br>
+            {/* <UserSegmentHandler/> */}
+            {showUserSegmentCard && <UserSegmentInfoCard email={email} id={id} token={token}/>}
         </Container>
-        );
-}
+    );
+};

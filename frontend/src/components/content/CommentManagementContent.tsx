@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import { Table, Dropdown, Container, Button, Form, NavDropdown } from 'react-bootstrap';
 import { updateCommentStatus } from 'src/lib/api/commentRoutes';
 import { updateFalseFlagComment } from 'src/lib/api/flagRoutes';
@@ -40,10 +40,10 @@ export const CommentManagementContent: React.FC<CommentManagementContentProps> =
         setShowUserSegmentCard(true);
         setEmail(email);
         setId(id);
-    }
-    let userEmail: String[] = []
-    let userName: String[] = []
-    let commentType: String[] = []
+    };
+    let userEmail: String[] = [];
+    let userName: String[] = [];
+    let commentType: String[] = [];
     let commentNumFlags: number[] = [];
     if(comments && users){
         for(let i = 0; i < comments!.length; i++){
@@ -76,8 +76,8 @@ export const CommentManagementContent: React.FC<CommentManagementContentProps> =
         }
     }
     const ideaURL = '/ideas/';
-        return (
-            <Container style={{maxWidth: '80%', marginLeft: 50}}>
+    return (
+        <Container style={{maxWidth: '80%', marginLeft: 50}}>
             {showCommentBanModal ?
                 <CommentBanModal show={showCommentBanModal} setShow={setShowCommentBanModal} comment={banModalCommentData!} authorName={banModalAuthorName} postLink={banModalPostLink} token={token}/>
                 :
@@ -89,124 +89,138 @@ export const CommentManagementContent: React.FC<CommentManagementContentProps> =
                 null
             }
             <Form>
-            <h2 className="mb-4 mt-4">Comment Management</h2>
-            <Table bordered hover size="sm">
-            <thead className="table-active">
-                <tr>
-                <th scope="col">User Email</th>
-                <th scope="col">User Name</th>
-                <th scope="col">Post Type</th>
-                <th scope="col">Post Link</th>
-                <th scope="col">Comment Contents</th>
-                <th scope="col">Number of Flags</th>
-                <th scope="col">Region</th>
-                <th scope="col">Active</th>
-                <th scope="col">Reviewed</th>
-                <th scope="col">Quarantined Date</th>
-                <th scope="col">Controls</th>
-                </tr>
-            </thead>
-            <tbody>
-            {comments?.map((req: IComment, index: number) => (
-                <tr key={req.id}>
-                    {req.id.toString() !== hideControls ? 
-                    <>
-                    <td>{userEmail[index]}</td>
+                <h2 className='mb-4 mt-4'>Comment Management</h2>
+                <Table bordered hover size='sm'>
+                    <thead className='table-active'>
+                        <tr>
+                            <th scope='col'>User Email</th>
+                            <th scope='col'>User Name</th>
+                            <th scope='col'>Post Type</th>
+                            <th scope='col'>Post Link</th>
+                            <th scope='col'>Comment Contents</th>
+                            <th scope='col'>Number of Flags</th>
+                            <th scope='col'>Region</th>
+                            <th scope='col'>Active</th>
+                            <th scope='col'>Reviewed</th>
+                            <th scope='col'>Quarantined Date</th>
+                            <th scope='col'>Controls</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {comments?.map((req: IComment, index: number) => (
+                            <tr key={req.id}>
+                                {req.id.toString() !== hideControls ? 
+                                    <>
+                                        <td>{userEmail[index]}</td>
                     
-                    <td>{userName[index]}</td>
-                    <td>{commentType[index]}</td>
-                    <td>{<a href= {ideaURL + req.ideaId}>Link</a>}</td>
-                    <td>{req.content}</td> 
-                    <td>{commentNumFlags[index].toString()}</td>
-                    <td>{"CRD"}</td>
-                    <td>{req.active ? "Yes" : "No"}</td>
-                    <td>{req.reviewed ? "Yes" : "No"}</td>
-                    <td>{(new Date(req.quarantined_at)).toLocaleDateString()}</td>
-                    </> :<>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td><Form.Check type="switch" checked={req.active} onChange={(e)=>{
-                        req.active = e.target.checked;
-                        setBan(e.target.checked)
-                        }} id="ban-switch"/></td>
-                        <td><Form.Check type="switch" checked={req.reviewed} onChange={(e)=>{
-                        req.reviewed = e.target.checked;
-                        setReviewed(e.target.checked)
-                        }} id="reviewed-switch"/></td>    
-                    </>
-                }
+                                        <td>{userName[index]}</td>
+                                        <td>{commentType[index]}</td>
+                                        <td>{<a href= {ideaURL + req.ideaId}>Link</a>}</td>
+                                        <td>{req.content}</td> 
+                                        <td>{commentNumFlags[index].toString()}</td>
+                                        <td>{'CRD'}</td>
+                                        <td>{req.active ? 'Yes' : 'No'}</td>
+                                        <td>{req.reviewed ? 'Yes' : 'No'}</td>
+                                        <td>{(new Date(req.quarantined_at)).toLocaleDateString()}</td>
+                                    </> :<>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td><Form.Check
+                                            type='switch'
+                                            checked={req.active}
+                                            onChange={(e)=>{
+                                                req.active = e.target.checked;
+                                                setBan(e.target.checked);
+                                            }}
+                                            id='ban-switch'/></td>
+                                        <td><Form.Check
+                                            type='switch'
+                                            checked={req.reviewed}
+                                            onChange={(e)=>{
+                                                req.reviewed = e.target.checked;
+                                                setReviewed(e.target.checked);
+                                            }}
+                                            id='reviewed-switch'/></td>    
+                                    </>
+                                }
 
-                    <td>
-                    {req.id.toString() !== hideControls ?
-                        <NavDropdown title="Controls" id="nav-dropdown">
-                            {/* <Dropdown.Item onClick={()=>{
+                                <td>
+                                    {req.id.toString() !== hideControls ?
+                                        <NavDropdown title='Controls' id='nav-dropdown'>
+                                            {/* <Dropdown.Item onClick={()=>{
                                 setHideControls(req.id.toString());
                                 setBan(req.active);
                                 setReviewed(req.reviewed);
                                 }}>Edit</Dropdown.Item> */}
-                            {req.bannedComment ?    
-                                <Dropdown.Item onClick={()=>{
-                                    setBanModalCommentData(req);
-                                    setShowCommentUnbanModal(true);
-                                    }}>Unban Comment
-                                </Dropdown.Item> :
-                                <>
-                                    <Dropdown.Item onClick={()=>{
-                                        setBanModalCommentData(req);
-                                        setBanModalPostLink(ideaURL + req.ideaId);
-                                        setBanModalAuthorName(userName[index].toString());
-                                        setShowCommentBanModal(true);
-                                        incrementBadPostCount(token, req.id.toString());
-                                        }}>Ban Comment
-                                    </Dropdown.Item>
-                                    {req.reviewed && req.active ?
-                                        <Dropdown.Item onClick={()=>{
-                                            updateFalseFlagComment(parseInt(req.id.toString()), token!, false);
-                                            setActive(req.active=false);
-                                            setReviewed(req.reviewed=false);
-                                            updateCommentStatus(token, req.id.toString(), req.active, req.reviewed, req.bannedComment, req.quarantined_at);
-                                            }}>Quarantine Idea
-                                        </Dropdown.Item>
-                                    :
-                                        <Dropdown.Item onClick={()=>{
-                                            updateFalseFlagComment(parseInt(req.id.toString()), token!, true);
-                                            setActive(req.active=true);
-                                            setReviewed(req.reviewed=true);
-                                            updateCommentStatus(token, req.id.toString(), req.active, req.reviewed, req.bannedComment, req.quarantined_at);
-                                            }}>Remove from Quarantine
-                                        </Dropdown.Item>
+                                            {req.bannedComment ?    
+                                                <Dropdown.Item
+                                                    onClick={()=>{
+                                                        setBanModalCommentData(req);
+                                                        setShowCommentUnbanModal(true);
+                                                    }}>Unban Comment
+                                                </Dropdown.Item> :
+                                                <>
+                                                    <Dropdown.Item
+                                                        onClick={()=>{
+                                                            setBanModalCommentData(req);
+                                                            setBanModalPostLink(ideaURL + req.ideaId);
+                                                            setBanModalAuthorName(userName[index].toString());
+                                                            setShowCommentBanModal(true);
+                                                            incrementBadPostCount(token, req.id.toString());
+                                                        }}>Ban Comment
+                                                    </Dropdown.Item>
+                                                    {req.reviewed && req.active ?
+                                                        <Dropdown.Item
+                                                            onClick={()=>{
+                                                                updateFalseFlagComment(parseInt(req.id.toString()), token!, false);
+                                                                setActive(req.active=false);
+                                                                setReviewed(req.reviewed=false);
+                                                                updateCommentStatus(token, req.id.toString(), req.active, req.reviewed, req.bannedComment, req.quarantined_at);
+                                                            }}>Quarantine Idea
+                                                        </Dropdown.Item>
+                                                        :
+                                                        <Dropdown.Item
+                                                            onClick={()=>{
+                                                                updateFalseFlagComment(parseInt(req.id.toString()), token!, true);
+                                                                setActive(req.active=true);
+                                                                setReviewed(req.reviewed=true);
+                                                                updateCommentStatus(token, req.id.toString(), req.active, req.reviewed, req.bannedComment, req.quarantined_at);
+                                                            }}>Remove from Quarantine
+                                                        </Dropdown.Item>
+                                                    }
+                                                </>
+                                            }
+                                        </NavDropdown>
+                                        : <>
+                                            <Button size='sm' variant='outline-danger' className='mr-2 mb-2' onClick={()=>setHideControls('')}>Cancel</Button>
+                                            <Button
+                                                size='sm'
+                                                onClick={()=>{
+                                                    setHideControls('');
+                                                    if(req.active === true && req.reviewed === true){
+                                                        updateFalseFlagComment(parseInt(req.id.toString()), token!, true);
+                                                    }else{
+                                                        updateFalseFlagComment(parseInt(req.id.toString()), token!, false);
+                                                    }
+                                                    updateCommentStatus(token, req.id.toString(), req.active, req.reviewed, false, req.quarantined_at);
+                                                }}>Save</Button>
+                                        </>
                                     }
-                                </>
-                                }
-                        </NavDropdown>
-                        : <>
-                        <Button size="sm" variant="outline-danger" className="mr-2 mb-2" onClick={()=>setHideControls('')}>Cancel</Button>
-                        <Button size="sm" onClick={()=>{
-                            setHideControls('');
-                            if(req.active === true && req.reviewed === true){
-                                updateFalseFlagComment(parseInt(req.id.toString()), token!, true);
-                            }else{
-                                updateFalseFlagComment(parseInt(req.id.toString()), token!, false);
-                            }
-                            updateCommentStatus(token, req.id.toString(), req.active, req.reviewed, false, req.quarantined_at);
-                            }}>Save</Button>
-                        </>
-                    }
 
-                    </td>
-                </tr>
-                ))}
-            </tbody>
-            </Table>
-        </Form>
-        <br></br>
-        {/* <UserSegmentHandler/> */}
-        {showUserSegmentCard && <UserSegmentInfoCard email={email} id={id} token={token}/>}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </Table>
+            </Form>
+            <br></br>
+            {/* <UserSegmentHandler/> */}
+            {showUserSegmentCard && <UserSegmentInfoCard email={email} id={id} token={token}/>}
         </Container>
-        );
-}
+    );
+};

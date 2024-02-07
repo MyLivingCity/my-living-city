@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import { Button, Container, Form, Modal, Row, Col } from 'react-bootstrap';
 import { IComment } from 'src/lib/types/data/comment.type';
-import { useFormik } from "formik";
+import { useFormik } from 'formik';
 import { IBanCommentInput } from 'src/lib/types/input/banComment.input';
 import { postCreateCommentBan } from 'src/lib/api/banRoutes';
 import { updateCommentStatus } from 'src/lib/api/commentRoutes';
@@ -43,23 +43,23 @@ export const CommentBanModal = ({
                 authorId: values.authorId,
                 banReason: values.banReason,
                 banMessage: values.banMessage,
-            }
+            };
             await postCreateCommentBan(banCommentInputValues, token);
             await updateCommentStatus(token, comment.id.toString(), comment.active, comment.reviewed, comment.bannedComment, comment.quarantined_at);
             handleClose();
         } catch (error) {
-            console.log(error)
+            console.log(error);
         } finally {
             setIsSubmitting(false);
         }
-    }
+    };
 
     const formik = useFormik<IBanCommentInput>({
         initialValues: {
             commentId: comment.id,
             authorId: comment.authorId,
-            banReason: "",
-            banMessage: "",
+            banReason: '',
+            banMessage: '',
         },
         onSubmit: submitHandler
     });
@@ -71,7 +71,7 @@ export const CommentBanModal = ({
             <Modal
                 show={show}
                 onHide={handleClose}
-                backdrop="static" // Disallow clicking outside of modal to close modal
+                backdrop='static' // Disallow clicking outside of modal to close modal
                 centered
                 size='lg'
                 keyboard={false} // Disallow esc key to close modal
@@ -88,17 +88,17 @@ export const CommentBanModal = ({
                 <Form onSubmit={formik.handleSubmit}>
                     <Modal.Body>
                         <Row>
-                            <Col md={"auto"}>
-                                <b>Comment Parent Post Link:</b> {<a href={postLink} target="_blank">Link</a>}
+                            <Col md={'auto'}>
+                                <b>Comment Parent Post Link:</b> {<a href={postLink} target='_blank' rel='noreferrer'>Link</a>}
                             </Col>
                         </Row>
                         <Row>
-                            <Col md={"auto"}>
+                            <Col md={'auto'}>
                                 <b>Comment Content:</b> {comment.content}
                             </Col>
                         </Row>
                         <Row>
-                            <Col md={"auto"}>
+                            <Col md={'auto'}>
                                 <b>Comment Author Name:</b> {authorName}
                                 <p />
                             </Col>
@@ -108,8 +108,8 @@ export const CommentBanModal = ({
                             Ban Reason
                         </Form.Label>
                         <Form.Control
-                            as="select"
-                            name="banReason"
+                            as='select'
+                            name='banReason'
                             onChange={formik.handleChange}
                             value={formik.values.banReason}
                             required
@@ -124,10 +124,10 @@ export const CommentBanModal = ({
                         <br />
                         <Form.Label>Ban Details</Form.Label>
                         <Form.Control
-                            as="textarea"
+                            as='textarea'
                             rows={5}
-                            name="banMessage"
-                            placeholder="Details for Ban"
+                            name='banMessage'
+                            placeholder='Details for Ban'
                             onChange={formik.handleChange}
                             value={formik.values.banMessage}
                             required
@@ -143,7 +143,7 @@ export const CommentBanModal = ({
                             </Button>
                             <Button
                                 className='mr-3'
-                                variant="secondary"
+                                variant='secondary'
                                 onClick={handleClose}
                             >Cancel
                             </Button>
@@ -152,5 +152,5 @@ export const CommentBanModal = ({
                 </Form>
             </Modal>
         </>
-    )
-}
+    );
+};

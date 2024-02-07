@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { UserProfileContext } from '../contexts/UserProfile.Context';
 import SubmitIdeaPageContent from '../components/content/SubmitIdeaPageContent';
@@ -13,25 +13,25 @@ interface SubmitIdeaPageProps extends RouteComponentProps<{}> {
 }
 
 const SubmitIdeaPage: React.FC<SubmitIdeaPageProps> = ({}) => {
-  const { token, user } = useContext(UserProfileContext);
-  const { data, isLoading, error, isError } = useCategories();
-  const segData = useAllUserSegmentsRefined(token, user!.id);
-  if (isLoading || segData.isLoading) {
-    return(
-      <div className="wrapper">
-      <LoadingSpinner />
-      </div>
-    )
+    const { token, user } = useContext(UserProfileContext);
+    const { data, isLoading, error, isError } = useCategories();
+    const segData = useAllUserSegmentsRefined(token, user!.id);
+    if (isLoading || segData.isLoading) {
+        return(
+            <div className='wrapper'>
+                <LoadingSpinner />
+            </div>
+        );
 
-  }
+    }
 
-  // TODO: Create non blocking error handling
+    // TODO: Create non blocking error handling
 
-  return (
-    <div className="wrapper">
-      <SubmitIdeaPageContent categories={data} segData={segData.data}/>
-    </div>
-  );
-}
+    return (
+        <div className='wrapper'>
+            <SubmitIdeaPageContent categories={data} segData={segData.data}/>
+        </div>
+    );
+};
 
-export default SubmitIdeaPage
+export default SubmitIdeaPage;

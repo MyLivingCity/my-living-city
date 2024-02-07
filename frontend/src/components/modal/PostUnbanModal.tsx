@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import { Button, Container, Card, Modal, Row } from 'react-bootstrap';
 import { FindPostBanDetailsWithStaleTime } from 'src/hooks/banHooks';
 import { IIdeaWithAggregations } from 'src/lib/types/data/idea.type';
@@ -40,11 +40,11 @@ export const PostUnbanModal = ({
         } finally {
             setIsSubmitting(false);
         }
-    }
+    };
 
     if (modalPostBanIsError) {
         return (
-            <div className="wrapper">
+            <div className='wrapper'>
                 <p>
                     Error occured while trying to retrieve ban details. Please try again later.
                 </p>
@@ -56,7 +56,7 @@ export const PostUnbanModal = ({
         return (
             <Modal
                 show={show}
-                size="lg"
+                size='lg'
                 centered>
             </Modal>
         );
@@ -67,7 +67,7 @@ export const PostUnbanModal = ({
             <Modal
                 show={show}
                 onHide={handleClose}
-                backdrop="static" // Disallow clicking outside of modal to close modal
+                backdrop='static' // Disallow clicking outside of modal to close modal
                 centered
                 size='lg'
                 keyboard={false} // Disallow esc key to close modal
@@ -108,7 +108,7 @@ export const PostUnbanModal = ({
                         </Button>
                         <Button
                             className='mr-3'
-                            variant="secondary"
+                            variant='secondary'
                             onClick={handleClose}
                         >Cancel
                         </Button>
@@ -116,5 +116,5 @@ export const PostUnbanModal = ({
                 </Modal.Footer>
             </Modal>
         </>
-    )
-}
+    );
+};

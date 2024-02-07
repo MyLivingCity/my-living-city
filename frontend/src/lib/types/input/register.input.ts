@@ -1,7 +1,7 @@
-import { IAddressInput } from "./address.input";
-import { IGeoInput } from "./geo.input";
-import { ISchoolDetailsInput } from "./schoolDetails.input";
-import { IWorkDetailsInput } from "./workDetails.input";
+import { IAddressInput } from './address.input';
+import { IGeoInput } from './geo.input';
+import { ISchoolDetailsInput } from './schoolDetails.input';
+import { IWorkDetailsInput } from './workDetails.input';
 
 export interface IRegisterInput {
   userRoleId?: number;

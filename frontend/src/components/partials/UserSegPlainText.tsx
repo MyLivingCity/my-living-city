@@ -10,28 +10,28 @@ interface UserSegPlainTextProps {
 }
 
 export const UserSegPlainText: React.FC<UserSegPlainTextProps> = ({
-  email,
-  id,
-  token,
+    email,
+    id,
+    token,
 }) => {
-  const [userSegment, setUserSegment] = useState<IUserSegment | null>(null);
+    const [userSegment, setUserSegment] = useState<IUserSegment | null>(null);
 
-  useEffect(() => {
-    async function fetchData() {
-      const response = await getMyUserSegmentInfo(token!, id);
-      if (response) {
-        setUserSegment(response);
-      } else {
-        setUserSegment(null);
-      }
-    }
-    fetchData();
-  }, [id, token]);
+    useEffect(() => {
+        async function fetchData() {
+            const response = await getMyUserSegmentInfo(token!, id);
+            if (response) {
+                setUserSegment(response);
+            } else {
+                setUserSegment(null);
+            }
+        }
+        fetchData();
+    }, [id, token]);
 
-  // Extract the home segment as a string
-  const homeSegment = userSegment?.homeSegmentName
-    ? capitalizeString(userSegment.homeSegmentName)
-    : '';
+    // Extract the home segment as a string
+    const homeSegment = userSegment?.homeSegmentName
+        ? capitalizeString(userSegment.homeSegmentName)
+        : '';
 
-  return <>{homeSegment}</>;
+    return <>{homeSegment}</>;
 };

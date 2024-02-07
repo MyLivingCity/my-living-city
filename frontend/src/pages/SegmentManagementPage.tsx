@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext } from 'react';
 import { useAllSegmentRequests, useAllSegments } from 'src/hooks/segmentHooks';
 import { UserProfileContext } from '../contexts/UserProfile.Context';
 import SegmentManagementContent from '../components/content/SegmentManagementContent';
@@ -13,16 +13,16 @@ export default function SegmentManagementPage() {
     const segReq = useAllSegmentRequests(token);
     
     if (isLoading || segReq.isLoading) {
-      return (
-        <div className="wrapper">
-          <LoadingSpinner />
-        </div>
-      )
+        return (
+            <div className='wrapper'>
+                <LoadingSpinner />
+            </div>
+        );
     }
   
     return (
-      <div className="wrapper">
-        <SegmentManagementContent segments={ data } token = {token} segReq={segReq.data}/>
-      </div>
-    )
-  }
+        <div className='wrapper'>
+            <SegmentManagementContent segments={ data } token = {token} segReq={segReq.data}/>
+        </div>
+    );
+}

@@ -23,7 +23,8 @@ export interface IUser {
   verifiedToken?: string;
   displayFName?: string;
   displayLName?: string;
-  status: boolean;
+  adminmodEmail?: string;
+  status?: boolean;
 
   // Relationships can be nullable
   geo?: IGeo;

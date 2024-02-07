@@ -131,10 +131,10 @@ passport.use(
         if (createdUser.verified === false) {
           sendEmailVerification(createdUser);
           // stop here if user is not verified
-          return done(null, createdUser);
+          return done(null, { user: createdUser });
         }
 
-        return done(null, createdUser);
+        return done(null, { user: createdUser });
       } catch (error) {
         console.error(error);
         done(error);
@@ -252,16 +252,23 @@ passport.use(
       try {
         // TODO: Shouldn't trust what the user gives you check if user with given id works
         console.log(token.user);
-        
-        // Check if given token user is valid
-        const foundUser = await prisma.user.findUnique({
-          where: { id: token.user.id }
-        });
 
-        if (!foundUser) {
-          console.log('User could not be found in Database');
-          return done(null, false, { message: 'User could not be found in Database.'})
-        }
+        // if (!token.user || !token.user.id) {
+        //   console.log("Invalid token: User ID is not present");
+        //   return done(null, false, {
+        //     message: "Invalid token: User ID is not present.",
+        //   });
+        // }
+
+        // // Check if given token user is valid
+        // const foundUser = await prisma.user.findUnique({
+        //   where: { id: token.user.id }
+        // });
+
+        // if (!foundUser) {
+        //   console.log('User could not be found in Database');
+        //   return done(null, false, { message: 'User could not be found in Database.'})
+        // }
         
         console.log('User found in database');
         return done(null, token.user);

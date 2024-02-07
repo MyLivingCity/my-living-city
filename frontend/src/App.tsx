@@ -19,6 +19,7 @@ import PublicRoute from "./components/utility/PublicRoute";
 import SubmitAdvertisementPage from "./pages/SubmitAdvertisementPage";
 import ResetPasswordContent from "./pages/ResetPasswordPage";
 import SegmentManagementPage from "./pages/SegmentManagementPage";
+import AdminEmailGeneratePage from "./pages/AdminEmailGeneratePage";
 import AllAdsPage from "./pages/AllAdsPage";
 import UserAdsPage from "./pages/UserAdsPage";
 import EditAdsPage from "./pages/EditAdsPage";
@@ -126,6 +127,17 @@ function App() {
             component={AdminManagementPage}
             userTypes={[USER_TYPES.ADMIN]}
           />
+          <CustomRoute
+            path={ROUTES.ADMIN_MOD_EMAIL_GENERATE}
+            component={AdminEmailGeneratePage}
+            userTypes={[
+              USER_TYPES.ADMIN,
+              USER_TYPES.MOD,
+              USER_TYPES.MUNICIPAL_SEG_ADMIN,
+              USER_TYPES.SEG_ADMIN
+            ]}
+          />
+
           <CustomRoute
             path={ROUTES.MOD_MANAGEMENT}
             component={ModManagementPage}

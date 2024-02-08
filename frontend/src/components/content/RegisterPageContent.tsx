@@ -161,7 +161,6 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
             company: "",
           },
           schoolDetails: {
-
             streetAddress: "",
             postalCode: "",
             faculty: "",
@@ -195,11 +194,11 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
           // const {email, password, confirmPassword} = values;
           try {
             setIsLoading(true);
-            console.log(values, segmentRequests)
+            console.log(values, segmentRequests);
             await postRegisterUser(values, segmentRequests, true, avatar);
             if (userType === USER_TYPES.RESIDENTIAL) {
               wipeLocalStorage();
-              window.location.href = ROUTES.LOGIN;
+              window.location.href = ROUTES.CHECKEMAIL;
             }
           } catch (error) {
             console.log(error);

@@ -377,44 +377,53 @@ userRouter.delete(
  * 			401:
  *        description: The user couldn't be created
 */
-userRouter.post(
-	'/signup',
-	async (req, res, next) => {
-		passport.authenticate('signup', (err, user, info) => {
-			if (err) {
-				res.status(500);
-				res.json({
-					message: err.message,
-					stack: err.stack,
-				});
-				return;
-			}
+userRouter.post("/signup", async (req, res, next) => {
+  passport.authenticate("signup", async (err, user, info) => {
+    if (err) {
+      res.status(500);
+      res.json({
+        message: err.message,
+        stack: err.stack,
+      });
+      return;
+    }
 
-			if (!user) {
-				console.log(info);
-				res.status(401);
-				res.json({
-					message: info.message
-				});
-				return;
-			}
+    if (!user) {
+      console.log(info);
+      res.status(401);
+      res.json({
+        message: info.message,
+      });
+      return;
+    }
 
-			// Give valid token upon signup
-			const tokenBody = { id: user.id, email: user.email };
-			const token = jwt.sign({ user: tokenBody }, JWT_SECRET, {
-				expiresIn: JWT_EXPIRY
-			});
+    const adminTypes = [
+      "ADMIN",
+      "MOD",
+      "SEG_ADMIN",
+      "SEG_MOD",
+      "MUNICIPAL_SEG_ADMIN",
+    ];
+    // Give valid token upon signup
+    const tokenBody = {
+      id: user.id,
+      email: adminTypes.includes(user.userType)
+        ? user.adminmodEmail
+        : user.email,
+    };
+    const token = jwt.sign({ user: tokenBody }, JWT_SECRET, {
+      expiresIn: JWT_EXPIRY,
+    });
 
-			res.status(201).json({
-				user: {
-          ...user,
-          password: null,
-        },
-				token,
-			});
-		})(req, res, next);
-	}
-)
+    res.status(201).json({
+      user: {
+        ...user,
+        password: null,
+      },
+      token,
+    });
+  })(req, res, next);
+});
 
 /**
  * @swagger
@@ -448,64 +457,54 @@ userRouter.post(
  * 			400:
  *        description: The user could not be logged in
 */
-userRouter.post(
-	'/login',
-	async (req, res, next) => {
-		passport.authenticate(
-			'login',
-			async (err, user, info) => {
-				try {
-					if (err) {
-						res.status(400);
-						return res.json({
-							error: err,
-							message: "An Error occured."
-						});
-					}
+userRouter.post("/login", async (req, res, next) => {
+  passport.authenticate("login", async (err, user, info) => {
+    try {
+      if (err) {
+        res.status(400);
+        return res.json({
+          error: err,
+          message: "An Error occured.",
+        });
+      }
 
-					if (!user) {
-						res.status(400);
-						return res.json({
-							message: info.message
-						});
-					}
+      if (!user) {
+        res.status(400);
+        return res.json({
+          message: info.message,
+        });
+      }
 
-					req.login(
-						user,
-						{ session: false },
-						async (error) => {
-							if (error) return next(error);
+      req.login(user, { session: false }, async (error) => {
+        if (error) return next(error);
 
-							const tokenBody = { id: user.id, email: user.email };
-							const token = jwt.sign({ user: tokenBody }, JWT_SECRET, {
-								expiresIn: JWT_EXPIRY
-							});
+        const tokenBody = { id: user.id, email: user.email };
+        const token = jwt.sign({ user: tokenBody }, JWT_SECRET, {
+          expiresIn: JWT_EXPIRY,
+        });
 
-							const parsedUser = {
-								...user,
-								password: null,
-							}
+        const parsedUser = {
+          ...user,
+          password: null,
+        };
 
-							res.status(200);
-							return res.json({
-								user: parsedUser,
-								token,
-							})
-						}
-					)
-				} catch (error) {
-					res.status(400).json({
-						message: "An error occured while trying to login a user.",
-						details: {
-							errorMessage: error.message,
-							errorStack: error.stack,
-						}
-					});
-				}
-			}
-		)(req, res, next);
-	}
-)
+        res.status(200);
+        return res.json({
+          user: parsedUser,
+          token,
+        });
+      });
+    } catch (error) {
+      res.status(400).json({
+        message: "An error occured while trying to login a user.",
+        details: {
+          errorMessage: error.message,
+          errorStack: error.stack,
+        },
+      });
+    }
+  })(req, res, next);
+});
 
 userRouter.post(
 	'/reset-password',
@@ -795,7 +794,10 @@ userRouter.put(
 					// 	country,
 					// 	postalCode,
 					// },
-					banned
+					banned,
+					reviewed,
+					verified,
+					status
 				} = req.body;
 
 				if(!id){
@@ -838,7 +840,10 @@ userRouter.put(
 						fname:fname,
 						lname:lname,
 						userType:userType,
-						banned:banned
+						banned:banned,
+						reviewed:reviewed,
+						verified:verified,
+						status:status
 					}
 				});
 

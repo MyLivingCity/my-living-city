@@ -19,6 +19,7 @@ import PublicRoute from "./components/utility/PublicRoute";
 import SubmitAdvertisementPage from "./pages/SubmitAdvertisementPage";
 import ResetPasswordContent from "./pages/ResetPasswordPage";
 import SegmentManagementPage from "./pages/SegmentManagementPage";
+import AdminEmailGeneratePage from "./pages/AdminEmailGeneratePage";
 import AllAdsPage from "./pages/AllAdsPage";
 import UserAdsPage from "./pages/UserAdsPage";
 import EditAdsPage from "./pages/EditAdsPage";
@@ -32,6 +33,7 @@ import MyPostsPage from "./pages/MyPostsPage";
 import CommunityDashboardPage from "./pages/CommunityDashboardPage";
 import ModManagementPage from "./pages/ModManagementPage";
 import MunicipalDashboardPage from "./pages/MunicipalDashboardPage";
+import CheckEmailPage from "./pages/CheckEmailPage";
 
 function App() {
   return (
@@ -49,6 +51,7 @@ function App() {
           <Route path={ROUTES.SINGLE_IDEA} component={SingleIdeaPage} />
           <Route path={ROUTES.SINGLE_PROPOSAL} component={SingleProposalPage} />
           <PublicRoute path={ROUTES.LOGIN} component={LoginPage} />
+          <PublicRoute path={ROUTES.CHECKEMAIL} component={CheckEmailPage} />
           <PublicRoute path={ROUTES.REGISTER} component={RegisterPage} />
           <PublicRoute
             path={ROUTES.RESET_PASSWORD}
@@ -69,22 +72,31 @@ function App() {
           <PrivateRoute path={ROUTES.My_POSTS} component={MyPostsPage} />
           <PrivateRoute path={ROUTES.DASHBOARD} component={DashboardPage} />
 
-          <CustomRoute 
-            path={ROUTES.USER_ADVERTISEMENTS} 
+          <CustomRoute
+            path={ROUTES.USER_ADVERTISEMENTS}
             component={UserAdsPage}
-            userTypes={[USER_TYPES.BUSINESS, USER_TYPES.COMMUNITY]}/>
+            userTypes={[USER_TYPES.BUSINESS, USER_TYPES.COMMUNITY]}
+          />
           <CustomRoute
             path={ROUTES.SUBMIT_ADVERTISEMENT}
             component={SubmitAdvertisementPage}
-            userTypes={[USER_TYPES.BUSINESS, USER_TYPES.COMMUNITY, USER_TYPES.ADMIN]}
+            userTypes={[
+              USER_TYPES.BUSINESS,
+              USER_TYPES.COMMUNITY,
+              USER_TYPES.ADMIN,
+            ]}
           />
-          <CustomRoute 
+          <CustomRoute
             path={ROUTES.COMMUNITY_DASHBOARD}
             component={CommunityDashboardPage}
-            userTypes={[USER_TYPES.RESIDENTIAL, USER_TYPES.BUSINESS, USER_TYPES.COMMUNITY]}
+            userTypes={[
+              USER_TYPES.RESIDENTIAL,
+              USER_TYPES.BUSINESS,
+              USER_TYPES.COMMUNITY,
+            ]}
           />
 
-          <CustomRoute 
+          <CustomRoute
             path={ROUTES.MUNICIPAL_DASHBOARD}
             component={MunicipalDashboardPage}
             userTypes={[USER_TYPES.MUNICIPAL, USER_TYPES.MUNICIPAL_SEG_ADMIN]}
@@ -103,14 +115,29 @@ function App() {
           <CustomRoute
             path={ROUTES.USER_MANAGEMENT}
             component={UserManagementPage}
-            userTypes={[USER_TYPES.ADMIN, USER_TYPES.MOD, USER_TYPES.MUNICIPAL_SEG_ADMIN]}
+            userTypes={[
+              USER_TYPES.ADMIN,
+              USER_TYPES.MOD,
+              USER_TYPES.MUNICIPAL_SEG_ADMIN,
+            ]}
           />
-          
+
           <CustomRoute
             path={ROUTES.ADMIN_MANAGEMENT}
             component={AdminManagementPage}
             userTypes={[USER_TYPES.ADMIN]}
-          /> 
+          />
+          <CustomRoute
+            path={ROUTES.ADMIN_MOD_EMAIL_GENERATE}
+            component={AdminEmailGeneratePage}
+            userTypes={[
+              USER_TYPES.ADMIN,
+              USER_TYPES.MOD,
+              USER_TYPES.MUNICIPAL_SEG_ADMIN,
+              USER_TYPES.SEG_ADMIN
+            ]}
+          />
+
           <CustomRoute
             path={ROUTES.MOD_MANAGEMENT}
             component={ModManagementPage}

@@ -396,7 +396,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
         );
     } else { 
         return (
-            <Container style={{maxWidth: '100%', marginLeft: 50}}>
+            <Container style={{ maxWidth: '1600px', margin: 'auto' }}>
                 {showUserFlagsModal ?
                     <UserFlagsModal show={showUserFlagsModal} setShow={setShowUserFlagsModal} user={modalUser!} flags={flags} commentFlags={commentFlags} ideas={ideas} proposals={proposals} comments={comments}/>
                     : null
@@ -570,7 +570,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                     )
                 }
                 <Form>
-                    <Table bordered hover size='sm'>
+                    <Table bordered hover size='sm' style={{ fontSize: '0.8rem' }}>
                         <thead className='table-active'>
                             <tr>
                                 <th scope='col' className='text-center align-middle'>Email</th>
@@ -578,6 +578,9 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                                 <th scope='col' className='text-center align-middle'>First</th>
                                 <th scope='col' className='text-center align-middle'>Last</th>
                                 <th scope='col' className='text-center align-middle'>User Type</th>
+                                <th scope='col' className='text-center align-middle'>Home Segment</th>
+                                <th scope='col' className='text-center align-middle'>School Segment</th>
+                                <th scope='col' className='text-center align-middle'>Work Segment</th>
                                 <th scope='col' className='text-center align-middle'>Total Flags</th>
                                 <th scope='col' className='text-center align-middle'>False Flags</th>
                                 <th scope='col' className='text-center align-middle'>Banned</th>
@@ -597,6 +600,9 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                                                 <td className='text-center align-middle'>{req.fname}</td>
                                                 <td className='text-center align-middle'>{req.lname}</td>
                                                 <td className='text-center align-middle'>{req.userType}</td>
+                                                <td className='text-center align-middle'>{req?.userSegments?.homeSegmentName || 'NA'}</td>
+                                                <td className='text-center align-middle'>{req?.userSegments?.schoolSegmentName || 'NA'}</td>
+                                                <td className='text-center align-middle'>{req?.userSegments?.workSegmentName || 'NA'}</td>
                                                 <td className='text-center align-middle'>{userFlags![index].toString()}</td>
                                                 <td className='text-center align-middle'>{userFalseFlags![index].toString()}</td>
                                                 <td className='text-center align-middle'>{req.banned ? 'Yes' : 'No' }</td> 
@@ -727,6 +733,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                 {/* <UserSegmentHandler/> */}
                 {showUserSegmentCard && <UserSegmentInfoCard email={email} id={id} token={token}/>}
             </Container>
+            
         );
     }
 };

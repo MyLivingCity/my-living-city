@@ -35,7 +35,14 @@ export interface ISegmentRequest {
   subSegmentName: string;
 }
 export interface IUserSegment {
-  id: number;
+  id: string;
+  userId: string;
+  homeSuperSegId: number;
+  homeSuperSegName: string;
+  workSuperSegId: number | null,
+  workSuperSegName: string | null,
+  schoolSuperSegId: number | null,
+  schoolSuperSegName: string | null,
   homeSegmentId: number;
   homeSegmentName: string;
   workSegmentId: number;

@@ -464,7 +464,7 @@ userSegmentRouter.put(
 
                         homeSuperSegId = queryResult.superSegId;
 
-                        homeSegmentName = queryResult.superSegName;
+                        homeSuperSegName = queryResult.superSegName;
 
                         homeSegmentHandle = `${user.fname}@${user.address.streetAddress}`
                     }
@@ -516,7 +516,7 @@ userSegmentRouter.put(
 
                         schoolSuperSegId=queryResult.superSegId;
 
-                        schoolSegmentName=queryResult.superSegName;
+                        schoolSuperSegName=queryResult.superSegName;
 
                         schoolSegmentHandle = `${user.fname}@${school_Details.faculty}`
                     }
@@ -670,6 +670,289 @@ userSegmentRouter.put(
                     }
                 })
             }
+
+            res.status(200).json(result);
+
+        }catch(error){
+            console.log(error);
+            res.status(400).json({
+                message: "An error occured while trying to update a userSegment.",
+                details: {
+                    errorMessage: error.message,
+                    errorStack: error.stack,
+                }
+            });
+        }finally{
+            await prisma.$disconnect();
+        }
+    }
+);
+
+userSegmentRouter.put(
+    '/update/:id',
+    passport.authenticate('jwt',{session:false}),
+    async(req,res)=>{
+        try{
+            let updateId;
+            let error = '';
+            let errorMessage = '';
+            let errorStack = '';
+
+            let homeSuperSegId,workSuperSegId,schoolSuperSegId;
+            let homeSuperSegName = '';
+            let workSuperSegName = '';
+            let schoolSuperSegName = '';
+            let homeSegmentName = '';
+            let workSegmentName = '';
+            let schoolSegmentName = '';
+            let homeSubSegmentName = '';
+            let workSubSegmentName = '';
+            let schoolSubSegmentName = '';
+            let homeSegmentHandle = '';
+            let workSegmentHandle = '';
+            let schoolSegmentHandle = '';
+
+            const { id } = req.params;
+
+            const {
+                homeSegmentId,
+                workSegmentId,
+                schoolSegmentId,
+                homeSubSegmentId,
+                workSubSegmentId,
+                schoolSubSegmentId
+            } = req.body;
+
+            const userSegementInfo = await prisma.userSegments.findFirst({
+                where:{userId:id}
+            })
+
+            if(!userSegementInfo){
+                error+='user with id doesn\'t exist in the database!';
+                errorMessage+='id of existing user must be provided.';
+                errorStack+='id of existing user must be provided.';
+                throw new Error("user with id doesn\'t exist in the database!");
+            }
+
+            const user = await prisma.user.findFirst({
+                where:{id:id}
+            })
+
+            const work_Details = await prisma.work_Details.findFirst({
+                where:{userId:id}
+            })
+
+            const school_Details = await prisma.school_Details.findFirst({
+                where:{userId:id}
+            })
+
+            updateId = userSegementInfo.id;
+            homeSuperSegName = userSegementInfo.homeSuperSegName;
+            workSuperSegName = userSegementInfo.workSuperSegName;
+            schoolSuperSegName = userSegementInfo.schoolSuperSegName;
+            homeSegmentName = userSegementInfo.homeSegmentName;
+            workSegmentName = userSegementInfo.workSegmentName;
+            schoolSegmentName = userSegementInfo.schoolSegmentName;
+            homeSubSegmentName = userSegementInfo.homeSubSegmentName;
+            workSubSegmentName = userSegementInfo.workSubSegmentName;
+            schoolSubSegmentName = userSegementInfo.schoolSubSegmentName;
+            homeSegmentHandle = userSegementInfo.homeSegmentHandle;
+            workSegmentHandle = userSegementInfo.workSegmentHandle;
+            schoolSegmentHandle = userSegementInfo.schoolSegmentHandle;
+            
+            if(homeSegmentId){
+                if(!isInteger(homeSegmentId)){
+                    error+='homeSegment Id must be integer.';
+                    errorMessage+='homeSegment Id must be provided in request body as an integer.';
+                    errorStack+='homeSegment Id must be provided in request body as an integer.';
+                }else{
+                    const queryResult = await prisma.segments.findUnique({
+                        where: {segId:homeSegmentId}
+                    });
+
+                    if(!queryResult){
+                        error+='homeSegmend Id doesn\'t exist in the database!';
+                        errorMessage+='homeSegment Id must be provided with a existing segment id in the database.';
+                        errorStack+='homeSegment Id must be provided with a existing segment id in the database.';
+                    }else{
+                        homeSegmentName = queryResult.name;
+
+                        homeSuperSegId = queryResult.superSegId;
+
+                        homeSuperSegName = queryResult.superSegName;
+
+                        homeSegmentHandle = `${user.fname}@${user?.address?.streetAddress || ""}`
+                    }
+                }
+            }
+
+            if(workSegmentId){
+                if(!isInteger(workSegmentId)){
+                    error+='workSegment Id must be integer.';
+                    errorMessage+='workSegment Id must be provided in request body as an integer.';
+                    errorStack+='workSegment Id must be provided in request body as an integer.';
+                }else{
+                    const queryResult = await prisma.segments.findUnique({
+                        where: {segId:workSegmentId}
+                    });
+
+                    if(!queryResult){
+                        error+='workSegmend Id doesn\'t exist in the database!';
+                        errorMessage+='workSegment Id must be provided with a existing segment id in the database.';
+                        errorStack+='workSegment Id must be provided with a existing segment id in the database.';
+                    }else{
+                        workSegmentName=queryResult.name;
+
+                        workSuperSegId=queryResult.superSegId;
+
+                        workSuperSegName=queryResult.superSegName;
+
+                        workSegmentHandle = `${user.fname}@${work_Details.company}`
+                    }
+                }
+            }
+
+            if(schoolSegmentId){
+                if(!isInteger(schoolSegmentId)){
+                    error+='schoolSegment Id must be integer.';
+                    errorMessage+='schoolSegment Id must be provided in request body as an integer.';
+                    errorStack+='schoolSegment Id must be provided in request body as an integer.';
+                }else{
+                    const queryResult = await prisma.segments.findUnique({
+                        where: {segId:schoolSegmentId}
+                    });
+
+                    if(!queryResult){
+                        error+='schoolSegmend Id doesn\'t exist in the database!';
+                        errorMessage+='schoolSegment Id must be provided with a existing segment id in the database.';
+                        errorStack+='schoolSegment Id must be provided with a existing segment id in the database.';
+                    }else{
+                        schoolSegmentName=queryResult.name;
+
+                        schoolSuperSegId=queryResult.superSegId;
+
+                        schoolSuperSegName=queryResult.superSegName;
+
+                        schoolSegmentHandle = `${user.fname}@${school_Details.faculty}`
+                    }
+                }
+            }
+
+            if(homeSubSegmentId){
+                if(!homeSegmentId){
+                    error+='homeSegmend Id must be provide if request body contains homeSubSegmentId.';
+                    errorMessage+='In order to assign user a subsegment, segmentId must be provided with sub segment id.';
+                    errorStack+='In order to assign user a subsegment, segmentId must be provided with sub segment id.';
+                }
+
+                if(!isInteger(homeSubSegmentId)){
+                    error+='homeSubSegment Id must be integer.';
+                    errorMessage+='homeSubSegment Id must be provided in request body as an integer.';
+                    errorStack+='homeSubSegment Id must be provided in request body as an integer.';
+                }else{
+                    const queryResult = await prisma.subSegments.findFirst({
+                        where:{id:homeSubSegmentId,segId:homeSegmentId}
+                    });
+
+                    if(!queryResult){
+                        error+='homeSubSegment Id doesn\'t exist in the database!';
+                        errorMessage+='homeSubSegement Id must be provided with a existing segment id in the database.';
+                        errorStack+='homeSubSegment Id must be provided with a existing segment id in the database.';
+                    }else{
+                        homeSubSegmentName=queryResult.name;
+                    }
+                }
+            }
+
+            if(workSubSegmentId){
+                if(!workSegmentId){
+                    error+='workSegmend Id must be provide if request body contains homeSubSegmentId.';
+                    errorMessage+='In order to assign user a subsegment, segmentId must be provided with sub segment id.';
+                    errorStack+='In order to assign user a subsegment, segmentId must be provided with sub segment id.';
+                }
+
+                if(!isInteger(workSubSegmentId)){
+                    error+='workSubSegment Id must be integer.';
+                    errorMessage+='workSubSegment Id must be provided in request body as an integer.';
+                    errorStack+='workSubSegment Id must be provided in request body as an integer.';
+                }else{
+                    const queryResult = await prisma.subSegments.findFirst({
+                        where:{id:workSubSegmentId,segId:workSegmentId}
+                    });
+
+                    if(!queryResult){
+                        error+='workSubSegment Id doesn\'t exist in the database!';
+                        errorMessage+='workSubSegement Id must be provided with a existing segment id in the database.';
+                        errorStack+='workSubSegment Id must be provided with a existing segment id in the database.';
+                    }else{
+                        workSubSegmentName=queryResult.name;
+                    }
+                }
+            }
+
+            if(schoolSubSegmentId){
+                if(!schoolSegmentId){
+                    error+='homeSegmend Id must be provide if request body contains homeSubSegmentId.';
+                    errorMessage+='In order to assign user a subsegment, segmentId must be provided with sub segment id.';
+                    errorStack+='In order to assign user a subsegment, segmentId must be provided with sub segment id.';
+                }
+
+                if(!isInteger(schoolSubSegmentId)){
+                    error+='homeSubSegment Id must be integer.';
+                    errorMessage+='homeSubSegment Id must be provided in request body as an integer.';
+                    errorStack+='homeSubSegment Id must be provided in request body as an integer.';
+                }else{
+                    const queryResult = await prisma.subSegments.findFirst({
+                        where:{id:schoolSubSegmentId,segId:schoolSegmentId}
+                    });
+
+                    if(!queryResult){
+                        error+='schoolSubSegment Id doesn\'t exist in the database!';
+                        errorMessage+='schoolSubSegement Id must be provided with a existing segment id in the database.';
+                        errorStack+='schoolSubSegment Id must be provided with a existing segment id in the database.';
+                    }else{
+                        schoolSubSegmentName=queryResult.name;
+                    }
+                }
+            }
+        
+            //If there's error in error holder
+            if(error||errorMessage||errorStack){
+                return res.status(400).json({
+                    message: error,
+                    details: {
+                    errorMessage: errorMessage,
+                    errorStack: errorStack
+                    }
+                });
+            }
+
+            const result = await prisma.userSegments.update({
+                where:{id:updateId},
+                data:{
+                    homeSuperSegId:homeSuperSegId,
+                    homeSuperSegName:homeSuperSegName,
+                    workSuperSegId:workSuperSegId,
+                    workSuperSegName:workSuperSegName,
+                    schoolSuperSegId:schoolSuperSegId,
+                    schoolSuperSegName:schoolSegmentName,
+                    homeSegmentId:homeSegmentId,
+                    homeSegmentName:homeSegmentName,
+                    workSegmentId:workSegmentId,
+                    workSegmentName:workSegmentName,
+                    schoolSegmentId:schoolSegmentId,
+                    schoolSegmentName:schoolSegmentName,
+                    homeSubSegmentId:homeSubSegmentId,
+                    homeSubSegmentName:homeSubSegmentName,
+                    workSubSegmentId:workSubSegmentId,
+                    workSubSegmentName:workSubSegmentName,
+                    schoolSubSegmentId:schoolSubSegmentId,
+                    schoolSubSegmentName:schoolSubSegmentName,
+                    homeSegHandle:homeSegmentHandle,
+                    workSegHandle:workSegmentHandle,
+                    schoolSegHandle:schoolSegmentHandle
+                }
+            })
 
             res.status(200).json(result);
 

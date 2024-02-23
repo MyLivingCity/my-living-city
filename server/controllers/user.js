@@ -406,20 +406,17 @@ userRouter.post("/signup", async (req, res, next) => {
     ];
     // Give valid token upon signup
     const tokenBody = {
-      id: user.id,
-      email: adminTypes.includes(user.userType)
-        ? user.adminmodEmail
-        : user.email,
+      id: user.user.id,
+      email: adminTypes.includes(user.user.userType)
+        ? user.user.adminmodEmail
+        : user.user.email,
     };
     const token = jwt.sign({ user: tokenBody }, JWT_SECRET, {
       expiresIn: JWT_EXPIRY,
     });
 
     res.status(201).json({
-      user: {
-        ...user,
-        password: null,
-      },
+      user: user.user,
       token,
     });
   })(req, res, next);

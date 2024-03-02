@@ -21,9 +21,11 @@ export interface ResetPassword {
 }
 
 export interface LoginResponse {
-  user: IUser;
+  userObject: IUser;
   token: string;
+  user: IUser;
 }
+
 export const getUserById = async (userId: string | null) => {
     const res = await axios({
         method: 'get',
@@ -126,15 +128,15 @@ export const postRegisterUser = async (registerData: IRegisterInput, requestData
         fname,
         lname,
         address,
-        geo,
-        workDetails,
-        schoolDetails,
-        homeSegmentId,
-        workSegmentId,
-        schoolSegmentId,
-        homeSubSegmentId,
-        workSubSegmentId,
-        schoolSubSegmentId,
+        // geo,
+        // workDetails,
+        // schoolDetails,
+        //homeSegmentId,
+        // workSegmentId,
+        // schoolSegmentId,
+        // homeSubSegmentId,
+        // workSubSegmentId,
+        // schoolSubSegmentId,
         userType,
         reachSegmentIds,
         verified,
@@ -165,49 +167,49 @@ export const postRegisterUser = async (registerData: IRegisterInput, requestData
     const displayFName = fname;
     const displayLName = address?.streetAddress || '';
     console.log('Added Display Names');
-    const request = await axios.post<LoginResponse>(`${API_BASE_URL}/user/signup`, { email, password, confirmPassword, organizationName, fname, lname, address, geo, userType, verified, displayFName, displayLName});
+    const request = await axios.post<LoginResponse>(`${API_BASE_URL}/user/signup`, { email, password, confirmPassword, organizationName, fname, lname, address, userType, verified, displayFName, displayLName});
     console.log('Awaiting Request for user');
-    console.log(schoolDetails);
-    console.log('Requested USERID', request.data.user.address?.userId);
-    const request2 =  await  axios({
-        method: 'post',
-        url: `${API_BASE_URL}/schoolDetails/create`,
-        data: {
-            schoolDetails: schoolDetails,
-            userId: request.data.user.address?.userId,
+    // console.log(schoolDetails);
+   // console.log('Requested USERID', request.data.userObject.address?.userId);
+    // const request2 =  await  axios({
+    //     method: 'post',
+    //     url: `${API_BASE_URL}/schoolDetails/create`,
+    //     data: {
+    //         // schoolDetails: schoolDetails,
+    //         userId: request.data.user.address?.userId,
 
  
-        },
-        headers: { 'Access-Control-Allow-Origin': '*', 'x-auth-token': request.data.token },
-        withCredentials: true,
-    });
+    //     },
+    //     headers: { 'Access-Control-Allow-Origin': '*', 'x-auth-token': request.data.token },
+    //     withCredentials: true,
+    // });
     console.log('Awaiting for School');
-    await axios({
-        method: 'post',
-        url: `${API_BASE_URL}/workDetails/create`,
-        data: {
-            workDetails: workDetails,
-            userId: request.data.user.address?.userId,
+    // await axios({
+    //     method: 'post',
+    //     url: `${API_BASE_URL}/workDetails/create`,
+    //     data: {
+    //         // workDetails: workDetails,
+    //         userId: request.data.user.address?.userId,
   
-        },
-        headers: { 'Access-Control-Allow-Origin': '*', 'x-auth-token': request.data.token },
-        withCredentials: true,
-    });
+    //     },
+    //     headers: { 'Access-Control-Allow-Origin': '*', 'x-auth-token': request.data.token },
+    //     withCredentials: true,
+    // });
     console.log('Awaiting for work');
-    await axios({
-        method: 'post',
-        url: `${API_BASE_URL}/userSegment/create`,
-        data: {
-            homeSegmentId,
-            workSegmentId,
-            schoolSegmentId,
-            homeSubSegmentId,
-            workSubSegmentId,
-            schoolSubSegmentId
-        },
-        headers: { 'Access-Control-Allow-Origin': '*', 'x-auth-token': request.data.token },
-        withCredentials: true
-    });
+    // await axios({
+    //     method: 'post',
+    //     url: `${API_BASE_URL}/userSegment/create`,
+    //     data: {
+    //         //homeSegmentId,
+    //         // workSegmentId,
+    //         // schoolSegmentId,
+    //         // homeSubSegmentId,
+    //         // workSubSegmentId,
+    //         // schoolSubSegmentId
+    //     },
+    //     headers: { 'Access-Control-Allow-Origin': '*', 'x-auth-token': request.data.token },
+    //     withCredentials: true
+    // });
     if (requestData) {
         if (requestData[0]) {
             request3 = await axios({
@@ -246,7 +248,7 @@ export const postRegisterUser = async (registerData: IRegisterInput, requestData
                 url: `${API_BASE_URL}/reach/create`,
                 data: {
                     segId: segId,
-                    userId: request.data.user.address?.userId,
+                    userId: request.data.userObject.address?.userId,
                 },
                 headers: { 'Access-Control-Allow-Origin': '*', 'x-auth-token': request.data.token },
                 withCredentials: true,
@@ -259,12 +261,12 @@ export const postRegisterUser = async (registerData: IRegisterInput, requestData
 
 
 
-    Promise.all([request, request2, request3, request4, request5, request6, ...request7]).then((...responses) => {
+    Promise.all([request, request3, request4, request5, request6, ...request7]).then((...responses) => {
 
     });
     if (logUser){
-        const { token, user } = request.data;
-        storeUserAndTokenInLocalStorage(token, user);
+        const { token, userObject } = request.data;
+        storeUserAndTokenInLocalStorage(token, userObject);
         storeTokenExpiryInLocalStorage();
     }
   

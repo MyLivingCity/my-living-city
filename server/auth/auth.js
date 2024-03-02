@@ -189,9 +189,8 @@ passport.use(
           adminTypes.includes(foundUser.userType) &&
           foundUser.adminmodEmail !== email.toLowerCase()
         ) {
-          console.log("Admin or Mod user must use adminmodEmail to login");
           return done(null, false, {
-            message: `Admin or Mod user must use generated email: adminXXXX@mylivingcity.org to login!`,
+            message: `Admin or Mod user must use generated email: adminXXXX@mylivingcity.org instead of contact email to login!`,
           });
         }
         // const validPassword = await foundUser.validatePassword(password);

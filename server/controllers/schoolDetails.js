@@ -9,22 +9,25 @@ schoolDetailsRouter.post(
     async (req, res) => {
         try {
             console.log("TESTER1234,   Made it to schooDetails")
-            console.log("Check Date",req.body.schoolDetails.programCompletionDate)
-            const schoolDate = req.body.schoolDetails.programCompletionDate && !isNaN(Date.parse(req.body.schoolDetails.programCompletionDate))
+            // console.log("Check Date",req.body.schoolDetails.programCompletionDate)
+            // const schoolDate = req.body.schoolDetails.programCompletionDate && !isNaN(Date.parse(req.body.schoolDetails.programCompletionDate))
             ? new Date(req.body.schoolDetails.programCompletionDate)
             : new Date();
             console.log("TESTER1234,   Created Date")
-            console.log(schoolDate)
-            console.log(req)
             const schoolDetails = await prisma.school_Details.create({
-                
-                data: {
-                    streetAddress: req.body.schoolDetails.streetAddress || "",
-                    postalCode: req.body.schoolDetails.postalCode || "",
-                    faculty: req.body.schoolDetails.faculty || "",
-                    programCompletionDate: schoolDate,
-                    userId: req.body.userId,
+              data: {
+                // streetAddress: req.body.schoolDetails.streetAddress || "",
+                postalCode: req.body.schoolDetails.postalCode || "",
+                faculty: req.body.schoolDetails.faculty || "",
+                // programCompletionDate: schoolDate,
+                userId: req.body.userId,
+                user: {
+                  connect: {
+                    id: req.body.userId, // replace with the actual user ID
+                    email:req.body.email
+                  },
                 },
+              },
             });
             res.status(200).json(schoolDetails);
         } catch (error) {

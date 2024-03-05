@@ -89,6 +89,7 @@ function App() {
               userTypes={[
                 USER_TYPES.BUSINESS,
                 USER_TYPES.COMMUNITY,
+                USER_TYPES.SUPER_ADMIN,
                 USER_TYPES.ADMIN,
               ]}
             />
@@ -125,20 +126,22 @@ function App() {
               path={ROUTES.USER_MANAGEMENT}
               component={UserManagementPage}
               userTypes={[
+                USER_TYPES.SUPER_ADMIN,
                 USER_TYPES.ADMIN,
                 USER_TYPES.MOD,
                 USER_TYPES.MUNICIPAL_SEG_ADMIN,
               ]}
             />
-              <CustomRoute
-                path={ROUTES.ADMIN_MANAGEMENT}
-                component={AdminManagementPage}
-                userTypes={[USER_TYPES.ADMIN]}
-              />
+            <CustomRoute
+              path={ROUTES.ADMIN_MANAGEMENT}
+              component={AdminManagementPage}
+              userTypes={[USER_TYPES.ADMIN, USER_TYPES.SUPER_ADMIN]}
+            />
             <CustomRoute
               path={ROUTES.ADMIN_MOD_EMAIL_GENERATE}
               component={AdminEmailGeneratePage}
               userTypes={[
+                USER_TYPES.SUPER_ADMIN,
                 USER_TYPES.ADMIN,
                 USER_TYPES.MOD,
                 USER_TYPES.MUNICIPAL_SEG_ADMIN,
@@ -149,7 +152,11 @@ function App() {
             <CustomRoute
               path={ROUTES.MOD_MANAGEMENT}
               component={ModManagementPage}
-              userTypes={[USER_TYPES.ADMIN, USER_TYPES.MOD]}
+              userTypes={[
+                USER_TYPES.SUPER_ADMIN,
+                USER_TYPES.ADMIN,
+                USER_TYPES.MOD,
+              ]}
             />
 
             <Route path={ROUTES.TEAM404} component={Team404Page} />

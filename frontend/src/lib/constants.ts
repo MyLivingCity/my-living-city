@@ -37,6 +37,7 @@ export const PROVINCES = [
 // Token expiry in minutes
 export const TOKEN_EXPIRY = Number(process.env.REACT_APP_TOKEN_EXPIRY || 60);
 export enum USER_TYPES {
+  SUPER_ADMIN = 'SUPER_ADMIN',
   ADMIN = 'ADMIN',
   MOD = 'MOD',
   SEG_ADMIN = 'SEG_ADMIN',

@@ -398,6 +398,7 @@ userRouter.post("/signup", async (req, res, next) => {
     }
 
     const adminTypes = [
+			"SUPER_ADMIN",
       "ADMIN",
       "MOD",
       "SEG_ADMIN",
@@ -584,7 +585,7 @@ userRouter.get(
 
 			const theUser = await prisma.user.findUnique({where:{id:id}});
 
-			if(theUser.userType === 'ADMIN' || theUser.userType === 'MOD' || theUser.userType === 'MUNICIPAL_SEG_ADMIN'){
+			if(theUser.userType === 'SUPER_ADMIN' || theUser.userType === 'ADMIN' || theUser.userType === 'MOD' || theUser.userType === 'MUNICIPAL_SEG_ADMIN'){
 				const allUsers = await prisma.user.findMany();
 
 				res.json(allUsers);
@@ -765,7 +766,9 @@ userRouter.put(
 
 			const theUser = await prisma.user.findUnique({where:{id:id}});
 
-			const userTypes = ['ADMIN',
+			const userTypes = [
+				'SUPER_ADMIN',
+				'ADMIN',
 				'MOD',
 				'SEG_ADMIN',
 				'SEG_MOD',
@@ -778,7 +781,7 @@ userRouter.put(
 				'DEVELOPER'
 			];
 
-			if(theUser.userType==='ADMIN'){
+			if(theUser.userType === 'SUPER_ADMIN' || theUser.userType === 'ADMIN'){
 				console.log(req.body.banned);
 
 				const {
@@ -886,7 +889,9 @@ userRouter.put(
 
 			const theUser = await prisma.user.findUnique({where:{id:id}});
 
-			const userTypes = ['ADMIN',
+			const userTypes = [
+				'SUPER_ADMIN',
+				'ADMIN',
 				'MOD',
 				'SEG_ADMIN',
 				'SEG_MOD',
@@ -1005,9 +1010,15 @@ userRouter.patch(
 
 			const theUser = await prisma.user.findUnique({where:{id:id}});
 
-			if( !(theUser.userType === 'ADMIN' || theUser.userType === 'MOD')) {
-				return res.status(401).json("You are not allowed to unban users!");
-			}
+			if (
+        !(
+          theUser.userType === "SUPER_ADMIN" ||
+					theUser.userType === "ADMIN" ||
+          theUser.userType === "MOD"
+        )
+      ) {
+        return res.status(401).json("You are not allowed to unban users!");
+      }
 
 			const userIds= req.body.userIds;
 			console.log(userIds);

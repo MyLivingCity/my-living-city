@@ -1202,6 +1202,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
       </Container>
     );
   } else if (
+    userType === USER_TYPES.SUPER_ADMIN ||
     userType === USER_TYPES.ADMIN ||
     userType === USER_TYPES.SEG_ADMIN ||
     userType === USER_TYPES.MOD ||
@@ -1372,10 +1373,12 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                       <ListGroupItem>{adminmodEmail!}</ListGroupItem>
                       <ListGroupItem>{userType!}</ListGroupItem>
                       <ListGroupItem>
-                        {userType === USER_TYPES.ADMIN || userType === USER_TYPES.MOD
+                        {userType === USER_TYPES.SUPER_ADMIN || USER_TYPES.ADMIN ||
+                        userType === USER_TYPES.MOD
                           ? "Full Access"
-                          : userType === USER_TYPES.SEG_ADMIN || userType === USER_TYPES.SEG_MOD
-                          ? user.userSegments 
+                          : userType === USER_TYPES.SEG_ADMIN ||
+                            userType === USER_TYPES.SEG_MOD
+                          ? user.userSegments
                           : "Unknown"}
                       </ListGroupItem>
                     </ListGroup>

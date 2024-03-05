@@ -22,7 +22,7 @@ segmentRouter.post(
                 select: { userType: true }
             });
             //User must be admin to create segment
-            if (theUser.userType == 'ADMIN' || theUser.userType == 'MOD') {
+            if (theUser.userType == 'SUPER_ADMIN' || theUser.userType == 'ADMIN' || theUser.userType == 'MOD') {
                 const { country, province, name, superSegName } = req.body;
 
                 console.log(req.body);
@@ -309,7 +309,7 @@ segmentRouter.delete(
                 select: { userType: true }
             });
             //Only admin can delete segment
-            if (theUser.userType == 'ADMIN') {
+            if (theUser.userType == 'SUPER_ADMIN' || theUser.userType == 'ADMIN') {
                 const { segmentId } = req.params;
                 const parsedSegmentId = parseInt(segmentId);
                 const theSegment = await prisma.segments.findUnique({
@@ -365,7 +365,7 @@ segmentRouter.post(
                 select: { userType: true }
             });
             //User must be admin to create segment
-            if (theUser.userType == 'ADMIN') {
+            if (theUser.userType == 'SUPER_ADMIN' || theUser.userType == 'ADMIN') {
                 const { segmentId } = req.params;
 
                 const parsedSegmentId = parseInt(segmentId);

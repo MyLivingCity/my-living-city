@@ -91,6 +91,7 @@ passport.use(
         let adminmodEmail;
         if (
           [
+            "SUPER_ADMIN",
             "ADMIN",
             "MOD",
             "SEG_ADMIN",
@@ -178,6 +179,7 @@ passport.use(
         }
 
         const adminTypes = [
+          "SUPER_ADMIN", // "SUPER_ADMIN" is not in the list of userTypes in the database, but it is used in the code
           "ADMIN",
           "MOD",
           "SEG_ADMIN",

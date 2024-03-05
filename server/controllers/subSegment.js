@@ -23,7 +23,7 @@ subSegmentRouter.post(
                 select: { userType: true }
             });
             //User must be admin to create subsegment
-            if (theUser.userType == 'ADMIN') {
+            if (theUser.userType === 'SUPER_ADMIN' || theUser.userType === 'ADMIN') {
                 const { segId, name, lat, lon, radius } = req.body;
 
                 //if there's no object in the request body
@@ -146,7 +146,7 @@ subSegmentRouter.delete(
                 select: { userType: true }
             });
 
-            if (theUser.userType == 'ADMIN') {
+            if (theUser.userType === 'SUPER_ADMIN' || theUser.userType === 'ADMIN') {
                 const { subSegmentId } = req.params;
 
                 const parsedSubSegmentId = parseInt(subSegmentId);
@@ -304,9 +304,8 @@ subSegmentRouter.post(
                 select: { userType: true }
             });
 
-            if (theUser.userType == 'ADMIN') {
+            if (theUser.userType === 'SUPER_ADMIN' || theUser.userType === 'ADMIN') {
                 const { subSegmentId } = req.params;
-
 
                 const parsedSubSegmentId = parseInt(subSegmentId);
 

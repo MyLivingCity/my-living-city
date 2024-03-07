@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { API_BASE_URL } from '../constants';
-import { ISegment, ISegmentData, ISubSegment } from '../types/data/segment.type';
+import { ISegment, ISegmentData, ISubSegment, IUserSegment } from '../types/data/segment.type';
 import { IRegisterInput } from '../types/input/register.input';
 import { getAxiosJwtRequestOption } from './axiosRequestOptions';
 export interface ISegData {
@@ -34,14 +34,25 @@ export const postUserSegmentInfo = async (registerData: IRegisterInput, token:st
         headers: {'Access-Control-Allow-Origin': '*', 'x-auth-token': token},
         withCredentials: true
     });
-  
+
     return res.data;
 };
 export const getMyUserSegmentInfo = async (token: string | null, userId: string | null) => {
-  
-    const req = await axios.get(`${API_BASE_URL}/userSegment/getUserSegment/${userId}`,getAxiosJwtRequestOption(token!));
+
+    const req = await axios.get<IUserSegment>(`${API_BASE_URL}/userSegment/getUserSegment/${userId}`,getAxiosJwtRequestOption(token!));
     
     return req.data;
+};
+
+export const updateUserSegmentInfo = async (segmentInfo: IUserSegment, token:string | null) => {
+    const res = await axios({
+        method: 'put',
+        url: `${API_BASE_URL}/userSegment/update/${segmentInfo.userId}`,
+        data: segmentInfo,
+        headers: {'Access-Control-Allow-Origin': '*', 'x-auth-token': token},
+        withCredentials: true
+    });
+    return res.data;
 };
 
 export const getUserHomeSegmentInfo = async (token: string | null) => {

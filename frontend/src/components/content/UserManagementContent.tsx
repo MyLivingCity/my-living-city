@@ -16,6 +16,7 @@ import { IBanUser } from 'src/lib/types/data/banUser.type';
 import { UserSegPlainText } from '../partials/UserSegPlainText';
 import { IRegisterInput } from './../../lib/types/input/register.input';
 import { ISegment, ISuperSegment } from 'src/lib/types/data/segment.type';
+import { EditUserInfoModal } from '../modal/EditUserInfoModal';
 
 interface UserManagementContentProps {
     users: IUser[] | undefined;
@@ -44,6 +45,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
     const [showUserBanModal, setShowUserBanModal] = useState<boolean>(false);
     const [showUserUnbanModal, setShowUserUnbanModal] = useState<boolean>(false);
     const [showUserBanHistoryModal, setShowUserBanHistoryModal] = useState<boolean>(false);
+    const [showEditUserModal, setShowEditUserModal] = useState<boolean>(false);
     const [modalUser, setModalUser] = useState<IUser>();
     const [banHistory, setBanHistory] = useState<any>();
     const UserSegmentHandler = (email: string, id: string) => {
@@ -53,8 +55,30 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
     };
     const [buttonText, setButtonText] = useState(user?.userType === USER_TYPES.ADMIN ? 'User Creation Wizard' : 'Municipal User Creation Wizard');
     const [showCreateAccountForm, setShowCreateAccountForm] = useState(false);
-    function formatBanHistory(banhistory: any){
 
+    let newHomeID = 1;
+    const [selectedUserType, setSelectedUserType] = useState('');
+    const [selectedHomeRegion, setSelectedHomeRegion] = useState('');
+    const handleHomeRegionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedRegionName = event.target.value;
+        setSelectedHomeRegion(selectedRegionName);
+    };
+
+    let newWorkID = 1;
+    const [selectedWorkRegion, setSelectedWorkRegion] = useState('');
+    const handleWorkRegionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedRegionName = event.target.value;
+        setSelectedWorkRegion(selectedRegionName);
+    };
+
+    let newSchoolID = 1;
+    const [selectedSchoolRegion, setSelectedSchoolRegion] = useState('');
+    const handleSchoolRegionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedRegionName = event.target.value;
+        setSelectedSchoolRegion(selectedRegionName);
+    };
+
+    function formatBanHistory(banhistory: any){
         // iterate through ban history and format it
         let banHistory = banhistory.map((ban: any) => {
             if (ban.type === 'USER') {
@@ -233,6 +257,25 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
         }
     };
 
+    const handleUpdatedLocalUserData = (updatedUser: IUser) => {
+        setFilteredUsers(
+            filteredUsers.map((user) => {
+                if (user.id === updatedUser.id) {
+                    return updatedUser;
+                }
+                return user;
+            })
+        );
+        setMunicipalFilteredUsers(
+            municipalFilteredUsers.map((user) => {
+                if (user.id === updatedUser.id) {
+                    return updatedUser;
+                }
+                return user;
+            })
+        );
+    };
+
     useEffect(() => {
         if (users) {
             // Filter out specific user types or conditions if needed
@@ -254,28 +297,6 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
             setMunicipalFilteredUsers(municipalFilteredUsers);
         }
     }, [users]);
-
-    let newHomeID = 1;
-    const [selectedUserType, setSelectedUserType] = useState('');
-    const [selectedHomeRegion, setSelectedHomeRegion] = useState('');
-    const handleHomeRegionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedRegionName = event.target.value;
-        setSelectedHomeRegion(selectedRegionName);
-    };
-
-    let newWorkID = 1;
-    const [selectedWorkRegion, setSelectedWorkRegion] = useState('');
-    const handleWorkRegionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedRegionName = event.target.value;
-        setSelectedWorkRegion(selectedRegionName);
-    };
-
-    let newSchoolID = 1;
-    const [selectedSchoolRegion, setSelectedSchoolRegion] = useState('');
-    const handleSchoolRegionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedRegionName = event.target.value;
-        setSelectedSchoolRegion(selectedRegionName);
-    };
 
     const [validEmail, setValidEmail] = useState(true);
 
@@ -411,6 +432,10 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                 }
                 {showUserBanHistoryModal ?
                     <UserManagementBanHistoryModal show={showUserBanHistoryModal} setShow={setShowUserBanHistoryModal} modalUser={modalUser!} currentUser={user!} token={token} data={banHistory!}/>
+                    : null
+                }
+                {showEditUserModal ?
+                    <EditUserInfoModal show={showEditUserModal} setShow={setShowEditUserModal} modalUser={modalUser!} currentUser={user!} token={token} segs={segs} subSeg={subSeg} changesSaved={handleUpdatedLocalUserData} />
                     : null
                 }
 
@@ -592,7 +617,18 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                         <tbody>
                             {filteredUsers?.map((req: IUser, index: number) => (
                                 req.userType !== 'ADMIN' && req.userType !== 'MOD' && req.userType !== 'SEG_MOD' && req.userType !== 'MUNICIPAL_SEG_ADMIN' && req.userType !== 'SEG_ADMIN' ? (
-                                    <tr key={req.id}>
+                                    <tr
+                                        key={req.id}
+                                        onClick={() => {
+                                            console.log('hode', hideControls);
+                                            if (hideControls === null || hideControls === '') {
+                                                setShowEditUserModal(true);
+                                                setModalUser(req);
+                                                console.log(req);
+                                                console.log(segs);
+                                                console.log(subSeg);
+                                            }
+                                        }}>
                                         {req.id !== hideControls ? 
                                             <>
                                                 <td className='align-middle' style={{wordBreak: 'break-word'}}>{req.email}</td>
@@ -645,7 +681,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                                             </>
                                         }
 
-                                        <td>
+                                        <td onClick={e => e.stopPropagation()}>
                                             {req.id !== hideControls ? 
                                                 <NavDropdown title='Controls' id='nav-dropdown'>
                                                     <Dropdown.Item
@@ -685,15 +721,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                                             req.verified = true;
                                             let response = await updateUser(req, token, user);
                                             if (response?.user?.verified === true) {
-                                                setFilteredUsers(filteredUsers.map(oldUsers => {
-                                                    if (oldUsers.id === req.id) {
-                                                        return {
-                                                            ...oldUsers,
-                                                            verified: true
-                                                        };
-                                                    }
-                                                    return oldUsers;
-                                                }));
+                                                handleUpdatedLocalUserData(response.user);
                                             }
                                         }}>Verify Email</Dropdown.Item>
                                                     }

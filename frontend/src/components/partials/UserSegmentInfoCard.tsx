@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import { Button, Card, Table } from 'react-bootstrap';
 import { getMyUserSegmentInfo } from 'src/lib/api/userSegmentRoutes';
 import { capitalizeString } from 'src/lib/utilityFunctions';
@@ -27,34 +27,34 @@ export const UserSegmentInfoCard: React.FC<UserSegmentInfoCardProps> = ({email, 
             } 
         }
         fetchData();
-    },[id, token])
-        return (
+    },[id, token]);
+    return (
 
         <Card>
-            <Card.Header>{capitalizeString(email)}'s Segment Info<Button onClick={()=>{setShowReq(b=>!b)}}className="float-right" size="sm">{showReq ? "Hide Details": "View Details"}</Button></Card.Header>
+            <Card.Header>{capitalizeString(email)}'s Segment Info<Button onClick={()=>{setShowReq(b=>!b);}}className='float-right' size='sm'>{showReq ? 'Hide Details': 'View Details'}</Button></Card.Header>
             {showReq && 
             <Card.Body>
-            <Table bordered hover>
-            <thead>
-                <tr>
-                <th scope="col">Home Segment</th>
-                <th scope="col">Work Segment</th>
-                <th scope="col">School Segment</th>
-                <th scope="col">Home Sub-Segment</th>
-                <th scope="col">Work Sub-Segment</th>
-                <th scope="col">School Sub-Segment</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>{userSegment ? capitalizeString(userSegment.homeSegmentName) : ''}</td>
-                    <td>{userSegment ? capitalizeString(userSegment.workSegmentName) : ''}</td>
-                    <td>{userSegment ? capitalizeString(userSegment.schoolSegmentName) : ''}</td>
-                    <td>{userSegment ? capitalizeString(userSegment.homeSubSegmentName) : ''}</td>
-                    <td>{userSegment ? capitalizeString(userSegment.workSubSegmentName) : ''}</td>
-                    <td>{userSegment ? capitalizeString(userSegment.schoolSubSegmentName) : ''}</td>
-                </tr>
-            {/* {segReq?.map((req: ISegmentRequest, index: number) => (
+                <Table bordered hover>
+                    <thead>
+                        <tr>
+                            <th scope='col'>Home Segment</th>
+                            <th scope='col'>Work Segment</th>
+                            <th scope='col'>School Segment</th>
+                            <th scope='col'>Home Sub-Segment</th>
+                            <th scope='col'>Work Sub-Segment</th>
+                            <th scope='col'>School Sub-Segment</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{userSegment ? capitalizeString(userSegment.homeSegmentName) : ''}</td>
+                            <td>{userSegment ? capitalizeString(userSegment.workSegmentName) : ''}</td>
+                            <td>{userSegment ? capitalizeString(userSegment.schoolSegmentName) : ''}</td>
+                            <td>{userSegment ? capitalizeString(userSegment.homeSubSegmentName) : ''}</td>
+                            <td>{userSegment ? capitalizeString(userSegment.workSubSegmentName) : ''}</td>
+                            <td>{userSegment ? capitalizeString(userSegment.schoolSubSegmentName) : ''}</td>
+                        </tr>
+                        {/* {segReq?.map((req: ISegmentRequest, index: number) => (
                 <tr key={req.id}>
                     <td>{req.segmentName ? capitalizeFirstLetterEachWord(req.segmentName) : ''}</td>
                     <td>{req.subSegmentName ? capitalizeFirstLetterEachWord(req.subSegmentName) : ''}</td>
@@ -67,10 +67,10 @@ export const UserSegmentInfoCard: React.FC<UserSegmentInfoCardProps> = ({email, 
                     }}>Delete</Button></td>
                 </tr>
                 ))} */}
-            </tbody>
-            </Table>
+                    </tbody>
+                </Table>
             </Card.Body>}
             
         </Card>
-        );
-}
+    );
+};

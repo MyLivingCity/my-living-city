@@ -1,11 +1,11 @@
-import LoginPageContent from '../components/content/LoginPageContent'
+import LoginPageContent from '../components/content/LoginPageContent';
 
 export default function LoginPage() {
-  return (
-    <>
-      <div className="wrapper">
-        <LoginPageContent />
-      </div>
-    </>
-  )
+    return (
+        <>
+            <div className='wrapper'>
+                <LoginPageContent />
+            </div>
+        </>
+    );
 }

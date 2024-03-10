@@ -1,13 +1,13 @@
-import { useContext, useEffect, useState } from "react";
-import { Button, Container, Row, Alert } from "react-bootstrap";
-import { UserProfileContext } from "src/contexts/UserProfile.Context";
-import { useCreateFeedbackRatingMutation } from "src/hooks/feedbackRatingHooks";
+import { useContext, useEffect, useState } from 'react';
+import { Button, Container, Row, Alert } from 'react-bootstrap';
+import { UserProfileContext } from 'src/contexts/UserProfile.Context';
+import { useCreateFeedbackRatingMutation } from 'src/hooks/feedbackRatingHooks';
 import {
     FormControl,
     FormControlLabel,
     Radio,
     RadioGroup,
-} from "@mui/material";
+} from '@mui/material';
 
 interface FeedbackRatingInputProps {
     userHasRated: boolean;
@@ -50,7 +50,7 @@ const FeedbackRatingYesNoInput = ({
     const submitHandler = () => {
         const payload = {
             rating: ratingValue,
-            ratingExplanation: "",
+            ratingExplanation: '',
         };
         submitRatingMutation(payload);
     };
@@ -68,10 +68,10 @@ const FeedbackRatingYesNoInput = ({
     };
 
     const buttonTextOutput = (): string => {
-        let buttonText = "Please login to submit rating";
-        if (tokenExists()) buttonText = "Submit";
-        if (isLoading) buttonText = "Submitting...";
-        if (userHasRated) buttonText = "You have already rated this feedback";
+        let buttonText = 'Please login to submit rating';
+        if (tokenExists()) buttonText = 'Submit';
+        if (isLoading) buttonText = 'Submitting...';
+        if (userHasRated) buttonText = 'You have already rated this feedback';
         return buttonText;
     };
 
@@ -92,24 +92,24 @@ const FeedbackRatingYesNoInput = ({
         <Container>
             <Row>
                 <FormControl
-                    component="fieldset"
-                    style={{ width: "100%", padding: "0rem 0rem 0rem 0rem" }}>
+                    component='fieldset'
+                    style={{ width: '100%', padding: '0rem 0rem 0rem 0rem' }}>
                     <RadioGroup
                         row
-                        aria-label="rating"
-                        name="rating"
+                        aria-label='rating'
+                        name='rating'
                         value={ratingValue}
                         onChange={(e) => setRatingValue(parseInt(e.target.value))}
-                        sx={{ width: "70%", height: "70%" }}
+                        sx={{ width: '70%', height: '70%' }}
                     >
                         <FormControlLabel
                             value={1}
                             control={<Radio />}
-                            label="Yes"
+                            label='Yes'
                             sx = {{
                                 '& .MuiSvgIcon-root': {
                                     fontSize: 18,
-                                  },
+                                },
                                 '& .MuiTypography-root': {
                                     fontSize: 13,
                                 },
@@ -119,11 +119,11 @@ const FeedbackRatingYesNoInput = ({
                         <FormControlLabel
                             value={2}
                             control={<Radio />}
-                            label="No"
+                            label='No'
                             sx = {{
                                 '& .MuiSvgIcon-root': {
                                     fontSize: 18,
-                                  },
+                                },
                                 '& .MuiTypography-root': {
                                     fontSize: 13,
                                 },
@@ -132,22 +132,23 @@ const FeedbackRatingYesNoInput = ({
                         />
                         {showRatingSubmitError && (
                             <Alert
-                                className=""
+                                className=''
                                 show={showRatingSubmitError}
                                 onClose={() => setShowRatingSubmitError(false)}
                                 dismissible
-                                variant="danger"
+                                variant='danger'
                             >
                                 {error?.message ??
-                                    "An error occurred while submitting your rating"}
+                                    'An error occurred while submitting your rating'}
                             </Alert>
                         )}
                         {!userHasRated && (
-                            <Button className="mr-2 mt-2 mb-3"
-                                variant="primary"
+                            <Button
+                                className='mr-2 mt-2 mb-3'
+                                variant='primary'
                                 onClick={submitHandler}
                                 disabled={shouldButtonBeDisabled()}
-                                size="sm"
+                                size='sm'
                             >
                                 {buttonTextOutput()}
                             </Button>
@@ -193,10 +194,10 @@ const FeedbackRatingScaleInput = ({
     const submitHandler = () => {
         const payload = {
             rating: ratingValue,
-            ratingExplanation: "",
+            ratingExplanation: '',
         };
         submitRatingMutation(payload);
-    }
+    };
 
     const tokenExists = (): boolean => {
         return token != null;
@@ -211,10 +212,10 @@ const FeedbackRatingScaleInput = ({
     };
 
     const buttonTextOutput = (): string => {
-        let buttonText = "Please login to submit rating";
-        if (tokenExists()) buttonText = "Submit";
-        if (isLoading) buttonText = "Submitting...";
-        if (userHasRated) buttonText = "You have already rated this feedback";
+        let buttonText = 'Please login to submit rating';
+        if (tokenExists()) buttonText = 'Submit';
+        if (isLoading) buttonText = 'Submitting...';
+        if (userHasRated) buttonText = 'You have already rated this feedback';
         return buttonText;
     };
 
@@ -222,24 +223,24 @@ const FeedbackRatingScaleInput = ({
         <Container>
             <Row>
                 <FormControl
-                    component="fieldset"
-                    style={{ width: "100%", padding: "0rem 0rem 0rem 0rem" }}>
+                    component='fieldset'
+                    style={{ width: '100%', padding: '0rem 0rem 0rem 0rem' }}>
                     <RadioGroup
                         row
-                        aria-label="rating"
-                        name="rating"
+                        aria-label='rating'
+                        name='rating'
                         value={ratingValue}
                         onChange={(e) => setRatingValue(parseInt(e.target.value))}
-                        sx={{ width: "70%", height: "70%" }}
+                        sx={{ width: '70%', height: '70%' }}
                     >
                         <FormControlLabel
                             value={1}
-                            control={<Radio color="success" />}
-                            label="1"
+                            control={<Radio color='success' />}
+                            label='1'
                             sx = {{
                                 '& .MuiSvgIcon-root': {
                                     fontSize: 18,
-                                  },
+                                },
                                 '& .MuiTypography-root': {
                                     fontSize: 13,
                                 },
@@ -248,12 +249,12 @@ const FeedbackRatingScaleInput = ({
                         />
                         <FormControlLabel
                             value={2}
-                            control={<Radio color="success" />}
-                            label="2"
+                            control={<Radio color='success' />}
+                            label='2'
                             sx = {{
                                 '& .MuiSvgIcon-root': {
                                     fontSize: 18,
-                                  },
+                                },
                                 '& .MuiTypography-root': {
                                     fontSize: 13,
                                 },
@@ -262,12 +263,12 @@ const FeedbackRatingScaleInput = ({
                         />
                         <FormControlLabel
                             value={3}
-                            control={<Radio color="success" />}
-                            label="3"
+                            control={<Radio color='success' />}
+                            label='3'
                             sx = {{
                                 '& .MuiSvgIcon-root': {
                                     fontSize: 18,
-                                  },
+                                },
                                 '& .MuiTypography-root': {
                                     fontSize: 13,
                                 },
@@ -276,12 +277,12 @@ const FeedbackRatingScaleInput = ({
                         />
                         <FormControlLabel
                             value={4}
-                            control={<Radio color="success" />}
-                            label="4"
+                            control={<Radio color='success' />}
+                            label='4'
                             sx = {{
                                 '& .MuiSvgIcon-root': {
                                     fontSize: 18,
-                                  },
+                                },
                                 '& .MuiTypography-root': {
                                     fontSize: 13,
                                 },
@@ -290,12 +291,12 @@ const FeedbackRatingScaleInput = ({
                         />
                         <FormControlLabel
                             value={5}
-                            control={<Radio color="success" />}
-                            label="5"
+                            control={<Radio color='success' />}
+                            label='5'
                             sx = {{
                                 '& .MuiSvgIcon-root': {
                                     fontSize: 18,
-                                  },
+                                },
                                 '& .MuiTypography-root': {
                                     fontSize: 13,
                                 },
@@ -304,22 +305,23 @@ const FeedbackRatingScaleInput = ({
                         />
                         {showRatingSubmitError && (
                             <Alert
-                                className=""
+                                className=''
                                 show={showRatingSubmitError}
                                 onClose={() => setShowRatingSubmitError(false)}
                                 dismissible
-                                variant="danger"
+                                variant='danger'
                             >
                                 {error?.message ??
-                                    "An error occurred while submitting your rating"}
+                                    'An error occurred while submitting your rating'}
                             </Alert>
                         )}
                         {!userHasRated && (
-                            <Button className="mr-2 mt-2 mb-3"
-                                variant="primary"
+                            <Button
+                                className='mr-2 mt-2 mb-3'
+                                variant='primary'
                                 onClick={submitHandler}
                                 disabled={shouldButtonBeDisabled()}
-                                size="sm"
+                                size='sm'
                             >
                                 {buttonTextOutput()}
                             </Button>
@@ -328,7 +330,7 @@ const FeedbackRatingScaleInput = ({
                 </FormControl>
             </Row>
         </Container>
-    )
-}
+    );
+};
 
 export { FeedbackRatingScaleInput, FeedbackRatingYesNoInput };

@@ -1,17 +1,17 @@
-import { Container, Table, Card, Button } from "react-bootstrap";
-import { IIdeaWithAggregations } from "../../../lib/types/data/idea.type";
-import { BsFilter } from "react-icons/bs";
-import CSS from "csstype";
-import React, { useState, useEffect, useContext } from "react";
-import { useAllProposals } from "src/hooks/proposalHooks";
-import { capitalizeFirstLetterEachWord } from "./../../../lib/utilityFunctions";
-import { BsPeople, BsHeartHalf } from "react-icons/bs";
-import { AiOutlineStar } from "react-icons/ai";
-import { getAllSuperSegments } from "./../../../lib/api/segmentRoutes";
-import { ISuperSegment } from "./../../../lib/types/data/segment.type";
-import { useAllCommentsUnderMultipleIdeas } from "src/hooks/commentHooks";
-import { useGetEndorsedMunicpalUsersByIdea } from "src/hooks/ideaHooks";
-import { UserProfileContext } from "src/contexts/UserProfile.Context";
+import { Container, Table, Card, Button } from 'react-bootstrap';
+import { IIdeaWithAggregations } from '../../../lib/types/data/idea.type';
+import { BsFilter } from 'react-icons/bs';
+import CSS from 'csstype';
+import React, { useState, useEffect, useContext } from 'react';
+import { useAllProposals } from 'src/hooks/proposalHooks';
+import { capitalizeFirstLetterEachWord } from './../../../lib/utilityFunctions';
+import { BsPeople, BsHeartHalf } from 'react-icons/bs';
+import { AiOutlineStar } from 'react-icons/ai';
+import { getAllSuperSegments } from './../../../lib/api/segmentRoutes';
+import { ISuperSegment } from './../../../lib/types/data/segment.type';
+import { useAllCommentsUnderMultipleIdeas } from 'src/hooks/commentHooks';
+import { useGetEndorsedMunicpalUsersByIdea } from 'src/hooks/ideaHooks';
+import { UserProfileContext } from 'src/contexts/UserProfile.Context';
 
 
 
@@ -64,7 +64,7 @@ const SpecifiedCommunitySectionTableView: React.FC<SpecifiedCommunityTableViewPr
                     doesIdeaPassImpact = false;
                 }
             });
-            if (!doesIdeaPassImpact) { return false };
+            if (!doesIdeaPassImpact) { return false; };
         }
         if (filterConfig.superSeg.length !== 0 && !filterConfig.superSeg.includes(idea.superSegId)) {
             return false;
@@ -79,19 +79,19 @@ const SpecifiedCommunitySectionTableView: React.FC<SpecifiedCommunityTableViewPr
             return false;
         }
         return true;
-    }
+    };
 
     const titleStyle: CSS.Properties = {
-        display: "inline",
-    }
+        display: 'inline',
+    };
 
     const filterButtonStyle: CSS.Properties = {
-        float: "right"
-    }
+        float: 'right'
+    };
 
     const mouseHoverPointer = (e: any) => {
-        e.target.style.cursor = "pointer"
-    }
+        e.target.style.cursor = 'pointer';
+    };
 
 
 
@@ -115,10 +115,10 @@ const SpecifiedCommunitySectionTableView: React.FC<SpecifiedCommunityTableViewPr
 
     const {user, token} = useContext(UserProfileContext);
 
-    const { data: allComments, isLoading, error } = useAllCommentsUnderMultipleIdeas(topIdeas.map(idea => ({ ideaId: idea.id })))
+    const { data: allComments, isLoading, error } = useAllCommentsUnderMultipleIdeas(topIdeas.map(idea => ({ ideaId: idea.id })));
 
 
-    const { data: allEndorsedPosts, isLoading: allEndorsedPostsLoading } = useGetEndorsedMunicpalUsersByIdea(token, topIdeas.map(idea => ({ ideaId: idea.id })))
+    const { data: allEndorsedPosts, isLoading: allEndorsedPostsLoading } = useGetEndorsedMunicpalUsersByIdea(token, topIdeas.map(idea => ({ ideaId: idea.id })));
 
     
    
@@ -129,7 +129,7 @@ const SpecifiedCommunitySectionTableView: React.FC<SpecifiedCommunityTableViewPr
     if (allComments && topIdeas) {
         topIdeas.forEach((idea, index) => {
             const municipalCommentExists = allComments[index].some(
-                (comment) => comment.ideaId === idea.id && (comment.author.userType === "MUNICIPAL" || comment.author.userType === "MUNICIPAL_SEG_ADMIN")
+                (comment) => comment.ideaId === idea.id && (comment.author.userType === 'MUNICIPAL' || comment.author.userType === 'MUNICIPAL_SEG_ADMIN')
             );
             checkmarks[index] = municipalCommentExists;
         });
@@ -139,35 +139,35 @@ const SpecifiedCommunitySectionTableView: React.FC<SpecifiedCommunityTableViewPr
 
     if (allEndorsedPosts && topIdeas) {
         topIdeas.forEach((idea, index) => {
-          const municipalEndorsementExists = allEndorsedPosts[index].some(
-            (endorsed: any) =>  endorsed.userType === "MUNICIPAL"
-          );
-          checkmarksEndorsed[index] = municipalEndorsementExists;
+            const municipalEndorsementExists = allEndorsedPosts[index].some(
+                (endorsed: any) =>  endorsed.userType === 'MUNICIPAL'
+            );
+            checkmarksEndorsed[index] = municipalEndorsementExists;
         });
-      }
+    }
 
     return (
-        <Container className="system" id="hanging-icons">
-            <div className="pb-1 border-bottom display-6 text-left">
-                <h2 style={titleStyle}>{sectionTitle ? capitalizeFirstLetterEachWord(sectionTitle) : ""} Posts</h2>
-                {showCustomFilter === false ? null : <BsFilter onMouseOver={mouseHoverPointer} style={filterButtonStyle} onClick={() => { setShowModal(!showModal) }} size={30} />}
+        <Container className='system' id='hanging-icons'>
+            <div className='pb-1 border-bottom display-6 text-left'>
+                <h2 style={titleStyle}>{sectionTitle ? capitalizeFirstLetterEachWord(sectionTitle) : ''} Posts</h2>
+                {showCustomFilter === false ? null : <BsFilter onMouseOver={mouseHoverPointer} style={filterButtonStyle} onClick={() => { setShowModal(!showModal); }} size={30} />}
 
             </div>
-            <div className="p-2 m-2"> {/*padding on the x-axis (left and right) */}
-                <div className="dropdown-divider"></div>
+            <div className='p-2 m-2'> {/*padding on the x-axis (left and right) */}
+                <div className='dropdown-divider'></div>
             </div>
             <Table striped bordered hover>
                 <thead>
                     <tr>
-                        <th className="text-center align-middle">#</th>
-                        <th className="text-left align-middle">Title</th>
-                        <th className="text-center align-middle">Location</th>
-                        <th className="text-center align-middle">State</th>
-                        <th className="text-left align-middle">Description</th>
-                        <th className="text-center align-middle"><AiOutlineStar /></th>
-                        <th className="text-center align-middle" >  <BsHeartHalf /></th>
-                        <th className="text-center align-middle">  <BsPeople /></th>
-                        <th className="text-center align-middle">Details</th>
+                        <th className='text-center align-middle'>#</th>
+                        <th className='text-left align-middle'>Title</th>
+                        <th className='text-center align-middle'>Location</th>
+                        <th className='text-center align-middle'>State</th>
+                        <th className='text-left align-middle'>Description</th>
+                        <th className='text-center align-middle'><AiOutlineStar /></th>
+                        <th className='text-center align-middle' >  <BsHeartHalf /></th>
+                        <th className='text-center align-middle'>  <BsPeople /></th>
+                        <th className='text-center align-middle'>Details</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -178,9 +178,9 @@ const SpecifiedCommunitySectionTableView: React.FC<SpecifiedCommunityTableViewPr
                             return doesIdeaPassFilter(idea) ?
                                 <tr key={idea.id}>
 
-                                    <td className="text-center align-middle">{index + 1}</td>
-                                    <td className="align-middle">{idea.title}</td>
-                                    <td className="text-left align-middle">
+                                    <td className='text-center align-middle'>{index + 1}</td>
+                                    <td className='align-middle'>{idea.title}</td>
+                                    <td className='text-left align-middle'>
                                         {idea.subSegmentName
                                             ? idea.subSegmentName.charAt(0).toUpperCase() + idea.subSegmentName.slice(1)
                                             : idea.segmentName
@@ -188,15 +188,15 @@ const SpecifiedCommunitySectionTableView: React.FC<SpecifiedCommunityTableViewPr
                                                 : superSegmentName}
                                     </td>
 
-                                    <td className="text-center align-middle">{idea.state}</td>
-                                    <td className="text-lef align-middle">{idea.description.length > 75 ? `${idea.description.substring(0, 30)}...` : idea.description}</td>
-                                    <td className="text-center align-middle">{parseFloat((idea.ratingAvg).toString()).toFixed(2)}</td>
-                                    <td className="text-center align-middle">{idea.posRatings}/{idea.negRatings}</td>
-                                    <td className="text-center align-middle">
+                                    <td className='text-center align-middle'>{idea.state}</td>
+                                    <td className='text-lef align-middle'>{idea.description.length > 75 ? `${idea.description.substring(0, 30)}...` : idea.description}</td>
+                                    <td className='text-center align-middle'>{parseFloat((idea.ratingAvg).toString()).toFixed(2)}</td>
+                                    <td className='text-center align-middle'>{idea.posRatings}/{idea.negRatings}</td>
+                                    <td className='text-center align-middle'>
                                         {Number(idea.commentCount) + Number(idea.ratingCount)}
                                     </td>
-                                    <td className="text-center align-middle">  <Card.Link href={`/ideas/${idea.id}`}>
-                                        <Button variant="primary">Info</Button>
+                                    <td className='text-center align-middle'>  <Card.Link href={`/ideas/${idea.id}`}>
+                                        <Button variant='primary'>Info</Button>
                                     </Card.Link></td>
                                 </tr>
                                 : null;

@@ -1,7 +1,7 @@
-import React, { Dispatch} from "react"
-import { Form } from "react-bootstrap";
-import { capitalizeFirstLetterEachWord, getDuplicatesRemoved } from "./../../lib/utilityFunctions";
-import CSS from "csstype";
+import React, { Dispatch} from 'react';
+import { Form } from 'react-bootstrap';
+import { capitalizeFirstLetterEachWord, getDuplicatesRemoved } from './../../lib/utilityFunctions';
+import CSS from 'csstype';
 
 
 export type CheckBoxItem = {
@@ -24,7 +24,7 @@ export const RegisterPageContentReach:
                 <CheckboxTree data={data} parent={null} selected={selected} setSelected={setSelected}/>
             </div>
         );
-}
+    };
 
 interface CheckBoxTreeProps {
     data: CheckBoxItem[]
@@ -48,7 +48,7 @@ export const CheckboxTree: React.FC<CheckBoxTreeProps> = ({data, parent, ...prop
                 getAllLeaveChildrenItems(item.children, leafChildren);
             }
         });
-    }
+    };
 
     /**
      * Set the items' checked attribute to the value in isChecked
@@ -60,7 +60,7 @@ export const CheckboxTree: React.FC<CheckBoxTreeProps> = ({data, parent, ...prop
             let itemElement = document.getElementById(`${item.value}`) as HTMLInputElement | null;
             if (itemElement !== null) itemElement.checked = isChecked;
         });
-    }
+    };
 
     /**
      * Handles when a checkbox is checked or unchecked
@@ -114,7 +114,7 @@ export const CheckboxTree: React.FC<CheckBoxTreeProps> = ({data, parent, ...prop
             let parentElem = document.getElementById(`${parent.value}`) as HTMLInputElement;
             parentElem.checked = isCheckboxChecked && areSiblingsChecked;
         }
-    }
+    };
 
     /**
      * Return the siblings of this item
@@ -125,23 +125,23 @@ export const CheckboxTree: React.FC<CheckBoxTreeProps> = ({data, parent, ...prop
         const siblings = data.filter(element => element !== item);
         return siblings;
        
-    }
+    };
 
     const treeDiv: CSS.Properties = {
-        marginLeft: "20px",
-    }
+        marginLeft: '20px',
+    };
 
     return (
         <div style={treeDiv}>
             {data && data.map((item, i) => {
                 return(
                     <div key={i}>
-                        <input type="checkbox" id={item.value} onChange={(e) => {onChangeCallback(e, item.children, getSiblings(item))}}/>
-                        <Form.Label style={{paddingLeft: "10px"}}>{item.label && capitalizeFirstLetterEachWord(item.label)}</Form.Label>
+                        <input type='checkbox' id={item.value} onChange={(e) => {onChangeCallback(e, item.children, getSiblings(item));}}/>
+                        <Form.Label style={{paddingLeft: '10px'}}>{item.label && capitalizeFirstLetterEachWord(item.label)}</Form.Label>
                         {item.children && <CheckboxTree data={item.children} parent={item} selected={props.selected} setSelected={props.setSelected}/>}
                     </div>
-                )
+                );
             })}
         </div>
-    )
-}
+    );
+};

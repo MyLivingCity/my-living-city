@@ -1,5 +1,5 @@
-import { useContext } from 'react'
-import { RouteProps, Route, Redirect } from 'react-router-dom'
+import { useContext } from 'react';
+import { RouteProps, Route, Redirect } from 'react-router-dom';
 import { UserProfileContext } from '../../contexts/UserProfile.Context';
 import { ROUTES } from '../../lib/constants';
 
@@ -14,11 +14,11 @@ interface ModeratorRouteProps {
     component: React.ElementType
     }
 
-    const ModeratorRoute: React.FC<ModeratorRouteProps> = ({
+const ModeratorRoute: React.FC<ModeratorRouteProps> = ({
     redirectPath,
     component: Component,
     ...routeProps
-    }) => {
+}) => {
     const {
         user,
         token
@@ -31,16 +31,16 @@ interface ModeratorRouteProps {
 
     return (
         <Route
-        {...routeProps}
-        render={(props) =>
-            isLoggedIn && user!.userType === "MOD" ? (
-            <ComponentToRender {...props} />
-            ) : (
-            <Redirect to={ redirectPath || ROUTES.LOGIN } />
-            )
-        }
+            {...routeProps}
+            render={(props) =>
+                isLoggedIn && user!.userType === 'MOD' ? (
+                    <ComponentToRender {...props} />
+                ) : (
+                    <Redirect to={ redirectPath || ROUTES.LOGIN } />
+                )
+            }
         />
     );
-}
+};
 
-export default ModeratorRoute
+export default ModeratorRoute;

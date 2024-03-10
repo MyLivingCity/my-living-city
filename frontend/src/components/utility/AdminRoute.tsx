@@ -1,5 +1,5 @@
-import { useContext } from 'react'
-import { RouteProps, Route, Redirect } from 'react-router-dom'
+import { useContext } from 'react';
+import { RouteProps, Route, Redirect } from 'react-router-dom';
 import { UserProfileContext } from '../../contexts/UserProfile.Context';
 import { ROUTES } from '../../lib/constants';
 
@@ -14,11 +14,11 @@ interface AdminRouteProps {
     component: React.ElementType
     }
 
-    const AdminRoute: React.FC<AdminRouteProps> = ({
+const AdminRoute: React.FC<AdminRouteProps> = ({
     redirectPath,
     component: Component,
     ...routeProps
-    }) => {
+}) => {
     const {
         user,
         token
@@ -31,16 +31,16 @@ interface AdminRouteProps {
 
     return (
         <Route
-        {...routeProps}
-        render={(props) =>
-            isLoggedIn && user!.userType === "ADMIN" ? (
-            <ComponentToRender {...props} />
-            ) : (
-            <Redirect to={ redirectPath || ROUTES.LOGIN } />
-            )
-        }
+            {...routeProps}
+            render={(props) =>
+                isLoggedIn && user!.userType === 'ADMIN' ? (
+                    <ComponentToRender {...props} />
+                ) : (
+                    <Redirect to={ redirectPath || ROUTES.LOGIN } />
+                )
+            }
         />
     );
-}
+};
 
-export default AdminRoute
+export default AdminRoute;

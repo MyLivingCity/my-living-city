@@ -1,5 +1,5 @@
-import { useContext } from 'react'
-import { RouteProps, Route, Redirect } from 'react-router-dom'
+import { useContext } from 'react';
+import { RouteProps, Route, Redirect } from 'react-router-dom';
 import { UserProfileContext } from '../../contexts/UserProfile.Context';
 import { ROUTES } from '../../lib/constants';
 
@@ -15,32 +15,32 @@ interface PrivateRouteProps {
 }
 
 const PrivateRoute: React.FC<PrivateRouteProps> = ({
-  redirectPath,
-  component: Component,
-  ...routeProps
+    redirectPath,
+    component: Component,
+    ...routeProps
 }) => {
-  const {
-    user,
-    token
-  } = useContext(UserProfileContext);
-  const ComponentToRender = Component as React.ElementType;
-  let isLoggedIn = false;
-  if (!!user && !!token) {
-    isLoggedIn = true;
-  }
+    const {
+        user,
+        token
+    } = useContext(UserProfileContext);
+    const ComponentToRender = Component as React.ElementType;
+    let isLoggedIn = false;
+    if (!!user && !!token) {
+        isLoggedIn = true;
+    }
 
-  return (
-    <Route
-      {...routeProps}
-      render={(props) =>
-        isLoggedIn ? (
-          <ComponentToRender {...props} />
-        ) : (
-          <Redirect to={ redirectPath || ROUTES.LOGIN } />
-        )
-      }
-    />
-  );
-}
+    return (
+        <Route
+            {...routeProps}
+            render={(props) =>
+                isLoggedIn ? (
+                    <ComponentToRender {...props} />
+                ) : (
+                    <Redirect to={ redirectPath || ROUTES.LOGIN } />
+                )
+            }
+        />
+    );
+};
 
-export default PrivateRoute
+export default PrivateRoute;

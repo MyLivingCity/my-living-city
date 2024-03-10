@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import AllAdsPageContent from '../components/content/AllAdsPageContent';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
@@ -12,24 +12,24 @@ interface AllAdsPageProps extends RouteComponentProps<{}> {
 }
 
 const AllAdsPage: React.FC<AllAdsPageProps> = ({}) => {
-  const { token } = useContext(UserProfileContext);
+    const { token } = useContext(UserProfileContext);
 
-  const { data, isLoading} = useAdvertisements();
+    const { data, isLoading} = useAdvertisements();
 
   
-  if (isLoading) {
-    <div className="wrapper">
-      <LoadingSpinner />
-    </div>
-  }
+    if (isLoading) {
+        <div className='wrapper'>
+            <LoadingSpinner />
+        </div>;
+    }
 
-  // TODO: Create non blocking error handling
+    // TODO: Create non blocking error handling
 
-  return (
-    <div className="wrapper">
-      <AllAdsPageContent token={token} AllAdvertisement={data}/>
-    </div>
-  );
-}
+    return (
+        <div className='wrapper'>
+            <AllAdsPageContent token={token} AllAdvertisement={data}/>
+        </div>
+    );
+};
 
-export default AllAdsPage
+export default AllAdsPage;

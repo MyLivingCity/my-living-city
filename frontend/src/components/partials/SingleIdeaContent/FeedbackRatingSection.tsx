@@ -1,17 +1,17 @@
-import React, { useContext, useEffect, useState } from "react";
-import { Container, Row } from "react-bootstrap";
-import { UserProfileContext } from "../../../contexts/UserProfile.Context";
-import { useAllFeedbackRatingsUnderFeedback } from "src/hooks/feedbackRatingHooks";
-import { IFeedbackRatingYesNoAggregateSummary, IFeedbackRatingScaleAggregateSummary } from "src/lib/types/data/feedbackRating.type";
+import React, { useContext, useEffect, useState } from 'react';
+import { Container, Row } from 'react-bootstrap';
+import { UserProfileContext } from '../../../contexts/UserProfile.Context';
+import { useAllFeedbackRatingsUnderFeedback } from 'src/hooks/feedbackRatingHooks';
+import { IFeedbackRatingYesNoAggregateSummary, IFeedbackRatingScaleAggregateSummary } from 'src/lib/types/data/feedbackRating.type';
 import {
     checkIfUserHasRated,
     findUserFeedbackRatingSubmission,
     getFeedbackRatingYesNoAggregateSummary,
     getFeedbackRatingScaleAggregateSummary,
-} from "src/lib/utilityFunctions";
-import LoadingSpinner from "../../ui/LoadingSpinner";
-import { FeedbackRatingYesNoDisplay, FeedbackRatingScaleDisplay } from "./FeedbackRatingDisplay";
-import { FeedbackRatingYesNoInput, FeedbackRatingScaleInput } from "./FeedbackRatingInput";
+} from 'src/lib/utilityFunctions';
+import LoadingSpinner from '../../ui/LoadingSpinner';
+import { FeedbackRatingYesNoDisplay, FeedbackRatingScaleDisplay } from './FeedbackRatingDisplay';
+import { FeedbackRatingYesNoInput, FeedbackRatingScaleInput } from './FeedbackRatingInput';
 interface FeedbackRatingsSectionProps {
     feedbackId: string;
     proposalId: string;

@@ -77,14 +77,14 @@ export const useCreateFeedbackRatingMutation = (feedbackId: number, proposalId: 
                 queryClient.invalidateQueries(previousProposalKey);
             },
         },
-    )
+    );
     const { error } = feedbackRatingMutation;
     const [ parsedErrorObj, setParsedErrorObj ] = useState<IFetchError | null>(null);
 
     useEffect(() => {
         if (error) {
             const parsedError = handlePotentialAxiosError(
-                "An error occurred while trying to submit your rating.",
+                'An error occurred while trying to submit your rating.',
                 error,
             );
             setParsedErrorObj(parsedError);
@@ -100,4 +100,4 @@ export const useCreateFeedbackRatingMutation = (feedbackId: number, proposalId: 
         submitRatingMutation,
         error: parsedErrorObj,
     };
-}
+};

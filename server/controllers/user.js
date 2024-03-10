@@ -6,6 +6,7 @@ const { JWT_SECRET, JWT_EXPIRY } = require('../lib/constants');
 const { argon2ConfirmHash, argon2Hash, imagePathsToS3Url } = require('../lib/utilityFunctions');
 const prisma = require('../lib/prismaClient');
 const { authenticate } = require('passport');
+const { checkUserCreationAuthorization } = require('../helpers/userHelpers');
 
 /**
  * @swagger
@@ -340,87 +341,93 @@ userRouter.delete(
 		}
 	}
 );
-/**
- * Signs up a user with fields referenced in the User DB model.
- * At a minimum must have email and password to succeed.
- *
- * @route			POST /user/signup
- * @access		Public (No credentials required)
- * @returns		{{ User, JWT }}
- */
 
-/**
- * @swagger
- * /user/signup:
- *  post:
- *    summary: Creates a user based on User Values
- *    tags: [User]
- *    description: Creates a user with desired properties
- *    requestBody:
- *      required: true
- *      content:
- *        application/json:
- *          schema:
- *            $ref: '#/components/schemas/User'
- *    responses:
- *      201:
- *        description: The user was succesfully created
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                user:
- *                  $ref: '#/components/schemas/User'
- *                token:
- *                  type: string
- * 			401:
- *        description: The user couldn't be created
-*/
-userRouter.post("/signup", async (req, res, next) => {
-	passport.authenticate("signup", async (err, user, info) => {
-		if (err) {
-			res.status(500);
-			res.json({
-				message: err.message,
-				stack: err.stack,
-			});
-			return;
-		}
-
-		if (!user) {
-			console.log(info);
-			res.status(401);
-			res.json({
-				message: info.message,
-			});
-			return;
-		}
-
-		const adminTypes = [
-			"ADMIN",
-			"MOD",
-			"SEG_ADMIN",
-			"SEG_MOD",
-			"MUNICIPAL_SEG_ADMIN",
+userRouter.post("/signup", 
+	async (req, res, next) => 
+	{
+		// console.log(req.user);
+		// console.log(req.body);
+		// Types that don't need admin permissions to create
+		const nonAdminTypes = [
+			'BUSINESS',
+			'RESIDENTIAL',
+			'COMMUNITY',
 		];
-		// Give valid token upon signup
-		const tokenBody = {
-			id: user.user.id,
-			email: adminTypes.includes(user.user.userType)
-				? user.user.adminmodEmail
-				: user.user.email,
-		};
-		const token = jwt.sign({ user: tokenBody }, JWT_SECRET, {
-			expiresIn: JWT_EXPIRY,
-		});
+		const adminTypes = [
+			'ADMIN',
+			'MOD',
+			'SEG_ADMIN',
+			'SEG_MOD',
+			'MUNICIPAL_SEG_ADMIN',
+		];
+		// I don't know what these types are but they are defined in the Prisma Schema
+		const otherTypes = [
+			'MUNICIPAL',
+			'WORKER',
+			'ASSOCIATE',
+			'DEVELOPER',
+			'IN_PROGRESS'
+		]
 
-		res.status(201).json({
-			user: user.user,
-			token,
-		});
-	})(req, res, next);
-});
+		// Anyone can create non-verified users of these user types
+		if (nonAdminTypes.includes(req.body?.userType) && !req.body?.verified) {
+			console.log("Non Admin User Creation")
+			createUser();
+		} else {
+			console.log("Admin User Creation")
+			// Check user has permissions to create a user of this type.
+			// Start by retrieving the user from the JWT
+			passport.authenticate("jwt", { session: false }, async (err, user, info) => {
+				console.log("JWT return values", err, user, info);
+				if (err) {
+					res.status(500).json(err);
+					return;
+				}
+				if (!user) {
+					res.status(401).json({message: info?.message || "User not found"});
+					return;
+				}
+
+				// TODO: Check if the user has permissions to create a user of this type
+				const canCreateUser = checkUserCreationAuthorization(req.body, user);
+				await createUser();
+				// Use the user to check if they have permissions to create a user of this type
+				// console.log("UserOutside", user);
+				// res.status(201).json({
+				// 	user: user,
+				// });
+				return;
+			})(req, res, next);
+		}
+
+		function createUser() {
+			passport.authenticate("signup", async (err, user, info) => {
+				if (err) {
+					console.log("Should be error stopping it", err.message)
+					res.status(500).json({error: err.message});
+					return;
+				}
+				if (!user) {
+					res.status(401).json(info);
+					return;
+				}
+
+				// Give valid token upon signup
+				const tokenBody = {
+					id: user.id,
+					email: user.email,
+				};
+				const token = jwt.sign({ user: tokenBody }, JWT_SECRET, {
+					expiresIn: JWT_EXPIRY,
+				});
+				res.status(201).json({
+					user: user,
+					token: token,
+				});
+			})(req, res, next);
+		}
+	}
+);
 
 /**
  * @swagger

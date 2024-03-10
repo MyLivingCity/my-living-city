@@ -53,6 +53,7 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
         school: { lat: null, lon: null },
     });
     const [isLoading, setIsLoading] = useState(false);
+    const [submitError, setSubmitError] = useState('');
     const [map, showMap] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [segment, setSegment] = useState<ISegment>();
@@ -194,13 +195,15 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                     // const {email, password, confirmPassword} = values;
                     try {
                         setIsLoading(true);
-                        console.log(values, segmentRequests);
+                        setSubmitError('');
+                        // console.log(values, segmentRequests);
                         await postRegisterUser(values, segmentRequests, true, avatar);
                         if (userType === USER_TYPES.RESIDENTIAL) {
                             wipeLocalStorage();
                             window.location.href = ROUTES.CHECKEMAIL;
                         }
-                    } catch (error) {
+                    } catch (error: any) {
+                        setSubmitError('An error occurred while creating your account.');
                         console.log(error);
                         wipeLocalStorage();
                     } finally {
@@ -236,8 +239,7 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                         </div> */}
                     </BForm.Group>
                 </FormikStep>
-                {(userType === USER_TYPES.BUSINESS ||
-          userType === USER_TYPES.COMMUNITY) && (
+                {(userType === USER_TYPES.BUSINESS || userType === USER_TYPES.COMMUNITY) && (
                     <FormikStep
                         validationSchema={Yup.object().shape({
                             password: Yup.string().min(
@@ -374,8 +376,7 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                     </FormikStep>
                 )}
 
-                {userType != USER_TYPES.BUSINESS &&
-          userType != USER_TYPES.COMMUNITY && (
+                {userType != USER_TYPES.BUSINESS && userType != USER_TYPES.COMMUNITY && (
                     <FormikStep
                         validationSchema={Yup.object().shape({
                             password: Yup.string().min(
@@ -934,6 +935,7 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                 </FormikStep>
 
                 <FormikStep>
+                    {submitError && <Alert variant='danger'>{submitError}</Alert>}
                     <h3>
             To complete registration press submit! Make sure to check your email
             for a verification code!{' '}

@@ -161,11 +161,13 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
                 registerData,
                 null,
                 false,
-                null
+                null,
+                token
             );
             console.log('User registered successfully!');
-            setAdminmodEmail(createdUser.user.adminmodEmail || null);
-            history.push('/adminmod-email-generate', { adminmodEmail });
+            const adminmodEmail = createdUser.user.email || null;
+            setAdminmodEmail(adminmodEmail);
+            history.push('/adminmod-email-generate', { adminmodEmail: adminmodEmail });
             form.reset();
         } catch (error) {
             console.error('Error registering user:', error);

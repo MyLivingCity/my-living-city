@@ -695,6 +695,48 @@ userRouter.put(
 		}
 	}
 )
+userRouter.put(
+	'/:userId/password',
+	passport.authenticate('jwt', { session: false }),
+	async (req, res, next) => {
+		try {
+			const { userId } = req.params;
+			const { newPassword } = req.body;
+			const foundUser = await prisma.user.findUnique({
+				where: { id: userId }
+			});
+
+			if (!foundUser) {
+				throw new Error('User not found');
+			}
+
+			// Update the user's password without verifying the current password
+			const updatedUser = await prisma.user.update({
+				where: { id: userId },
+				data: {
+					password: await argon2Hash(newPassword)
+				}
+			});
+
+			const parsedUser = { ...updatedUser, password: null };
+
+			res.status(200).json({
+				message: "User password successfully updated",
+				user: parsedUser,
+			});
+		} catch (error) {
+			res.status(400).json({
+				message: `An Error occured while trying to change the password for the user with ID ${userId}.`,
+				details: {
+					errorMessage: error.message,
+					errorStack: error.stack,
+				}
+			});
+		} finally {
+			await prisma.$disconnect();
+		}
+	}
+);
 
 
 

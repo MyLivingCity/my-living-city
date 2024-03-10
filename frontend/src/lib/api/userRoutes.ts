@@ -62,6 +62,23 @@ export const deleteUser = async (userId: string, token: string | null) => {
     }
 };
 
+
+export const updateUserPassword = async (userId: string, newPassword: string, token: string | null) => {
+    try {
+        const response = await axios.put(`${API_BASE_URL}/user/${userId}/password`, {
+            password: newPassword
+        }, {
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'x-auth-token': token
+            },
+        });
+        return response.data;
+    } catch (error) {
+        throw new Error('Failed to update user password');
+    }
+};
+
 export const resetUserPassword = async (loginData: ResetPassword): Promise<ResetPassword> => {
     if (loginData.password !== loginData.confirmPassword) {
         throw new Error('Passwords must match');

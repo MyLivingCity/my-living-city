@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Dropdown, Container, Button, Form, NavDropdown } from 'react-bootstrap';
-import { updateUser, getUserBanHistory, removeFlagQuarantine, removePostCommentQuarantine, deleteUser, postRegisterUser, getUserWithEmail } from 'src/lib/api/userRoutes';
+import { updateUser, getUserBanHistory, removeFlagQuarantine, removePostCommentQuarantine, deleteUser, postRegisterUser, getUserWithEmail, updateUserPassword } from 'src/lib/api/userRoutes';
 import { USER_TYPES } from 'src/lib/constants';
 import { IComment } from 'src/lib/types/data/comment.type';
 import { ICommentFlag, IFlag } from 'src/lib/types/data/flag.type';
@@ -17,6 +17,7 @@ import { UserSegPlainText } from '../partials/UserSegPlainText';
 import { IRegisterInput } from './../../lib/types/input/register.input';
 import { ISegment, ISuperSegment } from 'src/lib/types/data/segment.type';
 import { EditUserInfoModal } from '../modal/EditUserInfoModal';
+import UserChangePasswordModal from '../modal/UserChangePasswordModal';
 
 interface UserManagementContentProps {
     users: IUser[] | undefined;
@@ -46,6 +47,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
     const [showUserUnbanModal, setShowUserUnbanModal] = useState<boolean>(false);
     const [showUserBanHistoryModal, setShowUserBanHistoryModal] = useState<boolean>(false);
     const [showEditUserModal, setShowEditUserModal] = useState<boolean>(false);
+    const [showChangePasswordModal, setShowChangePasswordModal] = useState<boolean>(false);
     const [modalUser, setModalUser] = useState<IUser>();
     const [banHistory, setBanHistory] = useState<any>();
     const UserSegmentHandler = (email: string, id: string) => {
@@ -276,6 +278,18 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
         );
     };
 
+    const handlePasswordChange = async ( newPassword: string) => {
+        console.log(newPassword);
+        if (modalUser) {
+            try {
+                await updateUserPassword(modalUser.id, newPassword, token);
+                console.log('changed user password successfully!');
+            } catch (error) {
+                console.error('Error changing user password:', error);
+            }
+        }
+    };
+
     useEffect(() => {
         if (users) {
             // Filter out specific user types or conditions if needed
@@ -438,6 +452,14 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                     <EditUserInfoModal show={showEditUserModal} setShow={setShowEditUserModal} modalUser={modalUser!} currentUser={user!} token={token} segs={segs} subSeg={subSeg} changesSaved={handleUpdatedLocalUserData} />
                     : null
                 }
+                {showChangePasswordModal && (
+                    <UserChangePasswordModal
+                        show={showChangePasswordModal}
+                        onHide={() => setShowChangePasswordModal(false)}
+                        onSubmit={handlePasswordChange}
+                        modalUser={modalUser} 
+                    />
+                )}
 
 
                 <div className='d-flex justify-content-between'>
@@ -690,6 +712,11 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                                                             setReviewed(req.reviewed);
                                                             setModalUser(req);
                                                         }}>Edit</Dropdown.Item>
+                                                    <Dropdown.Item
+                                                        onClick={()=>{
+                                                            setModalUser(req);
+                                                            setShowChangePasswordModal(true);
+                                                        }}>Change User Password</Dropdown.Item>
                                                     <Dropdown.Item
                                                         onClick={()=>
                                                             UserSegmentHandler(req.email, req.id)

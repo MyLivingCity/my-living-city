@@ -8,9 +8,9 @@
  */
 function checkUserCreationAuthorization(userToCreate, user) {
   // TODO implement this function
-  console.error('Unimplemented checkUserCreationAuthorization')
+  console.error('\x1b[31m%s\x1b[0m', 'Unimplemented checkUserCreationAuthorization');
   console.error('userToCreate:', userToCreate)
-  console.error('yserCreatingAccount:', user)
+  console.error('userCreatingAccount:', user)
   return true // or false
 }
 

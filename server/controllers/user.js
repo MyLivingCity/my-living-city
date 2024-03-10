@@ -492,8 +492,7 @@ userRouter.post("/login", async (req, res, next) => {
 					password: null,
 				};
 
-				res.status(200);
-				return res.json({
+				return res.status(200).json({
 					user: parsedUser,
 					token,
 				});
@@ -702,6 +701,58 @@ userRouter.put(
 		}
 	}
 )
+userRouter.put(
+	'/:userId/password',
+	passport.authenticate('jwt', { session: false }),
+	async (req, res, next) => {
+		try {
+			const { userId } = req.params;
+			const { newPassword } = req.body;
+			const foundUser = await prisma.user.findUnique({
+				where: { id: userId }
+			});
+
+			if (!foundUser) {
+				throw new Error('User not found');
+			}
+			
+			// Check if the user has permissions to change the password of the user 
+			// Rights are same as creating a user
+			const hasPermission = checkUserCreationAuthorization(foundUser, req.user);
+			if (!hasPermission) {
+				return res.status(403).json({
+					message: "You don't have the right to perform this action!",
+				});
+			};
+
+			// Update the user's password without verifying the current password
+			const updatedUser = await prisma.user.update({
+				where: { id: userId },
+				data: {
+					password: await argon2Hash(newPassword)
+				}
+			});
+
+			delete updatedUser.password;
+			delete updatedUser.passCode;
+
+			res.status(200).json({
+				message: "User password successfully updated",
+				user: updatedUser,
+			});
+		} catch (error) {
+			res.status(400).json({
+				message: `An Error occured while trying to change the password for the user with ID ${userId}.`,
+				details: {
+					errorMessage: error.message,
+					errorStack: error.stack,
+				}
+			});
+		} finally {
+			await prisma.$disconnect();
+		}
+	}
+);
 
 
 

@@ -66,7 +66,7 @@ export const deleteUser = async (userId: string, token: string | null) => {
 export const updateUserPassword = async (userId: string, newPassword: string, token: string | null) => {
     try {
         const response = await axios.put(`${API_BASE_URL}/user/${userId}/password`, {
-            password: newPassword
+            newPassword: newPassword
         }, {
             headers: {
                 'Access-Control-Allow-Origin': '*',

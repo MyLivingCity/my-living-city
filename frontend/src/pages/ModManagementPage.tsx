@@ -382,7 +382,7 @@ const ModManagementPage: React.FC<ModManagementProps> = ({ }) => {
     if (pageState === 'user') {
         return (
             <div>
-                <div style={{ width: 200, float: 'left', height: 240, marginLeft: '12%' }}>
+                <div className='mt-3' style={{ width: 200, float: 'left', height: 240, marginLeft: '12%' }}>
                     <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40 }} onClick={() => { window.scrollTo({ top: 0, left: 0, behavior: 'smooth' }); }}>Dashboard</Button>
                     <br></br>
                     <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black', borderBottom: '1px solid black' }} onClick={() => loadState('quarantine')}>Quarantine List</Button>
@@ -397,7 +397,7 @@ const ModManagementPage: React.FC<ModManagementProps> = ({ }) => {
                     <br></br>
                     <Button style={{ border: 'none', width: 200, textAlign: 'left', height: 40, backgroundColor: '#F1F2F2', color: 'black' }} onClick={() => loadState('comment')}>Comment View</Button>
                 </div>
-                <div style={{ width: '80%', marginLeft: '22%' }}>
+                <div style={{ width: '80%', marginLeft: '25%' }}>
                     <UserManagementContent users={userData!} token={token} user={user} flags={flagData} commentFlags={commentFlagData} ideas={ideaData} proposals={proposalData} comments={commentData} bans={banData} />
                 </div>
             </div>

@@ -716,6 +716,15 @@ userRouter.put(
 			if (!foundUser) {
 				throw new Error('User not found');
 			}
+			
+			// Check if the user has permissions to change the password of the user 
+			// Rights are same as creating a user
+			const hasPermission = checkUserCreationAuthorization(foundUser, req.user);
+			if (!hasPermission) {
+				return res.status(403).json({
+					message: "You don't have the right to perform this action!",
+				});
+			};
 
 			// Update the user's password without verifying the current password
 			const updatedUser = await prisma.user.update({
@@ -725,11 +734,12 @@ userRouter.put(
 				}
 			});
 
-			const parsedUser = { ...updatedUser, password: null };
+			delete updatedUser.password;
+			delete updatedUser.passCode;
 
 			res.status(200).json({
 				message: "User password successfully updated",
-				user: parsedUser,
+				user: updatedUser,
 			});
 		} catch (error) {
 			res.status(400).json({

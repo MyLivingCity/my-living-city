@@ -5,6 +5,7 @@ const prisma = require('../lib/prismaClient');
 const { argon2Hash, argon2ConfirmHash } = require('../lib/utilityFunctions');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const nodemailer = require('nodemailer');
+const { getSegmentInfo } = require('../helpers/userSegmentHelpers');
 
 passport.use(
   "signup",
@@ -16,10 +17,9 @@ passport.use(
     },
     async (req, email, password, done) => {
       try {
-        const {
-          confirmPassword,
-          //userRoleId,
-        } = req.body;
+        // --------------------------------------------
+        // Verify User data
+        // --------------------------------------------
         if (!email) {
           return done({ message: "You must supply an email." });
         }
@@ -28,13 +28,16 @@ passport.use(
           return done({ message: "You must supply a password." });
         }
 
-        console.log("Request body create user");
-        console.log(req.body);
-
+        const parsedMainData = {
+          ...req.body,
+          email: email.toLowerCase(),
+        };
+        
         // hash password
         const hashedPassword = await argon2Hash(password);
 
         // Check if confirmPassword and password are the same
+        const { confirmPassword } = req.body;
         const passwordConfirmation = password === confirmPassword;
         if (!passwordConfirmation) {
           return done({
@@ -43,6 +46,41 @@ passport.use(
           });
         }
 
+        // --------------------------------------------
+        // ADMIN ACCOUNTS ONLY SECTION
+        // --------------------------------------------
+        // If admin use the generated email
+        // TODO move the Admin account types to a constant
+        let adminmodEmail;
+        if (
+          [
+            "SUPER_ADMIN",
+            "ADMIN",
+            "MOD",
+            "SEG_ADMIN",
+            "SEG_MOD",
+            "MUNICIPAL_SEG_ADMIN",
+          ].includes(parsedMainData.userType)
+        ) {
+          // Need to ensure that the generated adminmodEmail is unique
+          let uniqueEmailGenerated = false;
+          while (!uniqueEmailGenerated) {
+            const randomDigits = Math.floor(Math.random() * 100).toString().padStart(2, "0");
+            const randomChars = Math.random().toString(36).substring(2, 4).toLowerCase();
+            let adminmodEmail = `admin${randomDigits}${randomChars}@mylivingcity.org`;
+            const adminmodUser = await prisma.user.findFirst({
+              where: { email: adminmodEmail },
+            });
+            if (!adminmodUser) {
+              uniqueEmailGenerated = true;
+              parsedMainData.adminmodEmail = parsedMainData.email.toLowerCase();
+              parsedMainData.email = adminmodEmail;
+            }
+          }
+        }
+        // --------------------------------------------
+        // END ADMIN ACCOUNTS ONLY SECTION
+
         // Check if user exists
         const userExists = await prisma.user.findUnique({
           where: { email },
@@ -50,23 +88,93 @@ passport.use(
         if (userExists && userExists.verified === true) {
           return done(null, false, { message: "User already exists." });
         }
-
-        if (userExists && userExists.verified === false) {
+        if (userExists && userExists.verified !== true) {
           // Send email verification
           sendEmailVerification(userExists);
-          return done(null, userExists);
+          return done(null, false, { message: "User already exists. Please check your email for verification link."});
         }
-        // Parse body
-        const geoData = { ...req.body.geo };
+        // --------------------------------------------
+        // END Verify User data
+
+        // Validate address data
         const addressData = { ...req.body.address };
-        const parsedMainData = {
-          ...req.body,
-          //...userRoleId && { userRoleId: Number(userRoleId) }
-        };
-        //if (userRoleId == null) delete parsedMainData.userRoleId;
+
+        // Validate geo data
+        const geoData = { ...req.body.geo };
+        
+        // Need to get the rest of segment data to fill in the userSegments table
+        const userSegmentData = await getSegmentInfo(req.body?.userSegment, req.body?.fname,  req.body?.address?.streetAddress, req.body?.Work_Details?.company, req.body?.School_Details?.faculty);
+
+        // Validate segment request data
+        const segmentRequest = (req.body?.segmentRequest || []).filter(newSegment => newSegment);
+
+        // --------------------------------------------
+        // COMMUNITY AND BUSINESS ACCOUNTS ONLY SECTION
+        // --------------------------------------------
+        const userReachRequest = [];
+        let stripeAccount = null;
+        if (parsedMainData.userType === "BUSINESS" || parsedMainData.userType === "COMMUNITY") 
+        {
+          // create stripe account
+          const newStripCustomer = await stripe.customers.create({
+            email: email.toLowerCase(),
+          });
+          stripeAccount = { stripeId: newStripCustomer.id, status: "incomplete"};
+          // and Validate user reach segment data
+          if (parsedMainData.userReach && parsedMainData.userReach.length > 0) {
+            const theSegments = await prisma.segments.findMany({
+              where: {
+                  segId: {
+                      in: parsedMainData.userReach
+                  }
+              }
+            });
+            for (let segId of parsedMainData.userReach) {
+              if (!theSegments.some(segment => segment.segId === segId)) {
+                return done(null, false, {
+                  message: `The Segment with id ${segId} cannot be found!`
+                });
+              } else {
+                userReachRequest.push({segId: segId});
+              }
+            }
+          }
+        }
+        // --------------------------------------------
+        // END COMMUNITY AND BUSINESS ACCOUNTS ONLY SECTION 
+
+        // --------------------------------------------
+        // RESIDENTIAL ACCOUNTS ONLY SECTION
+        // --------------------------------------------
+        let School_Details = req.body?.schoolDetails
+        let Work_Details = req.body?.workDetails
+        if (parsedMainData.userType === "RESIDENTIAL") {
+          if (!School_Details) {School_Details = {};}
+          if (!Work_Details) {Work_Details = {};}
+        }
+        if (School_Details && School_Details.programCompletionDate) {
+          School_Details.programCompletionDate = new Date(School_Details.programCompletionDate);
+          if (isNaN(School_Details.programCompletionDate)) {
+            return done(null, false, {
+              message: "Invalid date for program completion date."
+            });
+          }
+        } else {
+          School_Details.programCompletionDate = null;
+        }
+        // --------------------------------------------
+        // END RESIDENTIAL ACCOUNTS ONLY SECTION
+
+        // Remove unnecessary data
         delete parsedMainData.geo;
         delete parsedMainData.address;
         delete parsedMainData.confirmPassword;
+        delete parsedMainData.reachSegmentIds;
+        delete parsedMainData.userSegment;
+        delete parsedMainData.segmentRequest;
+        delete parsedMainData.userReach;
+        delete parsedMainData.schoolDetails;
+        delete parsedMainData.workDetails;
 
         // Create user
         const createdUser = await prisma.user.create({
@@ -77,66 +185,47 @@ passport.use(
             address: {
               create: addressData,
             },
+            userSegments: {
+              create: userSegmentData,
+            },
+            segmentRequest: {
+              create: segmentRequest,
+            },
+            userReach: {
+              create: userReachRequest,
+            },
+            School_Details: {
+              create: School_Details,
+            },
+            Work_Details: {
+              create: Work_Details,
+            },
+            ...(stripeAccount && { stripe: { create: stripeAccount } }),
             ...parsedMainData,
             password: hashedPassword,
-            email: email.toLowerCase(),
           },
           include: {
             geo: true,
             address: true,
-            //userRole: true,
+            userSegments: true,
+            stripe: true,
+            segmentRequest: true,
+            userReach: true,
+            School_Details: true,
+            Work_Details: true,
           },
         });
 
-        let adminmodEmail;
-        if (
-          [
-            "ADMIN",
-            "MOD",
-            "SEG_ADMIN",
-            "SEG_MOD",
-            "MUNICIPAL_SEG_ADMIN",
-          ].includes(createdUser.userType)
-        ) {
-          const randomDigits = Math.floor(Math.random() * 100)
-            .toString()
-            .padStart(2, "0");
-          const randomChars = Math.random().toString(36).substring(2, 4);
-          adminmodEmail = `admin${randomDigits}${randomChars}@mylivingcity.org`;
-        }
-        // Update the user record with the new adminmodEmail
-        await prisma.user.update({
-          where: { id: createdUser.id },
-          data: { adminmodEmail: adminmodEmail },
-        });
-
-        createdUser.adminmodEmail = adminmodEmail;
-        //Check to only create Stripe account for paid accounts.
-        if (
-          parsedMainData.userType === "BUSINESS" ||
-          parsedMainData.userType === "COMMUNITY"
-        ) {
-          const newStripCustomer = await stripe.customers.create({
-            email: createdUser.email,
-          });
-          await prisma.userStripe.create({
-            data: {
-              userId: createdUser.id,
-              stripeId: newStripCustomer.id,
-              status: "incomplete",
-            },
-          });
-        }
+        // Delete password fields of returned user
+        delete createdUser.password;
+        delete createdUser.passCode;
 
         if (createdUser.verified === false) {
           sendEmailVerification(createdUser);
-          // stop here if user is not verified
-          return done(null, { user: createdUser });
         }
-
-        return done(null, { user: createdUser });
+        return done(null, createdUser);
       } catch (error) {
-        console.error(error);
+        console.error("signup error", error);
         done(error);
       } finally {
         await prisma.$disconnect();
@@ -250,29 +339,30 @@ passport.use(
     },
     async (token, done) => {
       try {
-        // TODO: Shouldn't trust what the user gives you check if user with given id works
-        console.log(token.user);
+        // console.log("token user", token.user);
 
-        // if (!token.user || !token.user.id) {
-        //   console.log("Invalid token: User ID is not present");
-        //   return done(null, false, {
-        //     message: "Invalid token: User ID is not present.",
-        //   });
-        // }
+        if (!token?.user || !token?.user.id) {
+          // console.log("Invalid token: User ID is not present");
+          return done(null, false, {
+            message: "Invalid token: User ID is not present.",
+          });
+        }
 
-        // // Check if given token user is valid
-        // const foundUser = await prisma.user.findUnique({
-        //   where: { id: token.user.id }
-        // });
+        // Check if given token user is valid
+        const foundUser = await prisma.user.findUnique({
+          where: { id: token.user.id }
+        });
 
-        // if (!foundUser) {
-        //   console.log('User could not be found in Database');
-        //   return done(null, false, { message: 'User could not be found in Database.'})
-        // }
+        if (!foundUser) {
+          // console.log('User could not be found in Database');
+          return done(null, false, { message: 'User could not be found in Database.'})
+        }
         
-        console.log('User found in database');
-        return done(null, token.user);
+        // console.log('User found in database', foundUser);
+        // console.log("User token info", token.user);
+        return done(null, foundUser);
       } catch (error) {
+        // console.log('Error is thrown', error);
         done(error);
       } finally {
         await prisma.$disconnect();

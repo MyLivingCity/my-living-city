@@ -228,7 +228,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
             if (await getUserWithEmail(registerData.email) === 200) {
                 setValidEmail(false);
             } else {
-                await postRegisterUser(registerData, null, false, null);
+                await postRegisterUser(registerData, null, false, null, token);
                 console.log('User registered successfully!');
                 form.reset();    
             }

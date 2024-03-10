@@ -246,10 +246,7 @@ passport.use(
       try {
         const foundUser = await prisma.user.findFirst({
           where: {
-            OR: [
-              { email: email.toLowerCase() },
-              // { adminmodEmail: email.toLowerCase() },
-            ],
+              email: email.toLowerCase(),
           },
           // TODO: May cause unnecessary queries to database
           include: {
@@ -266,25 +263,6 @@ passport.use(
           });
         }
 
-        const adminTypes = [
-          "ADMIN",
-          "MOD",
-          "SEG_ADMIN",
-          "SEG_MOD",
-          "MUNICIPAL_SEG_ADMIN",
-        ];
-        // Check the userType of the found user
-        // if (
-        //   adminTypes.includes(foundUser.userType) &&
-        //   foundUser.adminmodEmail !== email.toLowerCase()
-        // ) {
-        //   console.log("Admin or Mod user must use adminmodEmail to login");
-        //   return done(null, false, {
-        //     message: `Admin or Mod user must use generated email: adminXXXX@mylivingcity.org to login!`,
-        //   });
-        // }
-        // const validPassword = await foundUser.validatePassword(password);
-        // console.log(validPassword);
         const validPassword = await argon2ConfirmHash(
           password,
           foundUser.password

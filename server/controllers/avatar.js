@@ -2,7 +2,7 @@ const passport = require('passport');
 const express = require('express');
 const avatarRouter = express.Router();
 const prisma = require('../lib/prismaClient');
-const { makeUpload } = require('../lib/imageBucket');
+const { makeUpload, deleteImage } = require('../lib/imageBucket');
 
 const upload = makeUpload("avatar").single('avatar');
 
@@ -61,7 +61,10 @@ avatarRouter.get(
             }
           });
 
-          await deleteImage("avatar", originalPath);
+          if(originalPath){
+            await deleteImage("avatar", originalPath);
+          }
+          
           res.status(200).json(result);
     
         } catch (error) {

@@ -492,8 +492,7 @@ userRouter.post("/login", async (req, res, next) => {
 					password: null,
 				};
 
-				res.status(200);
-				return res.json({
+				return res.status(200).json({
 					user: parsedUser,
 					token,
 				});

@@ -248,7 +248,7 @@ passport.use(
           where: {
             OR: [
               { email: email.toLowerCase() },
-              { adminmodEmail: email.toLowerCase() },
+              // { adminmodEmail: email.toLowerCase() },
             ],
           },
           // TODO: May cause unnecessary queries to database
@@ -274,15 +274,15 @@ passport.use(
           "MUNICIPAL_SEG_ADMIN",
         ];
         // Check the userType of the found user
-        if (
-          adminTypes.includes(foundUser.userType) &&
-          foundUser.adminmodEmail !== email.toLowerCase()
-        ) {
-          console.log("Admin or Mod user must use adminmodEmail to login");
-          return done(null, false, {
-            message: `Admin or Mod user must use generated email: adminXXXX@mylivingcity.org to login!`,
-          });
-        }
+        // if (
+        //   adminTypes.includes(foundUser.userType) &&
+        //   foundUser.adminmodEmail !== email.toLowerCase()
+        // ) {
+        //   console.log("Admin or Mod user must use adminmodEmail to login");
+        //   return done(null, false, {
+        //     message: `Admin or Mod user must use generated email: adminXXXX@mylivingcity.org to login!`,
+        //   });
+        // }
         // const validPassword = await foundUser.validatePassword(password);
         // console.log(validPassword);
         const validPassword = await argon2ConfirmHash(
@@ -371,13 +371,13 @@ passport.use(
   )
 )
 
-const sendEmailVerification = async(user) => {
+const sendEmailVerification = async (user) => {
   transporter = nodemailer.createTransport({
     host: 'smtp-mail.outlook.com',
     port: 587,
     auth: {
-        user:  process.env.EMAIL,
-        pass:  process.env.EMAIL_PASSWORD
+      user: process.env.EMAIL,
+      pass: process.env.EMAIL_PASSWORD
     }
   });
   let token = Math.random().toString(36).substr(2, 6);

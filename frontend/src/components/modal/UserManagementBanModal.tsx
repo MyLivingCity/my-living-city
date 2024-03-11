@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import { Button, Container, Form, Modal, Row } from 'react-bootstrap';
 import { IUser } from 'src/lib/types/data/user.type';
-import { useFormik } from "formik";
+import { useFormik } from 'formik';
 import { IBanUserInput } from 'src/lib/types/input/banUser.input';
 import { postCreateUserBan } from 'src/lib/api/banRoutes';
 import { updateUser } from 'src/lib/api/userRoutes';
@@ -41,24 +41,24 @@ export const UserManagementBanModal = ({
                 banDuration: values.banDuration,
                 banReason: values.banReason,
                 banMessage: values.banMessage,
-            }
+            };
             await postCreateUserBan(banInputValues, token);
             await updateUser(modalUser, token, currentUser);
             handleClose();
         } catch (error) {
-            console.log(error)
+            console.log(error);
         } finally {
             setIsSubmitting(false);
         }
-    }
+    };
 
     const formik = useFormik<IBanUserInput>({
         initialValues: {
             userId: modalUser.id,
             banType: BAN_USER_TYPES.WARNING,
             banDuration: 0,
-            banReason: "",
-            banMessage: "",
+            banReason: '',
+            banMessage: '',
         },
         onSubmit: submitHandler
     });
@@ -68,7 +68,7 @@ export const UserManagementBanModal = ({
             <Modal
                 show={show}
                 onHide={handleClose}
-                backdrop="static" // Disallow clicking outside of modal to close modal
+                backdrop='static' // Disallow clicking outside of modal to close modal
                 centered
                 size='lg'
                 keyboard={false} // Disallow esc key to close modal
@@ -88,8 +88,8 @@ export const UserManagementBanModal = ({
                             Ban Type
                         </Form.Label>
                         <Form.Control
-                            as="select"
-                            name="banType"
+                            as='select'
+                            name='banType'
                             onChange={formik.handleChange}
                             value={formik.values.banType}
                         >
@@ -102,8 +102,8 @@ export const UserManagementBanModal = ({
                             Ban Duration
                         </Form.Label>
                         <Form.Control
-                            as="select"
-                            name="banDuration"
+                            as='select'
+                            name='banDuration'
                             onChange={formik.handleChange}
                             value={formik.values.banDuration}
                             required
@@ -123,8 +123,8 @@ export const UserManagementBanModal = ({
                             Ban Reason
                         </Form.Label>
                         <Form.Control
-                            as="select"
-                            name="banReason"
+                            as='select'
+                            name='banReason'
                             onChange={formik.handleChange}
                             value={formik.values.banReason}
                             required
@@ -140,10 +140,10 @@ export const UserManagementBanModal = ({
                         <br />
                         <Form.Label>Ban Additional Details</Form.Label>
                         <Form.Control
-                            as="textarea"
+                            as='textarea'
                             rows={5}
-                            name="banMessage"
-                            placeholder="Additional Details for Ban"
+                            name='banMessage'
+                            placeholder='Additional Details for Ban'
                             onChange={formik.handleChange}
                             value={formik.values.banMessage}
                             required
@@ -159,7 +159,7 @@ export const UserManagementBanModal = ({
                             </Button>
                             <Button
                                 className='mr-3'
-                                variant="secondary"
+                                variant='secondary'
                                 onClick={handleClose}
                             >Cancel
                             </Button>
@@ -168,5 +168,5 @@ export const UserManagementBanModal = ({
                 </Form>
             </Modal>
         </>
-    )
-}
+    );
+};

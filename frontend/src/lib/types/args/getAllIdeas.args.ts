@@ -20,8 +20,8 @@ export interface IIdeaOrderByAggregate {
 type SortOrder = 'asc' | 'desc'
 
 export const defaultOrderByAggregate: IIdeaOrderByAggregate = {
-  updatedAt: 'desc'
-}
+    updatedAt: 'desc'
+};
 
 
 export interface IGetAllIdeasWithSort {
@@ -30,7 +30,7 @@ export interface IGetAllIdeasWithSort {
 }
 
 export const getAllIdeasWithSortDefault: IGetAllIdeasWithSort = {
-  orderBy: {
-    updatedAt: 'desc'
-  }
-}
+    orderBy: {
+        updatedAt: 'desc'
+    }
+};

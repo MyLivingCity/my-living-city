@@ -1,9 +1,9 @@
 
 const Popup = (props: any) => {
-  return (
-    <>
-      <style>
-        {`.popup-box {
+    return (
+        <>
+            <style>
+                {`.popup-box {
                 position: fixed;
                 background: #00000050;
                 width: 100%;
@@ -44,17 +44,17 @@ const Popup = (props: any) => {
                 font-size: 20px;
 
                 }`}
-      </style>
-      <div className="popup-box">
-        <div className="box">
-          <span className="close-icon" onClick={props.handleClose}>
+            </style>
+            <div className='popup-box'>
+                <div className='box'>
+                    <span className='close-icon' onClick={props.handleClose}>
             x
-          </span>
-          {props.content}
-        </div>
-      </div>
-    </>
-  );
+                    </span>
+                    {props.content}
+                </div>
+            </div>
+        </>
+    );
 };
 
 export default Popup;

@@ -5,15 +5,15 @@ import { IUserRole } from '../lib/types/data/userRole.type';
 import { IFetchError } from '../lib/types/types';
 
 export const getAllUserRoles = async () => {
-  const res = await axios.get<IUserRole[]>(`${API_BASE_URL}/role/getall`);
-  return res.data;
-}
+    const res = await axios.get<IUserRole[]>(`${API_BASE_URL}/role/getall`);
+    return res.data;
+};
 
 const useUserRoles = () => {
-  return useQuery<IUserRole[], IFetchError>(
-    'userRoles', 
-    getAllUserRoles,
-  );
-}
+    return useQuery<IUserRole[], IFetchError>(
+        'userRoles', 
+        getAllUserRoles,
+    );
+};
 
 export default useUserRoles;

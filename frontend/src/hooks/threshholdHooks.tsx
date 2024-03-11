@@ -11,13 +11,13 @@ export interface INumber {
 }
 
 export const useThreshold = (token: string | null) => {
-    return useQuery<INumber, IFetchError>('threshhold', () => getThreshhold(token))
-}
+    return useQuery<INumber, IFetchError>('threshhold', () => getThreshhold(token));
+};
 
 export const useFalseFlagThreshold = (token: string | null) => {
-    return useQuery<INumber, IFetchError>('false-flag-threshhold', () => getFalseFlagThreshold(token))
-}
+    return useQuery<INumber, IFetchError>('false-flag-threshhold', () => getFalseFlagThreshold(token));
+};
 
 export const useBadPostingThreshhold = (token: string | null) => {
-    return useQuery<INumber, IFetchError>('bad-posting-threshhold', () => getBadPostingThreshhold(token))
-}
+    return useQuery<INumber, IFetchError>('bad-posting-threshhold', () => getBadPostingThreshhold(token));
+};

@@ -1,5 +1,5 @@
-import { useContext } from 'react'
-import { RouteProps, Route, Redirect } from 'react-router-dom'
+import { useContext } from 'react';
+import { RouteProps, Route, Redirect } from 'react-router-dom';
 import { UserProfileContext } from '../../contexts/UserProfile.Context';
 import { ROUTES } from '../../lib/constants';
 
@@ -14,11 +14,11 @@ interface SegAdminRouteProps {
     component: React.ElementType
     }
 
-    const SegAdminRoute: React.FC<SegAdminRouteProps> = ({
+const SegAdminRoute: React.FC<SegAdminRouteProps> = ({
     redirectPath,
     component: Component,
     ...routeProps
-    }) => {
+}) => {
     const {
         user,
         token
@@ -31,16 +31,16 @@ interface SegAdminRouteProps {
 
     return (
         <Route
-        {...routeProps}
-        render={(props) =>
-            isLoggedIn && user!.userType === "SEG_ADMIN" ? (
-            <ComponentToRender {...props} />
-            ) : (
-            <Redirect to={ redirectPath || ROUTES.LOGIN } />
-            )
-        }
+            {...routeProps}
+            render={(props) =>
+                isLoggedIn && user!.userType === 'SEG_ADMIN' ? (
+                    <ComponentToRender {...props} />
+                ) : (
+                    <Redirect to={ redirectPath || ROUTES.LOGIN } />
+                )
+            }
         />
     );
-}
+};
 
-export default SegAdminRoute
+export default SegAdminRoute;

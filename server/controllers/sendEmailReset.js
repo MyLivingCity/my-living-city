@@ -12,15 +12,16 @@ sendEmailRouter.post(
 			});
             if (foundUser){
                 var mailOptions = {
-                    from: process.env.EMAIL_USERNAME,
+                    from: process.env.EMAIL,
                     to: email,
                     subject: 'MyLivingCity Password Reset',
                     text: `${process.env.CORS_ORIGIN}/user/reset-password?passCode=${foundUser.passCode}`
                 };
                 var transporter = nodemailer.createTransport({
-                    service: 'gmail',
+                    host: 'smtp-mail.outlook.com',
+                    port: 587,
                     auth: {
-                        user: process.env.EMAIL_USERNAME,
+                        user: process.env.EMAIL,
                         pass: process.env.EMAIL_PASSWORD
                     }
                     });

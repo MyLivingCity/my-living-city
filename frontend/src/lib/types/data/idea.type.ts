@@ -1,14 +1,14 @@
-import { ICategory } from "./category.type";
-import { IAddress } from "./address.type";
-import { IGeo } from "./geo.type";
-import { IProposal, IProposalWithAggregations } from "./proposal.type";
-import { IProject } from "./project.type";
-import { IRating } from "./rating.type";
-import { IComment } from "./comment.type";
-import { IUser } from "./user.type";
-import { ISegment, ISubSegment, ISuperSegment } from "./segment.type";
+import { ICategory } from './category.type';
+import { IAddress } from './address.type';
+import { IGeo } from './geo.type';
+import { IProposal, IProposalWithAggregations } from './proposal.type';
+import { IProject } from './project.type';
+import { IRating } from './rating.type';
+import { IComment } from './comment.type';
+import { IUser } from './user.type';
+import { ISegment, ISubSegment, ISuperSegment } from './segment.type';
 
-export type IdeaState = "IDEA" | "PROPOSAL" | "PROJECT";
+export type IdeaState = 'IDEA' | 'PROPOSAL' | 'PROJECT';
 
 // Root Idea with no relationships
 export interface IIdea {

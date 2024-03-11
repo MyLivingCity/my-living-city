@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { UserProfileContext } from 'src/contexts/UserProfile.Context';
 import { USER_TYPES } from 'src/lib/constants';
@@ -7,8 +7,8 @@ import { delay } from 'src/lib/utilityFunctions';
 import SubmitAdvertisementPageContent from '../components/content/SubmitAdvertisementPageContent';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import { useCategories } from '../hooks/categoryHooks';
-import { getAllSegments } from "./../lib/api/segmentRoutes";
-import { getMyUserSegmentInfo } from "./../lib/api/userSegmentRoutes";
+import { getAllSegments } from './../lib/api/segmentRoutes';
+import { getMyUserSegmentInfo } from './../lib/api/userSegmentRoutes';
 
 // Extends Route component props with advertisement title route param
 interface SubmitAdvertisementPageProps extends RouteComponentProps<{}> {
@@ -22,37 +22,37 @@ const SubmitAdvertisementPage: React.FC<SubmitAdvertisementPageProps> = ({}) => 
     const [segmentData, setSegmentData] = useState<ISegment[]>([]);
 
     useEffect(() => {
-      async function getSegmentData() {
-        let data;
-        if (user?.userType === USER_TYPES.ADMIN) {data = await getAllSegments()}
-        else {
-            await delay(1000);
-            data = await getAllSegments();
-            let userSegment = await getMyUserSegmentInfo(token, user!.id);
+        async function getSegmentData() {
+            let data;
+            if (user?.userType === USER_TYPES.ADMIN) {data = await getAllSegments();}
+            else {
+                await delay(1000);
+                data = await getAllSegments();
+                let userSegment = await getMyUserSegmentInfo(token, user!.id);
             //TODO: get all segments of a community/business user and present in dropdown 2022/11/24
+            }
+            setSegmentData(data);
         }
-        setSegmentData(data);
-      }
       
-      getSegmentData();
+        getSegmentData();
     }, []);
   
     if (isLoading) {
-      return(
-        <div className="wrapper">
-        <LoadingSpinner />
-        </div>
-      )
+        return(
+            <div className='wrapper'>
+                <LoadingSpinner />
+            </div>
+        );
 
     }
   
     // TODO: Create non blocking error handling
   
     return (
-      <div className="wrapper">
-        <SubmitAdvertisementPageContent segmentOptions={segmentData}/>
-      </div>
+        <div className='wrapper'>
+            <SubmitAdvertisementPageContent segmentOptions={segmentData}/>
+        </div>
     );
-  }
+};
   
-  export default SubmitAdvertisementPage;
+export default SubmitAdvertisementPage;

@@ -1,6 +1,6 @@
-import React from "react";
-import { Container, Row } from "react-bootstrap";
-import MyPosts from "../partials/DashboardContent/MyPosts";
+import React from 'react';
+import { Container, Row } from 'react-bootstrap';
+import MyPosts from '../partials/DashboardContent/MyPosts';
 
 
 interface LandingPageContentProps {
@@ -8,17 +8,17 @@ interface LandingPageContentProps {
 }
 
 const MyPostsPageContent: React.FC<LandingPageContentProps> = ({
-  userIdeas,
+    userIdeas,
 }) => {
-  return (
-    <Container className="landing-page-content">
-      <Row as="article" className="featured"></Row>
+    return (
+        <Container className='landing-page-content'>
+            <Row as='article' className='featured'></Row>
 
-      <Row as="article" className="new-and-trending">
-        <MyPosts userIdeas={userIdeas!} numPosts={-1} isDashboard={false} />
-      </Row>
-    </Container>
-  );
+            <Row as='article' className='new-and-trending'>
+                <MyPosts userIdeas={userIdeas!} numPosts={-1} isDashboard={false} />
+            </Row>
+        </Container>
+    );
 };
 
 export default MyPostsPageContent;

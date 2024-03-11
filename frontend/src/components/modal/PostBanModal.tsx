@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import { Button, Container, Form, Modal, Row, Col } from 'react-bootstrap';
 import { IIdeaWithAggregations } from 'src/lib/types/data/idea.type';
-import { useFormik } from "formik";
+import { useFormik } from 'formik';
 import { IBanPostInput } from 'src/lib/types/input/banPost.input';
 import { postCreatePostBan } from 'src/lib/api/banRoutes';
 import { updateIdeaStatus } from 'src/lib/api/ideaRoutes';
@@ -39,23 +39,23 @@ export const PostBanModal = ({
                 authorId: values.authorId,
                 banReason: values.banReason,
                 banMessage: values.banMessage,
-            }
+            };
             await postCreatePostBan(banPostInputValues, token);
             await updateIdeaStatus(token, post.id.toString(), post.active, post.reviewed, post.banned, post.quarantined_at);
             handleClose();
         } catch (error) {
-            console.log(error)
+            console.log(error);
         } finally {
             setIsSubmitting(false);
         }
-    }
+    };
 
     const formik = useFormik<IBanPostInput>({
         initialValues: {
             postId: post.id,
             authorId: post.authorId,
-            banReason: "",
-            banMessage: "",
+            banReason: '',
+            banMessage: '',
         },
         onSubmit: submitHandler
     });
@@ -65,7 +65,7 @@ export const PostBanModal = ({
             <Modal
                 show={show}
                 onHide={handleClose}
-                backdrop="static" // Disallow clicking outside of modal to close modal
+                backdrop='static' // Disallow clicking outside of modal to close modal
                 centered
                 size='lg'
                 keyboard={false} // Disallow esc key to close modal
@@ -82,19 +82,19 @@ export const PostBanModal = ({
                 <Form onSubmit={formik.handleSubmit}>
                     <Modal.Body>
                         <Row>
-                            <Col md={"auto"}>
+                            <Col md={'auto'}>
                                 <b>Post Title: </b>{post.title}
                                 <p />
                             </Col>
                         </Row>
                         <Row>
-                            <Col md={"auto"}>
+                            <Col md={'auto'}>
                                 <b>Post Description: </b>{post.description}
                                 <p />
                             </Col>
                         </Row>
                         <Row>
-                            <Col md={"auto"}>
+                            <Col md={'auto'}>
                                 <b>Post Author Name: </b>{post.firstName}
                                 <p />
                             </Col>
@@ -104,8 +104,8 @@ export const PostBanModal = ({
                             Ban Reason
                         </Form.Label>
                         <Form.Control
-                            as="select"
-                            name="banReason"
+                            as='select'
+                            name='banReason'
                             onChange={formik.handleChange}
                             value={formik.values.banReason}
                             required
@@ -120,10 +120,10 @@ export const PostBanModal = ({
                         <br />
                         <Form.Label>Ban Details</Form.Label>
                         <Form.Control
-                            as="textarea"
+                            as='textarea'
                             rows={5}
-                            name="banMessage"
-                            placeholder="Details for Ban"
+                            name='banMessage'
+                            placeholder='Details for Ban'
                             onChange={formik.handleChange}
                             value={formik.values.banMessage}
                             required
@@ -139,7 +139,7 @@ export const PostBanModal = ({
                             </Button>
                             <Button
                                 className='mr-3'
-                                variant="secondary"
+                                variant='secondary'
                                 onClick={handleClose}
                             >Cancel
                             </Button>
@@ -148,5 +148,5 @@ export const PostBanModal = ({
                 </Form>
             </Modal>
         </>
-    )
-}
+    );
+};

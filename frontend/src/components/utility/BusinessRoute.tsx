@@ -1,5 +1,5 @@
-import { useContext } from 'react'
-import { RouteProps, Route, Redirect } from 'react-router-dom'
+import { useContext } from 'react';
+import { RouteProps, Route, Redirect } from 'react-router-dom';
 import { UserProfileContext } from '../../contexts/UserProfile.Context';
 import { ROUTES } from '../../lib/constants';
 
@@ -14,11 +14,11 @@ interface BusinessRoute {
     component: React.ElementType
     }
 
-    const BusinessRoute: React.FC<BusinessRoute> = ({
+const BusinessRoute: React.FC<BusinessRoute> = ({
     redirectPath,
     component: Component,
     ...routeProps
-    }) => {
+}) => {
     const {
         user,
         token
@@ -31,16 +31,16 @@ interface BusinessRoute {
 
     return (
         <Route
-        {...routeProps}
-        render={(props) =>
-            isLoggedIn && user!.userType === "BUSINESS" ? (
-            <ComponentToRender {...props} />
-            ) : (
-            <Redirect to={ redirectPath || ROUTES.LOGIN } />
-            )
-        }
+            {...routeProps}
+            render={(props) =>
+                isLoggedIn && user!.userType === 'BUSINESS' ? (
+                    <ComponentToRender {...props} />
+                ) : (
+                    <Redirect to={ redirectPath || ROUTES.LOGIN } />
+                )
+            }
         />
     );
-}
+};
 
-export default BusinessRoute
+export default BusinessRoute;

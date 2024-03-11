@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import EditAdsPageContent from '../components/content/EditAdsPageContent';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
@@ -13,29 +13,29 @@ interface EditAdsPageProps extends RouteComponentProps<{}> {
 }
 
 const EditAdsPage: React.FC<EditAdsPageProps> = ({}) => {
-  // const { token } = useContext(UserProfileContext);
+    // const { token } = useContext(UserProfileContext);
 
-  const currentUrl = window.location.search;
-  const search = new URLSearchParams(currentUrl);
+    const currentUrl = window.location.search;
+    const search = new URLSearchParams(currentUrl);
 
-  const id = search.get('id');
+    const id = search.get('id');
 
-  const { data, isLoading, error, isError } = useSingleAdvertisement(id);
+    const { data, isLoading, error, isError } = useSingleAdvertisement(id);
 
   
-  if (isLoading) {
-    <div className="wrapper">
-      <LoadingSpinner />
-    </div>
-  }
+    if (isLoading) {
+        <div className='wrapper'>
+            <LoadingSpinner />
+        </div>;
+    }
 
-  // TODO: Create non blocking error handling
+    // TODO: Create non blocking error handling
 
-  return (
-    <div className="wrapper">
-      <EditAdsPageContent adsData={data}/>
-    </div>
-  );
-}
+    return (
+        <div className='wrapper'>
+            <EditAdsPageContent adsData={data}/>
+        </div>
+    );
+};
 
-export default EditAdsPage
+export default EditAdsPage;

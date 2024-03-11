@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import AdsSection from 'src/components/partials/LandingContent/AdsSection';
 import { usePublishedAds } from 'src/hooks/advertisementHooks';
 
@@ -11,5 +11,5 @@ export const AdsSectionPage = () => {
         <div>
             <AdsSection ads={data}/>
         </div>
-    )
-}
+    );
+};

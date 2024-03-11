@@ -1,6 +1,6 @@
-import React from "react";
-import { ShowSubSegments } from "src/components/content/SegmentManagementContent";
-import { useAllSubSegmentsWithId } from "src/hooks/segmentHooks";
+import React from 'react';
+import { ShowSubSegments } from 'src/components/content/SegmentManagementContent';
+import { useAllSubSegmentsWithId } from 'src/hooks/segmentHooks';
 
 export interface ShowSubSegmentsPageProps {
     segId: number;
@@ -10,8 +10,8 @@ export interface ShowSubSegmentsPageProps {
 export const ShowSubSegmentsPage: React.FC<ShowSubSegmentsPageProps> = ({segId, token, segName}) => {
     const { data } = useAllSubSegmentsWithId(String(segId));
     return (
-    <>
-        <ShowSubSegments data={data} segId={segId} token={token} segName={segName}/>
-    </>
-    )
-}
+        <>
+            <ShowSubSegments data={data} segId={segId} token={token} segName={segName}/>
+        </>
+    );
+};

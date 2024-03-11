@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import { Button, Container, Card, Modal, Row } from 'react-bootstrap';
 import { FindCommentBanDetailsWithStaleTime } from 'src/hooks/banHooks';
 import { IComment } from 'src/lib/types/data/comment.type';
@@ -40,11 +40,11 @@ export const CommentUnbanModal = ({
         } finally {
             setIsSubmitting(false);
         }
-    }
+    };
 
     if (modalCommentBanIsError) {
         return (
-            <div className="wrapper">
+            <div className='wrapper'>
                 <p>
                     Error occured while trying to retrieve ban details. Please try again later.
                 </p>
@@ -56,7 +56,7 @@ export const CommentUnbanModal = ({
         return (
             <Modal
                 show={show}
-                size="lg"
+                size='lg'
                 centered>
             </Modal>
         );
@@ -67,7 +67,7 @@ export const CommentUnbanModal = ({
             <Modal
                 show={show}
                 onHide={handleClose}
-                backdrop="static" // Disallow clicking outside of modal to close modal
+                backdrop='static' // Disallow clicking outside of modal to close modal
                 centered
                 size='lg'
                 keyboard={false} // Disallow esc key to close modal
@@ -108,7 +108,7 @@ export const CommentUnbanModal = ({
                         </Button>
                         <Button
                             className='mr-3'
-                            variant="secondary"
+                            variant='secondary'
                             onClick={handleClose}
                         >Cancel
                         </Button>
@@ -116,5 +116,5 @@ export const CommentUnbanModal = ({
                 </Modal.Footer>
             </Modal>
         </>
-    )
-}
+    );
+};

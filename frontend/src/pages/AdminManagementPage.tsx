@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { AdminManagementContent } from 'src/components/content/AdminManagementContent';
 import { UserProfileContext } from '../contexts/UserProfile.Context';
@@ -27,30 +27,30 @@ interface AdminManagementPropsLegacy extends RouteComponentProps<{}> {
 }
 
 const AdminManagementPage: React.FC<AdminManagementPropsLegacy> = () => {
-  const { token } = useContext(UserProfileContext);
-  const { user } = useContext(UserProfileContext);
-  const { data: userData, isLoading: userLoading} = useAllUsers(token);
-  const { data: banData, isLoading: banLoading} = useAllBanDetails();
-  const { data: segData = [], isLoading: segLoading} = useAllSuperSegments();
-  const { data: subSegData = [], isLoading: subSegLoading} = useAllSegments();
+    const { token } = useContext(UserProfileContext);
+    const { user } = useContext(UserProfileContext);
+    const { data: userData, isLoading: userLoading} = useAllUsers(token);
+    const { data: banData, isLoading: banLoading} = useAllBanDetails();
+    const { data: segData = [], isLoading: segLoading} = useAllSuperSegments();
+    const { data: subSegData = [], isLoading: subSegLoading} = useAllSegments();
 
  
 
-  if (userLoading || banLoading || segLoading || subSegLoading) {
-    return(
-      <div className="wrapper">
-      <LoadingSpinner />
-      </div>
-    )
-  }
+    if (userLoading || banLoading || segLoading || subSegLoading) {
+        return(
+            <div className='wrapper'>
+                <LoadingSpinner />
+            </div>
+        );
+    }
 
-  // TODO: Create non blocking error handling
+    // TODO: Create non blocking error handling
 
-  return (
-    <div className="wrapper">
-      <AdminManagementContent  users={userData!}token={token} user={user}  bans={banData} segs={segData} subSeg={subSegData} />
-    </div>
-  );
-}
+    return (
+        <div className='wrapper'>
+            <AdminManagementContent  users={userData!}token={token} user={user}  bans={banData} segs={segData} subSeg={subSegData} />
+        </div>
+    );
+};
 
-export default AdminManagementPage
+export default AdminManagementPage;

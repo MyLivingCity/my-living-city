@@ -35,7 +35,14 @@ export interface ISegmentRequest {
   subSegmentName: string;
 }
 export interface IUserSegment {
-  id: number;
+  id: string;
+  userId: string;
+  homeSuperSegId: number;
+  homeSuperSegName: string;
+  workSuperSegId: number | null,
+  workSuperSegName: string | null,
+  schoolSuperSegId: number | null,
+  schoolSuperSegName: string | null,
   homeSegmentId: number;
   homeSegmentName: string;
   workSegmentId: number;
@@ -56,8 +63,8 @@ export interface IUserSegment {
 export interface ISegmentData {
   id: number;
   name: string;
-  segType: "Segment" | "Sub-Segment" | "Super-Segment";
-  userType: "Resident" | "Worker" | "Student";
+  segType: 'Segment' | 'Sub-Segment' | 'Super-Segment';
+  userType: 'Resident' | 'Worker' | 'Student';
 }
 
 export interface ISegmentAggregateInfo {

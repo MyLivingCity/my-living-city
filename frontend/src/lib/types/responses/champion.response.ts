@@ -1,4 +1,4 @@
-import { IIdeaWithRelationship } from "../data/idea.type";
+import { IIdeaWithRelationship } from '../data/idea.type';
 
 export interface ISubmitChampionRequestResponse {
   message: string;

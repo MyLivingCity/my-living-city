@@ -68,6 +68,7 @@ workDetailsRouter.get(
                     userId: req.params.id,
                 },
             });
+            console.log('workDetails', workDetails);
             res.status(200).json(workDetails);
         } catch (error) {
             res.status(400).json({ error: error.message });
@@ -131,6 +132,27 @@ workDetailsRouter.patch(
     '/updateCityNeighbourhood/:id',
     async (req, res) => {
         try {
+            if ((req.body.city === '' || req.body.city === 'Not Selected') && req.body.neighbourhood === '') {
+                const result = await prisma.userSegments.update({
+                    where: {
+                        userId: req.params.id,
+                    },
+                    data: {
+                        workSegmentId: null,
+                        workSegmentName: '',
+                        workSubSegmentId: null,
+                        workSubSegmentName: '',
+                    },
+                });
+
+                res.status(200).json({
+                    message: 'City and neighbourhood updated successfully',
+                    result,
+                });
+
+                return;
+            }
+
             const city = await prisma.segments.findFirst({
                 where: { name: { equals: req.body.city, mode: 'insensitive' } },
             });
@@ -142,7 +164,7 @@ workDetailsRouter.patch(
             const data = {};
 
             if (city) {
-                data.workSegmentId = city.id;
+                data.workSegmentId = city.segId;
                 data.workSegmentName = city.name || "";
             }
 
@@ -176,10 +198,5 @@ workDetailsRouter.patch(
         }
     }
 );
-
-
-
-
-
 
 module.exports = workDetailsRouter;

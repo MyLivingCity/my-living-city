@@ -1416,6 +1416,7 @@ userRouter.patch(
 
 			// get the id of the city from the segment table
 			// ignore case
+			console.log("user", req.params.id)
 			const city = await prisma.segments.findFirst({
 				where: { name: { equals: req.body.city, mode: "insensitive" } },
 			});
@@ -1435,7 +1436,7 @@ userRouter.patch(
 				const res = await prisma.userSegments.update({
 					where: { userId: req.params.id },
 					data: {
-						homeSegmentId: city.id,
+						homeSegmentId: city.segId,
 						homeSubSegmentId: neighbourhood.id,
 						homeSegmentName: req.body.city,
 						homeSubSegmentName: req.body.neighbourhood,

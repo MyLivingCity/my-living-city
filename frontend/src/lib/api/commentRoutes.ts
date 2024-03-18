@@ -112,3 +112,8 @@ export const updateCommentNotificationStatus = async(token: String | null, userI
     });
     return res.data;
 };
+
+export const getCommentsOfUser = async (userId: string, token: string | null | undefined): Promise<IComment[]> => {
+    const res = await axios.get<IComment[]>(`${API_BASE_URL}/comment/user/${userId}`, getAxiosJwtRequestOption(token!));
+    return res.data;
+};

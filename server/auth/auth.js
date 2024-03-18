@@ -50,8 +50,7 @@ passport.use(
         // ADMIN ACCOUNTS ONLY SECTION
         // --------------------------------------------
         // If admin use the generated email
-        // TODO move the Admin account types to a constant
-        let adminmodEmail;
+        // TODO move the Admin account types to a constant shared accross the app
         if (
           [
             "SUPER_ADMIN",
@@ -67,7 +66,7 @@ passport.use(
           while (!uniqueEmailGenerated) {
             const randomDigits = Math.floor(Math.random() * 100).toString().padStart(2, "0");
             const randomChars = Math.random().toString(36).substring(2, 4).toLowerCase();
-            let adminmodEmail = `admin${randomDigits}${randomChars}@mylivingcity.org`;
+            let adminmodEmail = `${parsedMainData.userType}${randomDigits}${randomChars}@mylivingcity.org`.toLowerCase();
             const adminmodUser = await prisma.user.findFirst({
               where: { email: adminmodEmail },
             });
@@ -83,7 +82,7 @@ passport.use(
 
         // Check if user exists
         const userExists = await prisma.user.findUnique({
-          where: { email },
+          where: { email: parsedMainData.email },
         });
         if (userExists && userExists.verified === true) {
           return done(null, false, { message: "User already exists." });

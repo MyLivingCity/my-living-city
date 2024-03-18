@@ -78,6 +78,7 @@ schoolDetailsRouter.get(
                     userId: req.params.id,
                 },
             });
+            console.log('schoolDetails', schoolDetails);
             res.status(200).json(schoolDetails);
         } catch (error) {
             res.status(400).json({ error: error.message });
@@ -95,10 +96,6 @@ schoolDetailsRouter.patch(
                 where: { userId: req.params.id },
             });
          
-
-            
-
-
             if (!profile) {
                 // Create a new profile
                 const schoolDetails = await prisma.school_Details.create({
@@ -146,6 +143,27 @@ schoolDetailsRouter.patch(
     '/updateCityNeighbourhood/:id',
     async (req, res) => {
         try {
+            if ((req.body.city === '' || req.body.city === 'Not Selected') && req.body.neighbourhood === '') {
+                const result = await prisma.userSegments.update({
+                    where: {
+                        userId: req.params.id,
+                    },
+                    data: {
+                        schoolSegmentId: null,
+                        schoolSegmentName: '',
+                        schoolSubSegmentId: null,
+                        schoolSubSegmentName: '',
+                    },
+                });
+
+                res.status(200).json({
+                    message: 'City and neighbourhood updated successfully',
+                    result,
+                });
+
+                return;
+            }
+
             const city = await prisma.segments.findFirst({
                 where: { name: { equals: req.body.city, mode: 'insensitive' } },
             });
@@ -157,13 +175,13 @@ schoolDetailsRouter.patch(
             const data = {};
 
             if (city) {
-                data.schoolSegmentId = city.id;
-                data.schoolSegmentName = city.name;
+                data.schoolSegmentId = city.segId;
+                data.schoolSegmentName = city.name || "";
             }
 
             if (neighbourhood) {
                 data.schoolSubSegmentId = neighbourhood.id;
-                data.schoolSubSegmentName = neighbourhood.name;
+                data.schoolSubSegmentName = neighbourhood.name || "";
             }
 
             if (Object.keys(data).length === 0) {
@@ -191,8 +209,5 @@ schoolDetailsRouter.patch(
         }
     }
 );
-
-
-
 
 module.exports = schoolDetailsRouter;

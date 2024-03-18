@@ -37,133 +37,133 @@ import CheckEmailPage from './pages/CheckEmailPage';
 
 function App() {
     return (
-      <div className="App">
-        {/* maybe put layout content wrapping around switch case? */}
-        <Header />
-        <div className="main-content">
-          <Switch>
-            <Route path={ROUTES.LANDING} component={LandingPage} exact />
-            <Route
-              path={ROUTES.CONVERSATIONS}
-              component={ConversationsPage}
-              exact
-            />
-            <Route path={ROUTES.SINGLE_IDEA} component={SingleIdeaPage} />
-            <Route
-              path={ROUTES.SINGLE_PROPOSAL}
-              component={SingleProposalPage}
-            />
-            <PublicRoute path={ROUTES.LOGIN} component={LoginPage} />
-            <PublicRoute path={ROUTES.CHECKEMAIL} component={CheckEmailPage} />
-            <PublicRoute path={ROUTES.REGISTER} component={RegisterPage} />
-            <PublicRoute
-              path={ROUTES.RESET_PASSWORD}
-              component={ResetPasswordContent}
-            />
-            <PrivateRoute
-              path={ROUTES.SUBMIT_IDEA}
-              component={SubmitIdeaPage}
-            />
-            <PrivateRoute path={ROUTES.USER_PROFILE} component={ProfilePage} />
-            <PrivateRoute
-              path={ROUTES.TEST_PAGE}
-              redirectPath="/ideas/1"
-              component={TestPage}
-            />
+        <div className="App">
+            {/* maybe put layout content wrapping around switch case? */}
+            <Header />
+            <div className="main-content">
+                <Switch>
+                    <Route path={ROUTES.LANDING} component={LandingPage} exact />
+                    <Route
+                        path={ROUTES.CONVERSATIONS}
+                        component={ConversationsPage}
+                        exact
+                    />
+                    <Route path={ROUTES.SINGLE_IDEA} component={SingleIdeaPage} />
+                    <Route
+                        path={ROUTES.SINGLE_PROPOSAL}
+                        component={SingleProposalPage}
+                    />
+                    <PublicRoute path={ROUTES.LOGIN} component={LoginPage} />
+                    <PublicRoute path={ROUTES.CHECKEMAIL} component={CheckEmailPage} />
+                    <PublicRoute path={ROUTES.REGISTER} component={RegisterPage} />
+                    <PublicRoute
+                        path={ROUTES.RESET_PASSWORD}
+                        component={ResetPasswordContent}
+                    />
+                    <PrivateRoute
+                        path={ROUTES.SUBMIT_IDEA}
+                        component={SubmitIdeaPage}
+                    />
+                    <PrivateRoute path={ROUTES.USER_PROFILE} component={ProfilePage} />
+                    <PrivateRoute
+                        path={ROUTES.TEST_PAGE}
+                        redirectPath="/ideas/1"
+                        component={TestPage}
+                    />
 
-            <PrivateRoute
-              path={ROUTES.SUBMIT_DIRECT_PROPOSAL}
-              component={SubmitDirectProposalPage}
-            />
-            <PrivateRoute path={ROUTES.My_POSTS} component={MyPostsPage} />
-            <PrivateRoute path={ROUTES.DASHBOARD} component={DashboardPage} />
+                    <PrivateRoute
+                        path={ROUTES.SUBMIT_DIRECT_PROPOSAL}
+                        component={SubmitDirectProposalPage}
+                    />
+                    <PrivateRoute path={ROUTES.My_POSTS} component={MyPostsPage} />
+                    <PrivateRoute path={ROUTES.DASHBOARD} component={DashboardPage} />
 
-            <CustomRoute
-              path={ROUTES.USER_ADVERTISEMENTS}
-              component={UserAdsPage}
-              userTypes={[USER_TYPES.BUSINESS, USER_TYPES.COMMUNITY]}
-            />
-            <CustomRoute
-              path={ROUTES.SUBMIT_ADVERTISEMENT}
-              component={SubmitAdvertisementPage}
-              userTypes={[
-                USER_TYPES.BUSINESS,
-                USER_TYPES.COMMUNITY,
-                USER_TYPES.SUPER_ADMIN,
-                USER_TYPES.ADMIN,
-              ]}
-            />
-            <CustomRoute
-              path={ROUTES.COMMUNITY_DASHBOARD}
-              component={CommunityDashboardPage}
-              userTypes={[
-                USER_TYPES.RESIDENTIAL,
-                USER_TYPES.BUSINESS,
-                USER_TYPES.COMMUNITY,
-              ]}
-            />
+                    <CustomRoute
+                        path={ROUTES.USER_ADVERTISEMENTS}
+                        component={UserAdsPage}
+                        userTypes={[USER_TYPES.BUSINESS, USER_TYPES.COMMUNITY]}
+                    />
+                    <CustomRoute
+                        path={ROUTES.SUBMIT_ADVERTISEMENT}
+                        component={SubmitAdvertisementPage}
+                        userTypes={[
+                            USER_TYPES.BUSINESS,
+                            USER_TYPES.COMMUNITY,
+                            USER_TYPES.SUPER_ADMIN,
+                            USER_TYPES.ADMIN,
+                        ]}
+                    />
+                    <CustomRoute
+                        path={ROUTES.COMMUNITY_DASHBOARD}
+                        component={CommunityDashboardPage}
+                        userTypes={[
+                            USER_TYPES.RESIDENTIAL,
+                            USER_TYPES.BUSINESS,
+                            USER_TYPES.COMMUNITY,
+                        ]}
+                    />
 
-            <CustomRoute
-              path={ROUTES.MUNICIPAL_DASHBOARD}
-              component={MunicipalDashboardPage}
-              userTypes={[USER_TYPES.MUNICIPAL, USER_TYPES.MUNICIPAL_SEG_ADMIN]}
-            />
+                    <CustomRoute
+                        path={ROUTES.MUNICIPAL_DASHBOARD}
+                        component={MunicipalDashboardPage}
+                        userTypes={[USER_TYPES.MUNICIPAL, USER_TYPES.MUNICIPAL_SEG_ADMIN]}
+                    />
 
-            <AdminRoute
-              path={ROUTES.ALL_ADVERTISEMENT}
-              component={AllAdsPage}
-            />
-            <AdminRoute
-              path={ROUTES.EDIT_ADVERTISEMENT}
-              component={EditAdsPage}
-            />
-            <AdminRoute
-              path={ROUTES.SEGMENT_MANAGEMENT}
-              component={SegmentManagementPage}
-            />
+                    <AdminRoute
+                        path={ROUTES.ALL_ADVERTISEMENT}
+                        component={AllAdsPage}
+                    />
+                    <AdminRoute
+                        path={ROUTES.EDIT_ADVERTISEMENT}
+                        component={EditAdsPage}
+                    />
+                    <AdminRoute
+                        path={ROUTES.SEGMENT_MANAGEMENT}
+                        component={SegmentManagementPage}
+                    />
 
-            <CustomRoute
-              path={ROUTES.USER_MANAGEMENT}
-              component={UserManagementPage}
-              userTypes={[
-                USER_TYPES.SUPER_ADMIN,
-                USER_TYPES.ADMIN,
-                USER_TYPES.MOD,
-                USER_TYPES.MUNICIPAL_SEG_ADMIN,
-              ]}
-            />
-            <CustomRoute
-              path={ROUTES.ADMIN_MANAGEMENT}
-              component={AdminManagementPage}
-              userTypes={[USER_TYPES.ADMIN, USER_TYPES.SUPER_ADMIN]}
-            />
-            <CustomRoute
-              path={ROUTES.ADMIN_MOD_EMAIL_GENERATE}
-              component={AdminEmailGeneratePage}
-              userTypes={[
-                USER_TYPES.SUPER_ADMIN,
-                USER_TYPES.ADMIN,
-                USER_TYPES.MOD,
-                USER_TYPES.MUNICIPAL_SEG_ADMIN,
-                USER_TYPES.SEG_ADMIN,
-              ]}
-            />
+                    <CustomRoute
+                        path={ROUTES.USER_MANAGEMENT}
+                        component={UserManagementPage}
+                        userTypes={[
+                            USER_TYPES.SUPER_ADMIN,
+                            USER_TYPES.ADMIN,
+                            USER_TYPES.MOD,
+                            USER_TYPES.MUNICIPAL_SEG_ADMIN,
+                        ]}
+                    />
+                    <CustomRoute
+                        path={ROUTES.ADMIN_MANAGEMENT}
+                        component={AdminManagementPage}
+                        userTypes={[USER_TYPES.ADMIN, USER_TYPES.SUPER_ADMIN]}
+                    />
+                    <CustomRoute
+                        path={ROUTES.ADMIN_MOD_EMAIL_GENERATE}
+                        component={AdminEmailGeneratePage}
+                        userTypes={[
+                            USER_TYPES.SUPER_ADMIN,
+                            USER_TYPES.ADMIN,
+                            USER_TYPES.MOD,
+                            USER_TYPES.MUNICIPAL_SEG_ADMIN,
+                            USER_TYPES.SEG_ADMIN,
+                        ]}
+                    />
 
-            <CustomRoute
-              path={ROUTES.MOD_MANAGEMENT}
-              component={ModManagementPage}
-              userTypes={[
-                USER_TYPES.SUPER_ADMIN,
-                USER_TYPES.ADMIN,
-                USER_TYPES.MOD,
-              ]}
-            />
+                    <CustomRoute
+                        path={ROUTES.MOD_MANAGEMENT}
+                        component={ModManagementPage}
+                        userTypes={[
+                            USER_TYPES.SUPER_ADMIN,
+                            USER_TYPES.ADMIN,
+                            USER_TYPES.MOD,
+                        ]}
+                    />
 
-            <Route path={ROUTES.TEAM404} component={Team404Page} />
-          </Switch>
+                    <Route path={ROUTES.TEAM404} component={Team404Page} />
+                </Switch>
+            </div>
+            <Footer />
         </div>
-        <Footer />
-      </div>
     );
 }
 

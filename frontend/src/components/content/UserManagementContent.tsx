@@ -434,47 +434,23 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
         );
     } else {
         return (
-            <Container style={{ maxWidth: '100%', marginLeft: 50 }}>
-                {showUserFlagsModal ? (
-                    <UserFlagsModal
-                        show={showUserFlagsModal}
-                        setShow={setShowUserFlagsModal}
-                        user={modalUser!}
-                        flags={flags}
-                        commentFlags={commentFlags}
-                        ideas={ideas}
-                        proposals={proposals}
-                        comments={comments}
-                    />
-                ) : null}
-                {showUserBanModal ? (
-                    <UserManagementBanModal
-                        show={showUserBanModal}
-                        setShow={setShowUserBanModal}
-                        modalUser={modalUser!}
-                        currentUser={user!}
-                        token={token}
-                    />
-                ) : null}
-                {showUserUnbanModal ? (
-                    <UserManagementUnbanModal
-                        show={showUserUnbanModal}
-                        setShow={setShowUserUnbanModal}
-                        modalUser={modalUser!}
-                        currentUser={user!}
-                        token={token}
-                    />
-                ) : null}
-                {showUserBanHistoryModal ? (
-                    <UserManagementBanHistoryModal
-                        show={showUserBanHistoryModal}
-                        setShow={setShowUserBanHistoryModal}
-                        modalUser={modalUser!}
-                        currentUser={user!}
-                        token={token}
-                        data={banHistory!}
-                    />
-                ) : null}
+            <Container style={{maxWidth: '100%', marginLeft: 50}}>
+            {showUserFlagsModal ?
+                <UserFlagsModal show={showUserFlagsModal} setShow={setShowUserFlagsModal} user={modalUser!} flags={flags} commentFlags={commentFlags} ideas={ideas} proposals={proposals} comments={comments}/>
+                : null
+            }
+            {showUserBanModal ?
+                <UserManagementBanModal show={showUserBanModal} setShow={setShowUserBanModal} modalUser={modalUser!} currentUser={user!} token={token}/>
+                : null
+            }
+            {showUserUnbanModal ?
+                <UserManagementUnbanModal show={showUserUnbanModal} setShow={setShowUserUnbanModal} modalUser={modalUser!} currentUser={user!} token={token} />
+                : null
+            }
+            {showUserBanHistoryModal ?
+                <UserManagementBanHistoryModal show={showUserBanHistoryModal} setShow={setShowUserBanHistoryModal} modalUser={modalUser!} currentUser={user!} token={token} data={banHistory!}/>
+                : null
+            }
 
                 <div className='d-flex justify-content-between'>
                     <h2 className='mb-4 mt-4'>User Management</h2>

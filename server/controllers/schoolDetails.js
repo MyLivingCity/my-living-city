@@ -9,25 +9,22 @@ schoolDetailsRouter.post(
     async (req, res) => {
         try {
             console.log("TESTER1234,   Made it to schooDetails")
-            // console.log("Check Date",req.body.schoolDetails.programCompletionDate)
-            // const schoolDate = req.body.schoolDetails.programCompletionDate && !isNaN(Date.parse(req.body.schoolDetails.programCompletionDate))
+            console.log("Check Date",req.body.schoolDetails.programCompletionDate)
+            const schoolDate = req.body.schoolDetails.programCompletionDate && !isNaN(Date.parse(req.body.schoolDetails.programCompletionDate))
             ? new Date(req.body.schoolDetails.programCompletionDate)
             : new Date();
             console.log("TESTER1234,   Created Date")
+            console.log(schoolDate)
+            console.log(req)
             const schoolDetails = await prisma.school_Details.create({
-              data: {
-                // streetAddress: req.body.schoolDetails.streetAddress || "",
-                postalCode: req.body.schoolDetails.postalCode || "",
-                faculty: req.body.schoolDetails.faculty || "",
-                // programCompletionDate: schoolDate,
-                userId: req.body.userId,
-                user: {
-                  connect: {
-                    id: req.body.userId, // replace with the actual user ID
-                    email:req.body.email
-                  },
+                
+                data: {
+                    streetAddress: req.body.schoolDetails.streetAddress || "",
+                    postalCode: req.body.schoolDetails.postalCode || "",
+                    faculty: req.body.schoolDetails.faculty || "",
+                    programCompletionDate: schoolDate,
+                    userId: req.body.userId,
                 },
-              },
             });
             res.status(200).json(schoolDetails);
         } catch (error) {
@@ -81,6 +78,7 @@ schoolDetailsRouter.get(
                     userId: req.params.id,
                 },
             });
+            console.log('schoolDetails', schoolDetails);
             res.status(200).json(schoolDetails);
         } catch (error) {
             res.status(400).json({ error: error.message });
@@ -98,10 +96,6 @@ schoolDetailsRouter.patch(
                 where: { userId: req.params.id },
             });
          
-
-            
-
-
             if (!profile) {
                 // Create a new profile
                 const schoolDetails = await prisma.school_Details.create({
@@ -149,6 +143,27 @@ schoolDetailsRouter.patch(
     '/updateCityNeighbourhood/:id',
     async (req, res) => {
         try {
+            if ((req.body.city === '' || req.body.city === 'Not Selected') && req.body.neighbourhood === '') {
+                const result = await prisma.userSegments.update({
+                    where: {
+                        userId: req.params.id,
+                    },
+                    data: {
+                        schoolSegmentId: null,
+                        schoolSegmentName: '',
+                        schoolSubSegmentId: null,
+                        schoolSubSegmentName: '',
+                    },
+                });
+
+                res.status(200).json({
+                    message: 'City and neighbourhood updated successfully',
+                    result,
+                });
+
+                return;
+            }
+
             const city = await prisma.segments.findFirst({
                 where: { name: { equals: req.body.city, mode: 'insensitive' } },
             });
@@ -160,13 +175,13 @@ schoolDetailsRouter.patch(
             const data = {};
 
             if (city) {
-                data.schoolSegmentId = city.id;
-                data.schoolSegmentName = city.name;
+                data.schoolSegmentId = city.segId;
+                data.schoolSegmentName = city.name || "";
             }
 
             if (neighbourhood) {
                 data.schoolSubSegmentId = neighbourhood.id;
-                data.schoolSubSegmentName = neighbourhood.name;
+                data.schoolSubSegmentName = neighbourhood.name || "";
             }
 
             if (Object.keys(data).length === 0) {
@@ -194,8 +209,5 @@ schoolDetailsRouter.patch(
         }
     }
 );
-
-
-
 
 module.exports = schoolDetailsRouter;

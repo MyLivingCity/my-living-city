@@ -8,9 +8,9 @@ const { UserType } = require('@prisma/client');
 
 superSegmentRouter.post(
     '/create',
-    passport.authenticate('jwt',{session:false}),
-    async(req,res) => {
-        try{
+    passport.authenticate('jwt', { session: false }),
+    async (req, res) => {
+        try {
             let error = '';
             let errorMessage = '';
             let errorStack = '';
@@ -18,70 +18,70 @@ superSegmentRouter.post(
             const { email, id } = req.user;
             //find the requesting user in the database
             const theUser = await prisma.user.findUnique({
-                where:{id:id},
-                select:{userType:true}
+                where: { id: id },
+                select: { userType: true }
             });
 
-            if(theUser.userType === 'SUPER_ADMIN' || theUser.userType === 'ADMIN'){
-                const {name,country,province} = req.body;
+            if (theUser.userType === 'SUPER_ADMIN' || theUser.userType === 'ADMIN') {
+                const { name, country, province } = req.body;
 
-                if(!name||!isString(name)){
-                    error+='A name is need for creating a super segment. ';
-                    errorMessage+='super segment name must be provided as a string variable. ';
-                    errorStack+='super segment name must be provided in the request body. ';
+                if (!name || !isString(name)) {
+                    error += 'A name is need for creating a super segment. ';
+                    errorMessage += 'super segment name must be provided as a string variable. ';
+                    errorStack += 'super segment name must be provided in the request body. ';
                 }
 
-                if(!country||!isString(country)){
-                    error+='Country field is need for creating a super segment. ';
-                    errorMessage+='super segment country field must be provided as a string variable. ';
-                    errorStack+='country must be provided in the request body. ';
+                if (!country || !isString(country)) {
+                    error += 'Country field is need for creating a super segment. ';
+                    errorMessage += 'super segment country field must be provided as a string variable. ';
+                    errorStack += 'country must be provided in the request body. ';
                 }
 
-                if(!province||!isString(province)){
-                    error+='Province field is need for creating a super segment. ';
-                    errorMessage+='Province field must be provided as a string variable. ';
-                    errorStack+='province must be provided in the request body. ';
+                if (!province || !isString(province)) {
+                    error += 'Province field is need for creating a super segment. ';
+                    errorMessage += 'Province field must be provided as a string variable. ';
+                    errorStack += 'province must be provided in the request body. ';
                 }
 
                 //If there's error in error holder
-                if(error||errorMessage||errorStack){
+                if (error || errorMessage || errorStack) {
                     return res.status(400).json({
                         message: error,
                         details: {
-                          errorMessage: errorMessage,
-                          errorStack: errorStack
+                            errorMessage: errorMessage,
+                            errorStack: errorStack
                         }
                     });
                 }
 
                 const result = await prisma.superSegment.create({
-                    data:{
-                        name:name,
-                        country:country,
-                        province:province
+                    data: {
+                        name: name,
+                        country: country,
+                        province: province
                     }
                 })
 
                 res.status(200).json(result);
-            }else{
+            } else {
                 return res.status(403).json({
                     message: "You don't have the right to add a super segment!",
                     details: {
-                      errorMessage: 'In order to create a super segment, you must be an admin.',
-                      errorStack: 'user must be an admin if they want to create a super segment',
+                        errorMessage: 'In order to create a super segment, you must be an admin.',
+                        errorStack: 'user must be an admin if they want to create a super segment',
                     }
                 });
             }
-        }catch(error){
+        } catch (error) {
             console.log(error);
             res.status(400).json({
-                message: "An error occured while trying to create a super segment.",
+                message: 'An error occured while trying to create a super segment.',
                 details: {
                     errorMessage: error.message,
                     errorStack: error.stack,
                 }
             });
-        }finally{
+        } finally {
             await prisma.$disconnect();
         }
     }
@@ -89,21 +89,21 @@ superSegmentRouter.post(
 
 superSegmentRouter.get(
     '/getAll',
-    async(req,res) => {
-        try{
+    async (req, res) => {
+        try {
             const superSegments = await prisma.superSegment.findMany();
 
             res.status(200).json(superSegments);
-        }catch(error){
+        } catch (error) {
             console.log(error);
             res.status(400).json({
-                message: "An error occured while trying to retrieve super segments. ",
+                message: 'An error occured while trying to retrieve super segments. ',
                 details: {
                     errorMessage: error.message,
                     errorStack: error.stack,
                 }
             });
-        }finally{
+        } finally {
             await prisma.$disconnect();
         }
     }
@@ -111,34 +111,34 @@ superSegmentRouter.get(
 
 superSegmentRouter.get(
     '/getById/:superSegmentId',
-    passport.authenticate('jwt',{session:false}),
-    async(req,res) => {
-        try{
-            const {superSegmentId} = req.params;
+    passport.authenticate('jwt', { session: false }),
+    async (req, res) => {
+        try {
+            const { superSegmentId } = req.params;
 
-            if(!isInteger(superSegmentId)){
-                return res.status(400).json("Invalid super segment id! ");
+            if (!isInteger(superSegmentId)) {
+                return res.status(400).json('Invalid super segment id! ');
             }
 
             const theSuperSegment = await prisma.superSegment.findUnique({
-                where:{superSegId:superSegmentId}
+                where: { superSegId: superSegmentId }
             });
 
-            if(!theSuperSegment){
-                return res.status(404).json("super segment not found! ");
+            if (!theSuperSegment) {
+                return res.status(404).json('super segment not found! ');
             }
 
             res.status(200).json(theSuperSegment);
-        }catch(error){
+        } catch (error) {
             console.log(error);
             res.status(400).json({
-                message: "An error occured while trying to retrieve a segment.",
+                message: 'An error occured while trying to retrieve a segment.',
                 details: {
                     errorMessage: error.message,
                     errorStack: error.stack,
                 }
             });
-        }finally{
+        } finally {
             await prisma.$disconnect();
         }
     }
@@ -146,9 +146,9 @@ superSegmentRouter.get(
 
 superSegmentRouter.delete(
     '/delete/:deleteId',
-    passport.authenticate('jwt',{session:false}),
-    async(req,res) => {
-        try{
+    passport.authenticate('jwt', { session: false }),
+    async (req, res) => {
+        try {
             let error = '';
             let errorMessage = '';
             let errorStack = '';
@@ -156,53 +156,53 @@ superSegmentRouter.delete(
             const { email, id } = req.user;
             //find the requesting user in the database
             const theUser = await prisma.user.findUnique({
-                where:{id:id},
-                select:{userType:true}
+                where: { id: id },
+                select: { userType: true }
             });
 
             if (
-              theUser.userType === "SUPER_ADMIN" || theUser.userType === "ADMIN"
+                theUser.userType === 'SUPER_ADMIN' || theUser.userType === 'ADMIN'
             ) {
-              const { deleteId } = req.params;
+                const { deleteId } = req.params;
 
-              if (!isInteger(deleteId)) {
-                return res.status(400).json("Invalid super segment id! ");
-              }
+                if (!isInteger(deleteId)) {
+                    return res.status(400).json('Invalid super segment id! ');
+                }
 
-              const theSuperSegment = await prisma.superSegment.findUnique({
-                where: { superSegId: deleteId },
-              });
+                const theSuperSegment = await prisma.superSegment.findUnique({
+                    where: { superSegId: deleteId },
+                });
 
-              if (!theSuperSegment) {
-                return res.status(404).json("super segment not found! ");
-              }
+                if (!theSuperSegment) {
+                    return res.status(404).json('super segment not found! ');
+                }
 
-              const result = await prisma.superSegment.delete({
-                where: { superSegId: deleteId },
-              });
+                const result = await prisma.superSegment.delete({
+                    where: { superSegId: deleteId },
+                });
 
-              res.sendStatus(204);
+                res.sendStatus(204);
             } else {
-              return res.status(403).json({
-                message: "You don't have the right to delete a super segment!",
-                details: {
-                  errorMessage:
-                    "In order to delete a super segment, you must be an admin.",
-                  errorStack:
-                    "user must be an admin if they want to delete a super segment",
-                },
-              });
+                return res.status(403).json({
+                    message: "You don't have the right to delete a super segment!",
+                    details: {
+                        errorMessage:
+                            'In order to delete a super segment, you must be an admin.',
+                        errorStack:
+                            'user must be an admin if they want to delete a super segment',
+                    },
+                });
             }
-        }catch(error){
+        } catch (error) {
             console.log(error);
             res.status(400).json({
-                message: "An error occured while trying to delete a segment.",
+                message: 'An error occured while trying to delete a segment.',
                 details: {
                     errorMessage: error.message,
                     errorStack: error.stack,
                 }
             });
-        }finally{
+        } finally {
             await prisma.$disconnect();
         }
     }
@@ -210,9 +210,9 @@ superSegmentRouter.delete(
 
 superSegmentRouter.post(
     '/update/:superSegId',
-    passport.authenticate('jwt',{session:false}),
-    async(req,res) => {
-        try{
+    passport.authenticate('jwt', { session: false }),
+    async (req, res) => {
+        try {
             let error = '';
             let errorMessage = '';
             let errorStack = '';
@@ -220,92 +220,92 @@ superSegmentRouter.post(
             const { email, id } = req.user;
             //find the requesting user in the database
             const theUser = await prisma.user.findUnique({
-                where:{id:id},
-                select:{userType:true}
+                where: { id: id },
+                select: { userType: true }
             });
 
             if (
-              theUser.userType === "SUPER_ADMIN" || theUser.userType === "ADMIN"
+                theUser.userType === 'SUPER_ADMIN' || theUser.userType === 'ADMIN'
             ) {
-              const { superSegId } = req.params;
-              const { name, country, province } = req.body;
+                const { superSegId } = req.params;
+                const { name, country, province } = req.body;
 
-              const theSuperSegment = await prisma.superSegment.findUnique({
-                where: { superSegId: deleteId },
-              });
-
-              if (!theSuperSegment) {
-                return res.status(404).json("super segment not found! ");
-              }
-
-              if (name && !isString(name)) {
-                error += "Valid name is need for creating a super segment. ";
-                errorMessage +=
-                  "super segment name must be provided as a string variable. ";
-                errorStack +=
-                  "Valid super segment name must be provided in the request body. ";
-              }
-
-              if (country && !isString(country)) {
-                error +=
-                  "Valid country field is need for creating a super segment. ";
-                errorMessage +=
-                  "super segment country field must be provided as a string variable. ";
-                errorStack +=
-                  "valid country name must be provided in the request body. ";
-              }
-
-              if (province && !isString(province)) {
-                error +=
-                  "Valid province field is need for creating a super segment. ";
-                errorMessage +=
-                  "Province field must be provided as a string variable. ";
-                errorStack +=
-                  "Valid province must be provided in the request body. ";
-              }
-
-              //If there's error in error holder
-              if (error || errorMessage || errorStack) {
-                return res.status(400).json({
-                  message: error,
-                  details: {
-                    errorMessage: errorMessage,
-                    errorStack: errorStack,
-                  },
+                const theSuperSegment = await prisma.superSegment.findUnique({
+                    where: { superSegId: deleteId },
                 });
-              }
 
-              const result = await prisma.superSegment.update({
-                where: { superSegId: superSegId },
-                data: {
-                  name: name,
-                  country: country,
-                  province: province,
-                },
-              });
+                if (!theSuperSegment) {
+                    return res.status(404).json('super segment not found! ');
+                }
 
-              res.status(200).json(result);
+                if (name && !isString(name)) {
+                    error += 'Valid name is need for creating a super segment. ';
+                    errorMessage +=
+                        'super segment name must be provided as a string variable. ';
+                    errorStack +=
+                        'Valid super segment name must be provided in the request body. ';
+                }
+
+                if (country && !isString(country)) {
+                    error +=
+                        'Valid country field is need for creating a super segment. ';
+                    errorMessage +=
+                        'super segment country field must be provided as a string variable. ';
+                    errorStack +=
+                        'valid country name must be provided in the request body. ';
+                }
+
+                if (province && !isString(province)) {
+                    error +=
+                        'Valid province field is need for creating a super segment. ';
+                    errorMessage +=
+                        'Province field must be provided as a string variable. ';
+                    errorStack +=
+                        'Valid province must be provided in the request body. ';
+                }
+
+                //If there's error in error holder
+                if (error || errorMessage || errorStack) {
+                    return res.status(400).json({
+                        message: error,
+                        details: {
+                            errorMessage: errorMessage,
+                            errorStack: errorStack,
+                        },
+                    });
+                }
+
+                const result = await prisma.superSegment.update({
+                    where: { superSegId: superSegId },
+                    data: {
+                        name: name,
+                        country: country,
+                        province: province,
+                    },
+                });
+
+                res.status(200).json(result);
             } else {
-              return res.status(403).json({
-                message: "You don't have the right to update a super segment!",
-                details: {
-                  errorMessage:
-                    "In order to update a super segment, you must be an admin.",
-                  errorStack:
-                    "user must be an admin if they want to delete a super segment",
-                },
-              });
+                return res.status(403).json({
+                    message: "You don't have the right to update a super segment!",
+                    details: {
+                        errorMessage:
+                            'In order to update a super segment, you must be an admin.',
+                        errorStack:
+                            'user must be an admin if they want to delete a super segment',
+                    },
+                });
             }
-        }catch(error){
+        } catch (error) {
             console.log(error);
             res.status(400).json({
-                message: "An error occured while trying to update a segment.",
+                message: 'An error occured while trying to update a segment.',
                 details: {
                     errorMessage: error.message,
                     errorStack: error.stack,
                 }
             });
-        }finally{
+        } finally {
             await prisma.$disconnect();
         }
     }

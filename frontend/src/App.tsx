@@ -121,7 +121,6 @@ function App() {
                             USER_TYPES.ADMIN,
                             USER_TYPES.MOD,
                             USER_TYPES.MUNICIPAL_SEG_ADMIN
-
                         ]}
                     />
                     <CustomRoute

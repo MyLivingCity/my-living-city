@@ -919,51 +919,51 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                         </thead>
                                         <tbody id='formLinksBody'>
                                             {links &&
-                                                links.map((link) => (
-                                                    <tr
-                                                        // Matches the key to the current index of the link in links
-                                                        key={links.indexOf(link)}
-                                                    >
-                                                        <td>
-                                                            <Form.Control
-                                                                as='select'
-                                                                onChange={(e) => {
-                                                                    // Updates the link type in the links array
-                                                                    updateLinkType(e.target.value, link);
-                                                                }}
-                                                                defaultValue={link.linkType}
-                                                            >
-                                                                {LinkTypes.map((linkType) => (
-                                                                    <option>{linkType}</option>
-                                                                ))}
-                                                            </Form.Control>
-                                                        </td>
-                                                        <td>
-                                                            <Form.Control
-                                                                type='text'
-                                                                placeholder='Link'
-                                                                defaultValue={link.link}
-                                                                onChange={(e) => {
-                                                                    // Updates the link in the links array
-                                                                    updateLink(e.target.value, link);
-                                                                }}
-                                                            />
-                                                        </td>
-                                                        <td>
-                                                            <NavDropdown title='Controls' id='nav-dropdown'>
-                                                                <Dropdown.Item
-                                                                    class='deleteButton'
-                                                                    onClick={() => {
-                                                                        // Deletes the row from the table
-                                                                        deleteRow(link);
-                                                                    }}
-                                                                >
-                                                                    Delete
-                                                                </Dropdown.Item>
-                                                            </NavDropdown>
-                                                        </td>
-                                                    </tr>
-                                                ))}
+                        links.map((link) => (
+                            <tr
+                            // Matches the key to the current index of the link in links
+                                key={links.indexOf(link)}
+                            >
+                                <td>
+                                    <Form.Control
+                                        as='select'
+                                        onChange={(e) => {
+                                            // Updates the link type in the links array
+                                            updateLinkType(e.target.value, link);
+                                        }}
+                                        defaultValue={link.linkType}
+                                    >
+                                        {LinkTypes.map((linkType) => (
+                                            <option>{linkType}</option>
+                                        ))}
+                                    </Form.Control>
+                                </td>
+                                <td>
+                                    <Form.Control
+                                        type='text'
+                                        placeholder='Link'
+                                        defaultValue={link.link}
+                                        onChange={(e) => {
+                                            // Updates the link in the links array
+                                            updateLink(e.target.value, link);
+                                        }}
+                                    />
+                                </td>
+                                <td>
+                                    <NavDropdown title='Controls' id='nav-dropdown'>
+                                        <Dropdown.Item
+                                            class='deleteButton'
+                                            onClick={() => {
+                                                // Deletes the row from the table
+                                                deleteRow(link);
+                                            }}
+                                        >
+                                  Delete
+                                        </Dropdown.Item>
+                                    </NavDropdown>
+                                </td>
+                            </tr>
+                        ))}
                                         </tbody>
                                     </Table>
                                 </Form.Group>

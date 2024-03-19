@@ -37,10 +37,10 @@ import CheckEmailPage from './pages/CheckEmailPage';
 
 function App() {
     return (
-        <div className="App">
+        <div className='App'>
             {/* maybe put layout content wrapping around switch case? */}
             <Header />
-            <div className="main-content">
+            <div className='main-content'>
                 <Switch>
                     <Route path={ROUTES.LANDING} component={LandingPage} exact />
                     <Route
@@ -49,10 +49,7 @@ function App() {
                         exact
                     />
                     <Route path={ROUTES.SINGLE_IDEA} component={SingleIdeaPage} />
-                    <Route
-                        path={ROUTES.SINGLE_PROPOSAL}
-                        component={SingleProposalPage}
-                    />
+                    <Route path={ROUTES.SINGLE_PROPOSAL} component={SingleProposalPage} />
                     <PublicRoute path={ROUTES.LOGIN} component={LoginPage} />
                     <PublicRoute path={ROUTES.CHECKEMAIL} component={CheckEmailPage} />
                     <PublicRoute path={ROUTES.REGISTER} component={RegisterPage} />
@@ -60,14 +57,11 @@ function App() {
                         path={ROUTES.RESET_PASSWORD}
                         component={ResetPasswordContent}
                     />
-                    <PrivateRoute
-                        path={ROUTES.SUBMIT_IDEA}
-                        component={SubmitIdeaPage}
-                    />
+                    <PrivateRoute path={ROUTES.SUBMIT_IDEA} component={SubmitIdeaPage} />
                     <PrivateRoute path={ROUTES.USER_PROFILE} component={ProfilePage} />
                     <PrivateRoute
                         path={ROUTES.TEST_PAGE}
-                        redirectPath="/ideas/1"
+                        redirectPath='/ideas/1'
                         component={TestPage}
                     />
 
@@ -109,10 +103,7 @@ function App() {
                         userTypes={[USER_TYPES.MUNICIPAL, USER_TYPES.MUNICIPAL_SEG_ADMIN]}
                     />
 
-                    <AdminRoute
-                        path={ROUTES.ALL_ADVERTISEMENT}
-                        component={AllAdsPage}
-                    />
+                    <AdminRoute path={ROUTES.ALL_ADVERTISEMENT} component={AllAdsPage} />
                     <AdminRoute
                         path={ROUTES.EDIT_ADVERTISEMENT}
                         component={EditAdsPage}
@@ -145,18 +136,14 @@ function App() {
                             USER_TYPES.ADMIN,
                             USER_TYPES.MOD,
                             USER_TYPES.MUNICIPAL_SEG_ADMIN,
-                            USER_TYPES.SEG_ADMIN,
+                            USER_TYPES.SEG_ADMIN
                         ]}
                     />
 
                     <CustomRoute
                         path={ROUTES.MOD_MANAGEMENT}
                         component={ModManagementPage}
-                        userTypes={[
-                            USER_TYPES.SUPER_ADMIN,
-                            USER_TYPES.ADMIN,
-                            USER_TYPES.MOD,
-                        ]}
+                        userTypes={[USER_TYPES.SUPER_ADMIN, USER_TYPES.ADMIN, USER_TYPES.MOD]}
                     />
 
                     <Route path={ROUTES.TEAM404} component={Team404Page} />

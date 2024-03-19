@@ -167,7 +167,6 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
             );
             console.log(createdUser);
             console.log('User registered successfully!');
-            //setAdminmodEmail(createdUser.user.user.adminmodEmail|| null);
             // @ts-ignore
             const adminmodEmail = createdUser.user.user.adminmodEmail;
             history.push('/adminmod-email-generate', { adminmodEmail });

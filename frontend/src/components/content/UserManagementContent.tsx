@@ -403,116 +403,49 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
     } else {
         return (
             <Container style={{maxWidth: '100%', marginLeft: 50}}>
-                {showUserFlagsModal ?
-                    <UserFlagsModal show={showUserFlagsModal} setShow={setShowUserFlagsModal} user={modalUser!} flags={flags} commentFlags={commentFlags} ideas={ideas} proposals={proposals} comments={comments}/>
-                    : null
-                }
-                {showUserBanModal ?
-                    <UserManagementBanModal show={showUserBanModal} setShow={setShowUserBanModal} modalUser={modalUser!} currentUser={user!} token={token}/>
-                    : null
-                }
-                {showUserUnbanModal ?
-                    <UserManagementUnbanModal show={showUserUnbanModal} setShow={setShowUserUnbanModal} modalUser={modalUser!} currentUser={user!} token={token} />
-                    : null
-                }
-                {showUserBanHistoryModal ?
-                    <UserManagementBanHistoryModal show={showUserBanHistoryModal} setShow={setShowUserBanHistoryModal} modalUser={modalUser!} currentUser={user!} token={token} data={banHistory!}/>
-                    : null
-                }
+
 
                 <div className='d-flex justify-content-between'>
                     <h2 className='mb-4 mt-4'>User Management</h2>
-                    {(user?.userType === USER_TYPES.SUPER_ADMIN ||
-                        user?.userType === USER_TYPES.ADMIN) && (
-                            <Button
-                                variant='primary'
-                                className='mb-4 mt-4'
-                                onClick={() => toggleCreateAccountForm()}
-                            >
-                                {buttonText}
-                            </Button>
-                        )}
-                </div>
-                {(user?.userType === USER_TYPES.SUPER_ADMIN ||
-                    user?.userType === USER_TYPES.ADMIN) &&
-                    showCreateAccountForm && (
+                    {(user?.userType === USER_TYPES.SUPER_ADMIN || user?.userType === USER_TYPES.ADMIN) && (
+                        <Button variant='primary' className='mb-4 mt-4' onClick={() => toggleCreateAccountForm()}>{buttonText}</Button>
+                    )}
+                </div>  
+                {(user?.userType === USER_TYPES.SUPER_ADMIN || user?.userType === USER_TYPES.ADMIN) && showCreateAccountForm && 
+                    (
                         <Form onSubmit={handleSubmit}>
                             <div className='form-row'>
                                 <div className='form-group col-md-12'>
                                     <label htmlFor='inputData'>User Type</label>
-                                    <Form.Control
-                                        as='select'
-                                        required
-                                        name='inputType'
-                                        onChange={(event) => {
-                                            setSelectedUserType(event.target.value);
-                                        }}
-                                    >
+                                    <Form.Control as='select' required name='inputType' onChange={(event) => { setSelectedUserType(event.target.value);}}>
                                         <option value=''>Select User Type</option>
-                                        {userTypes
-                                            .filter(
-                                                (item) =>
-                                                    item === USER_TYPES.RESIDENTIAL ||
-                                                    item === USER_TYPES.COMMUNITY ||
-                                                    item === USER_TYPES.MUNICIPAL ||
-                                                    item === USER_TYPES.BUSINESS
-                                            )
-                                            .map((item) => (
-                                                <option key={item}>{item}</option>
-                                            ))}
+                                        {userTypes.filter(
+                                            item => item === USER_TYPES.RESIDENTIAL ||
+                                            item === USER_TYPES.COMMUNITY || 
+                                            item === USER_TYPES.MUNICIPAL ||
+                                            item === USER_TYPES.BUSINESS
+                                        ).map(item => <option key={item}>{item}</option>)}
                                     </Form.Control>
                                 </div>
                             </div>
                             <div className='form-row'>
                                 <div className='form-group col-md-6'>
-                                    <label htmlFor='inputFirst'>
-                                        {selectedUserType !== USER_TYPES.RESIDENTIAL
-                                            ? 'Contact '
-                                            : ''}
-                                        First Name
-                                    </label>
-                                    <input
-                                        type='text'
-                                        className='form-control'
-                                        id='inputFirst'
-                                        name='inputFirst'
-                                        placeholder='John'
-                                        required
-                                    />
+                                <label htmlFor='inputFirst'>{selectedUserType !== USER_TYPES.RESIDENTIAL ? 'Contact ' : ''}First Name</label>
+                                    <input type='text' className='form-control' id='inputFirst' name='inputFirst' placeholder='John' required />
                                 </div>
                                 <div className='form-group col-md-6'>
-                                    <label htmlFor='inputLast'>
-                                        {selectedUserType !== USER_TYPES.RESIDENTIAL
-                                            ? 'Contact '
-                                            : ''}
-                                        Last Name
-                                    </label>
-                                    <input
-                                        type='text'
-                                        className='form-control'
-                                        id='inputLast'
-                                        name='inputLast'
-                                        placeholder='Doe'
-                                        required
-                                    />
+                                <label htmlFor='inputLast'>{selectedUserType !== USER_TYPES.RESIDENTIAL ? 'Contact ' : ''}Last Name</label>
+                                    <input type='text' className='form-control' id='inputLast' name='inputLast' placeholder='Doe' required />
                                 </div>
                             </div>
-                            {(selectedUserType === USER_TYPES.BUSINESS ||
-                                selectedUserType === USER_TYPES.COMMUNITY) && (
-                                    <div className='form-row'>
-                                        <div className='form-group col-md-12'>
-                                            <label htmlFor='inputOrg'>Organization Name</label>
-                                            <input
-                                                type='text'
-                                                className='form-control'
-                                                id='inputOrg'
-                                                name='inputOrg'
-                                                placeholder=''
-                                                required
-                                            />
+                            {(selectedUserType === USER_TYPES.BUSINESS || selectedUserType === USER_TYPES.COMMUNITY) && (
+                                <div className='form-row'>
+                                    <div className='form-group col-md-12'>
+                                        <label htmlFor='inputOrg'>Organization Name</label>
+                                        <input type='text' className='form-control' id='inputOrg' name='inputOrg' placeholder='' required />
                                         </div>
                                     </div>
-                                )}
+                            )}
                             <div className='form-row'>
                                 <div className='form-group col-md-6'>
                                     <label htmlFor='inputEmail'>Email</label>
@@ -534,29 +467,16 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
                                 </div>
                                 <div className='form-group col-md-6'>
                                     <label htmlFor='inputPassword'>Password</label>
-                                    <input
-                                        type='password'
-                                        className='form-control'
-                                        id='inputPassword'
-                                        name='inputPassword'
-                                        placeholder='Password'
-                                        required
-                                    />
+                                    <input type='password' className='form-control' id='inputPassword' name='inputPassword' placeholder='Password' required />
                                 </div>
                             </div>
 
                             <div className='form-row'>
                                 <div className='form-group col-md-6'>
                                     <label htmlFor='InputHomeRegion'>Home Region</label>
-                                    <Form.Control
-                                        name='InputHomeRegion'
-                                        as='select'
-                                        required
-                                        value={selectedHomeRegion}
-                                        onChange={handleHomeRegionChange}
-                                    >
+                                    <Form.Control name='InputHomeRegion' as='select' required value={selectedHomeRegion} onChange={handleHomeRegionChange}>
                                         <option value=''>Select Region</option>
-                                        {segs?.map((seg) => (
+                                        {segs?.map(seg => (
                                             <option key={seg.superSegId + 'hr'} value={seg.name}>
                                                 {seg.name}
                                             </option>
@@ -565,26 +485,15 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
                                 </div>
                                 <div className='form-group col-md-6'>
                                     <label htmlFor='inputCom'>Home Community</label>
-                                    <Form.Control
-                                        as='select'
-                                        name='inputCom'
-                                        onChange={(event) => {
-                                            newHomeID = parseInt(event.target.value);
-                                        }}
-                                    >
+                                    <Form.Control as='select' name='inputCom' onChange={(event) => { newHomeID = parseInt(event.target.value); }}>
                                         <option value=''>Select Community</option>
-                                        {subSeg &&
-                                            subSeg
-                                                .filter(
-                                                    (seg) =>
-                                                        seg.superSegName?.toUpperCase() ===
-                                                        selectedHomeRegion.toUpperCase()
-                                                )
-                                                .map((seg) => (
-                                                    <option key={seg.segId + 'hc'} value={seg.segId}>
-                                                        {capitalizeString(seg.name)}
-                                                    </option>
-                                                ))}
+                                        {subSeg && subSeg
+                                            .filter(seg => seg.superSegName?.toUpperCase() === selectedHomeRegion.toUpperCase())
+                                            .map(seg => (
+                                                <option key={seg.segId + 'hc'} value={seg.segId}>
+                                                    {capitalizeString(seg.name)}
+                                                </option>
+                                            ))}
                                     </Form.Control>
                                 </div>
                             </div>
@@ -593,151 +502,77 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
                                     <div className='form-row'>
                                         <div className='form-group col-md-6'>
                                             <label htmlFor='inputWorkRegion'>Work Region</label>
-                                            <Form.Control
-                                                name='inputWorkRegion'
-                                                as='select'
-                                                value={selectedWorkRegion}
-                                                onChange={handleWorkRegionChange}
-                                            >
+                                            <Form.Control name='inputWorkRegion' as='select' value={selectedWorkRegion} onChange={handleWorkRegionChange}>
                                                 <option value=''>Select Region</option>
-                                                {segs?.map((seg) => (
-                                                    <option
-                                                        key={seg.superSegId + 'wr'}
-                                                        value={seg.name}
-                                                    >
+                                                {segs?.map(seg => (
+                                                    <option key={seg.superSegId + 'wr'} value={seg.name}>
                                                         {seg.name}
                                                     </option>
                                                 ))}
                                             </Form.Control>
                                         </div>
                                         <div className='form-group col-md-6'>
-                                            <label htmlFor='inputWorkCommunity'>
-                                                Work Community
-                                            </label>
-                                            <Form.Control
-                                                as='select'
-                                                name='inputWorkCommunity'
-                                                onChange={(event) => {
-                                                    newWorkID = parseInt(event.target.value);
-                                                }}
-                                            >
+                                        <label htmlFor='inputWorkCommunity'>Work Community</label>
+                                            <Form.Control as='select' name='inputWorkCommunity' onChange={(event) => { newWorkID = parseInt(event.target.value); }}>
                                                 <option value=''>Select Community</option>
-                                                {subSeg &&
-                                                    subSeg
-                                                        .filter(
-                                                            (seg) =>
-                                                                seg.superSegName?.toUpperCase() ===
-                                                                selectedWorkRegion.toUpperCase()
-                                                        )
-                                                        .map((seg) => (
-                                                            <option
-                                                                key={seg.segId + 'wc'}
-                                                                value={seg.segId}
-                                                            >
-                                                                {capitalizeString(seg.name)}
-                                                            </option>
-                                                        ))}
+                                                {subSeg && subSeg
+                                                    .filter(seg => seg.superSegName?.toUpperCase() === selectedWorkRegion.toUpperCase())
+                                                    .map(seg => (
+                                                        <option key={seg.segId + 'wc'} value={seg.segId}>
+                                                            {capitalizeString(seg.name)}
+                                                        </option>
+                                                    ))}
                                             </Form.Control>
                                         </div>
                                     </div>
 
                                     <div className='form-row'>
                                         <div className='form-group col-md-6'>
-                                            <label htmlFor='InputSchoolRegion'>
-                                                School Region
-                                            </label>
-                                            <Form.Control
-                                                name='InputSchoolRegion'
-                                                as='select'
-                                                value={selectedSchoolRegion}
-                                                onChange={handleSchoolRegionChange}
-                                            >
+                                        <label htmlFor='InputSchoolRegion'>School Region</label>
+                                            <Form.Control name='InputSchoolRegion' as='select' value={selectedSchoolRegion} onChange={handleSchoolRegionChange}>
                                                 <option value=''>Select Region</option>
-                                                {segs?.map((seg) => (
-                                                    <option
-                                                        key={seg.superSegId + 'sr'}
-                                                        value={seg.name}
-                                                    >
+                                                {segs?.map(seg => (
+                                                    <option key={seg.superSegId + 'sr'} value={seg.name}>
                                                         {seg.name}
                                                     </option>
                                                 ))}
                                             </Form.Control>
                                         </div>
                                         <div className='form-group col-md-6'>
-                                            <label htmlFor='inputSchoolCommunity'>
-                                                School Community
-                                            </label>
-                                            <Form.Control
-                                                as='select'
-                                                name='inputSchoolCommunity'
-                                                onChange={(event) => {
-                                                    newSchoolID = parseInt(event.target.value);
-                                                }}
-                                            >
+                                        <label htmlFor='inputSchoolCommunity'>School Community</label>
+                                            <Form.Control as='select' name='inputSchoolCommunity' onChange={(event) => { newSchoolID = parseInt(event.target.value); }}>
                                                 <option value=''>Select Community</option>
-                                                {subSeg &&
-                                                    subSeg
-                                                        .filter(
-                                                            (seg) =>
-                                                                seg.superSegName?.toUpperCase() ===
-                                                                selectedSchoolRegion.toUpperCase()
-                                                        )
-                                                        .map((seg) => (
-                                                            <option
-                                                                key={seg.segId + 'sc'}
-                                                                value={seg.segId}
-                                                            >
-                                                                {capitalizeString(seg.name)}
-                                                            </option>
-                                                        ))}
+                                                {subSeg && subSeg
+                                                    .filter(seg => seg.superSegName?.toUpperCase() === selectedSchoolRegion.toUpperCase())
+                                                    .map(seg => (
+                                                        <option key={seg.segId + 'sc'} value={seg.segId}>
+                                                            {capitalizeString(seg.name)}
+                                                        </option>
+                                                    ))}
                                             </Form.Control>
                                         </div>
                                     </div>
                                 </>
                             )}
 
-                            <button type='submit' className='btn btn-primary mr-2 mb-2'>
-                                Submit
-                            </button>
+                            <button type='submit' className='btn btn-primary mr-2 mb-2'>Submit</button>
                         </Form>
                     )}
                 <Form>
                     <Table bordered hover size='sm'>
                         <thead className='table-active'>
                             <tr>
-                                <th scope='col' className='text-center align-middle'>
-                                    Email
-                                </th>
-                                <th scope='col' className='text-center align-middle'>
-                                    Organization
-                                </th>
-                                <th scope='col' className='text-center align-middle'>
-                                    First
-                                </th>
-                                <th scope='col' className='text-center align-middle'>
-                                    Last
-                                </th>
-                                <th scope='col' className='text-center align-middle'>
-                                    User Type
-                                </th>
-                                <th scope='col' className='text-center align-middle'>
-                                    Total Flags
-                                </th>
-                                <th scope='col' className='text-center align-middle'>
-                                    False Flags
-                                </th>
-                                <th scope='col' className='text-center align-middle'>
-                                    Banned
-                                </th>
-                                <th scope='col' className='text-center align-middle'>
-                                    Reviewed
-                                </th>
-                                <th scope='col' className='text-center align-middle'>
-                                    Verified
-                                </th>
-                                <th scope='col' className='text-center align-middle'>
-                                    Controls
-                                </th>
+                            <th scope='col' className='text-center align-middle'>Email</th>
+                                <th scope='col' className='text-center align-middle'>Organization</th>
+                                <th scope='col' className='text-center align-middle'>First</th>
+                                <th scope='col' className='text-center align-middle'>Last</th>
+                                <th scope='col' className='text-center align-middle'>User Type</th>
+                                <th scope='col' className='text-center align-middle'>Total Flags</th>
+                                <th scope='col' className='text-center align-middle'>False Flags</th>
+                                <th scope='col' className='text-center align-middle'>Banned</th>
+                                <th scope='col' className='text-center align-middle'>Reviewed</th>
+                                <th scope='col' className='text-center align-middle'>Verified</th>
+                                <th scope='col' className='text-center align-middle'>Controls</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -751,123 +586,52 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
                                     <tr key={req.id}>
                                         {req.id !== hideControls ? (
                                             <>
-                                                <td
-                                                    className='align-middle'
-                                                    style={{ wordBreak: 'break-word' }}
-                                                >
-                                                    {req.email}
-                                                </td>
-                                                <td className='text-center align-middle'>
-                                                    {req.organizationName
-                                                        ? req.organizationName
-                                                        : 'N/A'}
-                                                </td>
-                                                <td className='text-center align-middle'>
-                                                    {req.fname}
-                                                </td>
-                                                <td className='text-center align-middle'>
-                                                    {req.lname}
-                                                </td>
-                                                <td className='text-center align-middle'>
-                                                    {req.userType}
-                                                </td>
-                                                <td className='text-center align-middle'>
-                                                    {userFlags![index].toString()}
-                                                </td>
-                                                <td className='text-center align-middle'>
-                                                    {userFalseFlags![index].toString()}
-                                                </td>
-                                                <td className='text-center align-middle'>
-                                                    {req.banned ? 'Yes' : 'No'}
-                                                </td>
-                                                <td className='text-center align-middle'>
-                                                    {req.reviewed ? 'Yes' : 'No'}
-                                                </td>
-                                                <td className='text-center align-middle'>
-                                                    {req.verified ? 'Yes' : 'No'}
-                                                </td>
+                                                <td className='align-middle' style={{wordBreak: 'break-word'}}>{req.email}</td>
+                                                <td className='text-center align-middle'>{req.organizationName ? req.organizationName : 'N/A'}</td>
+                                                <td className='text-center align-middle'>{req.fname}</td>
+                                                <td className='text-center align-middle'>{req.lname}</td>
+                                                <td className='text-center align-middle'>{req.userType}</td>
+                                                <td className='text-center align-middle'>{userFlags![index].toString()}</td>
+                                                <td className='text-center align-middle'>{userFalseFlags![index].toString()}</td>
+                                                <td className='text-center align-middle'>{req.banned ? 'Yes' : 'No' }</td> 
+                                                <td className='text-center align-middle'>{req.reviewed ? 'Yes' : 'No'}</td>
+                                                <td className='text-center align-middle'>{req.verified ? 'Yes' : 'No'}</td>
                                             </>
                                         ) : (
                                             <>
-                                                <td>
-                                                    <Form.Control
-                                                        type='text'
-                                                        defaultValue={req.email}
-                                                        onChange={(e) => (req.email = e.target.value)}
-                                                    />
+                                                <td><Form.Control type='text' defaultValue={req.email} onChange={(e)=>req.email = e.target.value}/></td>
+                                                <td><Form.Control type='text' defaultValue={req.organizationName} onChange={(e)=>req.organizationName = e.target.value}/></td>
+                                                <td><Form.Control type='text' defaultValue={req.fname} onChange={(e)=>req.fname = e.target.value}/></td>
+                                                <td><Form.Control type='text' defaultValue={req.lname} onChange={(e)=>req.lname = e.target.value}/></td>
+                                                <td><Form.Control as='select' onChange={(e)=>{(req.userType as string) = e.target.value;}}>
+                                                    {userTypes
+                                                        .filter((type => type !== 'SUPER_ADMIN'))
+                                                        .filter((type => type !== 'ADMIN'))
+                                                        .filter((type => type !== 'SEG_ADMIN'))
+                                                        .filter((type => type !== 'MUNICIPAL_SEG_ADMIN'))
+                                                        .filter((type => type !== 'DEVELOPER'))
+                                                        .filter((type => type !== 'IN_PROGRESS'))
+                                                        .filter((type => type !== 'ASSOCIATE'))
+                                                        .filter((type => type !== 'MOD'))
+                                                        .filter((type => type !== 'SEG_MOD'))
+                                                        .map(item =>
+                                                            <option key={item}>{item}</option>
+                                                        )}
+                                                </Form.Control>
                                                 </td>
-                                                <td>
-                                                    <Form.Control
-                                                        type='text'
-                                                        defaultValue={req.organizationName}
-                                                        onChange={(e) =>
-                                                            (req.organizationName = e.target.value)
-                                                        }
-                                                    />
-                                                </td>
-                                                <td>
-                                                    <Form.Control
-                                                        type='text'
-                                                        defaultValue={req.fname}
-                                                        onChange={(e) => (req.fname = e.target.value)}
-                                                    />
-                                                </td>
-                                                <td>
-                                                    <Form.Control
-                                                        type='text'
-                                                        defaultValue={req.lname}
-                                                        onChange={(e) => (req.lname = e.target.value)}
-                                                    />
-                                                </td>
-                                                <td>
-                                                    <Form.Control
-                                                        as='select'
-                                                        onChange={(e) => {
-                                                            (req.userType as string) = e.target.value;
-                                                        }}
-                                                    >
-                                                        {userTypes
-                                                            .filter((type) => type !== 'SUPER_ADMIN')
-                                                            .filter((type) => type !== 'ADMIN')
-                                                            .filter((type) => type !== 'SEG_ADMIN')
-                                                            .filter(
-                                                                (type) => type !== 'MUNICIPAL_SEG_ADMIN'
-                                                            )
-                                                            .filter((type) => type !== 'DEVELOPER')
-                                                            .filter((type) => type !== 'IN_PROGRESS')
-                                                            .filter((type) => type !== 'ASSOCIATE')
-                                                            .filter((type) => type !== 'MOD')
-                                                            .filter((type) => type !== 'SEG_MOD')
-                                                            .map((item) => (
-                                                                <option key={item}>{item}</option>
-                                                            ))}
-                                                    </Form.Control>
-                                                </td>
-                                                <td className='text-center align-middle '>
-                                                    <Button
-                                                        onClick={() => setShowUserFlagsModal(true)}
-                                                    >
-                                                        Info
-                                                    </Button>
-                                                </td>
+                                                <td className='text-center align-middle '><Button onClick={()=> setShowUserFlagsModal(true)}>Info</Button></td>
                                                 <td></td>
-                                                <td className='text-center align-middle'>
-                                                    {req.banned ? 'Yes' : 'No'}
-                                                </td>
-                                                <td className='text-center align-middle'>
-                                                    <Form.Check
-                                                        type='switch'
-                                                        checked={reviewed}
-                                                        onChange={(e) => {
-                                                            setReviewed(e.target.checked);
-                                                            req.reviewed = e.target.checked;
-                                                        }}
-                                                        id='reviewed-switch'
-                                                    />
-                                                </td>
-                                                <td className='text-center align-middle'>
-                                                    {req.verified ? 'Yes' : 'No'}
-                                                </td>
+                                                <td className='text-center align-middle'>{req.banned ? 'Yes' : 'No' }</td>
+                                                <td className='text-center align-middle' ><Form.Check
+                                                    type='switch'
+                                                    checked={reviewed}
+                                                    onChange={(e)=>{
+                                                        setReviewed(e.target.checked);
+                                                        req.reviewed = e.target.checked;
+                                                    }}
+                                                    id='reviewed-switch'/>
+                                                </td>    
+                                                <td className='text-center align-middle'>{req.verified ? 'Yes' : 'No'}</td>
                                             </>
                                         )}
 
@@ -910,60 +674,34 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
                                                         </Dropdown.Item>
                                                     )}
                                                     <Dropdown.Item
-                                                        onClick={() =>
-                                                            getUserBanHistory(req.id).then((data) => {
-                                                                setModalUser(req);
-                                                                setBanHistory(formatBanHistory(data));
-                                                                setShowUserBanHistoryModal(true);
-                                                            })
-                                                        }
-                                                    >
-                                                        Ban History
-                                                    </Dropdown.Item>
-                                                    <Dropdown.Item
-                                                        onClick={() => removeFlagQuarantine(req.id)}
-                                                    >
-                                                        Remove Flag Quarantine
-                                                    </Dropdown.Item>
-                                                    <Dropdown.Item
-                                                        onClick={() =>
-                                                            removePostCommentQuarantine(req.id)
-                                                        }
-                                                    >
-                                                        Remove Post Comment Quarantine
-                                                    </Dropdown.Item>
-                                                    {req.verified !== true && (
-                                                        <Dropdown.Item
-                                                            onClick={async () => {
-                                                                req.verified = true;
-                                                                let response = await updateUser(
-                                                                    req,
-                                                                    token,
-                                                                    user
-                                                                );
-                                                                if (response?.user?.verified === true) {
-                                                                    setFilteredUsers(
-                                                                        filteredUsers.map((oldUsers) => {
-                                                                            if (oldUsers.id === req.id) {
-                                                                                return {
-                                                                                    ...oldUsers,
-                                                                                    verified: true,
-                                                                                };
-                                                                            }
-                                                                            return oldUsers;
-                                                                        })
-                                                                    );
-                                                                }
-                                                            }}
-                                                        >
-                                                            Verify Email
-                                                        </Dropdown.Item>
-                                                    )}
+                                                        onClick={() => getUserBanHistory(req.id).then(data => {
+                                                            setModalUser(req);
+                                                            setBanHistory(formatBanHistory(data));
+                                                            setShowUserBanHistoryModal(true);
+                                                        })} >Ban History</Dropdown.Item>
+                                                    <Dropdown.Item onClick={() => removeFlagQuarantine(req.id)}>Remove Flag Quarantine</Dropdown.Item>
+                                                    <Dropdown.Item onClick={() => removePostCommentQuarantine(req.id)}>Remove Post Comment Quarantine</Dropdown.Item>
+                                                    {req.verified !== true && 
+                                    <Dropdown.Item
+                                        onClick={async () => {
+                                            req.verified = true;
+                                            let response = await updateUser(req, token, user);
+                                            if (response?.user?.verified === true) {
+                                                setFilteredUsers(filteredUsers.map(oldUsers => {
+                                                    if (oldUsers.id === req.id) {
+                                                        return {
+                                                            ...oldUsers,
+                                                            verified: true
+                                                        };
+                                                    }
+                                                    return oldUsers;
+                                                }));
+                                            }
+                                        }}>Verify Email</Dropdown.Item>
+                                                    }
                                                     <Dropdown.Item
                                                         onClick={() => {
-                                                            const confirmed = window.confirm(
-                                                                'Are you sure you want to delete this user?'
-                                                            );
+                                                            const confirmed = window.confirm('Are you sure you want to delete this user?');
                                                             if (confirmed) {
                                                                 handleDeleteUser(req.id);
                                                             }
@@ -976,14 +714,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
                                             ) : (
                                                 <>
                                                     <div className='d-flex justify-content-between'>
-                                                        <Button
-                                                            size='sm'
-                                                            variant='outline-danger'
-                                                            className='mr-2 mb-2 text-center align-middle'
-                                                            onClick={() => setHideControls('')}
-                                                        >
-                                                            Cancel
-                                                        </Button>
+                                                    <Button size='sm' variant='outline-danger' className='mr-2 mb-2 text-center align-middle' onClick={()=>setHideControls('')}>Cancel</Button>
                                                         <Button
                                                             size='sm'
                                                             className='mr-2 mb-2 text-center align-middle'
@@ -1007,9 +738,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
                 </Form>
                 <br></br>
                 {/* <UserSegmentHandler/> */}
-                {showUserSegmentCard && (
-                    <UserSegmentInfoCard email={email} id={id} token={token} />
-                )}
+                {showUserSegmentCard && <UserSegmentInfoCard email={email} id={id} token={token}/>}
             </Container>
         );
     }

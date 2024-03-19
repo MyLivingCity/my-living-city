@@ -28,16 +28,16 @@ const AdminRoute: React.FC<AdminRouteProps> = ({
 
      return (
           <Route
-               {...routeProps}
-               render={(props) =>
-                    isLoggedIn && (user!.userType === 'SUPER_ADMIN' || user!.userType === 'ADMIN') ? (
-                         <ComponentToRender {...props} />
-                    ) : (
-                         <Redirect to={redirectPath || ROUTES.LOGIN} />
-                    )
-               }
+              {...routeProps}
+              render={(props) =>
+                  isLoggedIn && (user!.userType === 'SUPER_ADMIN' || user!.userType === 'ADMIN') ? (
+                      <ComponentToRender {...props} />
+                  ) : (
+                      <Redirect to={ redirectPath || ROUTES.LOGIN } />
+                  )
+              }
           />
-     );
+      );
 };
 
 export default AdminRoute;

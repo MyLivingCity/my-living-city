@@ -345,11 +345,11 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
                                             <td className='text-center align-middle'>{req.userType}</td>
                                         </> :
                                         <>
-                                            <td><Form.Control type='text' defaultValue={req.email} onChange={(e) => req.email = e.target.value} /></td>
-                                            <td><Form.Control type='text' defaultValue={req.organizationName} onChange={(e) => req.organizationName = e.target.value} /></td>
-                                            <td><Form.Control type='text' defaultValue={req.fname} onChange={(e) => req.fname = e.target.value} /></td>
-                                            <td><Form.Control type='text' defaultValue={req.lname} onChange={(e) => req.lname = e.target.value} /></td>
-                                            <td className='text-center align-middle '><Button onClick={() => setShowUserFlagsModal(true)}>Info</Button></td>
+                                            <td><Form.Control type='text' defaultValue={req.email} onChange={(e)=>req.email = e.target.value}/></td>
+                                            <td><Form.Control type='text' defaultValue={req.organizationName} onChange={(e)=>req.organizationName = e.target.value}/></td>
+                                            <td><Form.Control type='text' defaultValue={req.fname} onChange={(e)=>req.fname = e.target.value}/></td>
+                                            <td><Form.Control type='text' defaultValue={req.lname} onChange={(e)=>req.lname = e.target.value}/></td>
+                                            <td className='text-center align-middle '><Button onClick={()=> setShowUserFlagsModal(true)}>Info</Button></td>
 
                                         </>
                                     }
@@ -403,22 +403,22 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
     } else {
         return (
             <Container style={{maxWidth: '100%', marginLeft: 50}}>
-            {showUserFlagsModal ?
-                <UserFlagsModal show={showUserFlagsModal} setShow={setShowUserFlagsModal} user={modalUser!} flags={flags} commentFlags={commentFlags} ideas={ideas} proposals={proposals} comments={comments}/>
-                : null
-            }
-            {showUserBanModal ?
-                <UserManagementBanModal show={showUserBanModal} setShow={setShowUserBanModal} modalUser={modalUser!} currentUser={user!} token={token}/>
-                : null
-            }
-            {showUserUnbanModal ?
-                <UserManagementUnbanModal show={showUserUnbanModal} setShow={setShowUserUnbanModal} modalUser={modalUser!} currentUser={user!} token={token} />
-                : null
-            }
-            {showUserBanHistoryModal ?
-                <UserManagementBanHistoryModal show={showUserBanHistoryModal} setShow={setShowUserBanHistoryModal} modalUser={modalUser!} currentUser={user!} token={token} data={banHistory!}/>
-                : null
-            }
+                {showUserFlagsModal ?
+                    <UserFlagsModal show={showUserFlagsModal} setShow={setShowUserFlagsModal} user={modalUser!} flags={flags} commentFlags={commentFlags} ideas={ideas} proposals={proposals} comments={comments}/>
+                    : null
+                }
+                {showUserBanModal ?
+                    <UserManagementBanModal show={showUserBanModal} setShow={setShowUserBanModal} modalUser={modalUser!} currentUser={user!} token={token}/>
+                    : null
+                }
+                {showUserUnbanModal ?
+                    <UserManagementUnbanModal show={showUserUnbanModal} setShow={setShowUserUnbanModal} modalUser={modalUser!} currentUser={user!} token={token} />
+                    : null
+                }
+                {showUserBanHistoryModal ?
+                    <UserManagementBanHistoryModal show={showUserBanHistoryModal} setShow={setShowUserBanHistoryModal} modalUser={modalUser!} currentUser={user!} token={token} data={banHistory!}/>
+                    : null
+                }
 
                 <div className='d-flex justify-content-between'>
                     <h2 className='mb-4 mt-4'>User Management</h2>

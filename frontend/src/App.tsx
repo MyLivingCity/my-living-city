@@ -123,6 +123,7 @@ function App() {
                             USER_TYPES.MUNICIPAL_SEG_ADMIN,
                         ]}
                     />
+                    
                     <CustomRoute
                         path={ROUTES.ADMIN_MANAGEMENT}
                         component={AdminManagementPage}

@@ -135,21 +135,10 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
 
     const toggleCreateAccountForm = () => {
         setShowCreateAccountForm(!showCreateAccountForm);
-        if (
-            (user?.userType === USER_TYPES.SUPER_ADMIN ||
-                user?.userType) === USER_TYPES.ADMIN
-        ) {
-            setButtonText(
-                showCreateAccountForm
-                    ? 'User Creation Wizard'
-                    : 'Hide Creation Wizard'
-            );
+        if ((user?.userType === USER_TYPES.SUPER_ADMIN || user?.userType) === USER_TYPES.ADMIN) {
+            setButtonText(showCreateAccountForm ? 'User Creation Wizard' : 'Hide Creation Wizard');
         } else {
-            setButtonText(
-                showCreateAccountForm
-                    ? 'Municipal User Creation Wizard'
-                    : 'Hide Creation Wizard'
-            );
+            setButtonText(showCreateAccountForm ? 'Municipal User Creation Wizard' : 'Hide Creation Wizard');
         }
     };
 
@@ -168,20 +157,15 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
             password: formData.get('inputPassword') as string,
             confirmPassword: formData.get('inputPassword') as string,
             organizationName:
-                (user?.userType === USER_TYPES.SUPER_ADMIN || user?.userType) ===
-                    USER_TYPES.ADMIN &&
-                    (selectedUserType === USER_TYPES.BUSINESS ||
-                        selectedUserType === USER_TYPES.COMMUNITY)
-                    ? (formData.get('inputOrg') as string)
-                    : undefined,
+                (user?.userType === USER_TYPES.SUPER_ADMIN || user?.userType === USER_TYPES.ADMIN ) 
+                    && (
+                        selectedUserType === USER_TYPES.BUSINESS ||
+                        selectedUserType === USER_TYPES.COMMUNITY
+                    ) ? (formData.get('inputOrg') as string) : undefined,
             fname: formData.get('inputFirst') as string,
             lname: formData.get('inputLast') as string,
             displayFName: formData.get('inputFirst') as string,
-            displayLName:
-                (user?.userType === USER_TYPES.SUPER_ADMIN || user?.userType) ===
-                    USER_TYPES.ADMIN
-                    ? (formData.get('inputLast') as string)
-                    : 'Municipal',
+            displayLName: (user?.userType === USER_TYPES.SUPER_ADMIN || user?.userType === USER_TYPES.ADMIN) ? formData.get('inputLast') as string : 'Municipal',
             address: {
                 streetAddress: '',
                 streetAddress2: '',
@@ -209,29 +193,13 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
                 programCompletionDate: new Date(),
             },
 
-            homeSegmentId:
-                (user?.userType === USER_TYPES.SUPER_ADMIN || user?.userType) ===
-                    USER_TYPES.ADMIN
-                    ? newHomeID
-                    : user?.userSegments?.homeSegmentId,
-            workSegmentId:
-                user?.userType === USER_TYPES.SUPER_ADMIN ||
-                    user?.userType === USER_TYPES.ADMIN
-                    ? newWorkID
-                    : undefined,
-            schoolSegmentId:
-                user?.userType === USER_TYPES.SUPER_ADMIN ||
-                    user?.userType === USER_TYPES.ADMIN
-                    ? newSchoolID
-                    : undefined,
+            homeSegmentId: user?.userType === USER_TYPES.SUPER_ADMIN || user?.userType === USER_TYPES.ADMIN ? newHomeID : user?.userSegments?.homeSegmentId,
+            workSegmentId: user?.userType === USER_TYPES.SUPER_ADMIN || user?.userType === USER_TYPES.ADMIN ? newWorkID : undefined,
+            schoolSegmentId: user?.userType === USER_TYPES.SUPER_ADMIN || user?.userType === USER_TYPES.ADMIN ? newSchoolID : undefined,
             homeSubSegmentId: undefined,
             workSubSegmentId: undefined,
             schoolSubSegmentId: undefined,
-            userType:
-                user?.userType === USER_TYPES.SUPER_ADMIN ||
-                    user?.userType === USER_TYPES.ADMIN
-                    ? selectedUserType
-                    : 'MUNICIPAL',
+            userType: user?.userType === USER_TYPES.SUPER_ADMIN || user?.userType === USER_TYPES.ADMIN ? selectedUserType : 'MUNICIPAL',
             reachSegmentIds: [],
             verified: true,
         };

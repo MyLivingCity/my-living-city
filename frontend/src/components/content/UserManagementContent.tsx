@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Dropdown, Container, Button, Form, NavDropdown } from 'react-bootstrap';
-import { updateUser, getUserBanHistory, removeFlagQuarantine, removePostCommentQuarantine, deleteUser, postRegisterUser, getUserWithEmail } from 'src/lib/api/userRoutes';
+import { updateUser, getUserBanHistory, removeFlagQuarantine, removePostCommentQuarantine, deleteUser, postRegisterUser, getUserWithEmail, updateUserPassword } from 'src/lib/api/userRoutes';
 import { USER_TYPES } from 'src/lib/constants';
 import { IComment } from 'src/lib/types/data/comment.type';
 import { ICommentFlag, IFlag } from 'src/lib/types/data/flag.type';
@@ -16,13 +16,15 @@ import { IBanUser } from 'src/lib/types/data/banUser.type';
 import { UserSegPlainText } from '../partials/UserSegPlainText';
 import { IRegisterInput } from './../../lib/types/input/register.input';
 import { ISegment, ISuperSegment } from 'src/lib/types/data/segment.type';
+import { EditUserInfoModal } from '../modal/EditUserInfoModal';
+import UserChangePasswordModal from '../modal/UserChangePasswordModal';
 
 interface UserManagementContentProps {
     users: IUser[] | undefined;
     token: string | null;
     user: IUser | null;
     flags: IFlag[] | undefined;
-    commentFlags: ICommentFlag[] | undefined;
+    commentFlags: ICommentFlag[] | undefined; 
     ideas: IIdeaWithAggregations[] | undefined;
     proposals: IProposalWithAggregations[] | undefined;
     comments: IComment[] | undefined;
@@ -31,7 +33,7 @@ interface UserManagementContentProps {
     subSeg?: ISegment[] | undefined;
 }
 
-export const UserManagementContent: React.FC<UserManagementContentProps> = ({ users, token, user, flags, commentFlags, ideas, proposals, comments, bans, segs, subSeg }) => {
+export const UserManagementContent: React.FC<UserManagementContentProps> = ({users, token, user, flags, commentFlags, ideas, proposals, comments, bans, segs, subSeg}) => {
     const [filteredUsers, setFilteredUsers] = useState<IUser[]>([]);
     const [municipalFilteredUsers, setMunicipalFilteredUsers] = useState<IUser[]>([]);
     const [hideControls, setHideControls] = useState('');
@@ -44,6 +46,8 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
     const [showUserBanModal, setShowUserBanModal] = useState<boolean>(false);
     const [showUserUnbanModal, setShowUserUnbanModal] = useState<boolean>(false);
     const [showUserBanHistoryModal, setShowUserBanHistoryModal] = useState<boolean>(false);
+    const [showEditUserModal, setShowEditUserModal] = useState<boolean>(false);
+    const [showChangePasswordModal, setShowChangePasswordModal] = useState<boolean>(false);
     const [modalUser, setModalUser] = useState<IUser>();
     const [banHistory, setBanHistory] = useState<any>();
     const UserSegmentHandler = (email: string, id: string) => {
@@ -51,14 +55,32 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
         setEmail(email);
         setId(id);
     };
-    const [buttonText, setButtonText] = useState(
-        (user?.userType === USER_TYPES.SUPER_ADMIN || user?.userType) === USER_TYPES.ADMIN
-            ? 'User Creation Wizard'
-            : 'Municipal User Creation Wizard'
-    );
+    const [buttonText, setButtonText] = useState(user?.userType === USER_TYPES.SUPER_ADMIN || user?.userType === USER_TYPES.ADMIN ? 'User Creation Wizard' : 'Municipal User Creation Wizard');
     const [showCreateAccountForm, setShowCreateAccountForm] = useState(false);
-    function formatBanHistory(banhistory: any) {
 
+    let newHomeID = 1;
+    const [selectedUserType, setSelectedUserType] = useState('');
+    const [selectedHomeRegion, setSelectedHomeRegion] = useState('');
+    const handleHomeRegionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedRegionName = event.target.value;
+        setSelectedHomeRegion(selectedRegionName);
+    };
+
+    let newWorkID = 1;
+    const [selectedWorkRegion, setSelectedWorkRegion] = useState('');
+    const handleWorkRegionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedRegionName = event.target.value;
+        setSelectedWorkRegion(selectedRegionName);
+    };
+
+    let newSchoolID = 1;
+    const [selectedSchoolRegion, setSelectedSchoolRegion] = useState('');
+    const handleSchoolRegionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedRegionName = event.target.value;
+        setSelectedSchoolRegion(selectedRegionName);
+    };
+
+    function formatBanHistory(banhistory: any){
         // iterate through ban history and format it
         let banHistory = banhistory.map((ban: any) => {
             if (ban.type === 'USER') {
@@ -72,7 +94,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
                         <td>Banned Until: {ban.userBannedUntil}</td>
                     </tr>
                 );
-            } else if (ban.type === 'COMMENT') {
+            } else if (ban.type === 'COMMENT'){
                 return (
                     <tr>
                         <td>Ban Reason: {ban.reason}</td>
@@ -81,7 +103,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
                         <td>Banned At: {ban.createdAt}</td>
                     </tr>
                 );
-            } else if (ban.type === 'IDEA') {
+            } else if (ban.type === 'IDEA'){
                 return (
                     <tr>
                         <td>Ban Reason: {ban.reason}</td>
@@ -91,7 +113,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
                     </tr>
                 );
             } else {
-                return <tr><td>Invalid</td></tr>;
+                return<tr><td>Invalid</td></tr>;
             }
         });
         return banHistory;
@@ -99,15 +121,15 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
 
     let userFalseFlags: number[] = [];
     let userFlags: number[] = [];
-    if (users && flags) {
-        for (let i = 0; i < users.length; i++) {
+    if(users && flags){
+        for(let i = 0; i < users.length; i++){
             let counter = 0;
             let flagCounter = 0;
-            for (let z = 0; z < flags.length; z++) {
-                if (users[i].id === flags[z].flaggerId && flags[z].falseFlag === true) {
+            for(let z = 0; z < flags.length; z++){
+                if(users[i].id === flags[z].flaggerId && flags[z].falseFlag === true){
                     counter++;
                     flagCounter++;
-                } else if (users[i].id === flags[z].flaggerId) {
+                }else if(users[i].id === flags[z].flaggerId){
                     flagCounter++;
                 }
             }
@@ -115,15 +137,15 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
             userFlags.push(flagCounter);
         }
     }
-    if (users && commentFlags) {
-        for (let i = 0; i < users.length; i++) {
+    if(users && commentFlags){
+        for(let i = 0; i < users.length; i++){
             let counter = 0;
             let flagCounter = 0;
-            for (let z = 0; z < commentFlags.length; z++) {
-                if (users[i].id === commentFlags[z].flaggerId && commentFlags[z].falseFlag === true) {
+            for(let z = 0; z < commentFlags.length; z++){
+                if(users[i].id === commentFlags[z].flaggerId && commentFlags[z].falseFlag === true){
                     counter++;
                     flagCounter++;
-                } else if (users[i].id === commentFlags[z].flaggerId) {
+                } else if(users[i].id === commentFlags[z].flaggerId){
                     flagCounter++;
                 }
             }
@@ -135,7 +157,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
 
     const toggleCreateAccountForm = () => {
         setShowCreateAccountForm(!showCreateAccountForm);
-        if ((user?.userType === USER_TYPES.SUPER_ADMIN || user?.userType) === USER_TYPES.ADMIN) {
+        if (user?.userType === USER_TYPES.SUPER_ADMIN || user?.userType === USER_TYPES.ADMIN) {
             setButtonText(showCreateAccountForm ? 'User Creation Wizard' : 'Hide Creation Wizard');
         } else {
             setButtonText(showCreateAccountForm ? 'Municipal User Creation Wizard' : 'Hide Creation Wizard');
@@ -150,18 +172,17 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
         const form = event.target as HTMLFormElement;
         const formData = new FormData(form);
 
-
+    
         const registerData: IRegisterInput = {
             userRoleId: undefined,
             email: formData.get('inputEmail') as string,
             password: formData.get('inputPassword') as string,
             confirmPassword: formData.get('inputPassword') as string,
-            organizationName:
-                (user?.userType === USER_TYPES.SUPER_ADMIN || user?.userType === USER_TYPES.ADMIN ) 
-                    && (
-                        selectedUserType === USER_TYPES.BUSINESS ||
-                        selectedUserType === USER_TYPES.COMMUNITY
-                    ) ? (formData.get('inputOrg') as string) : undefined,
+            organizationName: (user?.userType === USER_TYPES.SUPER_ADMIN || user?.userType === USER_TYPES.ADMIN)
+                && (
+                    selectedUserType === USER_TYPES.BUSINESS ||
+                    selectedUserType === USER_TYPES.COMMUNITY
+                ) ? formData.get('inputOrg') as string : undefined,
             fname: formData.get('inputFirst') as string,
             lname: formData.get('inputLast') as string,
             displayFName: formData.get('inputFirst') as string,
@@ -209,9 +230,9 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
             if (await getUserWithEmail(registerData.email) === 200) {
                 setValidEmail(false);
             } else {
-                await postRegisterUser(registerData, null, false, null);
+                await postRegisterUser(registerData, null, false, null, token);
                 console.log('User registered successfully!');
-                form.reset();
+                form.reset();    
             }
         } catch (error) {
             console.error('Error registering user:', error);
@@ -220,7 +241,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
 
 
     const capitalizeString = (s: string) => {
-        if (s === null) {
+        if (s === null){
             return;
         }
         return s.charAt(0).toUpperCase() + s.slice(1);
@@ -235,6 +256,37 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
         } catch (error) {
             console.error('Error deleting user:', error);
             // Handle error state or show error message to the user
+        }
+    };
+
+    const handleUpdatedLocalUserData = (updatedUser: IUser) => {
+        setFilteredUsers(
+            filteredUsers.map((user) => {
+                if (user.id === updatedUser.id) {
+                    return updatedUser;
+                }
+                return user;
+            })
+        );
+        setMunicipalFilteredUsers(
+            municipalFilteredUsers.map((user) => {
+                if (user.id === updatedUser.id) {
+                    return updatedUser;
+                }
+                return user;
+            })
+        );
+    };
+
+    const handlePasswordChange = async ( newPassword: string) => {
+        console.log(newPassword);
+        if (modalUser) {
+            try {
+                await updateUserPassword(modalUser.id, newPassword, token);
+                console.log('changed user password successfully!');
+            } catch (error) {
+                console.error('Error changing user password:', error);
+            }
         }
     };
 
@@ -261,34 +313,12 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
         }
     }, [users]);
 
-    let newHomeID = 1;
-    const [selectedUserType, setSelectedUserType] = useState('');
-    const [selectedHomeRegion, setSelectedHomeRegion] = useState('');
-    const handleHomeRegionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedRegionName = event.target.value;
-        setSelectedHomeRegion(selectedRegionName);
-    };
-
-    let newWorkID = 1;
-    const [selectedWorkRegion, setSelectedWorkRegion] = useState('');
-    const handleWorkRegionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedRegionName = event.target.value;
-        setSelectedWorkRegion(selectedRegionName);
-    };
-
-    let newSchoolID = 1;
-    const [selectedSchoolRegion, setSelectedSchoolRegion] = useState('');
-    const handleSchoolRegionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedRegionName = event.target.value;
-        setSelectedSchoolRegion(selectedRegionName);
-    };
-
     const [validEmail, setValidEmail] = useState(true);
 
 
     if (user?.userType === USER_TYPES.MUNICIPAL_SEG_ADMIN) {
         return (
-            <Container style={{ maxWidth: '100%', marginLeft: 50 }}>
+            <Container style={{maxWidth: '100%', marginLeft: 50}}>
                 <h2 className='mb-4 mt-4'>Municipality of <UserSegPlainText email={user.email} id={user.id} token={token} /> User Management</h2>
                 <Button variant='primary' className='mb-4 mt-4' onClick={() => toggleCreateAccountForm()}>{buttonText}</Button>
                 {showCreateAccountForm && (
@@ -333,10 +363,10 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
                     </thead>
                     <tbody>
                         {municipalFilteredUsers?.map((req: IUser, index: number) => (
-                            req.userType === 'MUNICIPAL' && String(<UserSegPlainText email={req.email} id={req.id} token={token} />).toLowerCase() === String(<UserSegPlainText email={user.email} id={user.id} token={token} />).toLowerCase() ? (
+                            req.userType === 'MUNICIPAL' && String(<UserSegPlainText email={req.email} id={req.id} token={token} />).toLowerCase() === String(<UserSegPlainText email={user.email} id={user.id} token={token} />).toLowerCase()  ? (
                                 <tr key={req.id}>
-
-                                    {req.id !== hideControls ?
+                        
+                                    {req.id !== hideControls ? 
                                         <>
                                             <td className='align-middle'>{req.email}</td>
                                             <td className='text-center align-middle'>{req.organizationName ? req.organizationName : 'N/A'}</td>
@@ -350,15 +380,15 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
                                             <td><Form.Control type='text' defaultValue={req.fname} onChange={(e)=>req.fname = e.target.value}/></td>
                                             <td><Form.Control type='text' defaultValue={req.lname} onChange={(e)=>req.lname = e.target.value}/></td>
                                             <td className='text-center align-middle '><Button onClick={()=> setShowUserFlagsModal(true)}>Info</Button></td>
-
+                    
                                         </>
                                     }
 
                                     <td>
-                                        {req.id !== hideControls ?
+                                        {req.id !== hideControls ? 
                                             <NavDropdown title='Controls' id='nav-dropdown' className='text-center align-middle '>
                                                 <Dropdown.Item
-                                                    onClick={() => {
+                                                    onClick={()=>{
                                                         setHideControls(req.id);
                                                         setReviewed(req.reviewed);
                                                         setModalUser(req);
@@ -376,13 +406,13 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
                                             </NavDropdown>
                                             : <>
                                                 <div className='d-flex justify-content-between'>
-                                                    <Button size='sm' variant='outline-danger' className='mr-2 mb-2 text-center align-middle' onClick={() => setHideControls('')}>Cancel</Button>
+                                                    <Button size='sm' variant='outline-danger' className='mr-2 mb-2 text-center align-middle' onClick={()=>setHideControls('')}>Cancel</Button>
                                                     <Button
                                                         size='sm'
                                                         className='mr-2 mb-2 text-center align-middle'
-                                                        onClick={() => {
+                                                        onClick={()=>{
                                                             setHideControls('');
-
+                                
                                                             updateUser(req, token, user);
                                                         }}>Save</Button>
                                                 </div>
@@ -391,18 +421,46 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
 
                                     </td>
                                 </tr>
-                            ) : null))}
+                            ): null))}
                     </tbody>
                 </Table>
-
+            
                 <br></br>
                 {/* <UserSegmentHandler/> */}
-                {showUserSegmentCard && <UserSegmentInfoCard email={email} id={id} token={token} />}
+                {showUserSegmentCard && <UserSegmentInfoCard email={email} id={id} token={token}/>}
             </Container>
         );
-    } else {
+    } else { 
         return (
-            <Container style={{maxWidth: '100%', marginLeft: 50}}>
+            <Container style={{ maxWidth: '1600px', margin: 'auto' }}>
+                {showUserFlagsModal ?
+                    <UserFlagsModal show={showUserFlagsModal} setShow={setShowUserFlagsModal} user={modalUser!} flags={flags} commentFlags={commentFlags} ideas={ideas} proposals={proposals} comments={comments}/>
+                    : null
+                }
+                {showUserBanModal ?
+                    <UserManagementBanModal show={showUserBanModal} setShow={setShowUserBanModal} modalUser={modalUser!} currentUser={user!} token={token}/>
+                    : null
+                }
+                {showUserUnbanModal ?
+                    <UserManagementUnbanModal show={showUserUnbanModal} setShow={setShowUserUnbanModal} modalUser={modalUser!} currentUser={user!} token={token} />
+                    : null
+                }
+                {showUserBanHistoryModal ?
+                    <UserManagementBanHistoryModal show={showUserBanHistoryModal} setShow={setShowUserBanHistoryModal} modalUser={modalUser!} currentUser={user!} token={token} data={banHistory!}/>
+                    : null
+                }
+                {showEditUserModal ?
+                    <EditUserInfoModal show={showEditUserModal} setShow={setShowEditUserModal} modalUser={modalUser!} currentUser={user!} token={token} segs={segs} subSeg={subSeg} changesSaved={handleUpdatedLocalUserData} />
+                    : null
+                }
+                {showChangePasswordModal && (
+                    <UserChangePasswordModal
+                        show={showChangePasswordModal}
+                        onHide={() => setShowChangePasswordModal(false)}
+                        onSubmit={handlePasswordChange}
+                        modalUser={modalUser} 
+                    />
+                )}
 
 
                 <div className='d-flex justify-content-between'>
@@ -410,8 +468,8 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
                     {(user?.userType === USER_TYPES.SUPER_ADMIN || user?.userType === USER_TYPES.ADMIN) && (
                         <Button variant='primary' className='mb-4 mt-4' onClick={() => toggleCreateAccountForm()}>{buttonText}</Button>
                     )}
-                </div>  
-                {(user?.userType === USER_TYPES.SUPER_ADMIN || user?.userType === USER_TYPES.ADMIN) && showCreateAccountForm && 
+                </div>    
+                {(user?.userType === USER_TYPES.SUPER_ADMIN || user?.userType === USER_TYPES.ADMIN) && showCreateAccountForm &&
                     (
                         <Form onSubmit={handleSubmit}>
                             <div className='form-row'>
@@ -430,11 +488,11 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
                             </div>
                             <div className='form-row'>
                                 <div className='form-group col-md-6'>
-                                <label htmlFor='inputFirst'>{selectedUserType !== USER_TYPES.RESIDENTIAL ? 'Contact ' : ''}First Name</label>
+                                    <label htmlFor='inputFirst'>{selectedUserType !== USER_TYPES.RESIDENTIAL ? 'Contact ' : ''}First Name</label>
                                     <input type='text' className='form-control' id='inputFirst' name='inputFirst' placeholder='John' required />
                                 </div>
                                 <div className='form-group col-md-6'>
-                                <label htmlFor='inputLast'>{selectedUserType !== USER_TYPES.RESIDENTIAL ? 'Contact ' : ''}Last Name</label>
+                                    <label htmlFor='inputLast'>{selectedUserType !== USER_TYPES.RESIDENTIAL ? 'Contact ' : ''}Last Name</label>
                                     <input type='text' className='form-control' id='inputLast' name='inputLast' placeholder='Doe' required />
                                 </div>
                             </div>
@@ -443,8 +501,8 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
                                     <div className='form-group col-md-12'>
                                         <label htmlFor='inputOrg'>Organization Name</label>
                                         <input type='text' className='form-control' id='inputOrg' name='inputOrg' placeholder='' required />
-                                        </div>
                                     </div>
+                                </div>
                             )}
                             <div className='form-row'>
                                 <div className='form-group col-md-6'>
@@ -461,7 +519,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
                                             onChange={() => setValidEmail(true)}
                                         />
                                         <Form.Control.Feedback type='invalid'>
-                                            Email is already in use.
+                                        Email is already in use.
                                         </Form.Control.Feedback>
                                     </Form.Group>
                                 </div>
@@ -470,7 +528,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
                                     <input type='password' className='form-control' id='inputPassword' name='inputPassword' placeholder='Password' required />
                                 </div>
                             </div>
-
+        
                             <div className='form-row'>
                                 <div className='form-group col-md-6'>
                                     <label htmlFor='InputHomeRegion'>Home Region</label>
@@ -512,7 +570,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
                                             </Form.Control>
                                         </div>
                                         <div className='form-group col-md-6'>
-                                        <label htmlFor='inputWorkCommunity'>Work Community</label>
+                                            <label htmlFor='inputWorkCommunity'>Work Community</label>
                                             <Form.Control as='select' name='inputWorkCommunity' onChange={(event) => { newWorkID = parseInt(event.target.value); }}>
                                                 <option value=''>Select Community</option>
                                                 {subSeg && subSeg
@@ -528,7 +586,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
 
                                     <div className='form-row'>
                                         <div className='form-group col-md-6'>
-                                        <label htmlFor='InputSchoolRegion'>School Region</label>
+                                            <label htmlFor='InputSchoolRegion'>School Region</label>
                                             <Form.Control name='InputSchoolRegion' as='select' value={selectedSchoolRegion} onChange={handleSchoolRegionChange}>
                                                 <option value=''>Select Region</option>
                                                 {segs?.map(seg => (
@@ -539,7 +597,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
                                             </Form.Control>
                                         </div>
                                         <div className='form-group col-md-6'>
-                                        <label htmlFor='inputSchoolCommunity'>School Community</label>
+                                            <label htmlFor='inputSchoolCommunity'>School Community</label>
                                             <Form.Control as='select' name='inputSchoolCommunity' onChange={(event) => { newSchoolID = parseInt(event.target.value); }}>
                                                 <option value=''>Select Community</option>
                                                 {subSeg && subSeg
@@ -554,19 +612,23 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
                                     </div>
                                 </>
                             )}
-
+        
                             <button type='submit' className='btn btn-primary mr-2 mb-2'>Submit</button>
                         </Form>
-                    )}
+                    )
+                }
                 <Form>
-                    <Table bordered hover size='sm'>
+                    <Table bordered hover size='sm' style={{ fontSize: '0.8rem' }}>
                         <thead className='table-active'>
                             <tr>
-                            <th scope='col' className='text-center align-middle'>Email</th>
+                                <th scope='col' className='text-center align-middle'>Email</th>
                                 <th scope='col' className='text-center align-middle'>Organization</th>
                                 <th scope='col' className='text-center align-middle'>First</th>
                                 <th scope='col' className='text-center align-middle'>Last</th>
                                 <th scope='col' className='text-center align-middle'>User Type</th>
+                                <th scope='col' className='text-center align-middle'>Home Segment</th>
+                                <th scope='col' className='text-center align-middle'>School Segment</th>
+                                <th scope='col' className='text-center align-middle'>Work Segment</th>
                                 <th scope='col' className='text-center align-middle'>Total Flags</th>
                                 <th scope='col' className='text-center align-middle'>False Flags</th>
                                 <th scope='col' className='text-center align-middle'>Banned</th>
@@ -576,28 +638,36 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredUsers?.map((req: IUser, index: number) =>
-                                req.userType !== 'SUPER_ADMIN' &&
-                                    req.userType !== 'ADMIN' &&
-                                    req.userType !== 'MOD' &&
-                                    req.userType !== 'SEG_MOD' &&
-                                    req.userType !== 'MUNICIPAL_SEG_ADMIN' &&
-                                    req.userType !== 'SEG_ADMIN' ? (
-                                    <tr key={req.id}>
-                                        {req.id !== hideControls ? (
+                            {filteredUsers?.map((req: IUser, index: number) => (
+                                req.userType !== 'SUPER_ADMIN' && req.userType !== 'ADMIN' && req.userType !== 'MOD' && req.userType !== 'SEG_MOD' && req.userType !== 'MUNICIPAL_SEG_ADMIN' && req.userType !== 'SEG_ADMIN' ? (
+                                    <tr
+                                        key={req.id}
+                                        onClick={() => {
+                                            console.log('hode', hideControls);
+                                            if (hideControls === null || hideControls === '') {
+                                                setShowEditUserModal(true);
+                                                setModalUser(req);
+                                                console.log(req);
+                                                console.log(segs);
+                                                console.log(subSeg);
+                                            }
+                                        }}>
+                                        {req.id !== hideControls ? 
                                             <>
                                                 <td className='align-middle' style={{wordBreak: 'break-word'}}>{req.email}</td>
                                                 <td className='text-center align-middle'>{req.organizationName ? req.organizationName : 'N/A'}</td>
                                                 <td className='text-center align-middle'>{req.fname}</td>
                                                 <td className='text-center align-middle'>{req.lname}</td>
                                                 <td className='text-center align-middle'>{req.userType}</td>
+                                                <td className='text-center align-middle'>{req?.userSegments?.homeSegmentName || 'NA'}</td>
+                                                <td className='text-center align-middle'>{req?.userSegments?.schoolSegmentName || 'NA'}</td>
+                                                <td className='text-center align-middle'>{req?.userSegments?.workSegmentName || 'NA'}</td>
                                                 <td className='text-center align-middle'>{userFlags![index].toString()}</td>
                                                 <td className='text-center align-middle'>{userFalseFlags![index].toString()}</td>
                                                 <td className='text-center align-middle'>{req.banned ? 'Yes' : 'No' }</td> 
                                                 <td className='text-center align-middle'>{req.reviewed ? 'Yes' : 'No'}</td>
                                                 <td className='text-center align-middle'>{req.verified ? 'Yes' : 'No'}</td>
-                                            </>
-                                        ) : (
+                                            </> :
                                             <>
                                                 <td><Form.Control type='text' defaultValue={req.email} onChange={(e)=>req.email = e.target.value}/></td>
                                                 <td><Form.Control type='text' defaultValue={req.organizationName} onChange={(e)=>req.organizationName = e.target.value}/></td>
@@ -633,46 +703,39 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
                                                 </td>    
                                                 <td className='text-center align-middle'>{req.verified ? 'Yes' : 'No'}</td>
                                             </>
-                                        )}
+                                        }
 
-                                        <td>
-                                            {req.id !== hideControls ? (
+                                        <td onClick={e => e.stopPropagation()}>
+                                            {req.id !== hideControls ? 
                                                 <NavDropdown title='Controls' id='nav-dropdown'>
                                                     <Dropdown.Item
-                                                        onClick={() => {
+                                                        onClick={()=>{
                                                             setHideControls(req.id);
                                                             setReviewed(req.reviewed);
                                                             setModalUser(req);
-                                                        }}
-                                                    >
-                                                        Edit
-                                                    </Dropdown.Item>
+                                                        }}>Edit</Dropdown.Item>
                                                     <Dropdown.Item
-                                                        onClick={() =>
+                                                        onClick={()=>{
+                                                            setModalUser(req);
+                                                            setShowChangePasswordModal(true);
+                                                        }}>Change User Password</Dropdown.Item>
+                                                    <Dropdown.Item
+                                                        onClick={()=>
                                                             UserSegmentHandler(req.email, req.id)
-                                                        }
-                                                    >
-                                                        View Segments
-                                                    </Dropdown.Item>
-                                                    {req.banned ? (
+                                                        }>View Segments</Dropdown.Item>
+                                                    {req.banned ? 
                                                         <Dropdown.Item
-                                                            onClick={() => {
+                                                            onClick={()=> {
                                                                 setModalUser(req);
                                                                 setShowUserUnbanModal(true);
-                                                            }}
-                                                        >
-                                                            Modify Ban
-                                                        </Dropdown.Item>
-                                                    ) : (
+                                                            }}>Modify Ban</Dropdown.Item>
+                                                        :
                                                         <Dropdown.Item
-                                                            onClick={() => {
+                                                            onClick={()=> {
                                                                 setModalUser(req);
                                                                 setShowUserBanModal(true);
-                                                            }}
-                                                        >
-                                                            Ban User
-                                                        </Dropdown.Item>
-                                                    )}
+                                                            }}>Ban User</Dropdown.Item>
+                                                    }
                                                     <Dropdown.Item
                                                         onClick={() => getUserBanHistory(req.id).then(data => {
                                                             setModalUser(req);
@@ -687,15 +750,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
                                             req.verified = true;
                                             let response = await updateUser(req, token, user);
                                             if (response?.user?.verified === true) {
-                                                setFilteredUsers(filteredUsers.map(oldUsers => {
-                                                    if (oldUsers.id === req.id) {
-                                                        return {
-                                                            ...oldUsers,
-                                                            verified: true
-                                                        };
-                                                    }
-                                                    return oldUsers;
-                                                }));
+                                                handleUpdatedLocalUserData(response.user);
                                             }
                                         }}>Verify Email</Dropdown.Item>
                                                     }
@@ -706,33 +761,28 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
                                                                 handleDeleteUser(req.id);
                                                             }
                                                         }}
-                                                        className='text-danger'
-                                                    >
-                                                        Delete
+                                                        className='text-danger'>
+                                                    Delete
                                                     </Dropdown.Item>
                                                 </NavDropdown>
-                                            ) : (
-                                                <>
+                                                : <>
                                                     <div className='d-flex justify-content-between'>
-                                                    <Button size='sm' variant='outline-danger' className='mr-2 mb-2 text-center align-middle' onClick={()=>setHideControls('')}>Cancel</Button>
+                                                        <Button size='sm' variant='outline-danger' className='mr-2 mb-2 text-center align-middle' onClick={()=>setHideControls('')}>Cancel</Button>
                                                         <Button
                                                             size='sm'
                                                             className='mr-2 mb-2 text-center align-middle'
-                                                            onClick={() => {
+                                                            onClick={()=>{
                                                                 setHideControls('');
-
+                                
                                                                 updateUser(req, token, user);
-                                                            }}
-                                                        >
-                                                            Save
-                                                        </Button>
+                                                            }}>Save</Button>
                                                     </div>
                                                 </>
-                                            )}
+                                            }
+
                                         </td>
                                     </tr>
-                                ) : null
-                            )}
+                                ): null))}
                         </tbody>
                     </Table>
                 </Form>
@@ -740,6 +790,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
                 {/* <UserSegmentHandler/> */}
                 {showUserSegmentCard && <UserSegmentInfoCard email={email} id={id} token={token}/>}
             </Container>
+            
         );
     }
 };

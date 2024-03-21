@@ -1010,13 +1010,7 @@ userRouter.patch(
 
 			const theUser = await prisma.user.findUnique({where:{id:id}});
 
-			if (
-        !(
-          theUser.userType === "SUPER_ADMIN" ||
-					theUser.userType === "ADMIN" ||
-          theUser.userType === "MOD"
-        )
-      ) {
+			if ( !( theUser.userType === "SUPER_ADMIN" || theUser.userType === "ADMIN" || theUser.userType === "MOD")) {
         return res.status(401).json("You are not allowed to unban users!");
       }
 

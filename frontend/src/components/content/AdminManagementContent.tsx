@@ -27,12 +27,12 @@ import { ISegment } from 'src/lib/types/data/segment.type';
 import { IRegisterInput } from './../../lib/types/input/register.input';
 
 interface AdminManagementContentProps {
-  users: IUser[] | undefined;
-  token: string | null;
-  user: IUser | null;
-  bans: IBanUser[] | undefined;
-  segs: ISuperSegment[];
-  subSeg: ISegment[];
+    users: IUser[] | undefined;
+    token: string | null;
+    user: IUser | null;
+    bans: IBanUser[] | undefined;
+    segs: ISuperSegment[];
+    subSeg: ISegment[];
 }
 
 export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
@@ -198,10 +198,10 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
                                     .filter(
                                         (item) =>
                                             item === USER_TYPES.ADMIN ||
-                      item === USER_TYPES.MUNICIPAL_SEG_ADMIN ||
-                      item === USER_TYPES.SEG_ADMIN ||
-                      item === USER_TYPES.MOD ||
-                      item === USER_TYPES.SEG_MOD
+                                            item === USER_TYPES.MUNICIPAL_SEG_ADMIN ||
+                                            item === USER_TYPES.SEG_ADMIN ||
+                                            item === USER_TYPES.MOD ||
+                                            item === USER_TYPES.SEG_MOD
                                     )
                                     .map((item) => (
                                         <option key={item}>{item}</option>
@@ -289,8 +289,7 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
                                 {subSeg
                                     .filter(
                                         (seg) =>
-                                            seg.superSegName?.toUpperCase() ===
-                      selectedRegion.toUpperCase()
+                                            seg.superSegName?.toUpperCase() === selectedRegion.toUpperCase()
                                     )
                                     .map((seg) => (
                                         <option key={seg.superSegId} value={seg.segId}>
@@ -315,39 +314,39 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
                             scope='col'
                             className='col-3 text-center align-middle'
                         >
-              Email
+                            Email
                         </th>
                         <th scope='col' className='col-2 text-center align-middle'>
-              First
+                            First
                         </th>
                         <th scope='col' className='col-2 text-center align-middle'>
-              Last
+                            Last
                         </th>
                         <th scope='col' className='col-2 text-center align-middle '>
-              User Type
+                            User Type
                         </th>
                         <th scope='col' className='col-3 text-center align-middle'>
-              Area of Access
+                            Area of Access
                         </th>
                         <th scope='col' className='col-3 text-center align-middle'>
-              Date Created
+                            Date Created
                         </th>
                         <th scope='col' className='col-3 text-center align-middle'>
-              Status
+                            Status
                         </th>
                         <th scope='col' className='col-1 text-center align-middle'>
-              Controls
+                            Controls
                         </th>
                     </tr>
                 </thead>
                 <tbody>
                     {users?.map((req: IUser, index: number) =>
-            req.userType === 'SUPER_ADMIN' ||
-            req.userType === 'ADMIN' ||
-            req.userType === 'MUNICIPAL_SEG_ADMIN' ||
-            req.userType === 'MOD' ||
-            req.userType === 'SEG_MOD' ||
-            req.userType === 'SEG_ADMIN' ? (
+                        req.userType === 'SUPER_ADMIN' ||
+                        req.userType === 'ADMIN' ||
+                        req.userType === 'MUNICIPAL_SEG_ADMIN' ||
+                        req.userType === 'MOD' ||
+                        req.userType === 'SEG_MOD' ||
+                        req.userType === 'SEG_ADMIN' ? (
                                 <tr key={req.id}>
                                     {req.id !== hideControls ? (
                                         <>
@@ -450,84 +449,84 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
                                     )}
 
                                     <td>
-                                    {req.id !== hideControls ? (
-                                        <NavDropdown title='Controls' id='nav-dropdown'>
-                                            <Dropdown.Item
-                                                onClick={() => UserSegmentHandler(req.email, req.id)}
-                                            >
-                                                View Segments
-                                            </Dropdown.Item>
-                                            {req.userType !== 'SUPER_ADMIN' ? (
-                                                <>
-                                                    <Dropdown.Item
-                                                        onClick={() => {
-                                                            setHideControls(req.id);
-                                                            setReviewed(req.reviewed);
-                                                            setModalUser(req);
-                                                        }}
-                                                    >
-                                                        Edit
-                                                    </Dropdown.Item>
-                                                    {req.banned ? (
+                                        {req.id !== hideControls ? (
+                                            <NavDropdown title='Controls' id='nav-dropdown'>
+                                                <Dropdown.Item
+                                                    onClick={() => UserSegmentHandler(req.email, req.id)}
+                                                >
+                                                    View Segments
+                                                </Dropdown.Item>
+                                                {req.userType !== 'SUPER_ADMIN' ? (
+                                                    <>
                                                         <Dropdown.Item
                                                             onClick={() => {
+                                                                setHideControls(req.id);
+                                                                setReviewed(req.reviewed);
                                                                 setModalUser(req);
-                                                                setShowUserUnbanModal(true);
                                                             }}
                                                         >
-                                                            Modify Ban
+                                                            Edit
                                                         </Dropdown.Item>
-                                                    ) : (
+                                                        {req.banned ? (
+                                                            <Dropdown.Item
+                                                                onClick={() => {
+                                                                    setModalUser(req);
+                                                                    setShowUserUnbanModal(true);
+                                                                }}
+                                                            >
+                                                                Modify Ban
+                                                            </Dropdown.Item>
+                                                        ) : (
+                                                            <Dropdown.Item
+                                                                onClick={() => {
+                                                                    setModalUser(req);
+                                                                    setShowUserBanModal(true);
+                                                                }}
+                                                            >
+                                                                Ban User
+                                                            </Dropdown.Item>
+                                                        )}
                                                         <Dropdown.Item
                                                             onClick={() => {
-                                                                setModalUser(req);
-                                                                setShowUserBanModal(true);
+                                                                const confirmed = window.confirm(
+                                                                    'Are you sure you want to delete this user?'
+                                                                );
+                                                                if (confirmed) {
+                                                                    handleDeleteUser(req.id);
+                                                                }
                                                             }}
+                                                            className='text-danger'
                                                         >
-                                                            Ban User
+                                                            Delete
                                                         </Dropdown.Item>
-                                                    )}
-                                                    <Dropdown.Item
-                                                        onClick={() => {
-                                                            const confirmed = window.confirm(
-                                                                'Are you sure you want to delete this user?'
-                                                            );
-                                                            if (confirmed) {
-                                                                handleDeleteUser(req.id);
-                                                            }
-                                                        }}
-                                                        className='text-danger'
+                                                    </>
+                                                ) : null}
+                                            </NavDropdown>
+                                        ) : (
+                                            <>
+                                                <div className='d-flex justify-content-between'>
+                                                    <Button
+                                                        size='sm'
+                                                        variant='outline-danger'
+                                                        className='mr-2 mb-2 '
+                                                        onClick={() => setHideControls('')}
                                                     >
-                                                        Delete
-                                                    </Dropdown.Item>
-                                                </>
-                                            ) : null}
-                                        </NavDropdown>
-                                    ) : (
-                                        <>
-                                            <div className='d-flex justify-content-between'>
-                                                <Button
-                                                    size='sm'
-                                                    variant='outline-danger'
-                                                    className='mr-2 mb-2 '
-                                                    onClick={() => setHideControls('')}
-                                                >
-                                                    Cancel
-                                                </Button>
-                                                <Button
-                                                    size='sm'
-                                                    className='mr-2 mb-2'
-                                                    onClick={() => {
-                                                        setHideControls('');
-                                                        updateUser(req, token, user);
-                                                    }}
-                                                >
-                                                    Save
-                                                </Button>
-                                            </div>
-                                        </>
-                                    )}
-                                </td>
+                                                        Cancel
+                                                    </Button>
+                                                    <Button
+                                                        size='sm'
+                                                        className='mr-2 mb-2'
+                                                        onClick={() => {
+                                                            setHideControls('');
+                                                            updateUser(req, token, user);
+                                                        }}
+                                                    >
+                                                        Save
+                                                    </Button>
+                                                </div>
+                                            </>
+                                        )}
+                                    </td>
                                 </tr>
                             ) : null
                     )}

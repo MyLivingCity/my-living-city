@@ -119,7 +119,8 @@ export const getUserWithJWTVerbose = async ({ jwtAuthToken }: GetUserWithJWTInpu
     );
     return res.data;
 };
-export const postRegisterUser = async (registerData: IRegisterInput, requestData: IUserSegmentRequest[] | null, logUser: boolean | null, avatar: any): Promise<LoginResponse> => {  
+
+export const postRegisterUser = async (registerData: IRegisterInput, requestData: IUserSegmentRequest[] | null, logUser: boolean | null, avatar: any, token: string | null = null): Promise<LoginResponse> => {  
     const {
         email,
         password,
@@ -128,26 +129,20 @@ export const postRegisterUser = async (registerData: IRegisterInput, requestData
         fname,
         lname,
         address,
-        // geo,
-        // workDetails,
-        // schoolDetails,
-        //homeSegmentId,
-        // workSegmentId,
-        // schoolSegmentId,
-        // homeSubSegmentId,
-        // workSubSegmentId,
-        // schoolSubSegmentId,
+        geo,
+        workDetails,
+        schoolDetails,
+        homeSegmentId,
+        workSegmentId,
+        schoolSegmentId,
+        homeSubSegmentId,
+        workSubSegmentId,
+        schoolSubSegmentId,
         userType,
         reachSegmentIds,
         verified,
-   
-
-
     } = registerData;
-    console.log('Reach Requests');
-    let request3 = null;
-    let request4 = null;
-    let request5 = null;
+
     // Verify Payload
     if (!email || !password) {
         throw new Error('You must provide an email and password to sign up.');
@@ -163,115 +158,58 @@ export const postRegisterUser = async (registerData: IRegisterInput, requestData
     else {
         registerData.verified = false;
     }
-    console.log('Checked Created Requests');
+
     const displayFName = fname;
     const displayLName = address?.streetAddress || '';
-    console.log('Added Display Names');
-    const request = await axios.post<LoginResponse>(`${API_BASE_URL}/user/signup`, { email, password, confirmPassword, organizationName, fname, lname, address, userType, verified, displayFName, displayLName});
-    console.log('Awaiting Request for user');
-    // console.log(schoolDetails);
-   // console.log('Requested USERID', request.data.userObject.address?.userId);
-    // const request2 =  await  axios({
-    //     method: 'post',
-    //     url: `${API_BASE_URL}/schoolDetails/create`,
-    //     data: {
-    //         // schoolDetails: schoolDetails,
-    //         userId: request.data.user.address?.userId,
 
- 
-    //     },
-    //     headers: { 'Access-Control-Allow-Origin': '*', 'x-auth-token': request.data.token },
-    //     withCredentials: true,
-    // });
-    console.log('Awaiting for School');
-    // await axios({
-    //     method: 'post',
-    //     url: `${API_BASE_URL}/workDetails/create`,
-    //     data: {
-    //         // workDetails: workDetails,
-    //         userId: request.data.user.address?.userId,
-  
-    //     },
-    //     headers: { 'Access-Control-Allow-Origin': '*', 'x-auth-token': request.data.token },
-    //     withCredentials: true,
-    // });
-    console.log('Awaiting for work');
-    // await axios({
-    //     method: 'post',
-    //     url: `${API_BASE_URL}/userSegment/create`,
-    //     data: {
-    //         //homeSegmentId,
-    //         // workSegmentId,
-    //         // schoolSegmentId,
-    //         // homeSubSegmentId,
-    //         // workSubSegmentId,
-    //         // schoolSubSegmentId
-    //     },
-    //     headers: { 'Access-Control-Allow-Origin': '*', 'x-auth-token': request.data.token },
-    //     withCredentials: true
-    // });
-    if (requestData) {
-        if (requestData[0]) {
-            request3 = await axios({
-                method: 'post',
-                url: `${API_BASE_URL}/userSegmentRequest/create`,
-                data: requestData[0],
-                headers: { 'Access-Control-Allow-Origin': '*', 'x-auth-token': request.data.token },
-                withCredentials: true
-            });
-        } if (requestData[1]) {
-            request4 = await axios({
-                method: 'post',
-                url: `${API_BASE_URL}/userSegmentRequest/create`,
-                data: requestData[1],
-                headers: { 'Access-Control-Allow-Origin': '*', 'x-auth-token': request.data.token },
-                withCredentials: true
-            });
-        } if (requestData[2]) {
-            request5 = await axios({
-                method: 'post',
-                url: `${API_BASE_URL}/userSegmentRequest/create`,
-                data: requestData[2],
-                headers: { 'Access-Control-Allow-Origin': '*', 'x-auth-token': request.data.token },
-                withCredentials: true
-            });
-        }
+    // Create User
+    const createUserRequest = await axios.post<LoginResponse>(`${API_BASE_URL}/user/signup`, {
+        email, 
+        password, 
+        confirmPassword, 
+        organizationName, 
+        fname, 
+        lname, 
+        address, 
+        geo, 
+        userType, 
+        verified, 
+        displayFName, 
+        displayLName,
+        userSegment: {
+            homeSegmentId,
+            workSegmentId,
+            schoolSegmentId,
+            homeSubSegmentId,
+            workSubSegmentId,
+            schoolSubSegmentId
+        },
+        segmentRequest: requestData,
+        userReach: reachSegmentIds,
+        workDetails,
+        schoolDetails,
+    },
+    {
+        headers: { 'x-auth-token': token, 'Access-Control-Allow-Origin': '*',},
+        withCredentials: true
     }
-    console.log('Awaiting forusersegments');
-    const request6 = avatar ? await postAvatarImage(avatar, request.data.token) : null;
-
-    let request7: AxiosResponse<any>[] = [];
-    if (userType === USER_TYPES.IN_PROGRESS || userType === USER_TYPES.BUSINESS || userType === USER_TYPES.COMMUNITY) {
-        reachSegmentIds?.forEach(async (segId) => {
-            const newUserReachReq = await axios({
-                method: 'post',
-                url: `${API_BASE_URL}/reach/create`,
-                data: {
-                    segId: segId,
-                    userId: request.data.userObject.address?.userId,
-                },
-                headers: { 'Access-Control-Allow-Origin': '*', 'x-auth-token': request.data.token },
-                withCredentials: true,
-            });
-            request7.push(newUserReachReq);
-        });
+    );
+    if (createUserRequest.status !== 201) {
+        throw new Error('Failed to create user');
     }
- 
- 
+    
+    // Post avatar image if it exists
+    if (avatar) {
+        await postAvatarImage(avatar, createUserRequest.data.token);
+    }
 
-
-
-    Promise.all([request, request3, request4, request5, request6, ...request7]).then((...responses) => {
-
-    });
+    // Store user and token in local storage
     if (logUser){
-        const { token, userObject } = request.data;
-        storeUserAndTokenInLocalStorage(token, userObject);
+        const { token, user } = createUserRequest.data;
+        storeUserAndTokenInLocalStorage(token, user);
         storeTokenExpiryInLocalStorage();
     }
-  
-    await delay(2000);
-    return request.data;
+    return createUserRequest.data;
 };
 
 export const getUserBanHistory = async (userId: string | undefined) => {

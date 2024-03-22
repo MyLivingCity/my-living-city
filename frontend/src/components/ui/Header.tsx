@@ -187,7 +187,7 @@ function Header(){
 
                                 <Nav.Link href='/profile'>Profile</Nav.Link>
 
-                                {user.userType === 'ADMIN' && (
+                                {(user.userType === 'SUPER_ADMIN' || user.userType === 'ADMIN') && (
                                     <NavDropdown title='Admin Tools' id='nav-dropdown'>
                                         <Nav.Link href='/advertisement/all'>Ad Manager</Nav.Link>
                                         <Nav.Link href='/segment/management'>Segments</Nav.Link>

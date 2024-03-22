@@ -354,6 +354,7 @@ userRouter.post("/signup",
 			'COMMUNITY',
 		];
 		const adminTypes = [
+			'SUPER_ADMIN',
 			'ADMIN',
 			'MOD',
 			'SEG_ADMIN',
@@ -387,15 +388,9 @@ userRouter.post("/signup",
 					res.status(401).json({message: info?.message || "User not found"});
 					return;
 				}
-
 				// TODO: Check if the user has permissions to create a user of this type
 				const canCreateUser = checkUserCreationAuthorization(req.body, user);
 				await createUser();
-				// Use the user to check if they have permissions to create a user of this type
-				// console.log("UserOutside", user);
-				// res.status(201).json({
-				// 	user: user,
-				// });
 				return;
 			})(req, res, next);
 		}
@@ -591,7 +586,7 @@ userRouter.get(
 				}
 			);
 
-			if (theUser.userType === 'ADMIN' || theUser.userType === 'MOD' || theUser.userType === 'MUNICIPAL_SEG_ADMIN') {
+			if (theUser.userType === 'SUPER_ADMIN' || theUser.userType === 'ADMIN' || theUser.userType === 'MOD' || theUser.userType === 'MUNICIPAL_SEG_ADMIN') {
 				const allUsers = await prisma.user.findMany({
 					include: {
 						userSegments: true,
@@ -829,7 +824,9 @@ userRouter.put(
 
 			const theUser = await prisma.user.findUnique({ where: { id: id } });
 
-			const userTypes = ['ADMIN',
+			const userTypes = [
+				'SUPER_ADMIN',
+				'ADMIN',
 				'MOD',
 				'SEG_ADMIN',
 				'SEG_MOD',
@@ -842,7 +839,7 @@ userRouter.put(
 				'DEVELOPER'
 			];
 
-			if (theUser.userType === 'ADMIN') {
+			if(theUser.userType === 'SUPER_ADMIN' || theUser.userType === 'ADMIN'){
 				console.log(req.body.banned);
 
 				const {
@@ -950,7 +947,9 @@ userRouter.put(
 
 			const theUser = await prisma.user.findUnique({ where: { id: id } });
 
-			const userTypes = ['ADMIN',
+			const userTypes = [
+				'SUPER_ADMIN',
+				'ADMIN',
 				'MOD',
 				'SEG_ADMIN',
 				'SEG_MOD',
@@ -1069,9 +1068,9 @@ userRouter.patch(
 
 			const theUser = await prisma.user.findUnique({ where: { id: id } });
 
-			if (!(theUser.userType === 'ADMIN' || theUser.userType === 'MOD')) {
-				return res.status(401).json("You are not allowed to unban users!");
-			}
+			if ( !( theUser.userType === 'SUPER_ADMIN' || theUser.userType === 'ADMIN' || theUser.userType === 'MOD')) {
+        return res.status(401).json("You are not allowed to unban users!");
+      }
 
 			const userIds = req.body.userIds;
 			console.log(userIds);

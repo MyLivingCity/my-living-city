@@ -24,7 +24,7 @@ const SubmitAdvertisementPage: React.FC<SubmitAdvertisementPageProps> = ({}) => 
     useEffect(() => {
         async function getSegmentData() {
             let data;
-            if (user?.userType === USER_TYPES.ADMIN) {data = await getAllSegments();}
+            if (user?.userType === USER_TYPES.SUPER_ADMIN || user?.userType === USER_TYPES.ADMIN) {data = await getAllSegments();}
             else {
                 await delay(1000);
                 data = await getAllSegments();

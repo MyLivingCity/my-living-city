@@ -89,7 +89,7 @@ userSegmentRequestRouter.get(
                 where:{id:id}
             })
 
-            if(theUser.userType==='ADMIN'){
+            if(theUser.userType === 'SUPER_ADMIN' || theUser.userType === 'ADMIN'){
                 const result = await prisma.segmentRequest.findMany();
 
                 res.status(200).json(result);
@@ -167,7 +167,7 @@ userSegmentRequestRouter.delete(
                 return res.status(404).json("segment request not found!");
             }
 
-            if(theUser.userType==='ADMIN'){
+            if(theUser.userType === 'SUPER_ADMIN' || theUser.userType === 'ADMIN'){
                 const result = await prisma.segmentRequest.delete({
                     where:{id:parsedDeleteId}
                 })
@@ -209,7 +209,7 @@ userSegmentRequestRouter.delete(
                 where:{id:id}
             })
 
-            if(theUser.userType==='ADMIN'){
+            if(theUser.userType === 'SUPER_ADMIN' || theUser.userType === 'ADMIN'){
                 const {userId} = req.params;
                 const targetUser = await prisma.user.findUnique({
                     where:{id:userId}

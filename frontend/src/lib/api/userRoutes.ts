@@ -21,9 +21,11 @@ export interface ResetPassword {
 }
 
 export interface LoginResponse {
-  user: IUser;
+  userObject: IUser;
   token: string;
+  user: IUser;
 }
+
 export const getUserById = async (userId: string | null) => {
     const res = await axios({
         method: 'get',
@@ -134,6 +136,7 @@ export const getUserWithJWTVerbose = async ({ jwtAuthToken }: GetUserWithJWTInpu
     );
     return res.data;
 };
+
 export const postRegisterUser = async (registerData: IRegisterInput, requestData: IUserSegmentRequest[] | null, logUser: boolean | null, avatar: any, token: string | null = null): Promise<LoginResponse> => {  
     const {
         email,

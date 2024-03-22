@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
-import { Form, Tab, Tabs } from 'react-bootstrap';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
-import { ISegment, ISuperSegment } from 'src/lib/types/data/segment.type';
-import { IUser } from 'src/lib/types/data/user.type';
+import { Form, Tab, Tabs, Modal, Button } from 'react-bootstrap';
+import { ISegment, ISuperSegment } from '../../../lib/types/data/segment.type';
+import { IUser } from '../../../lib/types/data/user.type';
 import { EditUserInfoModalPage } from './components/EditUserInfoModalPage';
 import { useEditUserInfoModal } from './hooks/useEditUserInfoModal';
 import { EventKey } from 'react-bootstrap/esm/types';

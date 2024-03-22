@@ -16,7 +16,7 @@ import { IBanUser } from 'src/lib/types/data/banUser.type';
 import { UserSegPlainText } from '../partials/UserSegPlainText';
 import { IRegisterInput } from './../../lib/types/input/register.input';
 import { ISegment, ISuperSegment } from 'src/lib/types/data/segment.type';
-import { EditUserInfoModal } from '../modal/EditUserInfoModal/';
+import { EditUserInfoModal } from '../modal/EditUserInfoModal';
 import UserChangePasswordModal from '../modal/UserChangePasswordModal';
 
 interface UserManagementContentProps {
@@ -55,7 +55,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
         setEmail(email);
         setId(id);
     };
-    const [buttonText, setButtonText] = useState(user?.userType === USER_TYPES.ADMIN ? 'User Creation Wizard' : 'Municipal User Creation Wizard');
+    const [buttonText, setButtonText] = useState(user?.userType === USER_TYPES.SUPER_ADMIN || user?.userType === USER_TYPES.ADMIN ? 'User Creation Wizard' : 'Municipal User Creation Wizard');
     const [showCreateAccountForm, setShowCreateAccountForm] = useState(false);
 
     let newHomeID = 1;
@@ -157,7 +157,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
 
     const toggleCreateAccountForm = () => {
         setShowCreateAccountForm(!showCreateAccountForm);
-        if (user?.userType === USER_TYPES.ADMIN) {
+        if (user?.userType === USER_TYPES.SUPER_ADMIN || user?.userType === USER_TYPES.ADMIN) {
             setButtonText(showCreateAccountForm ? 'User Creation Wizard' : 'Hide Creation Wizard');
         } else {
             setButtonText(showCreateAccountForm ? 'Municipal User Creation Wizard' : 'Hide Creation Wizard');
@@ -178,7 +178,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
             email: formData.get('inputEmail') as string,
             password: formData.get('inputPassword') as string,
             confirmPassword: formData.get('inputPassword') as string,
-            organizationName: user?.userType === USER_TYPES.ADMIN
+            organizationName: (user?.userType === USER_TYPES.SUPER_ADMIN || user?.userType === USER_TYPES.ADMIN)
                 && (
                     selectedUserType === USER_TYPES.BUSINESS ||
                     selectedUserType === USER_TYPES.COMMUNITY
@@ -186,7 +186,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
             fname: formData.get('inputFirst') as string,
             lname: formData.get('inputLast') as string,
             displayFName: formData.get('inputFirst') as string,
-            displayLName: user?.userType === USER_TYPES.ADMIN ? formData.get('inputLast') as string : 'Municipal',
+            displayLName: (user?.userType === USER_TYPES.SUPER_ADMIN || user?.userType === USER_TYPES.ADMIN) ? formData.get('inputLast') as string : 'Municipal',
             address: {
                 streetAddress: '',
                 streetAddress2: '',
@@ -214,13 +214,13 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                 programCompletionDate: new Date(),
             },
 
-            homeSegmentId: user?.userType === USER_TYPES.ADMIN ? newHomeID : user?.userSegments?.homeSegmentId,
-            workSegmentId: user?.userType === USER_TYPES.ADMIN ? newWorkID : undefined,
-            schoolSegmentId:user?.userType === USER_TYPES.ADMIN ? newSchoolID : undefined,
+            homeSegmentId: user?.userType === USER_TYPES.SUPER_ADMIN || user?.userType === USER_TYPES.ADMIN ? newHomeID : user?.userSegments?.homeSegmentId,
+            workSegmentId: user?.userType === USER_TYPES.SUPER_ADMIN || user?.userType === USER_TYPES.ADMIN ? newWorkID : undefined,
+            schoolSegmentId: user?.userType === USER_TYPES.SUPER_ADMIN || user?.userType === USER_TYPES.ADMIN ? newSchoolID : undefined,
             homeSubSegmentId: undefined,
             workSubSegmentId: undefined,
             schoolSubSegmentId: undefined,
-            userType: user?.userType === USER_TYPES.ADMIN ? selectedUserType : 'MUNICIPAL',
+            userType: user?.userType === USER_TYPES.SUPER_ADMIN || user?.userType === USER_TYPES.ADMIN ? selectedUserType : 'MUNICIPAL',
             reachSegmentIds: [],
             verified: true,
         };
@@ -294,6 +294,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
         if (users) {
             // Filter out specific user types or conditions if needed
             const filteredUsers = users.filter(user =>
+                user.userType !== USER_TYPES.SUPER_ADMIN &&
                 user.userType !== USER_TYPES.ADMIN &&
                 user.userType !== USER_TYPES.MOD &&
                 user.userType !== USER_TYPES.SEG_MOD &&
@@ -464,11 +465,11 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
 
                 <div className='d-flex justify-content-between'>
                     <h2 className='mb-4 mt-4'>User Management</h2>
-                    {user?.userType === USER_TYPES.ADMIN && (
+                    {(user?.userType === USER_TYPES.SUPER_ADMIN || user?.userType === USER_TYPES.ADMIN) && (
                         <Button variant='primary' className='mb-4 mt-4' onClick={() => toggleCreateAccountForm()}>{buttonText}</Button>
                     )}
                 </div>    
-                {user?.userType === USER_TYPES.ADMIN && showCreateAccountForm &&
+                {(user?.userType === USER_TYPES.SUPER_ADMIN || user?.userType === USER_TYPES.ADMIN) && showCreateAccountForm &&
                     (
                         <Form onSubmit={handleSubmit}>
                             <div className='form-row'>
@@ -638,7 +639,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                         </thead>
                         <tbody>
                             {filteredUsers?.map((req: IUser, index: number) => (
-                                req.userType !== 'ADMIN' && req.userType !== 'MOD' && req.userType !== 'SEG_MOD' && req.userType !== 'MUNICIPAL_SEG_ADMIN' && req.userType !== 'SEG_ADMIN' ? (
+                                req.userType !== 'SUPER_ADMIN' && req.userType !== 'ADMIN' && req.userType !== 'MOD' && req.userType !== 'SEG_MOD' && req.userType !== 'MUNICIPAL_SEG_ADMIN' && req.userType !== 'SEG_ADMIN' ? (
                                     <tr
                                         key={req.id}
                                         onClick={() => {
@@ -674,6 +675,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                                                 <td><Form.Control type='text' defaultValue={req.lname} onChange={(e)=>req.lname = e.target.value}/></td>
                                                 <td><Form.Control as='select' onChange={(e)=>{(req.userType as string) = e.target.value;}}>
                                                     {userTypes
+                                                        .filter((type => type !== 'SUPER_ADMIN'))
                                                         .filter((type => type !== 'ADMIN'))
                                                         .filter((type => type !== 'SEG_ADMIN'))
                                                         .filter((type => type !== 'MUNICIPAL_SEG_ADMIN'))

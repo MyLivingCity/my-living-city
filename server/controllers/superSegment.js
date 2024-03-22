@@ -22,7 +22,7 @@ superSegmentRouter.post(
                 select:{userType:true}
             });
 
-            if(theUser.userType==='ADMIN'){
+            if(theUser.userType==='SUPER_ADMIN' || theUser.userType==='ADMIN'){
                 const {name,country,province} = req.body;
 
                 if(!name||!isString(name)){
@@ -160,7 +160,7 @@ superSegmentRouter.delete(
                 select:{userType:true}
             });
 
-            if(theUser.userType==='ADMIN'){
+            if(theUser.userType==='SUPER_ADMIN' || theUser.userType==='ADMIN'){
                 const {deleteId} = req.params;
 
                 if(!isInteger(deleteId)){
@@ -221,7 +221,7 @@ superSegmentRouter.post(
                 select:{userType:true}
             });
 
-            if(theUser.userType==='ADMIN'){
+            if(theUser.userType==='SUPER_ADMIN' || theUser.userType==='ADMIN'){
                 const {superSegId} = req.params;
                 const {name,country,province} = req.body;
 

@@ -25,15 +25,14 @@ import { IBanUser } from 'src/lib/types/data/banUser.type';
 import { ISuperSegment } from 'src/lib/types/data/segment.type';
 import { ISegment } from 'src/lib/types/data/segment.type';
 import { IRegisterInput } from './../../lib/types/input/register.input';
-import ts from 'typescript';
 
 interface AdminManagementContentProps {
-    users: IUser[] | undefined;
-    token: string | null;
-    user: IUser | null;
-    bans: IBanUser[] | undefined;
-    segs: ISuperSegment[];
-    subSeg: ISegment[];
+  users: IUser[] | undefined;
+  token: string | null;
+  user: IUser | null;
+  bans: IBanUser[] | undefined;
+  segs: ISuperSegment[];
+  subSeg: ISegment[];
 }
 
 export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
@@ -54,7 +53,7 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
     const [showUserBanModal, setShowUserBanModal] = useState<boolean>(false);
     const [showUserUnbanModal, setShowUserUnbanModal] = useState<boolean>(false);
     const [showUserBanHistoryModal, setShowUserBanHistoryModal] =
-        useState<boolean>(false);
+    useState<boolean>(false);
     const [modalUser, setModalUser] = useState<IUser>();
     const [showCreateAccountForm, setShowCreateAccountForm] = useState(false);
     const [buttonText, setButtonText] = useState('Admin Creation Wizard');
@@ -96,9 +95,6 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
             // Handle error state or show error message to the user
         }
     };
-
-    const history = useHistory();
-
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         console.log('Made it Submit');
@@ -128,48 +124,49 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
                 postalCode: '',
                 country: '',
             },
-            // geo: {
-            //     lon: undefined,
-            //     lat: undefined,
-            //     work_lat: undefined,
-            //     work_lon: undefined,
-            //     school_lat: undefined,
-            //     school_lon: undefined,
-            // },
-            // workDetails: {
-            //     streetAddress: '',
-            //     postalCode: '',
-            //     company: '',
-            // },
-            // schoolDetails: {
-            //     streetAddress: '',
-            //     postalCode: '',
-            //     faculty: '',
-            //     programCompletionDate: new Date(),
-            // },
+            geo: {
+                lon: undefined,
+                lat: undefined,
+                work_lat: undefined,
+                work_lon: undefined,
+                school_lat: undefined,
+                school_lon: undefined,
+            },
+            workDetails: {
+                streetAddress: '',
+                postalCode: '',
+                company: '',
+            },
+            schoolDetails: {
+                streetAddress: '',
+                postalCode: '',
+                faculty: '',
+                programCompletionDate: new Date(),
+            },
 
-            // homeSegmentId: parseInt(formData.get('inputCommunity') as string),
-            // workSegmentId: undefined,
-            // schoolSegmentId: undefined,
-            // homeSubSegmentId: undefined,
-            // workSubSegmentId: undefined,
-            // schoolSubSegmentId: undefined,
+            homeSegmentId: parseInt(formData.get('inputCommunity') as string),
+            workSegmentId: undefined,
+            schoolSegmentId: undefined,
+            homeSubSegmentId: undefined,
+            workSubSegmentId: undefined,
+            schoolSubSegmentId: undefined,
             userType: formData.get('inputType') as string,
             reachSegmentIds: [],
             verified: true,
         };
+
         try {
             const createdUser = await postRegisterUser(
                 registerData,
                 null,
                 false,
-                null
+                null,
+                token
             );
-            console.log(createdUser);
             console.log('User registered successfully!');
             // @ts-ignore
             const adminmodEmail = createdUser.user.user.adminmodEmail;
-            history.push('/adminmod-email-generate', { adminmodEmail });
+            history.push('/adminmod-email-generate', { adminmodEmail: adminmodEmail });
             form.reset();
         } catch (error) {
             console.error('Error registering user:', error);
@@ -177,6 +174,7 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
     };
 
     const userTypes = Object.keys(USER_TYPES);
+    const history = useHistory();
     return (
         <Container style={{ maxWidth: '100%', marginLeft: 50 }}>
             <div className='d-flex justify-content-between'>
@@ -200,10 +198,10 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
                                     .filter(
                                         (item) =>
                                             item === USER_TYPES.ADMIN ||
-                                            item === USER_TYPES.MUNICIPAL_SEG_ADMIN ||
-                                            item === USER_TYPES.SEG_ADMIN ||
-                                            item === USER_TYPES.MOD ||
-                                            item === USER_TYPES.SEG_MOD
+                      item === USER_TYPES.MUNICIPAL_SEG_ADMIN ||
+                      item === USER_TYPES.SEG_ADMIN ||
+                      item === USER_TYPES.MOD ||
+                      item === USER_TYPES.SEG_MOD
                                     )
                                     .map((item) => (
                                         <option key={item}>{item}</option>
@@ -292,7 +290,7 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
                                     .filter(
                                         (seg) =>
                                             seg.superSegName?.toUpperCase() ===
-                                            selectedRegion.toUpperCase()
+                      selectedRegion.toUpperCase()
                                     )
                                     .map((seg) => (
                                         <option key={seg.superSegId} value={seg.segId}>
@@ -304,7 +302,7 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
                     </div>
 
                     <button type='submit' className='btn btn-primary mr-2 mb-2'>
-                        Submit
+            Submit
                     </button>
                 </Form>
             )}
@@ -317,146 +315,141 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
                             scope='col'
                             className='col-3 text-center align-middle'
                         >
-                            Contact Email
+              Email
                         </th>
                         <th scope='col' className='col-2 text-center align-middle'>
-                            First
+              First
                         </th>
                         <th scope='col' className='col-2 text-center align-middle'>
-                            Last
+              Last
                         </th>
                         <th scope='col' className='col-2 text-center align-middle '>
-                            Login Email
-                        </th>
-                        <th scope='col' className='col-2 text-center align-middle '>
-                            User Type
+              User Type
                         </th>
                         <th scope='col' className='col-3 text-center align-middle'>
-                            Area of Access
+              Area of Access
                         </th>
                         <th scope='col' className='col-3 text-center align-middle'>
-                            Date Created
+              Date Created
                         </th>
                         <th scope='col' className='col-3 text-center align-middle'>
-                            Status
+              Status
                         </th>
                         <th scope='col' className='col-1 text-center align-middle'>
-                            Controls
+              Controls
                         </th>
                     </tr>
                 </thead>
                 <tbody>
                     {users?.map((req: IUser, index: number) =>
-                        req.userType === 'SUPER_ADMIN' ||
-                            req.userType === 'ADMIN' ||
-                            req.userType === 'MUNICIPAL_SEG_ADMIN' ||
-                            req.userType === 'MOD' ||
-                            req.userType === 'SEG_MOD' ||
-                            req.userType === 'SEG_ADMIN' ? (
-                            <tr key={req.id}>
-                                {req.id !== hideControls ? (
-                                    <>
-                                        <td className='text-left align-middle'>{req.email}</td>
-                                        <td className='text-left align-middle '>{req.fname}</td>
-                                        <td className='text-left align-middle'>{req.lname}</td>
-                                        <td className='text-left align-middle'>
-                                            {req.adminmodEmail}
-                                        </td>
-                                        <td className='text-center align-middle'>{req.userType}</td>
-                                        <td className='text-center align-middle'>
-                                            {req.userType === 'SUPER_ADMIN' ? (
-                                                'Full access'
-                                            ) : (
-                                                <UserSegPlainText
-                                                    email={req.email}
-                                                    id={req.id}
-                                                    token={token}
+            req.userType === 'SUPER_ADMIN' ||
+            req.userType === 'ADMIN' ||
+            req.userType === 'MUNICIPAL_SEG_ADMIN' ||
+            req.userType === 'MOD' ||
+            req.userType === 'SEG_MOD' ||
+            req.userType === 'SEG_ADMIN' ? (
+                                <tr key={req.id}>
+                                    {req.id !== hideControls ? (
+                                        <>
+                                            <td className='text-left align-middle'>{req.email}</td>
+                                            <td className='text-left align-middle '>{req.fname}</td>
+                                            <td className='text-left align-middle'>{req.lname}</td>
+                                            <td className='text-left align-middle'> {req.adminmodEmail}</td>
+                                            <td className='text-center align-middle'>{req.userType}</td>
+                                            <td className='text-center align-middle'>
+                                                {req.userType === 'SUPER_ADMIN' ? (
+                                                    'Full access'
+                                                ) : (
+                                                    <UserSegPlainText
+                                                        email={req.email}
+                                                        id={req.id}
+                                                        token={token}
+                                                    />
+                                                )}
+                                            </td>
+                                            <td className='text-center align-middle'>
+                                                {new Date(req.createdAt).toISOString().split('T')[0]}
+                                            </td>
+                                            <td className='text-left align-middle'>
+                                                {req.status ? 'Active' : 'Inactive'}
+                                            </td>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <td className='text-left align-middle'>
+                                                <Form.Control
+                                                    type='text'
+                                                    defaultValue={req.email}
+                                                    onChange={(e) => (req.email = e.target.value)}
                                                 />
-                                            )}
-                                        </td>
-                                        <td className='text-center align-middle'>
-                                            {new Date(req.createdAt).toISOString().split('T')[0]}
-                                        </td>
-                                        <td className='text-left align-middle'>
-                                            {req.status ? 'Active' : 'Inactive'}
-                                        </td>
-                                    </>
-                                ) : (
-                                    <>
-                                        <td className='text-left align-middle'>
-                                            <Form.Control
-                                                type='text'
-                                                defaultValue={req.email}
-                                                onChange={(e) => (req.email = e.target.value)}
-                                            />
-                                        </td>
-                                        <td className='text-left align-middle'>
-                                            <Form.Control
-                                                type='text'
-                                                defaultValue={req.fname}
-                                                onChange={(e) => (req.fname = e.target.value)}
-                                            />
-                                        </td>
-                                        <td className='text-left align-middle'>
-                                            <Form.Control
-                                                type='text'
-                                                defaultValue={req.lname}
-                                                onChange={(e) => (req.lname = e.target.value)}
-                                            />
-                                        </td>
-                                        <td className='text-left align-middle'>
-                                            <Form.Control
-                                                as='select'
-                                                onChange={(e) => {
-                                                    (req.userType as String) = e.target.value;
-                                                }}
-                                            >
-                                                <option className='text-center align-middle'>
-                                                    {req.userType}
-                                                </option>
-                                                {userTypes
-                                                    .filter((type) => type !== req.userType)
-                                                    .filter((type) => type !== 'DEVELOPER')
-                                                    .filter((type) => type !== 'IN_PROGRESS')
-                                                    .filter((type) => type !== 'ASSOCIATE')
-                                                    .filter((type) => type !== 'RESIDENTIAL')
-                                                    .filter((type) => type !== 'COMMUNITY')
-                                                    .filter((type) => type !== 'BUSINESS')
-                                                    .map((item) => (
-                                                        <option key={item}>{item}</option>
-                                                    ))}
-                                            </Form.Control>
-                                        </td>
-
-                                        <td className='text-center align-middle'>
-                                            {req.userType === 'SUPER_ADMIN' ? (
-                                                'Full access'
-                                            ) : (
-                                                <UserSegPlainText
-                                                    email={req.email}
-                                                    id={req.id}
-                                                    token={token}
+                                            </td>
+                                            <td className='text-left align-middle'>
+                                                <Form.Control
+                                                    type='text'
+                                                    defaultValue={req.fname}
+                                                    onChange={(e) => (req.fname = e.target.value)}
                                                 />
-                                            )}
-                                        </td>
-                                        <td className='text-center align-middle'>
-                                            {new Date(req.createdAt).toISOString().split('T')[0]}
-                                        </td>
-                                        <td className='text-center align-middle'>
-                                            <Form.Check
-                                                type='switch'
-                                                checked={status}
-                                                onChange={(e) => {
-                                                    setStatus(e.target.checked);
-                                                    req.status = e.target.checked;
-                                                }}
-                                                id='status-switch'
-                                            />
-                                        </td>
-                                    </>
-                                )}
+                                            </td>
+                                            <td className='text-left align-middle'>
+                                                <Form.Control
+                                                    type='text'
+                                                    defaultValue={req.lname}
+                                                    onChange={(e) => (req.lname = e.target.value)}
+                                                />
+                                            </td>
+                                            <td className='text-left align-middle'>
+                                                <Form.Control
+                                                    as='select'
+                                                    onChange={(e) => {
+                                                        (req.userType as String) = e.target.value;
+                                                    }}
+                                                >
+                                                    <option className='text-center align-middle'>
+                                                        {req.userType}
+                                                    </option>
+                                                    {userTypes
+                                                        .filter((type) => type !== req.userType)
+                                                        .filter((type) => type !== 'DEVELOPER')
+                                                        .filter((type) => type !== 'IN_PROGRESS')
+                                                        .filter((type) => type !== 'ASSOCIATE')
+                                                        .filter((type) => type !== 'RESIDENTIAL')
+                                                        .filter((type) => type !== 'COMMUNITY')
+                                                        .filter((type) => type !== 'BUSINESS')
+                                                        .map((item) => (
+                                                            <option key={item}>{item}</option>
+                                                        ))}
+                                                </Form.Control>
+                                            </td>
 
-                                <td>
+                                            <td className='text-center align-middle'>
+                                                {req.userType === 'SUPER_ADMIN' ? (
+                                                    'Full access'
+                                                ) : (
+                                                    <UserSegPlainText
+                                                        email={req.email}
+                                                        id={req.id}
+                                                        token={token}
+                                                    />
+                                                )}
+                                            </td>
+                                            <td className='text-center align-middle'>
+                                                {new Date(req.createdAt).toISOString().split('T')[0]}
+                                            </td>
+                                            <td className='text-center align-middle'>
+                                                <Form.Check
+                                                    type='switch'
+                                                    checked={status}
+                                                    onChange={(e) => {
+                                                        setStatus(e.target.checked);
+                                                        req.status = e.target.checked;
+                                                    }}
+                                                    id='status-switch'
+                                                />
+                                            </td>
+                                        </>
+                                    )}
+
+                                    <td>
                                     {req.id !== hideControls ? (
                                         <NavDropdown title='Controls' id='nav-dropdown'>
                                             <Dropdown.Item
@@ -535,8 +528,8 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
                                         </>
                                     )}
                                 </td>
-                            </tr>
-                        ) : null
+                                </tr>
+                            ) : null
                     )}
                 </tbody>
             </Table>

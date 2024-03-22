@@ -175,7 +175,7 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
     const userTypes = Object.keys(USER_TYPES);
     const history = useHistory();
     return (
-        <Container style={{ maxWidth: '100%', marginLeft: 50 }}>
+        <Container style={{ maxWidth: '1600px', margin: 'auto', width: 'fit-content' }}>
             <div className='d-flex justify-content-between'>
                 <h2 className='mb-4 mt-4'>Admin Management</h2>
                 <Button
@@ -196,6 +196,7 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
                                 {userTypes
                                     .filter(
                                         (item) =>
+                                            item === USER_TYPES.SUPER_ADMIN ||
                                             item === USER_TYPES.ADMIN ||
                                             item === USER_TYPES.MUNICIPAL_SEG_ADMIN ||
                                             item === USER_TYPES.SEG_ADMIN ||
@@ -300,7 +301,7 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
                     </div>
 
                     <button type='submit' className='btn btn-primary mr-2 mb-2'>
-            Submit
+                        Submit
                     </button>
                 </Form>
             )}
@@ -313,13 +314,16 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
                             scope='col'
                             className='col-3 text-center align-middle'
                         >
-                            Email
+                            Account
                         </th>
                         <th scope='col' className='col-2 text-center align-middle'>
                             First
                         </th>
                         <th scope='col' className='col-2 text-center align-middle'>
                             Last
+                        </th>
+                        <th scope='col' className='col-2 text-center align-middle'>
+                            Contact Email
                         </th>
                         <th scope='col' className='col-2 text-center align-middle '>
                             User Type

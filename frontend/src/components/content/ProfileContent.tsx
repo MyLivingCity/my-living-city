@@ -57,6 +57,9 @@ interface ProfileContentProps {
     token: string;
 }
 
+const UNKNOWN = 'Unknown';
+const NOT_SELECTED = 'Not Selected';
+
 const LinkTypes = Object.keys(LinkType).filter((item) => {
     return isNaN(Number(item));
 });
@@ -1605,24 +1608,13 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                         title={'Residence Segment'}
                         type={'home'}
                         segmentData={{
-                            displayFName: displayFName
-                                ? displayFName
-                                : fname
-                                    ? fname
-                                    : 'Unknown',
-                            displayLName: displayLName
-                                ? displayLName
-                                : streetAddress
-                                    ? streetAddress
-                                    : 'Unknown',
-                            street: streetAddress ? streetAddress : 'Unknown',
-                            city: userSegments!.homeSegmentName
-                                ? userSegments!.homeSegmentName
-                                : 'Unknown',
-                            postalCode: postalCode ? postalCode : 'Unknown',
-                            neighborhood: userSegments!.homeSubSegmentName
-                                ? userSegments!.homeSubSegmentName
-                                : 'Unknown',
+                            segmentId: userSegments?.homeSegmentId ? userSegments?.homeSegmentId : 0,
+                            displayFName: displayFName? displayFName: UNKNOWN,
+                            displayLName: displayLName? displayLName: UNKNOWN,
+                            street: streetAddress ? streetAddress : UNKNOWN,
+                            city: userSegments?.homeSegmentName ? userSegments?.homeSegmentName: NOT_SELECTED,
+                            postalCode: postalCode ? postalCode : UNKNOWN,
+                            neighborhood: userSegments?.homeSubSegmentName? userSegments?.homeSubSegmentName: NOT_SELECTED,
                         }}
                         geoData={{
                             lat: geoData!.lat ? geoData!.lat : 0,
@@ -1631,45 +1623,20 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                         segments={segments!}
                         updateFunction={updateHomeSegmentDetail}
                     ></SegmentInfo>
-                    {workData && (
+                    {Object.keys(workData).length > 0 && (
                         <SegmentInfo
                             user={user!}
                             token={token!}
                             title={'Business Segment'}
                             type={'work'}
                             segmentData={{
-                                displayFName: workData!.displayFName
-                                    ? workData!.displayFName
-                                    : fname
-                                        ? fname
-                                        : 'Unknown',
-                                displayLName: workData!.displayLName
-                                    ? workData!.displayLName
-                                    : workData!.company
-                                        ? workData!.company
-                                        : streetAddress
-                                            ? streetAddress
-                                            : 'Unknown',
-                                street: workData!.streetAddress
-                                    ? workData!.streetAddress
-                                    : streetAddress
-                                        ? streetAddress
-                                        : 'Unknown',
-                                city: userSegments!.workSegmentName
-                                    ? userSegments!.workSegmentName
-                                    : userSegments!.homeSegmentName
-                                        ? userSegments!.homeSegmentName
-                                        : 'Unknown',
-                                postalCode: workData!.postalCode
-                                    ? workData!.postalCode
-                                    : postalCode
-                                        ? postalCode
-                                        : 'Unknown',
-                                neighborhood: userSegments!.workSubSegmentName
-                                    ? userSegments!.workSubSegmentName
-                                    : userSegments!.homeSubSegmentName
-                                        ? userSegments!.homeSubSegmentName
-                                        : 'Unknown',
+                                segmentId: userSegments?.workSegmentId ? userSegments?.workSegmentId : 0,
+                                displayFName: workData!.displayFName ? workData!.displayFName : UNKNOWN,
+                                displayLName: workData!.displayLName ? workData!.displayLName : UNKNOWN,
+                                street: workData!.streetAddress ? workData!.streetAddress : UNKNOWN,
+                                city: userSegments?.workSegmentName ? userSegments?.workSegmentName : NOT_SELECTED,
+                                postalCode: workData!.postalCode ? workData!.postalCode : UNKNOWN,
+                                neighborhood: userSegments?.workSubSegmentName ? userSegments?.workSubSegmentName : NOT_SELECTED,
                             }}
                             geoData={{
                                 lat: geoData!.work_lat ? geoData!.work_lat : 0,
@@ -1680,45 +1647,20 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                             updateFunction={updateWorkSegmentDetail}
                         ></SegmentInfo>
                     )}
-                    {schoolData && (
+                    {Object.keys(schoolData).length > 0 && (
                         <SegmentInfo
                             user={user!}
                             token={token!}
                             title={'School Segment'}
                             type={'school'}
                             segmentData={{
-                                displayFName: schoolData!.displayFName
-                                    ? schoolData!.displayFName
-                                    : fname
-                                        ? fname
-                                        : 'Unknown',
-                                displayLName: schoolData!.displayLName
-                                    ? schoolData!.displayLName
-                                    : schoolData!.faculty
-                                        ? schoolData!.faculty
-                                        : streetAddress
-                                            ? streetAddress
-                                            : 'Unknown',
-                                street: schoolData!.streetAddress
-                                    ? schoolData!.streetAddress
-                                    : streetAddress
-                                        ? streetAddress
-                                        : 'Unknown',
-                                city: userSegments!.schoolSegmentName
-                                    ? userSegments!.schoolSegmentName
-                                    : userSegments!.homeSegmentName
-                                        ? userSegments!.homeSegmentName
-                                        : 'Unknown',
-                                postalCode: schoolData!.postalCode
-                                    ? schoolData!.postalCode
-                                    : postalCode
-                                        ? postalCode
-                                        : 'Unknown',
-                                neighborhood: userSegments!.schoolSubSegmentName
-                                    ? userSegments!.schoolSubSegmentName
-                                    : userSegments!.homeSubSegmentName
-                                        ? userSegments!.homeSubSegmentName
-                                        : 'Unknown',
+                                segmentId: userSegments?.schoolSegmentId ? userSegments?.schoolSegmentId : 0,
+                                displayFName: schoolData!.displayFName ? schoolData!.displayFName : UNKNOWN,
+                                displayLName: schoolData!.displayLName ? schoolData!.displayLName : UNKNOWN,
+                                street: schoolData!.streetAddress ? schoolData!.streetAddress : UNKNOWN,
+                                city: userSegments?.schoolSegmentName ? userSegments?.schoolSegmentName : NOT_SELECTED,
+                                postalCode: schoolData!.postalCode ? schoolData!.postalCode : UNKNOWN,
+                                neighborhood: userSegments?.schoolSubSegmentName ? userSegments?.schoolSubSegmentName : NOT_SELECTED,
                             }}
                             geoData={{
                                 lat: geoData!.school_lat ? geoData!.school_lat : 0,

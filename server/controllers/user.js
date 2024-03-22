@@ -6,6 +6,7 @@ const { JWT_SECRET, JWT_EXPIRY } = require('../lib/constants');
 const { argon2ConfirmHash, argon2Hash, imagePathsToS3Url } = require('../lib/utilityFunctions');
 const prisma = require('../lib/prismaClient');
 const { authenticate } = require('passport');
+const { checkUserCreationAuthorization } = require('../helpers/userHelpers');
 
 /**
  * @swagger
@@ -134,15 +135,15 @@ userRouter.get(
 
 			await imagePathsToS3Url([parsedUser], "avatar");
 			res.status(200);
-			res.json({...parsedUser});
+			res.json({ ...parsedUser });
 		} catch (error) {
 			res.status(400);
 			res.json({
 				message: error.message,
-        details: {
-        	errorMessage: error.message,
-        	errorStack: error.stack,
-        }
+				details: {
+					errorMessage: error.message,
+					errorStack: error.stack,
+				}
 			})
 		} finally {
 			await prisma.$disconnect();
@@ -154,7 +155,7 @@ userRouter.get(
 	async (req, res, next) => {
 		try {
 			const foundUser = await prisma.user.findUnique({
-				where: { id: req.params.userId},
+				where: { id: req.params.userId },
 				select: {
 					email: true,
 					fname: true,
@@ -174,10 +175,10 @@ userRouter.get(
 			res.status(400);
 			res.json({
 				message: error.message,
-        details: {
-          errorMessage: error.message,
-          errorStack: error.stack,
-        }
+				details: {
+					errorMessage: error.message,
+					errorStack: error.stack,
+				}
 			})
 		} finally {
 			await prisma.$disconnect();
@@ -191,7 +192,7 @@ userRouter.get(
 		try {
 			const { email } = req.params;
 			const foundUser = await prisma.user.findUnique({
-				where: { email:email }
+				where: { email: email }
 			});
 
 			if (!foundUser) {
@@ -208,10 +209,10 @@ userRouter.get(
 			res.status(400);
 			res.json({
 				message: error.message,
-        details: {
-          	errorMessage: error.message,
-          	errorStack: error.stack,
-        }
+				details: {
+					errorMessage: error.message,
+					errorStack: error.stack,
+				}
 			})
 		} finally {
 			await prisma.$disconnect();
@@ -248,16 +249,16 @@ userRouter.get(
 
 			res.status(200);
 			res.json({
-        ...parsedUser
+				...parsedUser
 			})
 		} catch (error) {
 			res.status(400);
 			res.json({
 				message: error.message,
-        details: {
-          errorMessage: error.message,
-          errorStack: error.stack,
-        }
+				details: {
+					errorMessage: error.message,
+					errorStack: error.stack,
+				}
 			})
 		} finally {
 			await prisma.$disconnect();
@@ -269,162 +270,159 @@ userRouter.delete(
 	async (req, res, next) => {
 		try {
 			const { userId } = req.params;
-		  
+
 			// Check if the user exists
 			const foundUser = await prisma.user.findUnique({
-			  where: { id: userId },
+				where: { id: userId },
 			});
-		  
+
 			if (!foundUser) {
-			  return res.status(400).json({
-				message: "User could not be found or does not exist in the database.",
-			  });
+				return res.status(400).json({
+					message: "User could not be found or does not exist in the database.",
+				});
 			}
-		  
+
 			// Delete related records first
 			await prisma.userAddress.deleteMany({
-			  where: { userId: foundUser.id },
+				where: { userId: foundUser.id },
 			});
-		  
+
 			await prisma.userGeo.deleteMany({
-			  where: { userId: foundUser.id },
+				where: { userId: foundUser.id },
 			});
-		  
+
 			await prisma.userSegments.deleteMany({
-			  where: { userId: foundUser.id },
+				where: { userId: foundUser.id },
 			});
-		  
+
 			await prisma.userReach.deleteMany({
-			  where: { userId: foundUser.id },
+				where: { userId: foundUser.id },
 			});
 
 			await prisma.userStripe.deleteMany({
 				where: { userId: foundUser.id },
-			  });
+			});
 
 			await prisma.idea.deleteMany({
 				where: { authorId: foundUser.id },
-			  });
+			});
 
 			await prisma.advertisements.deleteMany({
 				where: { ownerId: foundUser.id },
-			  });
+			});
 
 			await prisma.ideaRating.deleteMany({
 				where: { authorId: foundUser.id },
-			  }); 
+			});
 
 			await prisma.userIdeaFollow.deleteMany({
 				where: { userId: foundUser.id },
-			  });
-		  
+			});
+
 			// Delete the user record
 			await prisma.user.delete({
-			  where: { id: foundUser.id },
+				where: { id: foundUser.id },
 			});
-		  
+
 			res.status(200).json({
-			  message: "User deleted successfully.",
+				message: "User deleted successfully.",
 			});
-		  } catch (error) {
+		} catch (error) {
 			console.log(error);
 			res.status(400).json({
-			  message: error.message,
-			  details: {
-				errorMessage: error.message,
-				errorStack: error.stack,
-			  },
+				message: error.message,
+				details: {
+					errorMessage: error.message,
+					errorStack: error.stack,
+				},
 			});
-		  } finally {
+		} finally {
 			await prisma.$disconnect();
-		  }
+		}
 	}
 );
-/**
- * Signs up a user with fields referenced in the User DB model.
- * At a minimum must have email and password to succeed.
- *
- * @route			POST /user/signup
- * @access		Public (No credentials required)
- * @returns		{{ User, JWT }}
- */
 
-/**
- * @swagger
- * /user/signup:
- *  post:
- *    summary: Creates a user based on User Values
- *    tags: [User]
- *    description: Creates a user with desired properties
- *    requestBody:
- *      required: true
- *      content:
- *        application/json:
- *          schema:
- *            $ref: '#/components/schemas/User'
- *    responses:
- *      201:
- *        description: The user was succesfully created
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                user:
- *                  $ref: '#/components/schemas/User'
- *                token:
- *                  type: string
- * 			401:
- *        description: The user couldn't be created
-*/
-userRouter.post("/signup", async (req, res, next) => {
-  passport.authenticate("signup", async (err, user, info) => {
-    if (err) {
-      res.status(500);
-      res.json({
-        message: err.message,
-        stack: err.stack,
-      });
-      return;
-    }
+userRouter.post("/signup", 
+	async (req, res, next) => 
+	{
+		// console.log(req.user);
+		// console.log(req.body);
+		// Types that don't need admin permissions to create
+		const nonAdminTypes = [
+			'BUSINESS',
+			'RESIDENTIAL',
+			'COMMUNITY',
+		];
+		const adminTypes = [
+			'SUPER_ADMIN',
+			'ADMIN',
+			'MOD',
+			'SEG_ADMIN',
+			'SEG_MOD',
+			'MUNICIPAL_SEG_ADMIN',
+		];
+		// I don't know what these types are but they are defined in the Prisma Schema
+		const otherTypes = [
+			'MUNICIPAL',
+			'WORKER',
+			'ASSOCIATE',
+			'DEVELOPER',
+			'IN_PROGRESS'
+		]
 
-    if (!user) {
-      console.log(info);
-      res.status(401);
-      res.json({
-        message: info.message,
-      });
-      return;
-    }
+		// Anyone can create non-verified users of these user types
+		if (nonAdminTypes.includes(req.body?.userType) && !req.body?.verified) {
+			console.log("Non Admin User Creation")
+			createUser();
+		} else {
+			console.log("Admin User Creation")
+			// Check user has permissions to create a user of this type.
+			// Start by retrieving the user from the JWT
+			passport.authenticate("jwt", { session: false }, async (err, user, info) => {
+				console.log("JWT return values", err, user, info);
+				if (err) {
+					res.status(500).json(err);
+					return;
+				}
+				if (!user) {
+					res.status(401).json({message: info?.message || "User not found"});
+					return;
+				}
+				// TODO: Check if the user has permissions to create a user of this type
+				const canCreateUser = checkUserCreationAuthorization(req.body, user);
+				await createUser();
+				return;
+			})(req, res, next);
+		}
 
-    const adminTypes = [
-			"SUPER_ADMIN",
-      "ADMIN",
-      "MOD",
-      "SEG_ADMIN",
-      "SEG_MOD",
-      "MUNICIPAL_SEG_ADMIN",
-    ];
-    // Give valid token upon signup
-    const tokenBody = {
-      id: user.id,
-      email: adminTypes.includes(user.userType)
-        ? user.adminmodEmail
-        : user.email,
-    };
-    const token = jwt.sign({ user: tokenBody }, JWT_SECRET, {
-      expiresIn: JWT_EXPIRY,
-    });
+		function createUser() {
+			passport.authenticate("signup", async (err, user, info) => {
+				if (err) {
+					console.log("Should be error stopping it", err.message)
+					res.status(500).json({error: err.message});
+					return;
+				}
+				if (!user) {
+					res.status(401).json(info);
+					return;
+				}
 
-    res.status(201).json({
-      user: {
-        ...user,
-        password: null,
-      },
-      token,
-    });
-  })(req, res, next);
-});
+				// Give valid token upon signup
+				const tokenBody = {
+					id: user.id,
+					email: user.email,
+				};
+				const token = jwt.sign({ user: tokenBody }, JWT_SECRET, {
+					expiresIn: JWT_EXPIRY,
+				});
+				res.status(201).json({
+					user: user,
+					token: token,
+				});
+			})(req, res, next);
+		}
+	}
+);
 
 /**
  * @swagger
@@ -459,52 +457,51 @@ userRouter.post("/signup", async (req, res, next) => {
  *        description: The user could not be logged in
 */
 userRouter.post("/login", async (req, res, next) => {
-  passport.authenticate("login", async (err, user, info) => {
-    try {
-      if (err) {
-        res.status(400);
-        return res.json({
-          error: err,
-          message: "An Error occured.",
-        });
-      }
+	passport.authenticate("login", async (err, user, info) => {
+		try {
+			if (err) {
+				res.status(400);
+				return res.json({
+					error: err,
+					message: "An Error occured.",
+				});
+			}
 
-      if (!user) {
-        res.status(400);
-        return res.json({
-          message: info.message,
-        });
-      }
+			if (!user) {
+				res.status(400);
+				return res.json({
+					message: info.message,
+				});
+			}
 
-      req.login(user, { session: false }, async (error) => {
-        if (error) return next(error);
+			req.login(user, { session: false }, async (error) => {
+				if (error) return next(error);
 
-        const tokenBody = { id: user.id, email: user.email };
-        const token = jwt.sign({ user: tokenBody }, JWT_SECRET, {
-          expiresIn: JWT_EXPIRY,
-        });
+				const tokenBody = { id: user.id, email: user.email };
+				const token = jwt.sign({ user: tokenBody }, JWT_SECRET, {
+					expiresIn: JWT_EXPIRY,
+				});
 
-        const parsedUser = {
-          ...user,
-          password: null,
-        };
+				const parsedUser = {
+					...user,
+					password: null,
+				};
 
-        res.status(200);
-        return res.json({
-          user: parsedUser,
-          token,
-        });
-      });
-    } catch (error) {
-      res.status(400).json({
-        message: "An error occured while trying to login a user.",
-        details: {
-          errorMessage: error.message,
-          errorStack: error.stack,
-        },
-      });
-    }
-  })(req, res, next);
+				return res.status(200).json({
+					user: parsedUser,
+					token,
+				});
+			});
+		} catch (error) {
+			res.status(400).json({
+				message: "An error occured while trying to login a user.",
+				details: {
+					errorMessage: error.message,
+					errorStack: error.stack,
+				},
+			});
+		}
+	})(req, res, next);
 });
 
 userRouter.post(
@@ -513,7 +510,7 @@ userRouter.post(
 		try {
 			console.log(req.query);
 			const paramPassCode = req.query.passCode;
-			const { email, password, confirmPassword} = req.body;
+			const { email, password, confirmPassword } = req.body;
 			const foundUser = await prisma.user.findUnique({
 				where: { email }
 			});
@@ -545,12 +542,12 @@ userRouter.post(
 			});
 		} catch (error) {
 			res.status(400).json({
-        message: `An Error occured while trying to change the password for the email.`,
-        details: {
-          errorMessage: error.message,
-          errorStack: error.stack,
-        }
-      });
+				message: `An Error occured while trying to change the password for the email.`,
+				details: {
+					errorMessage: error.message,
+					errorStack: error.stack,
+				}
+			});
 		} finally {
 			await prisma.$disconnect();
 		}
@@ -581,25 +578,34 @@ userRouter.get(
 	passport.authenticate('jwt', { session: false }),
 	async (req, res, next) => {
 		try {
-			const {email,id} = req.user;
+			const { email, id } = req.user;
 
-			const theUser = await prisma.user.findUnique({where:{id:id}});
+			const theUser = await prisma.user.findUnique(
+				{
+					where: { id: id }
+				}
+			);
 
-			if(theUser.userType === 'SUPER_ADMIN' || theUser.userType === 'ADMIN' || theUser.userType === 'MOD' || theUser.userType === 'MUNICIPAL_SEG_ADMIN'){
-				const allUsers = await prisma.user.findMany();
+			if (theUser.userType === 'SUPER_ADMIN' || theUser.userType === 'ADMIN' || theUser.userType === 'MOD' || theUser.userType === 'MUNICIPAL_SEG_ADMIN') {
+				const allUsers = await prisma.user.findMany({
+					include: {
+						userSegments: true,
+					}
+				}
+				);
 
 				res.json(allUsers);
-			}else{
+			} else {
 				res.status(401).json("You are not allowed to pull all users!");
 			}
 		} catch (error) {
 			res.status(400).json({
-        message: "An error occured while trying to fetch all the users.",
-        details: {
-          errorMessage: error.message,
-          errorStack: error.stack,
-        }
-      });
+				message: "An error occured while trying to fetch all the users.",
+				details: {
+					errorMessage: error.message,
+					errorStack: error.stack,
+				}
+			});
 		} finally {
 			await prisma.$disconnect();
 		}
@@ -679,17 +685,69 @@ userRouter.put(
 			});
 		} catch (error) {
 			res.status(400).json({
-        message: `An Error occured while trying to change the password for the email ${req.user.email}.`,
-        details: {
-          errorMessage: error.message,
-          errorStack: error.stack,
-        }
-      });
+				message: `An Error occured while trying to change the password for the email ${req.user.email}.`,
+				details: {
+					errorMessage: error.message,
+					errorStack: error.stack,
+				}
+			});
 		} finally {
 			await prisma.$disconnect();
 		}
 	}
 )
+userRouter.put(
+	'/:userId/password',
+	passport.authenticate('jwt', { session: false }),
+	async (req, res, next) => {
+		try {
+			const { userId } = req.params;
+			const { newPassword } = req.body;
+			const foundUser = await prisma.user.findUnique({
+				where: { id: userId }
+			});
+
+			if (!foundUser) {
+				throw new Error('User not found');
+			}
+			
+			// Check if the user has permissions to change the password of the user 
+			// Rights are same as creating a user
+			const hasPermission = checkUserCreationAuthorization(foundUser, req.user);
+			if (!hasPermission) {
+				return res.status(403).json({
+					message: "You don't have the right to perform this action!",
+				});
+			};
+
+			// Update the user's password without verifying the current password
+			const updatedUser = await prisma.user.update({
+				where: { id: userId },
+				data: {
+					password: await argon2Hash(newPassword)
+				}
+			});
+
+			delete updatedUser.password;
+			delete updatedUser.passCode;
+
+			res.status(200).json({
+				message: "User password successfully updated",
+				user: updatedUser,
+			});
+		} catch (error) {
+			res.status(400).json({
+				message: `An Error occured while trying to change the password for the user with ID ${userId}.`,
+				details: {
+					errorMessage: error.message,
+					errorStack: error.stack,
+				}
+			});
+		} finally {
+			await prisma.$disconnect();
+		}
+	}
+);
 
 
 
@@ -728,7 +786,7 @@ userRouter.put(
 			}
 
 			const updatedUser = await prisma.user.update({
-				where: { id:id },
+				where: { id: id },
 				data: {
 					...updateData,
 					address: {
@@ -760,11 +818,11 @@ userRouter.put(
 userRouter.put(
 	'/admin-update-profile',
 	passport.authenticate('jwt', { session: false }),
-	async(req,res) => {
-		try{
-			const {id , email} = req.user;
+	async (req, res) => {
+		try {
+			const { id, email } = req.user;
 
-			const theUser = await prisma.user.findUnique({where:{id:id}});
+			const theUser = await prisma.user.findUnique({ where: { id: id } });
 
 			const userTypes = [
 				'SUPER_ADMIN',
@@ -803,12 +861,12 @@ userRouter.put(
 					status
 				} = req.body;
 
-				if(!id){
+				if (!id) {
 					return res.status(400).json("User id is missing!");
 				}
-				const targetUser = await prisma.user.findUnique({where:{id:id}});
+				const targetUser = await prisma.user.findUnique({ where: { id: id } });
 
-				if(!targetUser){
+				if (!targetUser) {
 					return res.status(404).json({
 						message: `An Error occured while trying to update the profile for the email ${req.user.email}.`,
 						details: {
@@ -818,7 +876,7 @@ userRouter.put(
 					});
 				}
 
-				if(userType && !userTypes.includes(userType)){
+				if (userType && !userTypes.includes(userType)) {
 					return res.status(400).json({
 						message: `An Error occured while trying to update the profile for the email ${req.user.email}.`,
 						details: {
@@ -829,24 +887,24 @@ userRouter.put(
 				}
 
 				/* const updateAddressData = {
-				 	...streetAddress && { streetAddress },
-				 	...streetAddress2 && { streetAddress2 },
-				 	...city && { city },
-				 	...country && { country },
-				 	...postalCode && { postalCode },
+					  ...streetAddress && { streetAddress },
+					  ...streetAddress2 && { streetAddress2 },
+					  ...city && { city },
+					  ...country && { country },
+					  ...postalCode && { postalCode },
 				} */
 
 				const updatedUser = await prisma.user.update({
-					where: { id : id },
+					where: { id: id },
 					data: {
-						email:email,
-						fname:fname,
-						lname:lname,
-						userType:userType,
-						banned:banned,
-						reviewed:reviewed,
-						verified:verified,
-						status:status
+						email: email,
+						fname: fname,
+						lname: lname,
+						userType: userType,
+						banned: banned,
+						reviewed: reviewed,
+						verified: verified,
+						status: status
 					}
 				});
 
@@ -857,16 +915,16 @@ userRouter.put(
 					user: parsedUser,
 				});
 
-			}else{
+			} else {
 				return res.status(403).json({
-                    message: "You don't have the right to use this endpoint!",
-                    details: {
-                      errorMessage: 'In order to use this endpoint, you must be an admin.',
-                      errorStack: 'user must be an admin if they want to use this endpoint.',
-                    }
-                });
+					message: "You don't have the right to use this endpoint!",
+					details: {
+						errorMessage: 'In order to use this endpoint, you must be an admin.',
+						errorStack: 'user must be an admin if they want to use this endpoint.',
+					}
+				});
 			}
-		}catch(error){
+		} catch (error) {
 			console.log(error);
 			res.status(400).json({
 				message: `An Error occured while trying to update the profile for the email ${req.user.email}.`,
@@ -875,7 +933,7 @@ userRouter.put(
 					errorStack: error.stack,
 				}
 			});
-		}finally{
+		} finally {
 			await prisma.$disconnect();
 		}
 	}
@@ -883,11 +941,11 @@ userRouter.put(
 userRouter.put(
 	'/mod-update-profile',
 	passport.authenticate('jwt', { session: false }),
-	async(req,res) => {
-		try{
-			const {id , email} = req.user;
+	async (req, res) => {
+		try {
+			const { id, email } = req.user;
 
-			const theUser = await prisma.user.findUnique({where:{id:id}});
+			const theUser = await prisma.user.findUnique({ where: { id: id } });
 
 			const userTypes = [
 				'SUPER_ADMIN',
@@ -905,7 +963,7 @@ userRouter.put(
 				'COMMUNITY'
 			];
 
-			if(theUser.userType==='MOD'){
+			if (theUser.userType === 'MOD') {
 				console.log(req.body.banned);
 
 				const {
@@ -925,12 +983,12 @@ userRouter.put(
 					reviewed
 				} = req.body;
 
-				if(!id){
+				if (!id) {
 					return res.status(400).json("User id is missing!");
 				}
-				const targetUser = await prisma.user.findUnique({where:{id:id}});
+				const targetUser = await prisma.user.findUnique({ where: { id: id } });
 
-				if(!targetUser){
+				if (!targetUser) {
 					return res.status(404).json({
 						message: `An Error occured while trying to update the profile for the email ${req.user.email}.`,
 						details: {
@@ -940,7 +998,7 @@ userRouter.put(
 					});
 				}
 
-				if(userType && !userTypes.includes(userType)){
+				if (userType && !userTypes.includes(userType)) {
 					return res.status(400).json({
 						message: `An Error occured while trying to update the profile for the email ${req.user.email}.`,
 						details: {
@@ -951,21 +1009,21 @@ userRouter.put(
 				}
 
 				/* const updateAddressData = {
-				 	...streetAddress && { streetAddress },
-				 	...streetAddress2 && { streetAddress2 },
-				 	...city && { city },
-				 	...country && { country },
-				 	...postalCode && { postalCode },
+					  ...streetAddress && { streetAddress },
+					  ...streetAddress2 && { streetAddress2 },
+					  ...city && { city },
+					  ...country && { country },
+					  ...postalCode && { postalCode },
 				} */
 
 				const updatedUser = await prisma.user.update({
-					where: { id : id },
+					where: { id: id },
 					data: {
-						email:email,
-						fname:fname,
-						lname:lname,
-						userType:userType,
-						banned:banned,
+						email: email,
+						fname: fname,
+						lname: lname,
+						userType: userType,
+						banned: banned,
 						reviewed: reviewed
 					}
 				});
@@ -977,16 +1035,16 @@ userRouter.put(
 					user: parsedUser,
 				});
 
-			}else{
+			} else {
 				return res.status(403).json({
-                    message: "You don't have the right to use this endpoint!",
-                    details: {
-                      errorMessage: 'In order to use this endpoint, you must be an moderator.',
-                      errorStack: 'user must be an moderator if they want to use this endpoint.',
-                    }
-                });
+					message: "You don't have the right to use this endpoint!",
+					details: {
+						errorMessage: 'In order to use this endpoint, you must be an moderator.',
+						errorStack: 'user must be an moderator if they want to use this endpoint.',
+					}
+				});
 			}
-		}catch(error){
+		} catch (error) {
 			console.log(error);
 			res.status(400).json({
 				message: `An Error occured while trying to update the profile for the email ${req.user.email}.`,
@@ -995,7 +1053,7 @@ userRouter.put(
 					errorStack: error.stack,
 				}
 			});
-		}finally{
+		} finally {
 			await prisma.$disconnect();
 		}
 	}
@@ -1008,13 +1066,13 @@ userRouter.patch(
 		try {
 			const { id } = req.user;
 
-			const theUser = await prisma.user.findUnique({where:{id:id}});
+			const theUser = await prisma.user.findUnique({ where: { id: id } });
 
 			if ( !( theUser.userType === 'SUPER_ADMIN' || theUser.userType === 'ADMIN' || theUser.userType === 'MOD')) {
         return res.status(401).json("You are not allowed to unban users!");
       }
 
-			const userIds= req.body.userIds;
+			const userIds = req.body.userIds;
 			console.log(userIds);
 
 			for (let i = 0; i < userIds.length; i++) {
@@ -1052,14 +1110,14 @@ userRouter.patch(
 
 			console.log("user id is ", id);
 
-			const theUser = await prisma.user.findUnique({where:{id:id}});
+			const theUser = await prisma.user.findUnique({ where: { id: id } });
 
-			if(!(theUser.banned)) {
+			if (!(theUser.banned)) {
 				return res.status(200).json("You're not banned");
 			}
 
 			const ban = await prisma.userBan.findMany({
-				where: {userId: id},
+				where: { userId: id },
 				orderBy: { id: "desc" },
 				distinct: ['userId'],
 			});
@@ -1282,12 +1340,14 @@ userRouter.patch(
 					}
 				});
 			}
-			const userDetails = await prisma.userSegments.update({ where: {
-				userId: user.id,
-			},
-			data: {
-			  homeSegHandle: req.body.displayFName + "@" + req.body.displayLName,
-			},})
+			const userDetails = await prisma.userSegments.update({
+				where: {
+					userId: user.id,
+				},
+				data: {
+					homeSegHandle: req.body.displayFName + "@" + req.body.displayLName,
+				},
+			})
 
 			res.status(200).json({
 				message: "Display name successfully updated"
@@ -1355,6 +1415,7 @@ userRouter.patch(
 
 			// get the id of the city from the segment table
 			// ignore case
+			console.log("user", req.params.id)
 			const city = await prisma.segments.findFirst({
 				where: { name: { equals: req.body.city, mode: "insensitive" } },
 			});
@@ -1374,7 +1435,7 @@ userRouter.patch(
 				const res = await prisma.userSegments.update({
 					where: { userId: req.params.id },
 					data: {
-						homeSegmentId: city.id,
+						homeSegmentId: city.segId,
 						homeSubSegmentId: neighbourhood.id,
 						homeSegmentName: req.body.city,
 						homeSubSegmentName: req.body.neighbourhood,

@@ -164,8 +164,7 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
                 token
             );
             console.log('User registered successfully!');
-            // @ts-ignore
-            const adminmodEmail = createdUser.user.user.adminmodEmail;
+            const adminmodEmail = createdUser.user.email || null;
             history.push('/adminmod-email-generate', { adminmodEmail: adminmodEmail });
             form.reset();
         } catch (error) {

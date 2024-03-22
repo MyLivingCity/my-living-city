@@ -596,5 +596,43 @@ commentRouter.get(
   }
 )
 
+commentRouter.get(
+  '/user/:userId',
+  async (req, res, next) => {
+    try {
+      const parsedUserId = req.params.userId;
+      const userComments = await prisma.ideaComment.findMany({
+        where: { authorId: parsedUserId },
+        include: {
+          idea: {
+            select: {
+              id: true,
+              title: true,
+              description: true,
+              segmentId: true,
+              subSegmentId: true
+            }
+          }
+        },
+        orderBy: {
+          updatedAt: 'desc'
+        }
+      });
+      console.log("userComments", userComments);
+      res.status(200).json(userComments);
+    } catch (error) {
+      res.status(400).json({
+        message: `An error occured while trying to fetch all comments by user #${req.params.userId}.`,
+        details: {
+          errorMessage: error.message,
+          errorStack: error.stack,
+        }
+      });
+    } finally {
+      await prisma.$disconnect();
+    }
+  }
+);
+
 
 module.exports = commentRouter;

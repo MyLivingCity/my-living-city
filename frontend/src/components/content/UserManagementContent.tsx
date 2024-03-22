@@ -16,7 +16,7 @@ import { IBanUser } from 'src/lib/types/data/banUser.type';
 import { UserSegPlainText } from '../partials/UserSegPlainText';
 import { IRegisterInput } from './../../lib/types/input/register.input';
 import { ISegment, ISuperSegment } from 'src/lib/types/data/segment.type';
-import { EditUserInfoModal } from '../modal/EditUserInfoModal';
+import { EditUserInfoModal } from '../modal/EditUserInfoModal/';
 import UserChangePasswordModal from '../modal/UserChangePasswordModal';
 
 interface UserManagementContentProps {

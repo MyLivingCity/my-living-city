@@ -23,6 +23,7 @@ import {
     createSubSegment,
     updateSegment,
     updateSubSegment,
+    deleteSegmentBySegmentId,
 } from '../../lib/api/segmentRoutes';
 import { ShowSubSegmentsPage } from 'src/pages/ShowSubSegmentsPage';
 import { UserSegmentRequestCard } from '../partials/UserSegmentRequestCard';
@@ -267,6 +268,7 @@ export const ShowSubSegments: React.FC<ShowSubSegmentsProps> = ({
 
 interface ShowSegmentsProps {
   segments: ISegment[] | undefined;
+  setSegments: React.Dispatch<React.SetStateAction<ISegment[]>>;
   token: string;
   segReq: ISegmentRequest[] | undefined;
 }
@@ -276,6 +278,7 @@ interface ShowSegmentsProps {
 //Only handling Canadian Provinces, will need to be able to add other countries as well in the future.
 export const ShowSegments: React.FC<ShowSegmentsProps> = ({
     segments,
+    setSegments,
     token,
     segReq,
 }) => {
@@ -323,6 +326,20 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
             console.log(error);
         }
     };
+
+    const handleDeleteSegment = async (segId: number) => {
+        const confirmed = window.confirm('Are you sure you want to delete this segment?');
+        if (confirmed) {
+            try {
+                await deleteSegmentBySegmentId(segId, token); 
+                const updatedSegments = segments!.filter(segment => segment.segId !== segId);
+                setSegments(updatedSegments);
+            } catch (error) {
+                console.error('Failed to delete the segment:', error);
+            }
+        }
+    };
+
     const sleep = (ms: number) => {
         return new Promise((resolve) => setTimeout(resolve, ms));
     };
@@ -435,6 +452,12 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
                                                                 }}
                                                             >
                                 Show Sub Segments
+                                                            </Dropdown.Item>
+                                                            <Dropdown.Item
+                                                                onClick={() => handleDeleteSegment(segment.segId)}
+                                                                className='text-danger'
+                                                            >
+                                Delete
                                                             </Dropdown.Item>
                                                         </NavDropdown>
                                                     </td>
@@ -554,14 +577,15 @@ interface SegmentPageContentProps {
 //Enter location to manage only checks for the segments with the province name selected.
 //Passing all the segments to the segmentmanagementContent component, in the future only get the api data that is needed.
 const SegmentManagementContent: React.FC<SegmentPageContentProps> = ({
-    segments,
+    segments: segs,
     token,
     segReq,
 }) => {
+    const [segments, setSegments] = useState<ISegment[]>(segs || []);
     return (
         <Container className='mb-4 mt-4'>
             <h2 className='pb-2 pt-2 display-6'>Segmentation Manager</h2>
-            <ShowSegments segments={segments} token={token} segReq={segReq} />
+            <ShowSegments segments={segments} setSegments={setSegments} token={token} segReq={segReq} />
         </Container>
     );
 };

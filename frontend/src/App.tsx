@@ -34,6 +34,7 @@ import CommunityDashboardPage from './pages/CommunityDashboardPage';
 import ModManagementPage from './pages/ModManagementPage';
 import MunicipalDashboardPage from './pages/MunicipalDashboardPage';
 import CheckEmailPage from './pages/CheckEmailPage';
+import { SegmentPage } from './pages/SegmentPage';
 
 function App() {
     return (
@@ -109,8 +110,20 @@ function App() {
                         component={EditAdsPage}
                     />
                     <AdminRoute
-                        path={ROUTES.SEGMENT_MANAGEMENT}
+                        path={ROUTES.SEGMENT_MANAGEMENT_OVERVIEW}
                         component={SegmentManagementPage}
+                    />
+
+                    <CustomRoute
+                        path={ROUTES.SEGMENT_MANAGEMENT}
+                        component={SegmentPage}
+                        userTypes={[
+                            USER_TYPES.SUPER_ADMIN,
+                            USER_TYPES.ADMIN,
+                            USER_TYPES.SEG_ADMIN,
+                            USER_TYPES.SEG_MOD,
+                            USER_TYPES.MUNICIPAL_SEG_ADMIN,
+                        ]}
                     />
 
                     <CustomRoute

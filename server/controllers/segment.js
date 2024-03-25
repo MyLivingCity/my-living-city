@@ -684,14 +684,16 @@ segmentRouter.get(
         try {
             const home = await prisma.user.findMany({
                 where: {
-                    userSegments: {
-                        is: {
-                            homeSegmentId: parseInt(req.params.segmentId)
-                        }
-                    }
+                    OR: [
+                        { userSegments: { is: { homeSegmentId: parseInt(req.params.segmentId) } } },
+                        { userSegments: { is: { workSegmentId: parseInt(req.params.segmentId) } } },
+                        { userSegments: { is: { schoolSegmentId: parseInt(req.params.segmentId) } } }
+                    ]
                 },
                 include: {
                     userSegments: true,
+                    Work_Details: true,
+                    School_Details: true,
                     address: true
                 }
             })
@@ -741,6 +743,7 @@ segmentRouter.get(
             const result = {
                 "segId": req.params.segmentId,
                 "totalUsers": uniqueUser.length,
+                "users": home,
                 "residents": home,
                 "workers": work,
                 "students": student,

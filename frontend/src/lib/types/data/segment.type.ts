@@ -85,6 +85,7 @@ export interface ISegmentAggregateInfo {
 export interface ISegmentUserInfo {
   segId: string;
   totalUsers: number;
+  users: IUser[];
   segment: ISegment;
   residents: IUser[];
   workers: IUser[];

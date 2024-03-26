@@ -33,6 +33,45 @@ interface UserManagementContentProps {
     subSeg?: ISegment[] | undefined;
 }
 
+export function formatBanHistory(banhistory: any){
+    // iterate through ban history and format it
+    let banHistory = banhistory.map((ban: any) => {
+        if (ban.type === 'USER') {
+            return (
+                <tr>
+                    <td>Ban Type: {ban.userBanType}</td>
+                    <td>Ban Reason: {ban.reason}</td>
+                    <td>Moderator Message: {ban.message}</td>
+                    <td>Moderator ID: {ban.modId}</td>
+                    <td>Banned At: {ban.createdAt}</td>
+                    <td>Banned Until: {ban.userBannedUntil}</td>
+                </tr>
+            );
+        } else if (ban.type === 'COMMENT'){
+            return (
+                <tr>
+                    <td>Ban Reason: {ban.reason}</td>
+                    <td>Moderator Message: {ban.message}</td>
+                    <td>Moderator ID: {ban.modId}</td>
+                    <td>Banned At: {ban.createdAt}</td>
+                </tr>
+            );
+        } else if (ban.type === 'IDEA'){
+            return (
+                <tr>
+                    <td>Ban Reason: {ban.reason}</td>
+                    <td>Moderator Message: {ban.message}</td>
+                    <td>Moderator ID: {ban.modId}</td>
+                    <td>Banned At: {ban.createdAt}</td>
+                </tr>
+            );
+        } else {
+            return<tr><td>Invalid</td></tr>;
+        }
+    });
+    return banHistory;
+}
+
 export const UserManagementContent: React.FC<UserManagementContentProps> = ({users, token, user, flags, commentFlags, ideas, proposals, comments, bans, segs, subSeg}) => {
     const [filteredUsers, setFilteredUsers] = useState<IUser[]>([]);
     const [municipalFilteredUsers, setMunicipalFilteredUsers] = useState<IUser[]>([]);
@@ -79,45 +118,6 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
         const selectedRegionName = event.target.value;
         setSelectedSchoolRegion(selectedRegionName);
     };
-
-    function formatBanHistory(banhistory: any){
-        // iterate through ban history and format it
-        let banHistory = banhistory.map((ban: any) => {
-            if (ban.type === 'USER') {
-                return (
-                    <tr>
-                        <td>Ban Type: {ban.userBanType}</td>
-                        <td>Ban Reason: {ban.reason}</td>
-                        <td>Moderator Message: {ban.message}</td>
-                        <td>Moderator ID: {ban.modId}</td>
-                        <td>Banned At: {ban.createdAt}</td>
-                        <td>Banned Until: {ban.userBannedUntil}</td>
-                    </tr>
-                );
-            } else if (ban.type === 'COMMENT'){
-                return (
-                    <tr>
-                        <td>Ban Reason: {ban.reason}</td>
-                        <td>Moderator Message: {ban.message}</td>
-                        <td>Moderator ID: {ban.modId}</td>
-                        <td>Banned At: {ban.createdAt}</td>
-                    </tr>
-                );
-            } else if (ban.type === 'IDEA'){
-                return (
-                    <tr>
-                        <td>Ban Reason: {ban.reason}</td>
-                        <td>Moderator Message: {ban.message}</td>
-                        <td>Moderator ID: {ban.modId}</td>
-                        <td>Banned At: {ban.createdAt}</td>
-                    </tr>
-                );
-            } else {
-                return<tr><td>Invalid</td></tr>;
-            }
-        });
-        return banHistory;
-    }
 
     let userFalseFlags: number[] = [];
     let userFlags: number[] = [];

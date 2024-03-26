@@ -690,4 +690,87 @@ segmentRouter.get(
     }
 )
 
+segmentRouter.get(
+    '/usersInfo/:segmentId',
+    async (req, res) => {
+        try {
+            const home = await prisma.user.findMany({
+                where: {
+                    OR: [
+                        { userSegments: { is: { homeSegmentId: parseInt(req.params.segmentId) } } },
+                        { userSegments: { is: { workSegmentId: parseInt(req.params.segmentId) } } },
+                        { userSegments: { is: { schoolSegmentId: parseInt(req.params.segmentId) } } }
+                    ]
+                },
+                include: {
+                    userSegments: true,
+                    Work_Details: true,
+                    School_Details: true,
+                    address: true
+                }
+            })
+
+            const work = await prisma.user.findMany({
+                where: {
+                    userSegments: {
+                        is: {
+                            workSegmentId: parseInt(req.params.segmentId)
+                        }
+                    }
+                },
+                include: {
+                    userSegments: true,
+                    Work_Details: true
+                }
+            })
+
+            const student = await prisma.user.findMany({
+                where: {
+                    userSegments: {
+                        is: {
+                            schoolSegmentId: parseInt(req.params.segmentId)
+                        }
+                    }
+                },
+                include: {
+                    userSegments: true,
+                    School_Details: true
+                }
+            })
+
+            const segment = await prisma.segments.findFirst({
+                where: {
+                    segId: parseInt(req.params.segmentId)
+                }
+            })
+
+            const allUsers = [...home, ...work, ...student];
+            const uniqueUser = [];
+            allUsers.forEach(user => {
+                if (!uniqueUser.includes(user.id)) {
+                    uniqueUser.push(user.id);
+                }
+            });
+
+            const result = {
+                "segId": req.params.segmentId,
+                "totalUsers": uniqueUser.length,
+                "users": home,
+                "residents": home,
+                "workers": work,
+                "students": student,
+                "segment": segment
+            }
+
+            res.status(200).json(result);
+
+        } catch (error) {
+            console.log(error);
+            res.status(400).end();
+        } finally {
+            await prisma.$disconnect();
+        }
+    }
+)
+
 module.exports = segmentRouter;

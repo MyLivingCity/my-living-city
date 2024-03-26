@@ -190,7 +190,7 @@ function Header(){
                                 {(user.userType === 'SUPER_ADMIN' || user.userType === 'ADMIN') && (
                                     <NavDropdown title='Admin Tools' id='nav-dropdown'>
                                         <Nav.Link href='/advertisement/all'>Ad Manager</Nav.Link>
-                                        <Nav.Link href='/segment/management'>Segments</Nav.Link>
+                                        <Nav.Link href='/segment/management/all'>Segments</Nav.Link>
                                         <Nav.Link href='/user/management'>User Manager</Nav.Link>
                                         <Nav.Link href='/admin/management'>Admin Manager</Nav.Link>
                                     </NavDropdown>
@@ -205,7 +205,7 @@ function Header(){
                                 )}
                                 {user.userType === 'SEG_ADMIN' && (
                                     <NavDropdown title='Seg-Admin Tools' id='nav-dropdown'>
-                                        <Nav.Link href='/segment/management'>Segments</Nav.Link>
+                                        <Nav.Link href={'/segment/management/' + userSegId}>Segments</Nav.Link>
                                     </NavDropdown>
                                 )}
                                 {user.userType === 'MOD' && (

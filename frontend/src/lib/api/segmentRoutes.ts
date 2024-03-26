@@ -166,6 +166,14 @@ export const getSegmentAgggregateInfo = async (segmentId: number) => {
     return res.data;
 };
 
+export const getSegmentUsersInfo = async (segmentId: number) => {
+    const res = await axios({
+        method: 'get',
+        url: `${API_BASE_URL}/segment/usersInfo/${segmentId}`,
+    });
+    return res.data;
+};
+
 export const getSegmentByName = async (segmentName: string) => {
     const res = await axios({
         method: 'get',

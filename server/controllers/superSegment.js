@@ -110,6 +110,34 @@ superSegmentRouter.get(
 );
 
 superSegmentRouter.get(
+    '/getByCountryProvince',
+    async (req, res) => {
+        try {
+            const { country, province } = req.query;
+            console.log(`Query Parameters: country=${country}, province=${province}`);
+            const superSegments = await prisma.superSegment.findMany({
+                where: {
+                    country: country,
+                    province: province
+                }
+            });
+            res.status(200).json(superSegments);
+        } catch (error) {
+            console.error(error);
+            res.status(400).json({
+                message: "An error occurred while trying to retrieve super segments.",
+                details: {
+                    errorMessage: error.message,
+                    errorStack: error.stack,
+                }
+            });
+        } finally {
+            await prisma.$disconnect();
+        }
+    }
+);
+
+superSegmentRouter.get(
     '/getById/:superSegmentId',
     passport.authenticate('jwt',{session:false}),
     async(req,res) => {

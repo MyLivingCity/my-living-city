@@ -20,6 +20,13 @@ export const getAllSuperSegments = async () => {
     return res.data;
 };
 
+export const getAllSuperSegmentsByCountryProvince = async (country: string, province: string) => {
+    const res = await axios.get(`${API_BASE_URL}/superSegment/getByCountryProvince`, {
+        params: { country, province }
+    });
+    return res.data;
+};
+
 export const getAllSubSegmentsWithId = async (segId: any) => {
     const res = await axios.get<ISubSegment[]>(`${API_BASE_URL}/subSegment/getBySegmentId/${segId}`);
     return res.data;
@@ -181,3 +188,22 @@ export const getSegmentByName = async (segmentName: string) => {
     return res.data;
 };
 
+export const deleteSegmentBySegmentId = async (segId: number, token: string) => {
+    try {
+        const res = await axios({
+            method: 'delete',
+            url: `${API_BASE_URL}/segment/delete/${segId}`,
+            headers: { 'x-auth-token': token, 'Access-Control-Allow-Origin': '*', },
+            withCredentials: true
+        });
+        
+        if (res.status !== 200 && res.status !== 204) {
+            throw new Error('Error deleting the segment');
+        }
+        
+        return res.data;
+    } catch (error) {
+        console.error('Failed to delete the segment:', error);
+        throw error;
+    }
+};

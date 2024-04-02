@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
     Table,
     Form,
@@ -24,6 +24,7 @@ import {
     updateSegment,
     updateSubSegment,
     deleteSegmentBySegmentId,
+    getAllSuperSegmentsByCountryProvince,
 } from '../../lib/api/segmentRoutes';
 import { ShowSubSegmentsPage } from 'src/pages/ShowSubSegmentsPage';
 import { UserSegmentRequestCard } from '../partials/UserSegmentRequestCard';
@@ -288,13 +289,52 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
     const [segName, setSegName] = useState<string | null>(null);
     const [error, setError] = useState<IFetchError | null>(null);
     const [showSub, setShowSub] = useState(false);
+    const [superSegments, setSuperSegments] = useState([]);
+
     const [provName, setProvName] = useState(PROVINCES[0].toLowerCase());
     const [countryName, setCountryName] = useState(COUNTRIES[0].toLowerCase());
     const filteredSegments = segments!.filter(
         (segment) =>
-            segment.province === provName && segment.country === countryName
+            segment.province.toLowerCase() === provName && segment.country.toLowerCase() === countryName.toLowerCase()
     );
-    let createData = {} as ISegment;
+
+    const [createData, setCreateData] = useState<ISegment>({
+        name: '',
+        country: '',
+        province: '',
+        superSegName: '', 
+        segId: 0,
+        superSegId: 0,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+    });
+    
+    const capitalizedCountryName = capitalizeFirstLetterEachWord(countryName.toLowerCase());
+    const capitalizedProvName = capitalizeFirstLetterEachWord(provName.toLowerCase());
+
+    useEffect(() => {
+        const fetchSuperSegments = async () => {
+            try {
+                const superSegmentsData = await getAllSuperSegmentsByCountryProvince(capitalizedCountryName, capitalizedProvName);
+                if (superSegmentsData.length > 0) {
+                    setCreateData(prevData => ({ 
+                        ...prevData,
+                        superSegName: superSegmentsData[0].name.toLowerCase()
+                    }));
+                }
+                setSuperSegments(superSegmentsData);
+            } catch (error) {
+                console.error('Error fetching super segments:', error);
+            }
+        };
+    
+        fetchSuperSegments();
+    }, [countryName, provName]);
+
+    useEffect(() => {
+        console.log('Super Segments state updated:', superSegments);
+    }, [superSegments]);
+    
     const handleSegSubmit = async (updateData?: any) => {
         try {
             if (updateData) {
@@ -309,7 +349,7 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
                     throw error;
                 }
                 const found = segments!.find(
-                    (element) => element.name === createData.name
+                    (element) => element.name.toLowerCase() === createData.name.toLowerCase()
                 );
                 if (found) {
                     setError(Error('A Segment with this name already exists'));
@@ -414,6 +454,8 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
                                         {/* <th>Seg ID</th> */}
                                         <th>Segment Name</th>
                                         <th>Super Seg-Name</th>
+                                        <th>Province</th>
+                                        <th>Country</th>
                                         <th>Controls</th>
                                     </tr>
                                 </thead>
@@ -431,6 +473,20 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
                                                         {segment.superSegName
                                                             ? capitalizeFirstLetterEachWord(
                                                                 segment.superSegName
+                                                            )
+                                                            : ''}
+                                                    </td>
+                                                    <td>
+                                                        {segment.province
+                                                            ? capitalizeFirstLetterEachWord(
+                                                                segment.province
+                                                            )
+                                                            : ''}
+                                                    </td>
+                                                    <td>
+                                                        {segment.country
+                                                            ? capitalizeFirstLetterEachWord(
+                                                                segment.country
                                                             )
                                                             : ''}
                                                     </td>
@@ -475,16 +531,44 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
                                                     </td>
                                                     <td>
                                                         <Form.Control
-                                                            type='text'
-                                                            defaultValue={
-                                                                segment.superSegName
-                                                                    ? capitalizeString(segment.superSegName)
-                                                                    : ''
-                                                            }
+                                                            as='select'
+                                                            defaultValue={segment.superSegName}
                                                             onChange={(e) => {
-                                                                segment.superSegName = e.target.value;
+                                                                segment.superSegName = e.target.value.toLowerCase();
                                                             }}
-                                                        />
+                                                        >
+                                                            {(superSegments as { id: string, name: string }[]).map((superSegment) => (
+                                                                <option key={superSegment.id} value={superSegment.name}>
+                                                                    {capitalizeFirstLetterEachWord(superSegment.name.toLowerCase())}
+                                                                </option>
+                                                            ))}
+                                                        </Form.Control>
+                                                    </td>
+                                                    <td>
+                                                        <Form.Control
+                                                            as='select'
+                                                            defaultValue={segment.province.toLowerCase()}
+                                                            onChange={(e) => {
+                                                                segment.province = e.target.value.toLowerCase();
+                                                            }}
+                                                        >
+                                                            {PROVINCES.map((prov) => (
+                                                                <option key={prov} value={prov.toLowerCase()}>{prov}</option>
+                                                            ))}
+                                                        </Form.Control>
+                                                    </td>
+                                                    <td>           
+                                                        <Form.Control
+                                                            as='select'
+                                                            defaultValue={segment.country.toLowerCase()}
+                                                            onChange={(e) => {
+                                                                segment.country = e.target.value.toLowerCase();
+                                                            }}
+                                                        >
+                                                            {COUNTRIES.map((prov) => (
+                                                                <option key={prov} value={prov.toLowerCase()}>{prov}</option>
+                                                            ))}
+                                                        </Form.Control>
                                                     </td>
                                                     <td>
                                                         <Button
@@ -521,12 +605,21 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
                                             </td>
                                             <td>
                                                 <Form.Control
-                                                    type='text'
-                                                    onChange={(e) =>
-                                                        (createData.superSegName =
-                              e.target.value.toLowerCase())
-                                                    }
-                                                ></Form.Control>
+                                                    as='select'
+                                                    onChange={(e) => {
+                                                        const newSuperSegName = e.target.value.toLowerCase();
+                                                        setCreateData((prevData) => ({
+                                                            ...prevData,
+                                                            superSegName: newSuperSegName
+                                                        }));
+                                                    }}
+                                                >
+                                                    {(superSegments as { id: string, name: string }[]).map((superSegment) => (
+                                                        <option key={superSegment.id} value={superSegment.name}>
+                                                            {capitalizeFirstLetterEachWord(superSegment.name.toLowerCase())}
+                                                        </option>
+                                                    ))}
+                                                </Form.Control>
                                             </td>
                                             <td>
                                                 <Button

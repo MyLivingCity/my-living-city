@@ -18,7 +18,7 @@ export const MLC_COLOUR_THEME = {
     shadeGray: '#F1F2F2',
     redWarning: '#F93943',
 };
-export const COUNTRIES = ['Canada'];
+export const COUNTRIES = ['Canada', 'US'];
 export const PROVINCES = [
     'British Columbia',
     'Alberta',

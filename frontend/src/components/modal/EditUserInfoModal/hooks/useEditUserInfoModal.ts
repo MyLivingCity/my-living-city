@@ -57,6 +57,8 @@ export const useEditUserInfoModal = ({
     segs,
     subSeg,
     changesSaved,
+    editSegmentsOnly = false,
+    editSegmentOnlySegment,
 }: EditUserInfoModalProps) => {
     const [userType, setUserType] = useState(modalUser?.userType as string);
     const [firstName, setFirstName] = useState(modalUser?.fname);
@@ -324,6 +326,8 @@ export const useEditUserInfoModal = ({
         selectedReachSegIds,
         toggleAllReachSegIds,
         handleReachSegChange,
+        editSegmentsOnly,
+        editSegmentOnlySegment,
         comments,
         loadingComments,
         posts,

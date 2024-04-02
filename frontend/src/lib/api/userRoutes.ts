@@ -38,6 +38,11 @@ export const getAllUsers = async (token: string | null) => {
     const res = await axios.get(`${API_BASE_URL}/user/getAll`, getAxiosJwtRequestOption(token!));
     return res.data;
 };
+
+export const getAllRegularUsers = async (token: string | null) => {
+    const res = await axios.get(`${API_BASE_URL}/user/getAllRegularUsers`, getAxiosJwtRequestOption(token!));
+    return res.data;
+};
 export const updateUser = async (userData: IUser, token: string | null, user: IUser | null) => {
 
     let userType = user?.userType;

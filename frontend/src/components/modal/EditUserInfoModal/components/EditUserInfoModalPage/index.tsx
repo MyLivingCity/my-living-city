@@ -27,7 +27,7 @@ export const EditUserInfoModalPage = ({
             <div className='form-row'>
                 <div className='form-group col-md-12'>
                     <label htmlFor='UserTypeData'>User Type</label>
-                    <Form.Control as='select' required name='UserTypeData' value={hook.userType} onChange={(event) => { hook.setUserType(event.target.value); }}>
+                    <Form.Control as='select' required name='UserTypeData' value={hook.userType} onChange={(event) => { hook.setUserType(event.target.value); }} disabled={hook.editSegmentsOnly}>
                         <option value=''>Select User Type</option>
                         {userTypes.filter(
                             item => item === USER_TYPES.RESIDENTIAL ||
@@ -41,18 +41,18 @@ export const EditUserInfoModalPage = ({
             <div className='form-row'>
                 <div className='form-group col-md-6'>
                     <label htmlFor='inputFirst'>{hook.userType !== USER_TYPES.RESIDENTIAL ? 'Contact ' : ''}First Name</label>
-                    <input type='text' className='form-control' id='inputFirst' name='inputFirst' placeholder='John' required value={hook.firstName} onChange={e => hook.setFirstName(e.target.value)} />
+                    <input type='text' className='form-control' id='inputFirst' name='inputFirst' placeholder='John' required value={hook.firstName} onChange={e => hook.setFirstName(e.target.value)} disabled={hook.editSegmentsOnly} />
                 </div>
                 <div className='form-group col-md-6'>
                     <label htmlFor='inputLast'>{hook.userType !== USER_TYPES.RESIDENTIAL ? 'Contact ' : ''}Last Name</label>
-                    <input type='text' className='form-control' id='inputLast' name='inputLast' placeholder='Doe' required value={hook.lastName} onChange={e => hook.setLastName(e.target.value)} />
+                    <input type='text' className='form-control' id='inputLast' name='inputLast' placeholder='Doe' required value={hook.lastName} onChange={e => hook.setLastName(e.target.value)} disabled={hook.editSegmentsOnly} />
                 </div>
             </div>
             {(hook.userType === USER_TYPES.BUSINESS || hook.userType === USER_TYPES.COMMUNITY) && (
                 <div className='form-row'>
                     <div className='form-group col-md-12'>
                         <label htmlFor='inputOrg'>Organization Name</label>
-                        <input type='text' className='form-control' id='inputOrg' name='inputOrg' placeholder='' required value={hook.organizationName} onChange={e => hook.setOrganizationName(e.target.value)} />
+                        <input type='text' className='form-control' id='inputOrg' name='inputOrg' placeholder='' required value={hook.organizationName} onChange={e => hook.setOrganizationName(e.target.value)} disabled={hook.editSegmentsOnly} />
                     </div>
                 </div>
             )}
@@ -68,6 +68,7 @@ export const EditUserInfoModalPage = ({
                         value={modalUser?.email}
                         required
                         readOnly
+                        disabled={hook.editSegmentsOnly}
                     />
                 </div>
             </div>
@@ -77,18 +78,32 @@ export const EditUserInfoModalPage = ({
                     <label htmlFor='InputHomeRegion'>Home Region</label>
                     <Form.Control className='text-capitalize' name='InputHomeRegion' as='select' required value={hook.selectedHomeSuperSegment} onChange={hook.handleHomeSuperSegmentChange}>
                         <option value={DEFAULT_REGION.value}>{DEFAULT_REGION.label}</option>
-                        {hook.superSegOptions?.map(seg => (
-                            <option key={seg.value + 'hr'} value={seg.value} className='text-capitalize'>
-                                {seg.label}
-                            </option>
-                        ))}
+                        {hook.superSegOptions?.filter(seg => {
+                            if (hook.editSegmentsOnly) {
+                                return seg.value === hook.selectedHomeSuperSegment || 
+                                    seg.value === hook.editSegmentOnlySegment?.superSegId.toString();
+                            }
+                            return true;
+                        })
+                            .map(seg => (
+                                <option key={seg.value + 'hr'} value={seg.value} className='text-capitalize'>
+                                    {seg.label}
+                                </option>
+                            ))
+                        }
                     </Form.Control>
                 </div>
                 <div className='form-group col-md-6'>
                     <label htmlFor='inputCom'>Home Municipality</label>
-                    <Form.Control className='text-capitalize' as='select' name='inputCom' value={hook.selectedHomeSegment} onChange={hook.handleHomeSegmentChange}>
+                    <Form.Control className='text-capitalize' as='select' name='inputCom' value={hook.selectedHomeSegment} onChange={hook.handleHomeSegmentChange} disabled={hook.editSegmentsOnly && hook.selectedHomeSuperSegment !== hook.editSegmentOnlySegment?.superSegId.toString()}>
                         <option value={DEFAULT_MUNICIPALITY.value}>{DEFAULT_MUNICIPALITY.label}</option>
-                        {hook.homeSegOptions
+                        {hook.homeSegOptions.filter(seg => {
+                            if (hook.editSegmentsOnly) {
+                                return seg.value === hook.selectedHomeSegment || 
+                                    seg.value === hook.editSegmentOnlySegment?.segId.toString();
+                            }
+                            return true;
+                        })
                             .map(seg => (
                                 <option key={seg.value + 'hc'} value={seg.value} className='text-capitalize'>
                                     {seg.label}
@@ -98,7 +113,7 @@ export const EditUserInfoModalPage = ({
                 </div>
                 <div className='form-group col-md-6'>
                     <label htmlFor='inputCom'>Home Community</label>
-                    <Form.Control className='text-capitalize' as='select' name='inputCom' value={hook.selectedHomeSubSegment} onChange={hook.handleHomeSubSegmentChange}>
+                    <Form.Control className='text-capitalize' as='select' name='inputCom' value={hook.selectedHomeSubSegment} onChange={hook.handleHomeSubSegmentChange} disabled={hook.editSegmentsOnly && hook.selectedHomeSegment !== hook.editSegmentOnlySegment?.segId.toString()}>
                         <option value={DEFAULT_COMMUNITY.label}>{DEFAULT_COMMUNITY.label}</option>
                         {hook.homeSubSegOptions
                             .map(seg => (
@@ -128,6 +143,7 @@ export const EditUserInfoModalPage = ({
                                 id={'SuperSeg-' + hook.selectedHomeSuperSegment}
                                 checked={hook.selectedReachSegIds.length === hook.homeSegOptions.length}
                                 onChange={hook.toggleAllReachSegIds}
+                                disabled={hook.editSegmentsOnly}
                             />
                             <Form.Label htmlFor={'SuperSeg-' + hook.selectedHomeSuperSegment} style={{ paddingLeft: '10px' }}>
                                 {hook.superSegOptions.find(seg => seg.value === hook.selectedHomeSuperSegment)?.label}
@@ -142,6 +158,7 @@ export const EditUserInfoModalPage = ({
                                         value={seg.value}
                                         checked={hook.selectedReachSegIds.includes(seg.value)}
                                         onChange={hook.handleReachSegChange}
+                                        disabled={hook.editSegmentsOnly}
                                     />
                                     <Form.Label htmlFor={'c' + seg.value} className='text-capitalize' style={{ paddingLeft: '10px' }}>{seg.label}</Form.Label>
                                 </div>
@@ -163,9 +180,15 @@ export const EditUserInfoModalPage = ({
                     <div className='form-row'>
                         <div className='form-group col-md-6'>
                             <label htmlFor='inputWorkRegion'>Work Region</label>
-                            <Form.Control className='text-capitalize' name='inputWorkRegion' as='select' value={hook.selectedWorkSuperSegment} onChange={hook.handleWorkSuperSegmentChange}>
+                            <Form.Control className='text-capitalize' name='inputWorkRegion' as='select' value={hook.selectedWorkSuperSegment} onChange={hook.handleWorkSuperSegmentChange} >
                                 <option value={DEFAULT_REGION.value}>{DEFAULT_REGION.label}</option>
-                                {hook.superSegOptions?.map(seg => (
+                                {hook.superSegOptions?.filter(seg => {
+                                    if (hook.editSegmentsOnly) {
+                                        return seg.value === hook.selectedWorkSuperSegment ||
+                                            seg.value === hook.editSegmentOnlySegment?.superSegId.toString();
+                                    }
+                                    return true;
+                                }).map(seg => (
                                     <option key={seg.value + 'hr'} value={seg.value} className='text-capitalize'>
                                         {seg.label}
                                     </option>
@@ -174,9 +197,16 @@ export const EditUserInfoModalPage = ({
                         </div>
                         <div className='form-group col-md-6'>
                             <label htmlFor='inputWorkCommunity'>Work Municipality</label>
-                            <Form.Control className='text-capitalize' as='select' name='inputWorkCommunity' onChange={hook.handleWorkSegmentChange} value={hook.selectedWorkSegment}>
+                            <Form.Control className='text-capitalize' as='select' name='inputWorkCommunity' onChange={hook.handleWorkSegmentChange} value={hook.selectedWorkSegment} disabled={hook.editSegmentsOnly && hook.selectedWorkSuperSegment !== hook.editSegmentOnlySegment?.superSegId.toString()}>
                                 <option value={DEFAULT_MUNICIPALITY.value}>{DEFAULT_MUNICIPALITY.label}</option>
                                 {hook.workSegOptions
+                                    .filter(seg => {
+                                        if (hook.editSegmentsOnly) {
+                                            return seg.value === hook.selectedWorkSegment ||
+                                                seg.value === hook.editSegmentOnlySegment?.segId.toString();
+                                        }
+                                        return true;
+                                    })
                                     .map(seg => (
                                         <option key={seg.value + 'hc'} value={seg.value} className='text-capitalize'>
                                             {seg.label}
@@ -186,7 +216,7 @@ export const EditUserInfoModalPage = ({
                         </div>
                         <div className='form-group col-md-6'>
                             <label htmlFor='inputCom'>Work Community</label>
-                            <Form.Control className='text-capitalize' as='select' name='inputCom' value={hook.selectedWorkSubSegment} onChange={hook.handleWorkSubSegmentChange}>
+                            <Form.Control className='text-capitalize' as='select' name='inputCom' value={hook.selectedWorkSubSegment} onChange={hook.handleWorkSubSegmentChange} disabled={hook.editSegmentsOnly && hook.selectedWorkSegment !== hook.editSegmentOnlySegment?.segId.toString()}>
                                 <option value={DEFAULT_COMMUNITY.label}>{DEFAULT_COMMUNITY.label}</option>
                                 {hook.workSubSegOptions
                                     .map(seg => (
@@ -218,9 +248,16 @@ export const EditUserInfoModalPage = ({
                         </div>
                         <div className='form-group col-md-6'>
                             <label htmlFor='inputSchoolCommunity'>School Municipality</label>
-                            <Form.Control className='text-capitalize' as='select' name='inputSchoolCommunity' onChange={hook.handleSchoolSegmentChange} value={hook.selectedSchoolSegment}>
+                            <Form.Control className='text-capitalize' as='select' name='inputSchoolCommunity' onChange={hook.handleSchoolSegmentChange} value={hook.selectedSchoolSegment} disabled={hook.editSegmentsOnly && hook.selectedSchoolSuperSegment !== hook.editSegmentOnlySegment?.superSegId.toString()}>
                                 <option value={DEFAULT_MUNICIPALITY.value}>{DEFAULT_MUNICIPALITY.label}</option>
                                 {hook.schoolSegOptions
+                                    .filter(seg => {
+                                        if (hook.editSegmentsOnly) {
+                                            return seg.value === hook.selectedSchoolSegment ||
+                                                seg.value === hook.editSegmentOnlySegment?.segId.toString();
+                                        }
+                                        return true;
+                                    })
                                     .map(seg => (
                                         <option key={seg.value + 'hc'} value={seg.value} className='text-capitalize'>
                                             {seg.label}
@@ -230,7 +267,7 @@ export const EditUserInfoModalPage = ({
                         </div>
                         <div className='form-group col-md-6'>
                             <label htmlFor='inputCom'>School Community</label>
-                            <Form.Control className='text-capitalize' as='select' name='inputCom' value={hook.selectedSchoolSubSegment} onChange={hook.handleSchoolSubSegmentChange}>
+                            <Form.Control className='text-capitalize' as='select' name='inputCom' value={hook.selectedSchoolSubSegment} onChange={hook.handleSchoolSubSegmentChange} disabled={hook.editSegmentsOnly && hook.selectedSchoolSegment !== hook.editSegmentOnlySegment?.segId.toString()}>
                                 <option value={DEFAULT_COMMUNITY.label}>{DEFAULT_COMMUNITY.label}</option>
                                 {hook.schoolSubSegOptions
                                     .map(seg => (

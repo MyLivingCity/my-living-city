@@ -56,7 +56,6 @@ export const createSubSegment = async (segData: any, token:any) =>{
     return res.data;
 };
 export const updateSegment = async (segData: any, token:any) =>{
- 
     const{segId}=segData;
     const parsedPayload = {...segData};
 
@@ -162,6 +161,14 @@ export const getSegmentAgggregateInfo = async (segmentId: number) => {
     const res = await axios({
         method: 'get',
         url: `${API_BASE_URL}/segment/aggregateInfo/${segmentId}`,
+    });
+    return res.data;
+};
+
+export const getSegmentUsersInfo = async (segmentId: number) => {
+    const res = await axios({
+        method: 'get',
+        url: `${API_BASE_URL}/segment/usersInfo/${segmentId}`,
     });
     return res.data;
 };

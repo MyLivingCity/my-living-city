@@ -678,4 +678,71 @@ segmentRouter.get(
     }
 )
 
+segmentRouter.get(
+    '/usersInfo/:segmentId',
+    async (req, res) => {
+        try {
+            const home = await prisma.user.findMany({
+                where: {
+                    OR: [
+                        { userSegments: { is: { homeSegmentId: parseInt(req.params.segmentId) } } },
+                        { userSegments: { is: { workSegmentId: parseInt(req.params.segmentId) } } },
+                        { userSegments: { is: { schoolSegmentId: parseInt(req.params.segmentId) } } }
+                    ],
+                    NOT: [
+                        { userType: UserType.ADMIN },
+                        { userType: UserType.SUPER_ADMIN },
+                        { userType: UserType.MOD }
+                    ]
+                },
+                include: {
+                    userSegments: true,
+                    Work_Details: true,
+                    School_Details: true,
+                    address: true
+                }
+            })
+
+            const work = home.filter((user) => user.userSegments?.workSegmentId === parseInt(req.params.segmentId));
+            const student = home.filter((user) => user.userSegments?.schoolSegmentId === parseInt(req.params.segmentId));
+
+            const segment = await prisma.segments.findFirst({
+                where: {
+                    segId: parseInt(req.params.segmentId)
+                },
+                include: {
+                    superSegment: true,
+                    SubSegments: true
+                }
+            })
+
+            const allUsers = [...home, ...work, ...student];
+            const uniqueUser = [];
+            allUsers.forEach(user => {
+                if (!uniqueUser.includes(user.id)) {
+                    uniqueUser.push(user.id);
+                }
+            });
+
+            const result = {
+                "segId": req.params.segmentId,
+                "totalUsers": uniqueUser.length,
+                "users": home,
+                "residents": home,
+                "workers": work,
+                "students": student,
+                "segment": segment
+            }
+
+            res.status(200).json(result);
+
+        } catch (error) {
+            console.log(error);
+            res.status(400).end();
+        } finally {
+            await prisma.$disconnect();
+        }
+    }
+)
+
 module.exports = segmentRouter;

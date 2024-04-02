@@ -612,6 +612,56 @@ userRouter.get(
 	}
 )
 
+userRouter.get(
+	'/getAllRegularUsers',
+	passport.authenticate('jwt', { session: false }),
+	async (req, res, next) => {
+		try {
+			const { email, id } = req.user;
+
+			const theUser = await prisma.user.findUnique(
+				{
+					where: { id: id }
+				}
+			);
+
+			if (theUser.userType === 'SUPER_ADMIN' || theUser.userType === 'ADMIN' || theUser.userType === 'MOD' || theUser.userType === 'MUNICIPAL_SEG_ADMIN') {
+				const allUsers = await prisma.user.findMany({
+					where: {
+						NOT: {
+							OR: [
+								{ userType: 'SUPER_ADMIN' },
+								{ userType: 'ADMIN' },
+								{ userType: 'MOD' },
+								{ userType: 'MUNICIPAL_SEG_ADMIN' },
+								{ userType: 'SEG_ADMIN' },
+							]
+						}
+					},
+					include: {
+						userSegments: true,
+					}
+				}
+				);
+
+				res.json(allUsers);
+			} else {
+				res.status(401).json("You are not allowed to pull all users!");
+			}
+		} catch (error) {
+			res.status(400).json({
+				message: "An error occured while trying to fetch all the users.",
+				details: {
+					errorMessage: error.message,
+					errorStack: error.stack,
+				}
+			});
+		} finally {
+			await prisma.$disconnect();
+		}
+	}
+)
+
 /**
  * @swagger
  * /user/password:

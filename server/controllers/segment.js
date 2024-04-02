@@ -11,6 +11,7 @@ segmentRouter.post(
     passport.authenticate('jwt', { session: false }),
     async (req, res) => {
         try {
+            console.log("create segment", req.body)
             let error = '';
             let errorMessage = '';
             let errorStack = '';
@@ -23,11 +24,11 @@ segmentRouter.post(
             });
             //User must be admin to create segment
             if (theUser.userType == 'SUPER_ADMIN' || theUser.userType == 'ADMIN' || theUser.userType == 'MOD') {
-                const { country, province, name, superSegName } = req.body;
+                const { country, province, name, superSegId } = req.body;
 
                 console.log(req.body);
 
-                let theSuperSegId;
+                const theSuperSeg = await prisma.superSegment.findFirst({ where: { superSegId: superSegId } });
 
                 //if there's no object in the request body
                 if (isEmpty(req.body)) {
@@ -59,20 +60,10 @@ segmentRouter.post(
                     errorStack += 'name must be provided in the body with a valid value. ';
                 }
 
-                if (!superSegName || !isString(superSegName)) {
-                    error += 'A segment must has a super segment name field. ';
-                    errorMessage += 'Creating a segment must explicitly be supplied with a super segment name field. ';
-                    errorStack += 'Super segment name must be provided in the body with a valid value. ';
-                } else {
-                    theSuperSeg = await prisma.superSegment.findFirst({ where: { name: superSegName.toUpperCase() } });
-
-                    if (!theSuperSeg) {
-                        error += 'A segment must has a valid super segment name field. ';
-                        errorMessage += 'Creating a segment must explicitly be supplied with a valid super segment name field. ';
-                        errorStack += 'Super segment name must be provided in the body with a valid value, which can match a super segment in the database. ';
-                    } else {
-                        theSuperSegId = theSuperSeg.superSegId;
-                    }
+                if (!theSuperSeg) {
+                    error += 'A segment must have a Super Segment with a valid ID. ';
+                    errorMessage += 'Creating a segment must explicitly be supplied with a super segment Id field. ';
+                    errorStack += 'Super segment Id must be provided in the body with a valid value. ';
                 }
 
                 //If there's error in error holder
@@ -92,8 +83,8 @@ segmentRouter.post(
                         country: country,
                         province: province,
                         name: name,
-                        superSegId: theSuperSegId,
-                        superSegName: superSegName
+                        superSegId: theSuperSeg.superSegId,
+                        superSegName: theSuperSeg.name
                     }
                 })
 

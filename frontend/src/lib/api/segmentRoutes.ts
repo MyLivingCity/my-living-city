@@ -242,3 +242,23 @@ export const deleteSegmentBySegmentId = async (segId: number, token: string) => 
         throw error;
     }
 };
+
+export const deleteSuperSegmentBySuperSegmentId = async (superSegId: number, token: string) => {
+    try {
+        const res = await axios({
+            method: 'delete',
+            url: `${API_BASE_URL}/superSegment/delete/${superSegId}`,
+            headers: { 'x-auth-token': token, 'Access-Control-Allow-Origin': '*', },
+            withCredentials: true
+        });
+        
+        if (res.status !== 200 && res.status !== 204) {
+            throw new Error('Error deleting the super segment');
+        }
+        
+        return res.data;
+    } catch (error) {
+        console.error('Failed to delete the super segment:', error);
+        throw error;
+    }
+};

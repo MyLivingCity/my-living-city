@@ -28,6 +28,7 @@ import {
     deleteSegmentBySegmentId,
     getAllSuperSegmentsByCountryProvince,
     createSuperSegment,
+    deleteSuperSegmentBySuperSegmentId,
 
 } from '../../lib/api/segmentRoutes';
 import { ShowSubSegmentsPage } from 'src/pages/ShowSubSegmentsPage';
@@ -424,6 +425,7 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
             }
             setShowNewSeg(false);
             setError(null);
+            window.location.reload();
         } catch (error) {
             console.log(error);
         }
@@ -438,6 +440,26 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
                 setSegments(updatedSegments);
             } catch (error) {
                 console.error('Failed to delete the segment:', error);
+            }
+        }
+    };
+
+    const handleDeleteSuperSegment = async (superSegId: number) => {
+        // Check if it has any Segments
+        const hasSegments = segments!.find(segment => segment.superSegId === superSegId);
+        if (hasSegments) {
+            setError({message: 'Cannot delete a Super Segment with associated Segments'});
+            return;
+        }
+        const confirmed = window.confirm('Are you sure you want to delete this super segment?');
+        if (confirmed) {
+            try {
+                // Delete Super Segment
+                await deleteSuperSegmentBySuperSegmentId(superSegId, token);
+                const updatedSuperSegments = superSegments!.filter(segment => segment.superSegId !== superSegId);
+                setSuperSegments(updatedSuperSegments);
+            } catch (error) {
+                console.error('Failed to delete the super segment:', error);
             }
         }
     };
@@ -552,6 +574,12 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
                                                             >
                                                                 Edit
                                                             </Dropdown.Item>
+                                                            <Dropdown.Item
+                                                                onClick={() => handleDeleteSuperSegment(segment.superSegId)}
+                                                                className='text-danger'
+                                                            >
+                                                                Delete
+                                                            </Dropdown.Item>
                                                         </NavDropdown>
                                                     </td>
                                                 </>
@@ -606,7 +634,7 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
                                                             onClick={async () => {
                                                                 setHideControls('');
                                                                 await handleSuperSegSubmit(segment);
-                                                                window.location.reload();
+                                                                
                                                             }}
                                                         >
                                                             Save
@@ -635,7 +663,6 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
                                                     size='sm'
                                                     onClick={async () => {
                                                         await handleSuperSegSubmit();
-                                                        window.location.reload();
                                                     }}
                                                 >
                                                     Add Super Segment
@@ -841,12 +868,15 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
                                                         const newSuperSegName = e.target.value.toLowerCase();
                                                         setCreateData((prevData) => ({
                                                             ...prevData,
-                                                            superSegName: newSuperSegName
+                                                            superSegId: Number.parseInt(e.target.value),
+                                                            superSegName: superSegments.find(
+                                                                (superSeg) => superSeg.superSegId === Number.parseInt(e.target.value)
+                                                            )?.name.toLowerCase(),
                                                         }));
                                                     }}
                                                 >
                                                     {superSegments.map((superSegment) => (
-                                                        <option key={superSegment.superSegId} value={superSegment.name}>
+                                                        <option key={superSegment.superSegId} value={superSegment.superSegId}>
                                                             {capitalizeFirstLetterEachWord(superSegment.name.toLowerCase())}
                                                         </option>
                                                     ))}
@@ -854,12 +884,12 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
                                             </td>
                                             <td>
                                                 <Button
-                                                    type='submit'
+                                                    type='button'
                                                     size='sm'
                                                     onClick={() => {
                                                         handleSegSubmit();
-                                                        sleep(6000);
-                                                        window.location.reload();
+                                                        // sleep(6000);
+                                                        // window.location.reload();
                                                     }}
                                                 >
                                                     Add Segment

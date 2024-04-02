@@ -189,14 +189,15 @@ superSegmentRouter.delete(
             });
 
             if(theUser.userType==='SUPER_ADMIN' || theUser.userType==='ADMIN'){
-                const {deleteId} = req.params;
-
-                if(!isInteger(deleteId)){
+                const { deleteId } = req.params;
+                const segIdNumber = Number.parseInt(deleteId);
+                console.log("deleteId: ", deleteId);
+                if(!isInteger(segIdNumber)){
                     return res.status(400).json("Invalid super segment id! ");
                 }
                 
                 const theSuperSegment = await prisma.superSegment.findUnique({
-                    where:{superSegId:deleteId}
+                    where:{superSegId:segIdNumber}
                 });
 
                 if(!theSuperSegment){
@@ -204,7 +205,7 @@ superSegmentRouter.delete(
                 }
 
                 const result = await prisma.superSegment.delete({
-                    where:{superSegId:deleteId}
+                    where:{superSegId:segIdNumber}
                 });
 
                 res.sendStatus(204);

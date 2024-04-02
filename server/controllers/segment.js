@@ -688,6 +688,11 @@ segmentRouter.get(
                         { userSegments: { is: { homeSegmentId: parseInt(req.params.segmentId) } } },
                         { userSegments: { is: { workSegmentId: parseInt(req.params.segmentId) } } },
                         { userSegments: { is: { schoolSegmentId: parseInt(req.params.segmentId) } } }
+                    ],
+                    NOT: [
+                        { userType: UserType.ADMIN },
+                        { userType: UserType.SUPER_ADMIN },
+                        { userType: UserType.MOD }
                     ]
                 },
                 include: {
@@ -698,37 +703,16 @@ segmentRouter.get(
                 }
             })
 
-            const work = await prisma.user.findMany({
-                where: {
-                    userSegments: {
-                        is: {
-                            workSegmentId: parseInt(req.params.segmentId)
-                        }
-                    }
-                },
-                include: {
-                    userSegments: true,
-                    Work_Details: true
-                }
-            })
-
-            const student = await prisma.user.findMany({
-                where: {
-                    userSegments: {
-                        is: {
-                            schoolSegmentId: parseInt(req.params.segmentId)
-                        }
-                    }
-                },
-                include: {
-                    userSegments: true,
-                    School_Details: true
-                }
-            })
+            const work = home.filter((user) => user.userSegments?.workSegmentId === parseInt(req.params.segmentId));
+            const student = home.filter((user) => user.userSegments?.schoolSegmentId === parseInt(req.params.segmentId));
 
             const segment = await prisma.segments.findFirst({
                 where: {
                     segId: parseInt(req.params.segmentId)
+                },
+                include: {
+                    superSegment: true,
+                    SubSegments: true
                 }
             })
 

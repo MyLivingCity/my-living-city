@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Dropdown, Container, NavDropdown, Card, Row, Col, Pagination, Form } from 'react-bootstrap';
-import { deleteUser } from 'src/lib/api/userRoutes';
+import { Table, Container, Card, Row, Col, Pagination, Form } from 'react-bootstrap';
 import { USER_TYPES } from 'src/lib/constants';
 import { IUser } from 'src/lib/types/data/user.type';
 import { EditUserInfoModal } from '../modal/EditUserInfoModal';
 import { ShowSubSegments } from './SegmentManagementContent';
 import { useAllSegments, useAllSubSegmentsWithId, useAllSuperSegments, useSegmentsUsers, useSingleSegmentBySegmentId } from 'src/hooks/segmentHooks';
 import LoadingSpinnerInline from '../ui/LoadingSpinnerInline';
+import { getAllRegularUsers } from 'src/lib/api/userRoutes';
 
 interface SegmentContentProps {
     token: string;
@@ -15,9 +15,9 @@ interface SegmentContentProps {
 }
 
 const userTypes = Object.keys(USER_TYPES);
-const ITEMS_PER_PAGE = 4;
+const ITEMS_PER_PAGE = 10;
 
-const segmentTypes = ['All', 'Home', 'Work', 'School'];
+const segmentTypes = ['All', 'Home', 'Work', 'School', 'None'];
 
 const makePaginationItems = (totalItems: number, currentPage: number, setActive: (value: React.SetStateAction<number>) => void): JSX.Element[] => {
     let newItems = [];
@@ -106,34 +106,22 @@ const sortByOptions = [
 
 export const SegmentContent: React.FC<SegmentContentProps> = ({token, user, segId}) => {
     const [filteredUsers, setFilteredUsers] = useState<IUser[]>([]);
+    const [allUsers, setAllUsers] = useState<IUser[]>([]);
     const [userTypeFilter, setUserTypeFilter] = useState<string>('All');
     const [segmentTypeFilter, setSegmentTypeFilter] = useState<string>(segmentTypes[0]);
     const [searchFilter, setSearchFilter] = useState<string>('');
     const [subsegmentFilter, setSubsegmentFilter] = useState<string>('All');
     const [sortByValue, setSortByValue] = useState<string>('email');
+    const [inSegmentFilter, setInSegmentFilter] = useState<string>('True');
 
-    const { data: subSegData, isLoading: subSegLoading } = useAllSubSegmentsWithId(String(segId));
+    const { data: subSegData } = useAllSubSegmentsWithId(String(segId));
     const { data: segmentData, isLoading: segmentLoading } = useSingleSegmentBySegmentId(segId);
-    const {data: segmentUserData, isLoading: segmentUserLoading} = useSegmentsUsers(segId);
+    const { data: segmentUserData } = useSegmentsUsers(segId);
+    // const { data: allUserData } = useAllRegularUsers(token);
 
     // For the Edit User Modal
     const { data: modalSegData = [] } = useAllSuperSegments();
     const { data: modalSubSegData = [] } = useAllSegments();
-
-    console.log('segmentUserData', segmentUserData);
-
-    // should be replaced with a function for removing user from segment.
-    const handleDeleteUser = async (userId: string) => {
-        try {
-            await deleteUser(userId, token);
-            console.log('User deleted successfully!');
-            // Remove the deleted user from the filteredUsers state
-            setFilteredUsers(filteredUsers.filter((user) => user.id !== userId));
-        } catch (error) {
-            console.error('Error deleting user:', error);
-            // Handle error state or show error message to the user
-        }
-    };
 
     const handleUpdatedLocalUserData = (updatedUser: IUser) => {
         setFilteredUsers(
@@ -162,7 +150,8 @@ export const SegmentContent: React.FC<SegmentContentProps> = ({token, user, segI
     useEffect(() => {
         if (segmentUserData && segmentUserData?.users.length !== 0) {
             const sortFunction = makeSortFunction(sortByValue);
-            const filteredUsers = segmentUserData.users
+            const dataSet = inSegmentFilter === 'True' ? segmentUserData.users : allUsers || [];
+            const filteredUsers = dataSet
                 .filter((user) => {
                     if (userTypeFilter === 'All') {
                         return true;
@@ -176,6 +165,10 @@ export const SegmentContent: React.FC<SegmentContentProps> = ({token, user, segI
                         return user.userSegments?.homeSegmentId === segId;
                     } else if (segmentTypeFilter === 'Work') {
                         return user.userSegments?.workSegmentId === segId;
+                    } else if (segmentTypeFilter === 'School') {
+                        return user.userSegments?.schoolSegmentId === segId;
+                    } else if (segmentTypeFilter === 'None') {
+                        return user.userSegments?.homeSegmentId !== segId && user.userSegments?.workSegmentId !== segId && user.userSegments?.schoolSegmentId !== segId; 
                     }
                     return user.userSegments?.schoolSegmentId === segId;
                 })
@@ -209,7 +202,15 @@ export const SegmentContent: React.FC<SegmentContentProps> = ({token, user, segI
             setFilteredUsers([]);
             setActive(1);
         }
-    }, [segmentUserData, userTypeFilter, segmentTypeFilter, searchFilter, subsegmentFilter, sortByValue, segId]);
+    }, [segmentUserData, userTypeFilter, segmentTypeFilter, searchFilter, subsegmentFilter, sortByValue, segId, allUsers, inSegmentFilter]);
+
+    useEffect(() => {
+        if (inSegmentFilter === 'False' && allUsers.length === 0) {
+            getAllRegularUsers(token).then((res) => {
+                setAllUsers(res);
+            });
+        }
+    }, [inSegmentFilter, allUsers, token, segId]);
 
     const getCorrectSubsegmentData = (user: IUser) => {
         if (segmentTypeFilter === 'Home') {
@@ -218,33 +219,44 @@ export const SegmentContent: React.FC<SegmentContentProps> = ({token, user, segI
             return user.userSegments?.workSubSegmentName;
         } else if (segmentTypeFilter === 'School') {
             return user.userSegments?.schoolSubSegmentName;
-        } else if (user.userSegments?.homeSegmentId == segId) {
+        } else if (user.userSegments?.homeSegmentId === segId) {
             return user.userSegments?.homeSubSegmentName;
-        } else if (user.userSegments?.workSegmentId == segId) {
+        } else if (user.userSegments?.workSegmentId === segId) {
             return user.userSegments?.workSubSegmentName;
-        } else if (user.userSegments?.schoolSegmentId == segId) {
+        } else if (user.userSegments?.schoolSegmentId === segId) {
             return user.userSegments?.schoolSubSegmentName;
         }
         return 'N/A';
     };
 
-    console.log('filteredUsers', filteredUsers);
+    const getRelationshipsString = (user: IUser) => {
+        let relationships = [];
+        if (user.userSegments?.homeSegmentId === segId) {
+            relationships.push('Home');
+        }
+        if (user.userSegments?.workSegmentId === segId) {
+            relationships.push('Work');
+        }
+        if (user.userSegments?.schoolSegmentId === segId) {
+            relationships.push('School');
+        }
+        return relationships.join(', ');
+    };
 
     return (
         <Container style={{ maxWidth: '1600px', margin: 'auto' }}>
             {showEditUserModal ?
-                <EditUserInfoModal show={showEditUserModal} setShow={setShowEditUserModal} modalUser={modalUser!} currentUser={user!} token={token} segs={modalSegData} subSeg={modalSubSegData} changesSaved={handleUpdatedLocalUserData} />
+                <EditUserInfoModal show={showEditUserModal} setShow={setShowEditUserModal} modalUser={modalUser!} currentUser={user!} token={token} segs={modalSegData} subSeg={modalSubSegData} changesSaved={handleUpdatedLocalUserData} editSegmentsOnly editSegmentOnlySegment={segmentUserData?.segment} />
                 : null
             }
 
             <div className='d-flex justify-content-between'>
                 <h2 className='mb-4 mt-4'>Segment Management</h2>
-                {/* <Button variant='primary' className='mb-4 mt-4' onClick={() => toggleEditSegmentInfoForm()}>Edit</Button> */}
             </div>
 
             <Card>
                 <Card.Header className='text-capitalize'>{segmentData?.name} Segment Info</Card.Header>
-                <Card.Body>
+                <Card.Body className='text-capitalize'>
                     <Container>
                         {segmentLoading ? 
                             <LoadingSpinnerInline />
@@ -297,11 +309,13 @@ export const SegmentContent: React.FC<SegmentContentProps> = ({token, user, segI
                     <Form.Label htmlFor='UserTypeData'>User Type</Form.Label>
                     <Form.Control as='select' required name='UserTypeData' value={userTypeFilter} onChange={(event) => { setUserTypeFilter(event.target.value); }}>
                         <option value='All'>All</option>
-                        {userTypes.map((type) => (
-                            <option key={type} value={type}>
-                                {type}
-                            </option>
-                        ))}
+                        {userTypes
+                            .filter((type) => type !== USER_TYPES.SUPER_ADMIN && type !== USER_TYPES.ADMIN && type !== USER_TYPES.MOD)
+                            .map((type) => (
+                                <option key={type} value={type}>
+                                    {type}
+                                </option>
+                            ))}
                     </Form.Control>
                 </Col>
             </Row>
@@ -318,6 +332,15 @@ export const SegmentContent: React.FC<SegmentContentProps> = ({token, user, segI
                         ))}
                     </Form.Control>
                 </Col>
+                {(user?.userType === USER_TYPES.ADMIN || user?.userType === USER_TYPES.SUPER_ADMIN) && (
+                    <Col>
+                        <Form.Label htmlFor='InSegmentData'>In Segment Only</Form.Label>
+                        <Form.Control as='select' required name='InSegmentData' value={inSegmentFilter} onChange={(event) => { setInSegmentFilter(event.target.value); }}>
+                            <option value='True'>True</option>
+                            <option value='False'>False</option>
+                        </Form.Control>
+                    </Col>
+                )}
                 <Col>
                     <Form.Label htmlFor='SortByData'>Sort By</Form.Label>
                     <Form.Control className='text-capitalize' as='select' required name='SortByData' value={sortByValue} onChange={(event) => { setSortByValue(event.target.value); }}>
@@ -328,7 +351,9 @@ export const SegmentContent: React.FC<SegmentContentProps> = ({token, user, segI
                         ))}
                     </Form.Control>
                 </Col>
-                <Col></Col>
+                {(user?.userType !== USER_TYPES.ADMIN && user?.userType !== USER_TYPES.SUPER_ADMIN) && (
+                    <Col ></Col>
+                )}
             </Row>
             <br />
             <Pagination>
@@ -347,9 +372,8 @@ export const SegmentContent: React.FC<SegmentContentProps> = ({token, user, segI
                         <th scope='col' className='text-center align-middle'>Last</th>
                         <th scope='col' className='text-center align-middle'>User Type</th>
                         <th scope='col' className='text-center align-middle'>Subsegment</th>
-                        <th scope='col' className='text-center align-middle'>Reviewed</th>
+                        <th scope='col' className='text-center align-middle'>Relationship</th>
                         <th scope='col' className='text-center align-middle'>Verified</th>
-                        <th scope='col' className='text-center align-middle'>Controls</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -361,30 +385,17 @@ export const SegmentContent: React.FC<SegmentContentProps> = ({token, user, segI
                                 onClick={() => {
                                     setShowEditUserModal(true);
                                     setModalUser(req);
-                                }}>
+                                }}
+                                className='cursor-pointer'
+                            >
                                 <td className='align-middle' style={{wordBreak: 'break-word'}}>{req.email}</td>
                                 <td className='text-center align-middle'>{req.organizationName ? req.organizationName : 'N/A'}</td>
                                 <td className='text-center align-middle'>{req.fname}</td>
                                 <td className='text-center align-middle'>{req.lname}</td>
                                 <td className='text-center align-middle'>{req.userType}</td>
                                 <td className='text-center align-middle'>{getCorrectSubsegmentData(req)}</td> 
-                                <td className='text-center align-middle'>{req.reviewed ? 'Yes' : 'No'}</td>
+                                <td className='text-center align-middle'>{getRelationshipsString(req)}</td>
                                 <td className='text-center align-middle'>{req.verified ? 'Yes' : 'No'}</td>
-
-                                <td onClick={e => e.stopPropagation()}>
-                                    <NavDropdown title='Controls' id='nav-dropdown'>
-                                        <Dropdown.Item
-                                            onClick={() => {
-                                                const confirmed = window.confirm('Are you sure you want to delete this user?');
-                                                if (confirmed) {
-                                                    handleDeleteUser(req.id);
-                                                }
-                                            }}
-                                            className='text-danger'>
-                                        Delete
-                                        </Dropdown.Item>
-                                    </NavDropdown>
-                                </td>
                             </tr>
                         ))}
                 </tbody>

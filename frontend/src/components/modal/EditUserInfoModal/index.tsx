@@ -17,6 +17,8 @@ export interface EditUserInfoModalProps {
     segs?: ISuperSegment[] | undefined;
     subSeg?: ISegment[] | undefined;
     changesSaved?: (updatedUser: IUser) => void;
+    editSegmentsOnly?: boolean;
+    editSegmentOnlySegment?: ISegment;
 };
 
 export const EditUserInfoModal = (props: EditUserInfoModalProps) => {

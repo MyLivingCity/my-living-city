@@ -56,7 +56,6 @@ export const createSubSegment = async (segData: any, token:any) =>{
     return res.data;
 };
 export const updateSegment = async (segData: any, token:any) =>{
- 
     const{segId}=segData;
     const parsedPayload = {...segData};
 

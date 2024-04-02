@@ -1,6 +1,6 @@
 import { useQuery } from 'react-query';
 import { IFetchError } from '../lib/types/types';
-import { getUserById, getAllUsers, getUserWithEmailAndPass, getUserWithJWT, getUserWithJWTVerbose, LoginData, LoginResponse, UseUserWithJwtInput, getAllBannedUsers } from '../lib/api/userRoutes';
+import { getUserById, getAllUsers, getUserWithEmailAndPass, getUserWithJWT, getUserWithJWTVerbose, LoginData, LoginResponse, UseUserWithJwtInput, getAllBannedUsers, getAllRegularUsers } from '../lib/api/userRoutes';
 import { AxiosError } from 'axios';
 import { IUser } from '../lib/types/data/user.type';
 import { IBanUserInfo } from 'src/lib/types/data/banUser.type';
@@ -11,6 +11,11 @@ export const useUserLoginWithEmailAndPass = (loginData: LoginData) => {
 export const useAllUsers = (token: string | null) => {
     return useQuery<IUser[], IFetchError>(`users`, () => getAllUsers(token));
 };
+
+export const useAllRegularUsers = (token: string | null) => {
+    return useQuery<IUser[], IFetchError>(`regular-users`, () => getAllRegularUsers(token));
+};
+
 export const useUserWithJwt = ({ jwtAuthToken, shouldTrigger}: UseUserWithJwtInput) => {
     return useQuery<IUser, AxiosError>(
         'user',

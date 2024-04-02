@@ -19,6 +19,8 @@ export interface ISubSegment {
   radius: number;
   createdAt: Date;
   updatedAt: Date;
+  superSegment?: ISuperSegment;
+  subSegments?: ISubSegment[];
 }
 export interface ISuperSegment {
   superSegId: number;

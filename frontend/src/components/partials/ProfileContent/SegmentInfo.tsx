@@ -20,6 +20,8 @@ interface SegmentInfoProps {
     segmentData: SegmentData;
     geoData: any;
     segments: ISegment[];
+    edit: boolean;
+    setEdit: (value: boolean) => void;
     deleteFunction?: (user: string | undefined) => void;
     updateFunction?: (user: string | undefined, data: any) => Promise<void>;
 }
@@ -53,7 +55,6 @@ const NeighborhoodDropdown: React.FC<NeighborhoodDropdownProps> = ({ subSegments
                 name='neighbourhood'
                 value={formNeighborhood}
                 onChange={(e) => {
-                    // console.log(e);
                     setFormNeighborhood(e.target.value);
                 }}
             >
@@ -74,23 +75,21 @@ const NeighborhoodDropdown: React.FC<NeighborhoodDropdownProps> = ({ subSegments
 };
 
 
-export const SegmentInfo: React.FC<SegmentInfoProps> = ({ user, token, title, type, segmentData, geoData, segments, deleteFunction, updateFunction }) => {
-
-    const [edit, setEdit] = useState(false);
+export const SegmentInfo: React.FC<SegmentInfoProps> = ({ user, token, title, type, segmentData, geoData, segments, edit, setEdit, deleteFunction, updateFunction }) => {
 
     function handleEdit() {
         // TODO: Add confirmation modal (optional) and then edit
-        
         setEdit(!edit);
     }
 
-    function handleDelete() {
+    const handleDelete = async () => {
         if (deleteFunction) {
             // TODO: Add confirmation modal (optional) and then delete 
             deleteFunction(user.id);
             setEdit(!edit);
         }
-    }
+        window.location.reload();
+    };
 
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
@@ -124,6 +123,13 @@ export const SegmentInfo: React.FC<SegmentInfoProps> = ({ user, token, title, ty
     const [formCity, setFormCity] = useState<string>(segmentData.city);
     const [formNeighborhood, setFormNeighborhood] = useState<string>(segmentData.neighborhood);
 
+    // City input validation message
+    const [firstNameMessage, setFirstNameMessage] = useState('');
+    const [lastNameMessage, setLastNameMessage] = useState('');
+    const [streetMessage, setStreetMessage] = useState('');
+    const [cityMessage, setCityMessage] = useState('');
+    const [postalCodeMessage, setPostalCodeMessage] = useState('');
+
     // Update neighborhood dropdown (sugsegment) when (municipality) segment changes
     function handleSegmentChange (e: any) {
         const selectedSegId = e.target.value;
@@ -136,7 +142,6 @@ export const SegmentInfo: React.FC<SegmentInfoProps> = ({ user, token, title, ty
             setSubSegments(res);
         });
     }
-
 
     function handleCommunityChange (segName : FormDataEntryValue, subSegName : FormDataEntryValue) {
         // Get segment and subsegment using the ids
@@ -185,6 +190,17 @@ export const SegmentInfo: React.FC<SegmentInfoProps> = ({ user, token, title, ty
                                     // Get form data
                                     const formData = new FormData(e.target as HTMLFormElement);
                                     const data = Object.fromEntries(formData.entries());
+
+                                    // Custom validation for each field
+                                    setFirstNameMessage(data.displayFName ? '' : 'Please provide a first name.');
+                                    setLastNameMessage(data.displayLName ? '' : 'Please provide a last name.');
+                                    setStreetMessage(data.streetAddress ? '' : 'Please provide a street.');
+                                    setCityMessage(data.city && data.city !== 'Not Selected' ? '' : 'Please select a municipality.');
+                                    setPostalCodeMessage(data.postalCode ? '' : 'Please provide a postal code / zip.');
+
+                                    if (!data.displayFName || !data.displayLName || !data.streetAddress || !data.city || data.city === 'Not Selected' || !data.postalCode) {
+                                        return;
+                                    }
                                     updateFunction && await updateFunction(user.id, data);
                                     // Reimplement this later
                                     // const newData = {
@@ -195,20 +211,23 @@ export const SegmentInfo: React.FC<SegmentInfoProps> = ({ user, token, title, ty
                                     //     postalCode: data.postalCode.toString(),
                                     //     neighborhood: (data.neighborhood ? data.neighborhood.toString() : segmentData.neighborhood)
                                     // };
+                                    // setEdit(false);
                                     window.location.reload();
-
                                 }}
                             >
                                 <Col>
                                     <Form.Group controlId='displayName'>
                                         <Form.Label><strong>Display Name</strong></Form.Label>
-                                        <Form.Control name='displayFName' type='text' placeholder='First Name' defaultValue={capitalizeString(displayFName)}></Form.Control>
+                                        <Form.Control name='displayFName' type='text' placeholder='First Name' defaultValue={capitalizeString(displayFName)} isInvalid={!!firstNameMessage}></Form.Control>
+                                        <Form.Control.Feedback type='invalid'>{firstNameMessage}</Form.Control.Feedback>
                                         <Form.Text>@</Form.Text>
-                                        <Form.Control name='displayLName' type='text' placeholder='Last Name' defaultValue={capitalizeString(displayLName)}></Form.Control>
+                                        <Form.Control name='displayLName' type='text' placeholder='Last Name' defaultValue={capitalizeString(displayLName)} isInvalid={!!lastNameMessage}></Form.Control>
+                                        <Form.Control.Feedback type='invalid'>{lastNameMessage}</Form.Control.Feedback>
                                     </Form.Group>
                                     <Form.Group controlId='street'>
                                         <Form.Label><strong>Street</strong></Form.Label>
-                                        <Form.Control name='streetAddress' type='text' placeholder='Street' defaultValue={capitalizeString(street)}></Form.Control>
+                                        <Form.Control name='streetAddress' type='text' placeholder='Street' defaultValue={capitalizeString(street)} isInvalid={!!streetMessage}></Form.Control>
+                                        <Form.Control.Feedback type='invalid'>{streetMessage}</Form.Control.Feedback>
                                     </Form.Group>
                                     <Form.Group controlId='city'>
                                         <Form.Label><strong>Municipality</strong>
@@ -219,11 +238,13 @@ export const SegmentInfo: React.FC<SegmentInfoProps> = ({ user, token, title, ty
                                                 onClick={handleShow}
                                             > Change Municipality </Button>
                                         </Form.Label>
-                                        <Form.Control name='city' type='text' placeholder='Not Selected' value={capitalizeString(formCity)} readOnly plaintext></Form.Control>
+                                        <Form.Control name='city' type='text' placeholder='Not Selected' value={capitalizeString(formCity)} readOnly plaintext isInvalid={!!cityMessage}></Form.Control>
+                                        <Form.Control.Feedback type='invalid'>{cityMessage}</Form.Control.Feedback>
                                     </Form.Group>
                                     <Form.Group controlId='postalCode'>
                                         <Form.Label><strong>Postal Code / Zip</strong></Form.Label>
-                                        <Form.Control name='postalCode' type='text' placeholder='Postal Code / Zip' defaultValue={capitalizeString(postalCode)}></Form.Control>
+                                        <Form.Control name='postalCode' type='text' placeholder='Postal Code / Zip' defaultValue={capitalizeString(postalCode)} isInvalid={!!postalCodeMessage}></Form.Control>
+                                        <Form.Control.Feedback type='invalid'>{postalCodeMessage}</Form.Control.Feedback>
                                     </Form.Group>
                                     <NeighborhoodDropdown
                                         subSegments={subSegments}
@@ -232,8 +253,8 @@ export const SegmentInfo: React.FC<SegmentInfoProps> = ({ user, token, title, ty
                                 </Col>
                                 <Col>
                                     <Button variant='primary' type='submit' style={{marginRight: '1rem'}}>Save</Button>
-                                    <Button variant='danger' className='' style={{marginRight: '1rem'}} onClick={() => {handleEdit(); window.location.reload(); }}>Cancel</Button>
-                                    {type !== 'home' && <Button variant='warning' className='' onClick={handleClearSegmentInfo}>Clear Segment Info</Button>}
+                                    <Button variant='warning' className='' style={{marginRight: '1rem'}} onClick={() => {handleEdit(); window.location.reload(); }}>Cancel</Button>
+                                    {type !== 'home' && <Button variant='danger' onClick={handleDeleteShow}>Delete</Button>}
                                 </Col>
                             </Form>
                         ) : 
@@ -332,13 +353,13 @@ export const SegmentInfo: React.FC<SegmentInfoProps> = ({ user, token, title, ty
                             setFormNeighborhood={setFormNeighborhood} />
                                 
                         <Button variant='secondary' onClick={handleSelectClose}>
-            Cancel
+                            Cancel
                         </Button>
                         <Button 
                             className='float-right'
                             variant='primary'
                             type='submit'>
-            Continue
+                            Continue
                         </Button>
                     </Form>
                 </Modal.Body>
@@ -349,18 +370,18 @@ export const SegmentInfo: React.FC<SegmentInfoProps> = ({ user, token, title, ty
                 </Modal.Header>
                 <Modal.Body>
                     <p>
-            You are about to delete all of your information on your {type} community. <strong>This cannot be undone.</strong>
+                        <strong>You are about to delete all of your information on your {type} community.</strong>
                     </p>
                     <p>
-            Would you like to proceed?
+                        Would you like to proceed?
                     </p>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant='secondary' onClick={handleDeleteClose}>
-            Cancel
+                        Cancel
                     </Button>
                     <Button variant='primary' onClick={handleDelete}>
-            Confirm
+                         Confirm
                     </Button>
                 </Modal.Footer>
             </Modal>

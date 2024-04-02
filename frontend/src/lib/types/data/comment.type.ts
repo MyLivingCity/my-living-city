@@ -39,6 +39,8 @@ export interface IParsedIdea {
   segmentId: number;
   subSegmentId?:number;
   superSegmentId?:number;
+  description?: string;
+  title?: string;
 }
 export interface IParsedSegData {
   id: string;

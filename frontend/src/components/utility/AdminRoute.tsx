@@ -33,7 +33,7 @@ const AdminRoute: React.FC<AdminRouteProps> = ({
         <Route
             {...routeProps}
             render={(props) =>
-                isLoggedIn && user!.userType === 'ADMIN' ? (
+                isLoggedIn && (user!.userType === 'SUPER_ADMIN' || user!.userType === 'ADMIN') ? (
                     <ComponentToRender {...props} />
                 ) : (
                     <Redirect to={ redirectPath || ROUTES.LOGIN } />

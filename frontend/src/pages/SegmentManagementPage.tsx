@@ -8,8 +8,9 @@ import LoadingSpinner from '../components/ui/LoadingSpinner';
 export default function SegmentManagementPage() {
 
     const { data, isLoading } = useAllSegments();
+
     const { token, user } = useContext(UserProfileContext);
-   
+
     const segReq = useAllSegmentRequests(token);
     
     if (isLoading || segReq.isLoading) {
@@ -19,7 +20,7 @@ export default function SegmentManagementPage() {
             </div>
         );
     }
-  
+
     return (
         <div className='wrapper'>
             <SegmentManagementContent segments={ data } token = {token} segReq={segReq.data}/>

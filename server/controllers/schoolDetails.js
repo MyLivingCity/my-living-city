@@ -39,31 +39,45 @@ schoolDetailsRouter.delete(
     '/delete/:id',
     async (req, res) => {    
         try {
-            const schoolDetails = await prisma.school_Details.deleteMany({
-                where: {
-                    userId: req.params.id,
-                },
-            });
-            const userSchoolUpdate = await prisma.userSegments.update({
-                where: {
-                    userId: req.params.id,
-                },
-                data: {
-                    schoolSegmentId: null,
-                    schoolSubSegmentId: null,
-                    schoolSegmentName: '',
-                    schoolSubSegmentName: '',
-                    schoolSuperSegId: null,
-                    schoolSuperSegName: '',
-                    schoolSegHandle: '',
-                },
+            const schoolDetails = await prisma.school_Details.findFirst({
+                where: { userId: req.params.id },
             });
 
-            res.status(200).json(schoolDetails);
+            if (!schoolDetails) {
+                res.status(400).json({ error: 'School details not found' });
+                return;
+            } else {
+                const schoolDetailsRemove = await prisma.school_Details.update({
+                    where: {
+                        id: schoolDetails.id,
+                    },
+                    data: {
+                        displayFName: '',
+                        displayLName: '',
+                        streetAddress: '',
+                        postalCode: '',
+                        faculty: '',
+                    },
+                });
+
+                const userSegmentsSchoolDetails = await prisma.userSegments.update({
+                    where: {
+                        userId: req.params.id,
+                    },
+                    data: {
+                        schoolSegmentId: null,
+                        schoolSubSegmentId: null,
+                        schoolSegmentName: '',
+                        schoolSubSegmentName: '',
+                        schoolSegHandle: '',
+                    },
+                });
+                res.status(200).json({schoolDetailsRemove, userSegmentsSchoolDetails});
+                return;
+            }
         } catch (error) {
-            console.log(error)
             res.status(400).json({ error: error.message });
-        } finally {
+        } finally { 
             await prisma.$disconnect();
         }
     }
@@ -143,14 +157,12 @@ schoolDetailsRouter.patch(
     '/updateCityNeighbourhood/:id',
     async (req, res) => {
         try {
-            if ((req.body.city === '' || req.body.city === 'Not Selected') && req.body.neighbourhood === '') {
+            if (req.body.neighbourhood === '') {
                 const result = await prisma.userSegments.update({
                     where: {
                         userId: req.params.id,
                     },
                     data: {
-                        schoolSegmentId: null,
-                        schoolSegmentName: '',
                         schoolSubSegmentId: null,
                         schoolSubSegmentName: '',
                     },

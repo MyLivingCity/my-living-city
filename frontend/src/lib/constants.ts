@@ -18,7 +18,7 @@ export const MLC_COLOUR_THEME = {
     shadeGray: '#F1F2F2',
     redWarning: '#F93943',
 };
-export const COUNTRIES = ['Canada'];
+export const COUNTRIES = ['Canada', 'US'];
 export const PROVINCES = [
     'British Columbia',
     'Alberta',
@@ -37,6 +37,7 @@ export const PROVINCES = [
 // Token expiry in minutes
 export const TOKEN_EXPIRY = Number(process.env.REACT_APP_TOKEN_EXPIRY || 60);
 export enum USER_TYPES {
+  SUPER_ADMIN = 'SUPER_ADMIN',
   ADMIN = 'ADMIN',
   MOD = 'MOD',
   SEG_ADMIN = 'SEG_ADMIN',
@@ -70,7 +71,8 @@ export const ROUTES = {
     EDIT_ADVERTISEMENT: '/advertisement/edit',
     SEND_EMAIL: '/sendEmail',
     RESET_PASSWORD: '/user/reset-password',
-    SEGMENT_MANAGEMENT: '/segment/management',
+    SEGMENT_MANAGEMENT_OVERVIEW: '/segment/management/all',
+    SEGMENT_MANAGEMENT: '/segment/management/:segId',
     USER_MANAGEMENT: '/user/management',
     ADMIN_MANAGEMENT: '/admin/management',
     SUBMIT_DIRECT_PROPOSAL: '/submit-direct-proposal',

@@ -21,9 +21,11 @@ export interface ResetPassword {
 }
 
 export interface LoginResponse {
-  user: IUser;
+  userObject: IUser;
   token: string;
+  user: IUser;
 }
+
 export const getUserById = async (userId: string | null) => {
     const res = await axios({
         method: 'get',
@@ -34,6 +36,11 @@ export const getUserById = async (userId: string | null) => {
 
 export const getAllUsers = async (token: string | null) => {
     const res = await axios.get(`${API_BASE_URL}/user/getAll`, getAxiosJwtRequestOption(token!));
+    return res.data;
+};
+
+export const getAllRegularUsers = async (token: string | null) => {
+    const res = await axios.get(`${API_BASE_URL}/user/getAllRegularUsers`, getAxiosJwtRequestOption(token!));
     return res.data;
 };
 export const updateUser = async (userData: IUser, token: string | null, user: IUser | null) => {
@@ -134,6 +141,7 @@ export const getUserWithJWTVerbose = async ({ jwtAuthToken }: GetUserWithJWTInpu
     );
     return res.data;
 };
+
 export const postRegisterUser = async (registerData: IRegisterInput, requestData: IUserSegmentRequest[] | null, logUser: boolean | null, avatar: any, token: string | null = null): Promise<LoginResponse> => {  
     const {
         email,

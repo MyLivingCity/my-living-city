@@ -11,6 +11,7 @@ segmentRouter.post(
     passport.authenticate('jwt', { session: false }),
     async (req, res) => {
         try {
+            console.log("create segment", req.body)
             let error = '';
             let errorMessage = '';
             let errorStack = '';
@@ -22,12 +23,12 @@ segmentRouter.post(
                 select: { userType: true }
             });
             //User must be admin to create segment
-            if (theUser.userType == 'ADMIN' || theUser.userType == 'MOD') {
-                const { country, province, name, superSegName } = req.body;
+            if (theUser.userType == 'SUPER_ADMIN' || theUser.userType == 'ADMIN' || theUser.userType == 'MOD') {
+                const { country, province, name, superSegId } = req.body;
 
                 console.log(req.body);
 
-                let theSuperSegId;
+                const theSuperSeg = await prisma.superSegment.findFirst({ where: { superSegId: superSegId } });
 
                 //if there's no object in the request body
                 if (isEmpty(req.body)) {
@@ -59,20 +60,10 @@ segmentRouter.post(
                     errorStack += 'name must be provided in the body with a valid value. ';
                 }
 
-                if (!superSegName || !isString(superSegName)) {
-                    error += 'A segment must has a super segment name field. ';
-                    errorMessage += 'Creating a segment must explicitly be supplied with a super segment name field. ';
-                    errorStack += 'Super segment name must be provided in the body with a valid value. ';
-                } else {
-                    theSuperSeg = await prisma.superSegment.findFirst({ where: { name: superSegName.toUpperCase() } });
-
-                    if (!theSuperSeg) {
-                        error += 'A segment must has a valid super segment name field. ';
-                        errorMessage += 'Creating a segment must explicitly be supplied with a valid super segment name field. ';
-                        errorStack += 'Super segment name must be provided in the body with a valid value, which can match a super segment in the database. ';
-                    } else {
-                        theSuperSegId = theSuperSeg.superSegId;
-                    }
+                if (!theSuperSeg) {
+                    error += 'A segment must have a Super Segment with a valid ID. ';
+                    errorMessage += 'Creating a segment must explicitly be supplied with a super segment Id field. ';
+                    errorStack += 'Super segment Id must be provided in the body with a valid value. ';
                 }
 
                 //If there's error in error holder
@@ -92,8 +83,8 @@ segmentRouter.post(
                         country: country,
                         province: province,
                         name: name,
-                        superSegId: theSuperSegId,
-                        superSegName: superSegName
+                        superSegId: theSuperSeg.superSegId,
+                        superSegName: theSuperSeg.name
                     }
                 })
 
@@ -309,7 +300,7 @@ segmentRouter.delete(
                 select: { userType: true }
             });
             //Only admin can delete segment
-            if (theUser.userType == 'ADMIN') {
+            if (theUser.userType == 'SUPER_ADMIN' || theUser.userType == 'ADMIN') {
                 const { segmentId } = req.params;
                 const parsedSegmentId = parseInt(segmentId);
                 const theSegment = await prisma.segments.findUnique({
@@ -321,6 +312,18 @@ segmentRouter.delete(
                 if (!theSegment) {
                     return res.status(404).json("the segment need to be deleted not found!");
                 } else {
+                    await prisma.userReach.deleteMany({
+                        where: {
+                            segId: parsedSegmentId
+                        }
+                    });
+
+                    await prisma.subSegments.deleteMany({
+                        where: {
+                            segId: parsedSegmentId
+                        }
+                    });
+
                     await prisma.segments.delete({
                         where: {
                             segId: parsedSegmentId
@@ -365,7 +368,7 @@ segmentRouter.post(
                 select: { userType: true }
             });
             //User must be admin to create segment
-            if (theUser.userType == 'ADMIN') {
+            if (theUser.userType == 'SUPER_ADMIN' || theUser.userType == 'ADMIN') {
                 const { segmentId } = req.params;
 
                 const parsedSegmentId = parseInt(segmentId);
@@ -665,6 +668,73 @@ segmentRouter.get(
                 "superSegmentName": superSegment.superSegName,
                 "subSegmentsCount": subSegments.length,
                 "subSegments": subsegmentNames,
+            }
+
+            res.status(200).json(result);
+
+        } catch (error) {
+            console.log(error);
+            res.status(400).end();
+        } finally {
+            await prisma.$disconnect();
+        }
+    }
+)
+
+segmentRouter.get(
+    '/usersInfo/:segmentId',
+    async (req, res) => {
+        try {
+            const home = await prisma.user.findMany({
+                where: {
+                    OR: [
+                        { userSegments: { is: { homeSegmentId: parseInt(req.params.segmentId) } } },
+                        { userSegments: { is: { workSegmentId: parseInt(req.params.segmentId) } } },
+                        { userSegments: { is: { schoolSegmentId: parseInt(req.params.segmentId) } } }
+                    ],
+                    NOT: [
+                        { userType: UserType.ADMIN },
+                        { userType: UserType.SUPER_ADMIN },
+                        { userType: UserType.MOD }
+                    ]
+                },
+                include: {
+                    userSegments: true,
+                    Work_Details: true,
+                    School_Details: true,
+                    address: true
+                }
+            })
+
+            const work = home.filter((user) => user.userSegments?.workSegmentId === parseInt(req.params.segmentId));
+            const student = home.filter((user) => user.userSegments?.schoolSegmentId === parseInt(req.params.segmentId));
+
+            const segment = await prisma.segments.findFirst({
+                where: {
+                    segId: parseInt(req.params.segmentId)
+                },
+                include: {
+                    superSegment: true,
+                    SubSegments: true
+                }
+            })
+
+            const allUsers = [...home, ...work, ...student];
+            const uniqueUser = [];
+            allUsers.forEach(user => {
+                if (!uniqueUser.includes(user.id)) {
+                    uniqueUser.push(user.id);
+                }
+            });
+
+            const result = {
+                "segId": req.params.segmentId,
+                "totalUsers": uniqueUser.length,
+                "users": home,
+                "residents": home,
+                "workers": work,
+                "students": student,
+                "segment": segment
             }
 
             res.status(200).json(result);

@@ -77,7 +77,11 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
         let userName = 'Unknown';
 
         let colour = '';
-        if (userType === 'ADMIN') {
+        if (userType === 'SUPER_ADMIN') {
+            userName = homeSegHandle + ' as Super Admin';
+            colour = 'text-danger';
+        }
+        else if (userType === 'ADMIN') {
             userName = homeSegHandle + ' as Admin';
             colour = 'text-danger';
         } else if (userType === 'MOD') {

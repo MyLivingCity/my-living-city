@@ -55,6 +55,25 @@ export const createSubSegment = async (segData: any, token:any) =>{
     }
     return res.data;
 };
+
+export const updateSuperSegment = async (superSegData: any, token:any) =>{
+    const{superSegId}=superSegData;
+    const parsedPayload = {...superSegData};
+
+    const res = await axios({
+        method: 'post',
+        url: `${API_BASE_URL}/superSegment/update/${superSegId}`,
+        data: parsedPayload,
+        headers: { 'x-auth-token': token, 'Access-Control-Allow-Origin': '*',},
+        withCredentials: true
+    });
+    //if not success, throw error which will stop form reset
+    if(!(res.status===201 || res.status===200)){
+        throw new Error(res.data);    
+    }
+    return res.data;
+};
+
 export const updateSegment = async (segData: any, token:any) =>{
     const{segId}=segData;
     const parsedPayload = {...segData};

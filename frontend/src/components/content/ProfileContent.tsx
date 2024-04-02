@@ -53,11 +53,11 @@ import {
 import { getAllSegments } from 'src/lib/api/segmentRoutes';
 
 interface ProfileContentProps {
-  user: IUser;
-  token: string;
+    user: IUser;
+    token: string;
 }
 
-const UNKNOWN = 'Unknown';
+const UNKNOWN = '';
 const NOT_SELECTED = 'Not Selected';
 
 const LinkTypes = Object.keys(LinkType).filter((item) => {
@@ -68,7 +68,7 @@ const deleteSchoolSegmentDetail = async (user: string | undefined) => {
     if (user === undefined) {
     } else {
         await deleteSchoolSegmentDetails(user);
-        window.location.reload();
+        // window.location.reload();
     }
 };
 
@@ -76,7 +76,6 @@ const deleteWorkSegmentDetail = async (user: string | undefined) => {
     if (user === undefined) {
     } else {
         await deleteWorkSegmentDetails(user);
-        window.location.reload();
     }
 };
 
@@ -107,6 +106,7 @@ const updateHomeSegmentDetail = async (user: string | undefined, data: any) => {
 const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
     const {
         email,
+        adminmodEmail,
         userType,
         organizationName,
         fname,
@@ -116,6 +116,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
         imagePath,
         displayFName,
         displayLName,
+        createdAt
     } = user;
 
     const { streetAddress, streetAddress2, city, postalCode, country } = address!;
@@ -135,6 +136,11 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
     const [segments, setSegments] = useState<any[]>([]);
     const [subSegments, setSubSegments] = useState<any[]>([]);
     const [editPersonalInfo, setEditPersonalInfo] = useState(false);
+    const [showWorkSegment, setShowWorkSegment] = useState(!!userSegments?.workSegmentName);
+    const [showSchoolSegment, setShowSchoolSegment] = useState(!!userSegments?.schoolSegmentName);
+    const [editHomeSegment, setEditHomeSegment] = useState(false);
+    const [editWorkSegment, setEditWorkSegment] = useState(false);
+    const [editSchoolSegment, setEditSchoolSegment] = useState(false);
 
     function handleEditPersonalInfo() {
         setEditPersonalInfo(!editPersonalInfo);
@@ -240,9 +246,9 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                     linkRow[i]
                         .getElementsByTagName('td')[0]
                         .getElementsByTagName('select')[0].value === link.linkType &&
-          linkRow[i]
-              .getElementsByTagName('td')[1]
-              .getElementsByTagName('input')[0].value === link.link
+                    linkRow[i]
+                        .getElementsByTagName('td')[1]
+                        .getElementsByTagName('input')[0].value === link.link
                 ) {
                     linkRow[i].remove();
                 }
@@ -254,10 +260,10 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
         if (userType === USER_TYPES.BUSINESS || userType === USER_TYPES.COMMUNITY) {
             const userId = user.id;
             const statement = (
-        document.getElementById('formVisionStatement') as HTMLInputElement
+                document.getElementById('formVisionStatement') as HTMLInputElement
             ).value;
             const description = (
-        document.getElementById('formServiceDescription') as HTMLInputElement
+                document.getElementById('formServiceDescription') as HTMLInputElement
             ).value;
             const linksLocation = document.getElementById('formLinksBody');
             const linksRows = linksLocation?.getElementsByTagName('tr');
@@ -278,13 +284,13 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                 }
             }
             const address = (
-        document.getElementById('formPublicAddress') as HTMLInputElement
+                document.getElementById('formPublicAddress') as HTMLInputElement
             ).value;
             const contactEmail = (
-        document.getElementById('formContactEmail') as HTMLInputElement
+                document.getElementById('formContactEmail') as HTMLInputElement
             ).value;
             const contactPhone = (
-        document.getElementById('formContactPhone') as HTMLInputElement
+                document.getElementById('formContactPhone') as HTMLInputElement
             ).value;
 
             const profileNew: PublicCommunityBusinessProfile = {
@@ -304,10 +310,10 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
         } else if (userType === USER_TYPES.MUNICIPAL) {
             const userId = user.id;
             const statement = (
-        document.getElementById('formVisionStatement') as HTMLInputElement
+                document.getElementById('formVisionStatement') as HTMLInputElement
             ).value;
             const responsibility = (
-        document.getElementById('formServiceResponsibility') as HTMLInputElement
+                document.getElementById('formServiceResponsibility') as HTMLInputElement
             ).value;
             const linksLocation = document.getElementById('formLinksBody');
             const linksRows = linksLocation?.getElementsByTagName('tr');
@@ -328,13 +334,13 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                 }
             }
             const address = (
-        document.getElementById('formPublicAddress') as HTMLInputElement
+                document.getElementById('formPublicAddress') as HTMLInputElement
             ).value;
             const contactEmail = (
-        document.getElementById('formContactEmail') as HTMLInputElement
+                document.getElementById('formContactEmail') as HTMLInputElement
             ).value;
             const contactPhone = (
-        document.getElementById('formContactPhone') as HTMLInputElement
+                document.getElementById('formContactPhone') as HTMLInputElement
             ).value;
 
             const profileNew: PublicMunicipalProfile = {
@@ -355,16 +361,15 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
     }
 
     const handleStandardProfile = () => {
-  
         const id = user.id;
         const firstName = (
-      document.getElementById('formStandardFirstName') as HTMLInputElement
+            document.getElementById('formStandardFirstName') as HTMLInputElement
         ).value;
         const lastName = (
-      document.getElementById('formStandardLastName') as HTMLInputElement
+            document.getElementById('formStandardLastName') as HTMLInputElement
         ).value;
         const email = (
-      document.getElementById('formStandardEmail') as HTMLInputElement
+            document.getElementById('formStandardEmail') as HTMLInputElement
         ).value;
         const profileNew: PublicStandardProfile = {
             id: id,
@@ -418,7 +423,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                         {stripeStatus !== '' && (
                             <>
                                 <p>
-                  Subscription Status:{' '}
+                                    Subscription Status:{' '}
                                     {stripeStatus === 'active' ? 'Active' : 'Not Active'}
                                 </p>
                                 <StripeCheckoutButton status={stripeStatus} user={user} />
@@ -507,7 +512,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                         dismissible
                                         onClose={() => setShowAlert(false)}
                                     >
-                    Profile Updated
+                                        Profile Updated
                                     </Alert>
                                 ) : null}
                                 <Form.Group className='mb-3' controlId='formVisionStatement'>
@@ -553,7 +558,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                             addNewRow();
                                         }}
                                     >
-                    Add New Link
+                                        Add New Link
                                     </Button>
                                     <Table bordered hover size='sm'>
                                         <thead>
@@ -656,7 +661,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                     </Table>
                                 </Form.Group>
                                 <Button variant='primary' type='submit'>
-                  Update
+                                    Update
                                 </Button>
                             </Form>
                         </Card.Body>
@@ -699,7 +704,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                         {stripeStatus !== '' && (
                             <>
                                 <p>
-                  Subscription Status:{' '}
+                                    Subscription Status:{' '}
                                     {stripeStatus === 'active' ? 'Active' : 'Not Active'}
                                 </p>
                                 <StripeCheckoutButton status={stripeStatus} user={user} />
@@ -720,7 +725,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                 dismissible
                                 onClose={() => setShowAlert(false)}
                             >
-                Profile Updated
+                                Profile Updated
                             </Alert>
                         ) : null}
                         <Row>
@@ -743,7 +748,6 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                     >
                                         {standardProfile ? (
                                             <>
-                       
                                                 <Form.Group className='mb-3' controlId='firstName'>
                                                     <Form.Label>
                                                         <strong>First Name:</strong>
@@ -779,7 +783,6 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                                         defaultValue={email}
                                                     />
                                                 </Form.Group>
-                      
                                             </>
                                         ) : null}
                                         <Button
@@ -788,10 +791,10 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                             style={{ marginRight: '1rem' }}
                                             onClick={handleEditPersonalInfo}
                                         >
-                      Cancel
+                                            Cancel
                                         </Button>
                                         <Button variant='primary' className='btn-sm' type='submit'>
-                      Update
+                                            Update
                                         </Button>
                                     </Form.Group>
                                 </Form>
@@ -813,8 +816,8 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                     <Col style={{ padding: '0' }}>
                                         <ListGroup variant='flush'>
                                             <ListGroupItem>
-                                                {userSegments!.homeSegmentName
-                                                    ? capitalizeString(userSegments!.homeSegmentName)
+                                                {userSegments?.homeSegmentName
+                                                    ? capitalizeString(userSegments?.homeSegmentName)
                                                     : 'Unknown'}
                                             </ListGroupItem>
                                             <ListGroupItem>
@@ -828,9 +831,9 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                             variant='primary'
                                             className='mr-2 mb-2'
                                             onClick={handleEditPersonalInfo}
-                                            style={{ float: 'right',  marginTop: '10px'  }}
+                                            style={{ float: 'right', marginTop: '10px' }}
                                         >
-                      Edit
+                                            Edit
                                         </Button>
                                     </Col>
                                 </>
@@ -865,7 +868,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                         dismissible
                                         onClose={() => setShowAlert(false)}
                                     >
-                    Profile Updated
+                                        Profile Updated
                                     </Alert>
                                 ) : null}
                                 <Form.Group className='mb-3' controlId='formVisionStatement'>
@@ -912,7 +915,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                             addNewRow();
                                         }}
                                     >
-                    Add New Link
+                                        Add New Link
                                     </Button>
                                     <Table bordered hover size='sm'>
                                         <thead>
@@ -1010,7 +1013,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                     </Table>
                                 </Form.Group>
                                 <Button variant='primary' type='submit'>
-                  Update
+                                    Update
                                 </Button>
                             </Form>
                         </Card.Body>
@@ -1058,7 +1061,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                         {stripeStatus !== '' && (
                             <>
                                 <p>
-                  Subscription Status:{' '}
+                                    Subscription Status:{' '}
                                     {stripeStatus === 'active' ? 'Active' : 'Not Active'}
                                 </p>
                                 <StripeCheckoutButton status={stripeStatus} user={user} />
@@ -1081,7 +1084,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                 dismissible
                                 onClose={() => setShowAlert(false)}
                             >
-                Profile Updated
+                                Profile Updated
                             </Alert>
                         ) : null}
                         <Row>
@@ -1147,10 +1150,10 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                             style={{ marginRight: '1rem' }}
                                             onClick={handleEditPersonalInfo}
                                         >
-                      Cancel
+                                            Cancel
                                         </Button>
                                         <Button variant='primary' className='btn-sm' type='submit'>
-                      Update
+                                            Update
                                         </Button>
                                     </Form.Group>
                                 </Form>
@@ -1189,7 +1192,213 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                             onClick={handleEditPersonalInfo}
                                             style={{ float: 'right', marginTop: '5px' }}
                                         >
-                      Edit
+                                            Edit
+                                        </Button>
+                                    </Col>
+                                </>
+                            )}
+                        </Row>
+                        <RequestSegmentModal
+                            showModal={show}
+                            setShowModal={setShow}
+                            index={0}
+                            setSegmentRequests={setSegmentRequests}
+                            segmentRequests={segmentRequests}
+                        />
+                    </Card>
+                </Row>
+            </Container>
+        );
+    } else if (
+        userType === USER_TYPES.SUPER_ADMIN ||
+        userType === USER_TYPES.ADMIN ||
+        userType === USER_TYPES.SEG_ADMIN ||
+        userType === USER_TYPES.MOD ||
+        userType === USER_TYPES.SEG_MOD
+    ) {
+        return (
+            <Container className='user-profile-content w-100'>
+                <Row className='mb-4 mt-4 justify-content-center'>
+                    <h2 className='pb-2 pt-2 display-6'>User Profile</h2>
+                </Row>
+
+                <Row style={{ marginBottom: '2rem' }}>
+                    <Card className='text-center mx-5 mb-5' style={{ width: '18rem' }}>
+                        <Row className='mt-3'>
+                            <Col>
+                                {imagePath ? (
+                                    <Image
+                                        fluid
+                                        src={imagePath}
+                                        style={{
+                                            objectFit: 'cover',
+                                            height: '200px',
+                                            width: '200px',
+                                        }}
+                                        roundedCircle
+                                    />
+                                ) : (
+                                    <Image
+                                        fluid
+                                        src='https://ih1.redbubble.net/image.785212781.7855/st,small,507x507-pad,600x600,f8f8f8.jpg'
+                                        width='70%'
+                                        roundedCircle
+                                    />
+                                )}
+                            </Col>
+                        </Row>
+                        <Card.Title className='mt-3'>
+                            {fname ? capitalizeString(fname) : 'Unknown'}{' '}
+                            {lname ? capitalizeString(lname) : 'Unknown'}
+                        </Card.Title>
+                        <Card.Text className='mb-3'>{email}</Card.Text>
+                        {stripeStatus !== '' && (
+                            <>
+                                <p>
+                                    Subscription Status:{' '}
+                                    {stripeStatus === 'active' ? 'Active' : 'Not Active'}
+                                </p>
+                                <StripeCheckoutButton status={stripeStatus} user={user} />
+                            </>
+                        )}
+                    </Card>
+
+                    <Card
+                        style={{
+                            width: '42rem',
+                            padding: '1.5rem',
+                            paddingBottom: '0',
+                            paddingTop: '0',
+                            justifyContent: 'center',
+                        }}
+                    >
+                        {showAlert ? (
+                            <Alert
+                                variant='primary'
+                                dismissible
+                                onClose={() => setShowAlert(false)}
+                            >
+                                Profile Updated
+                            </Alert>
+                        ) : null}
+                        <Row>
+                            <Col style={{ maxWidth: '4rem' }}></Col>
+                            {editPersonalInfo ? (
+                                <Form
+                                    id='formPublicProfile'
+                                    style={{ minWidth: '20rem' }}
+                                    onSubmit={(e) => {
+                                        e.preventDefault();
+                                        handleStandardProfile();
+                                        setEditPersonalInfo(false);
+                                        // Change
+                                        window.location.reload();
+                                    }}
+                                >
+                                    <Form.Group
+                                        className='mb-3'
+                                        controlId='formProfileInformation'
+                                    >
+                                        {standardProfile ? (
+                                            <>
+                                                <Form.Group className='mb-3' controlId='firstName'>
+                                                    <Form.Label>
+                                                        <strong>First Name:</strong>
+                                                    </Form.Label>
+                                                    <Form.Control
+                                                        type='text'
+                                                        id='formStandardFirstName'
+                                                        placeholder='First Name'
+                                                        defaultValue={fname}
+                                                        maxLength={TEXT_INPUT_LIMIT.NAME}
+                                                    />
+                                                </Form.Group>
+                                                <Form.Group className='mb-3' controlId='lastName'>
+                                                    <Form.Label>
+                                                        <strong>Last Name:</strong>
+                                                    </Form.Label>
+                                                    <Form.Control
+                                                        type='text'
+                                                        id='formStandardLastName'
+                                                        placeholder='Last Name'
+                                                        defaultValue={lname}
+                                                        maxLength={TEXT_INPUT_LIMIT.NAME}
+                                                    />
+                                                </Form.Group>
+                                                <Form.Group className='mb-3' controlId='email'>
+                                                    <Form.Label>
+                                                        <strong>Email:</strong>
+                                                    </Form.Label>
+                                                    <Form.Control
+                                                        type='email'
+                                                        id='formStandardEmail'
+                                                        placeholder='Email Address'
+                                                        defaultValue={email}
+                                                    />
+                                                </Form.Group>
+                                            </>
+                                        ) : null}
+                                        <Button
+                                            variant='danger'
+                                            className='btn-sm'
+                                            style={{ marginRight: '1rem' }}
+                                            onClick={handleEditPersonalInfo}
+                                        >
+                                            Cancel
+                                        </Button>
+                                        <Button variant='primary' className='btn-sm' type='submit'>
+                                            Update
+                                        </Button>
+                                    </Form.Group>
+                                </Form>
+                            ) : (
+                                <>
+                                    <Col style={{ padding: '0', maxWidth: '15rem' }}>
+                                        <ListGroup variant='flush'>
+                                            <ListGroupItem>
+                                                <strong>Full Name: </strong>
+                                            </ListGroupItem>
+                                            <ListGroupItem>
+                                                <strong>Contact Email: </strong>
+                                            </ListGroupItem>
+                                            <ListGroupItem>
+                                                <strong>Login Email: </strong>
+                                            </ListGroupItem>
+                                            <ListGroupItem>
+                                                <strong>User Type: </strong>
+                                            </ListGroupItem>
+                                            <ListGroupItem>
+                                                <strong>Access Level: </strong>
+                                            </ListGroupItem>
+                                        </ListGroup>
+                                    </Col>
+                                    <Col style={{ padding: '0' }}>
+                                        <ListGroup variant='flush'>
+                                            <ListGroupItem>
+                                                {capitalizeString(fname!)} {capitalizeString(lname!)}
+                                            </ListGroupItem>
+                                            <ListGroupItem>{email!}</ListGroupItem>
+                                            <ListGroupItem>{adminmodEmail!}</ListGroupItem>
+                                            <ListGroupItem>{userType!}</ListGroupItem>
+                                            <ListGroupItem>
+                                                {userType === USER_TYPES.SUPER_ADMIN || USER_TYPES.ADMIN ||
+                                                    userType === USER_TYPES.MOD
+                                                    ? 'Full Access'
+                                                    : userType === USER_TYPES.SEG_ADMIN ||
+                                                        userType === USER_TYPES.SEG_MOD
+                                                        ? user.userSegments
+                                                        : 'Unknown'}
+                                            </ListGroupItem>
+                                        </ListGroup>
+                                    </Col>
+                                    <Col style={{ maxWidth: '8rem' }}>
+                                        <Button
+                                            variant='primary'
+                                            className=''
+                                            onClick={handleEditPersonalInfo}
+                                            style={{ float: 'right', marginTop: '10px' }}
+                                        >
+                                            Edit
                                         </Button>
                                     </Col>
                                 </>
@@ -1246,7 +1455,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                         {stripeStatus !== '' && (
                             <>
                                 <p>
-                  Subscription Status:{' '}
+                                    Subscription Status:{' '}
                                     {stripeStatus === 'active' ? 'Active' : 'Not Active'}
                                 </p>
                                 <StripeCheckoutButton status={stripeStatus} user={user} />
@@ -1269,7 +1478,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                 dismissible
                                 onClose={() => setShowAlert(false)}
                             >
-                Profile Updated
+                                Profile Updated
                             </Alert>
                         ) : null}
                         <Row>
@@ -1335,10 +1544,10 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                             style={{ marginRight: '1rem' }}
                                             onClick={handleEditPersonalInfo}
                                         >
-                      Cancel
+                                            Cancel
                                         </Button>
                                         <Button variant='primary' className='btn-sm' type='submit'>
-                      Update
+                                            Update
                                         </Button>
                                     </Form.Group>
                                 </Form>
@@ -1351,6 +1560,12 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                             </ListGroupItem>
                                             <ListGroupItem>
                                                 <strong>Email: </strong>
+                                            </ListGroupItem>  
+                                            <ListGroupItem>
+                                                <strong>User Type: </strong>
+                                            </ListGroupItem>
+                                            <ListGroupItem>
+                                                <strong>Creation Date: </strong>
                                             </ListGroupItem>
                                             <ListGroupItem>
                                                 <strong>Community Request: </strong>
@@ -1363,13 +1578,15 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                                 {capitalizeString(fname!)} {capitalizeString(lname!)}
                                             </ListGroupItem>
                                             <ListGroupItem>{email!}</ListGroupItem>
+                                            <ListGroupItem>{userType!}</ListGroupItem>
+                                            <ListGroupItem>{new Date(createdAt!).toISOString().split('T')[0]}</ListGroupItem>
                                             <ListGroup.Item>
                                                 <Button
                                                     variant='link'
                                                     style={{ padding: '0' }}
                                                     onClick={() => setShow((b) => !b)}
                                                 >
-                          Request your Community!
+                                                    Request your Community!
                                                 </Button>
                                             </ListGroup.Item>
                                         </ListGroup>
@@ -1381,7 +1598,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                             onClick={handleEditPersonalInfo}
                                             style={{ float: 'right', marginTop: '10px' }}
                                         >
-                      Edit
+                                            Edit
                                         </Button>
                                     </Col>
                                 </>
@@ -1417,9 +1634,13 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                             lon: geoData!.lon ? geoData!.lon : 0,
                         }}
                         segments={segments!}
+                        edit={editHomeSegment}
+                        setEdit={setEditHomeSegment}
                         updateFunction={updateHomeSegmentDetail}
                     ></SegmentInfo>
-                    {Object.keys(workData).length > 0 && (
+                </Row>
+                <Row className='mt-3'>
+                    {showWorkSegment ? Object.keys(workData).length > 0 && (
                         <SegmentInfo
                             user={user!}
                             token={token!}
@@ -1439,11 +1660,17 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                 lon: geoData!.work_lon ? geoData!.work_lon : 0,
                             }}
                             segments={segments!}
+                            edit={editWorkSegment}
+                            setEdit={setEditWorkSegment}
                             deleteFunction={deleteWorkSegmentDetail}
                             updateFunction={updateWorkSegmentDetail}
                         ></SegmentInfo>
+                    ) : (
+                        <Button variant='primary' onClick={() => {setShowWorkSegment(true); setEditWorkSegment(true); }}>Add Work Segment</Button>
                     )}
-                    {Object.keys(schoolData).length > 0 && (
+                </Row>
+                <Row className='mt-3'>
+                    {showSchoolSegment ? Object.keys(schoolData).length > 0 && (
                         <SegmentInfo
                             user={user!}
                             token={token!}
@@ -1463,9 +1690,13 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                 lon: geoData!.school_lon ? geoData!.school_lon : 0,
                             }}
                             segments={segments!}
+                            edit={editSchoolSegment}
+                            setEdit={setEditSchoolSegment}
                             deleteFunction={deleteSchoolSegmentDetail}
                             updateFunction={updateSchoolSegmentDetail}
                         ></SegmentInfo>
+                    ) : (
+                        <Button variant='primary' onClick={() => {setShowSchoolSegment(true); setEditSchoolSegment(true); }}>Add School Segment</Button>
                     )}
                 </Row>
             </Container>

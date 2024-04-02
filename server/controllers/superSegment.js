@@ -22,7 +22,7 @@ superSegmentRouter.post(
                 select:{userType:true}
             });
 
-            if(theUser.userType==='ADMIN'){
+            if(theUser.userType==='SUPER_ADMIN' || theUser.userType==='ADMIN'){
                 const {name,country,province} = req.body;
 
                 if(!name||!isString(name)){
@@ -110,6 +110,34 @@ superSegmentRouter.get(
 );
 
 superSegmentRouter.get(
+    '/getByCountryProvince',
+    async (req, res) => {
+        try {
+            const { country, province } = req.query;
+            console.log(`Query Parameters: country=${country}, province=${province}`);
+            const superSegments = await prisma.superSegment.findMany({
+                where: {
+                    country: country,
+                    province: province
+                }
+            });
+            res.status(200).json(superSegments);
+        } catch (error) {
+            console.error(error);
+            res.status(400).json({
+                message: "An error occurred while trying to retrieve super segments.",
+                details: {
+                    errorMessage: error.message,
+                    errorStack: error.stack,
+                }
+            });
+        } finally {
+            await prisma.$disconnect();
+        }
+    }
+);
+
+superSegmentRouter.get(
     '/getById/:superSegmentId',
     passport.authenticate('jwt',{session:false}),
     async(req,res) => {
@@ -160,15 +188,16 @@ superSegmentRouter.delete(
                 select:{userType:true}
             });
 
-            if(theUser.userType==='ADMIN'){
-                const {deleteId} = req.params;
-
-                if(!isInteger(deleteId)){
+            if(theUser.userType==='SUPER_ADMIN' || theUser.userType==='ADMIN'){
+                const { deleteId } = req.params;
+                const segIdNumber = Number.parseInt(deleteId);
+                console.log("deleteId: ", deleteId);
+                if(!isInteger(segIdNumber)){
                     return res.status(400).json("Invalid super segment id! ");
                 }
                 
                 const theSuperSegment = await prisma.superSegment.findUnique({
-                    where:{superSegId:deleteId}
+                    where:{superSegId:segIdNumber}
                 });
 
                 if(!theSuperSegment){
@@ -176,7 +205,7 @@ superSegmentRouter.delete(
                 }
 
                 const result = await prisma.superSegment.delete({
-                    where:{superSegId:deleteId}
+                    where:{superSegId:segIdNumber}
                 });
 
                 res.sendStatus(204);
@@ -221,12 +250,16 @@ superSegmentRouter.post(
                 select:{userType:true}
             });
 
-            if(theUser.userType==='ADMIN'){
+            if(theUser.userType==='SUPER_ADMIN' || theUser.userType==='ADMIN'){
                 const {superSegId} = req.params;
+                const segIdNumber = Number.parseInt(superSegId);
+                if (!isInteger(segIdNumber)) {
+                    return res.status(400).json("Invalid super segment id! ");
+                }
                 const {name,country,province} = req.body;
 
                 const theSuperSegment = await prisma.superSegment.findUnique({
-                    where:{superSegId:deleteId}
+                    where:{superSegId: segIdNumber}
                 });
 
                 if(!theSuperSegment){
@@ -263,11 +296,41 @@ superSegmentRouter.post(
                 };
 
                 const result = await prisma.superSegment.update({
-                    where:{superSegId:superSegId},
+                    where:{superSegId:segIdNumber},
                     data:{
                         name:name,
                         country:country,
                         province:province
+                    }
+                });
+
+                await prisma.segments.updateMany({
+                    where:{superSegId:segIdNumber},
+                    data:{
+                        superSegName:name,
+                        country:country,
+                        province:province
+                    }
+                });
+
+                await prisma.userSegments.updateMany({
+                    where:{homeSuperSegId:segIdNumber},
+                    data:{
+                        homeSuperSegName:name
+                    }
+                });
+
+                await prisma.userSegments.updateMany({
+                    where:{workSuperSegId:segIdNumber},
+                    data:{
+                        workSuperSegName:name
+                    }
+                });
+
+                await prisma.userSegments.updateMany({
+                    where:{schoolSuperSegId:segIdNumber},
+                    data:{
+                        schoolSuperSegName:name
                     }
                 });
 

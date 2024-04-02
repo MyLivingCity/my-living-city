@@ -33,6 +33,7 @@ advertisementRouter.post(
             
             //test to see if the user is an admin or business user
             if (
+                theUser.userType == "SUPER_ADMIN" || 
                 theUser.userType == "ADMIN" || 
                 theUser.userType == "BUSINESS" || 
                 theUser.userType == "COMMUNITY"
@@ -398,7 +399,7 @@ advertisementRouter.put(
             });
             const { adType, adTitle, adDuration, adPosition, externalLink, published } = req.body;
 
-            if (theUser.userType == 'ADMIN' || theUser.userType == 'BUSINESS' || theUser.userType == "COMMUNITY") {
+            if (theUser.userType == 'SUPER_ADMIN' || theUser.userType == 'ADMIN' || theUser.userType == 'BUSINESS' || theUser.userType == "COMMUNITY") {
                 const { advertisementId } = req.params;
                 const parsedAdvertisementId = parseInt(advertisementId);
 
@@ -568,7 +569,7 @@ advertisementRouter.delete(
                 select: { userType: true }
             });
 
-            if (theUser.userType === 'ADMIN' || theUser.userType === 'BUSINESS') {
+            if (theUser.userType == 'SUPER_ADMIN' || theUser.userType === 'ADMIN' || theUser.userType === 'BUSINESS') {
                 const theAdvertisement = await prisma.advertisements.findUnique({
                     where: { id: parsedAdvertisementId }
                 })

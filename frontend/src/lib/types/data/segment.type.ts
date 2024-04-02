@@ -1,3 +1,5 @@
+import { IUser } from './user.type';
+
 export interface ISegment {
   segId: number;
   superSegId: number;
@@ -17,6 +19,8 @@ export interface ISubSegment {
   radius: number;
   createdAt: Date;
   updatedAt: Date;
+  superSegment?: ISuperSegment;
+  subSegments?: ISubSegment[];
 }
 export interface ISuperSegment {
   superSegId: number;
@@ -78,4 +82,14 @@ export interface ISegmentAggregateInfo {
   superSegmentName: string;
   subSegmentsCount: number;
   subSegments: string[];
+}
+
+export interface ISegmentUserInfo {
+  segId: string;
+  totalUsers: number;
+  users: IUser[];
+  segment: ISegment;
+  residents: IUser[];
+  workers: IUser[];
+  students: IUser[];
 }

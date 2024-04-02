@@ -31,6 +31,22 @@ export const getAllSubSegmentsWithId = async (segId: any) => {
     const res = await axios.get<ISubSegment[]>(`${API_BASE_URL}/subSegment/getBySegmentId/${segId}`);
     return res.data;
 };
+
+export const createSuperSegment = async (superSegData: any, token:any) =>{
+    const parsedPayload = {...superSegData};
+    const res = await axios({
+        method: 'post',
+        url: `${API_BASE_URL}/superSegment/create`,
+        data: parsedPayload,
+        headers: { 'x-auth-token': token, 'Access-Control-Allow-Origin': '*',},
+        withCredentials: true
+    });
+    if(!(res.status===201 || res.status===200)){
+        throw new Error(res.data);
+    }
+    return res.data;
+};
+
 export const createSegment = async (segData: any, token:any) =>{
     const parsedPayload = {...segData};
 
@@ -62,6 +78,25 @@ export const createSubSegment = async (segData: any, token:any) =>{
     }
     return res.data;
 };
+
+export const updateSuperSegment = async (superSegData: any, token:any) =>{
+    const{superSegId}=superSegData;
+    const parsedPayload = {...superSegData};
+
+    const res = await axios({
+        method: 'post',
+        url: `${API_BASE_URL}/superSegment/update/${superSegId}`,
+        data: parsedPayload,
+        headers: { 'x-auth-token': token, 'Access-Control-Allow-Origin': '*',},
+        withCredentials: true
+    });
+    //if not success, throw error which will stop form reset
+    if(!(res.status===201 || res.status===200)){
+        throw new Error(res.data);    
+    }
+    return res.data;
+};
+
 export const updateSegment = async (segData: any, token:any) =>{
     const{segId}=segData;
     const parsedPayload = {...segData};
@@ -204,6 +239,26 @@ export const deleteSegmentBySegmentId = async (segId: number, token: string) => 
         return res.data;
     } catch (error) {
         console.error('Failed to delete the segment:', error);
+        throw error;
+    }
+};
+
+export const deleteSuperSegmentBySuperSegmentId = async (superSegId: number, token: string) => {
+    try {
+        const res = await axios({
+            method: 'delete',
+            url: `${API_BASE_URL}/superSegment/delete/${superSegId}`,
+            headers: { 'x-auth-token': token, 'Access-Control-Allow-Origin': '*', },
+            withCredentials: true
+        });
+        
+        if (res.status !== 200 && res.status !== 204) {
+            throw new Error('Error deleting the super segment');
+        }
+        
+        return res.data;
+    } catch (error) {
+        console.error('Failed to delete the super segment:', error);
         throw error;
     }
 };

@@ -2,6 +2,7 @@ const passport = require('passport');
 const express = require('express');
 const workDetailsRouter = express.Router();
 const prisma = require('../lib/prismaClient');
+const e = require('express');
 
 workDetailsRouter.post(
     '/create',
@@ -29,31 +30,45 @@ workDetailsRouter.delete(
     '/delete/:id',
     async (req, res) => {
         try {
-            const workDetails = await prisma.work_Details.deleteMany({
-                where: {
-                    userId: req.params.id,
-                },
+            const workDetails = await prisma.work_Details.findFirst({
+                where: { userId: req.params.id },
             });
-            const userWorkUpdate = await prisma.userSegments.update({
-                where: {
-                    userId: req.params.id,
-                },
-                data: {
-                    workSegmentId: null,
-                    workSubSegmentId: null,
-                    workSegmentName: '',
-                    workSubSegmentName: '',
-                    workSuperSegId: null,
-                    workSuperSegName: '',
-                    workSegHandle: '',
-                },
-            });
-            
-            res.status(200).json(workDetails);
+
+            if (!workDetails) {
+                res.status(400).json({ error: 'Work details not found' });
+                return;
+            } else {
+                const workDetailsRemove = await prisma.work_Details.update({
+                    where: {
+                        id: workDetails.id,
+                    },
+                    data: {
+                        displayFName: '',
+                        displayLName: '',
+                        streetAddress: '',
+                        postalCode: '',
+                        company: '',
+                    },
+                });
+
+                const userSegmentsWorkDetails = await prisma.userSegments.update({
+                    where: {
+                        userId: req.params.id,
+                    },
+                    data: {
+                        workSegmentId: null,
+                        workSubSegmentId: null,
+                        workSegmentName: '',
+                        workSubSegmentName: '',
+                        workSegHandle: '',
+                    },
+                });
+                res.status(200).json({workDetailsRemove, userSegmentsWorkDetails});
+                return;
+            }
         } catch (error) {
-            console.log(error)
             res.status(400).json({ error: error.message });
-        } finally {
+        } finally { 
             await prisma.$disconnect();
         }
     }
@@ -85,6 +100,7 @@ workDetailsRouter.patch(
             const profile = await prisma.work_Details.findFirst({
                 where: { userId: req.params.id },
             });
+            console.log('profile', profile);
 
             if (!profile) {
                 // Create a new profile
@@ -132,14 +148,12 @@ workDetailsRouter.patch(
     '/updateCityNeighbourhood/:id',
     async (req, res) => {
         try {
-            if ((req.body.city === '' || req.body.city === 'Not Selected') && req.body.neighbourhood === '') {
+            if (req.body.neighbourhood === '') {
                 const result = await prisma.userSegments.update({
                     where: {
                         userId: req.params.id,
                     },
                     data: {
-                        workSegmentId: null,
-                        workSegmentName: '',
                         workSubSegmentId: null,
                         workSubSegmentName: '',
                     },

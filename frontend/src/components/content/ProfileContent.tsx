@@ -57,7 +57,7 @@ interface ProfileContentProps {
     token: string;
 }
 
-const UNKNOWN = 'Unknown';
+const UNKNOWN = '';
 const NOT_SELECTED = 'Not Selected';
 
 const LinkTypes = Object.keys(LinkType).filter((item) => {
@@ -68,7 +68,7 @@ const deleteSchoolSegmentDetail = async (user: string | undefined) => {
     if (user === undefined) {
     } else {
         await deleteSchoolSegmentDetails(user);
-        window.location.reload();
+        // window.location.reload();
     }
 };
 
@@ -76,7 +76,6 @@ const deleteWorkSegmentDetail = async (user: string | undefined) => {
     if (user === undefined) {
     } else {
         await deleteWorkSegmentDetails(user);
-        window.location.reload();
     }
 };
 
@@ -117,6 +116,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
         imagePath,
         displayFName,
         displayLName,
+        createdAt
     } = user;
 
     const { streetAddress, streetAddress2, city, postalCode, country } = address!;
@@ -136,6 +136,11 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
     const [segments, setSegments] = useState<any[]>([]);
     const [subSegments, setSubSegments] = useState<any[]>([]);
     const [editPersonalInfo, setEditPersonalInfo] = useState(false);
+    const [showWorkSegment, setShowWorkSegment] = useState(!!userSegments?.workSegmentName);
+    const [showSchoolSegment, setShowSchoolSegment] = useState(!!userSegments?.schoolSegmentName);
+    const [editHomeSegment, setEditHomeSegment] = useState(false);
+    const [editWorkSegment, setEditWorkSegment] = useState(false);
+    const [editSchoolSegment, setEditSchoolSegment] = useState(false);
 
     function handleEditPersonalInfo() {
         setEditPersonalInfo(!editPersonalInfo);
@@ -1555,6 +1560,12 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                             </ListGroupItem>
                                             <ListGroupItem>
                                                 <strong>Email: </strong>
+                                            </ListGroupItem>  
+                                            <ListGroupItem>
+                                                <strong>User Type: </strong>
+                                            </ListGroupItem>
+                                            <ListGroupItem>
+                                                <strong>Creation Date: </strong>
                                             </ListGroupItem>
                                             <ListGroupItem>
                                                 <strong>Community Request: </strong>
@@ -1567,6 +1578,8 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                                 {capitalizeString(fname!)} {capitalizeString(lname!)}
                                             </ListGroupItem>
                                             <ListGroupItem>{email!}</ListGroupItem>
+                                            <ListGroupItem>{userType!}</ListGroupItem>
+                                            <ListGroupItem>{new Date(createdAt!).toISOString().split('T')[0]}</ListGroupItem>
                                             <ListGroup.Item>
                                                 <Button
                                                     variant='link'
@@ -1621,9 +1634,13 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                             lon: geoData!.lon ? geoData!.lon : 0,
                         }}
                         segments={segments!}
+                        edit={editHomeSegment}
+                        setEdit={setEditHomeSegment}
                         updateFunction={updateHomeSegmentDetail}
                     ></SegmentInfo>
-                    {Object.keys(workData).length > 0 && (
+                </Row>
+                <Row className='mt-3'>
+                    {showWorkSegment ? Object.keys(workData).length > 0 && (
                         <SegmentInfo
                             user={user!}
                             token={token!}
@@ -1643,11 +1660,17 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                 lon: geoData!.work_lon ? geoData!.work_lon : 0,
                             }}
                             segments={segments!}
+                            edit={editWorkSegment}
+                            setEdit={setEditWorkSegment}
                             deleteFunction={deleteWorkSegmentDetail}
                             updateFunction={updateWorkSegmentDetail}
                         ></SegmentInfo>
+                    ) : (
+                        <Button variant='primary' onClick={() => {setShowWorkSegment(true); setEditWorkSegment(true); }}>Add Work Segment</Button>
                     )}
-                    {Object.keys(schoolData).length > 0 && (
+                </Row>
+                <Row className='mt-3'>
+                    {showSchoolSegment ? Object.keys(schoolData).length > 0 && (
                         <SegmentInfo
                             user={user!}
                             token={token!}
@@ -1667,9 +1690,13 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                 lon: geoData!.school_lon ? geoData!.school_lon : 0,
                             }}
                             segments={segments!}
+                            edit={editSchoolSegment}
+                            setEdit={setEditSchoolSegment}
                             deleteFunction={deleteSchoolSegmentDetail}
                             updateFunction={updateSchoolSegmentDetail}
                         ></SegmentInfo>
+                    ) : (
+                        <Button variant='primary' onClick={() => {setShowSchoolSegment(true); setEditSchoolSegment(true); }}>Add School Segment</Button>
                     )}
                 </Row>
             </Container>

@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { useAllSegmentRequests, useAllSegments, useAllSuperSegments } from 'src/hooks/segmentHooks';
+import { useAllSegmentRequests, useAllSegments } from 'src/hooks/segmentHooks';
 import { UserProfileContext } from '../contexts/UserProfile.Context';
 import SegmentManagementContent from '../components/content/SegmentManagementContent';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
@@ -8,12 +8,12 @@ import LoadingSpinner from '../components/ui/LoadingSpinner';
 export default function SegmentManagementPage() {
 
     const { data, isLoading } = useAllSegments();
-    const { data: superSegments, isLoading: superSegmentsLoading } = useAllSuperSegments();
+
     const { token, user } = useContext(UserProfileContext);
 
     const segReq = useAllSegmentRequests(token);
     
-    if (isLoading || segReq.isLoading || superSegmentsLoading) {
+    if (isLoading || segReq.isLoading) {
         return (
             <div className='wrapper'>
                 <LoadingSpinner />
@@ -23,7 +23,7 @@ export default function SegmentManagementPage() {
 
     return (
         <div className='wrapper'>
-            <SegmentManagementContent superSegments={superSegments } segments={ data } token = {token} segReq={segReq.data}/>
+            <SegmentManagementContent segments={ data } token = {token} segReq={segReq.data}/>
         </div>
     );
 }

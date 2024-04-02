@@ -321,6 +321,18 @@ segmentRouter.delete(
                 if (!theSegment) {
                     return res.status(404).json("the segment need to be deleted not found!");
                 } else {
+                    await prisma.userReach.deleteMany({
+                        where: {
+                            segId: parsedSegmentId
+                        }
+                    });
+
+                    await prisma.subSegments.deleteMany({
+                        where: {
+                            segId: parsedSegmentId
+                        }
+                    });
+
                     await prisma.segments.delete({
                         where: {
                             segId: parsedSegmentId

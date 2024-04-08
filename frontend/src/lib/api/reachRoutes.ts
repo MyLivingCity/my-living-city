@@ -4,7 +4,7 @@ import { API_BASE_URL } from '../constants';
 export const replaceAllReachSegments = async (token: string | null, userId: string, segIds: number[]) => {
     const res = await axios({
         method: 'post',
-        url: `${API_BASE_URL}/reach/replaceSegments`,
+        url: `${API_BASE_URL}/reach/replaceReachSegments`,
         data: {
             userId: userId,
             segIds: segIds

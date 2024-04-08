@@ -175,7 +175,7 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
     const userTypes = Object.keys(USER_TYPES);
     const history = useHistory();
     return (
-        <Container style={{ maxWidth: '1600px', margin: 'auto', width: 'fit-content' }}>
+        <Container style={{ maxWidth: '1600px', margin: 'auto' }}>
             <div className='d-flex justify-content-between'>
                 <h2 className='mb-4 mt-4'>Admin Management</h2>
                 <Button
@@ -353,10 +353,10 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
                                 <tr key={req.id}>
                                     {req.id !== hideControls ? (
                                         <>
-                                            <td className='text-left align-middle'>{req.email}</td>
+                                            <td className='text-left align-middle' style={{wordBreak: 'break-word'}}>{req.email}</td>
                                             <td className='text-left align-middle '>{req.fname}</td>
                                             <td className='text-left align-middle'>{req.lname}</td>
-                                            <td className='text-left align-middle'> {req.adminmodEmail}</td>
+                                            <td className='text-left align-middle' style={{wordBreak: 'break-word'}}> {req.adminmodEmail}</td>
                                             <td className='text-center align-middle'>{req.userType}</td>
                                             <td className='text-center align-middle'>
                                                 {req.userType === 'SUPER_ADMIN' ? (

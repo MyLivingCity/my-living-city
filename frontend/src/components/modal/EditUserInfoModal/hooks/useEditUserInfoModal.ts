@@ -8,6 +8,7 @@ import { USER_TYPES } from 'src/lib/constants';
 import { getCommentsOfUser } from 'src/lib/api/commentRoutes';
 import { IComment } from 'src/lib/types/data/comment.type';
 import { getUserIdeas } from 'src/lib/api/ideaRoutes';
+import { replaceAllReachSegments } from 'src/lib/api/reachRoutes';
 
 
 interface SelectOption {
@@ -213,10 +214,14 @@ export const useEditUserInfoModal = ({
                     schoolSuperSegId: parseInt(selectedSchoolSuperSegment),
                     schoolSegmentId: parseInt(selectedSchoolSegment),
                     schoolSubSegmentId: parseInt(selectedSchoolSubSegment),
-                }
+                },
+                userReach: selectedReachSegIds.map((segId) => ({ segId: parseInt(segId), userId: modalUser.id })),
             },
         };
         try {
+            if (updatedUserData.userType === USER_TYPES.BUSINESS || updatedUserData.userType === USER_TYPES.COMMUNITY) {
+                await replaceAllReachSegments(token, modalUser.id, selectedReachSegIds.map((segId) => parseInt(segId)));
+            }
             if (updatedUserData.userSegments) {
                 const [updateUserResult, updateSegmentResult] = await Promise.all([
                     updateUser(updatedUserData, token, currentUser),
@@ -230,7 +235,7 @@ export const useEditUserInfoModal = ({
         }
     };
 
-    const [selectedReachSegIds, setSelectedReachSegIds] = useState<any[]>([]);
+    const [selectedReachSegIds, setSelectedReachSegIds] = useState<any[]>(modalUser?.userReach?.map(seg => seg.segId.toString()) || []);
 
     const toggleAllReachSegIds = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.checked) {

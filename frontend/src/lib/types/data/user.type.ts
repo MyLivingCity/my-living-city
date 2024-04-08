@@ -34,4 +34,9 @@ export interface IUser {
   userRole?: IUserRole;
   userSegments?: IUserSegment;
   IdeaComments?: IComment[];
+  userReach?: {
+    id?: string;
+    userId: string;
+    segId: number;
+  }[];
 }

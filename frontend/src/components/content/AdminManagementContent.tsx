@@ -196,7 +196,6 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
                                 {userTypes
                                     .filter(
                                         (item) =>
-                                            item === USER_TYPES.SUPER_ADMIN ||
                                             item === USER_TYPES.ADMIN ||
                                             item === USER_TYPES.MUNICIPAL_SEG_ADMIN ||
                                             item === USER_TYPES.SEG_ADMIN ||
@@ -459,7 +458,7 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
                                                 >
                                                     View Segments
                                                 </Dropdown.Item>
-                                                {req.userType !== 'SUPER_ADMIN' ? (
+                                                {req.userType !== 'SUPER_ADMIN' && user?.userType != req.userType? (
                                                     <>
                                                         <Dropdown.Item
                                                             onClick={() => {

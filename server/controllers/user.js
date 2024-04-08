@@ -589,6 +589,7 @@ userRouter.get(
 				const allUsers = await prisma.user.findMany({
 					include: {
 						userSegments: true,
+						userReach: true,
 					}
 				}
 				);
@@ -885,7 +886,8 @@ userRouter.put(
 				'MUNICIPAL',
 				'WORKER',
 				'ASSOCIATE',
-				'DEVELOPER'
+				'DEVELOPER',
+				'COMMUNITY'
 			];
 
 			if (theUser.userType === 'SUPER_ADMIN' || theUser.userType === 'ADMIN') {

@@ -127,7 +127,7 @@ userReachRouter.post(
                 })
             }
 
-            if (!segId || !isArray(segId)) {
+            if (!segIds || !isArray(segIds)) {
                 return res.status(400).json({
                     message: "segIds are missing from the request body is it's in incorrect format!"
                 })

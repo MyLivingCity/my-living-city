@@ -133,6 +133,7 @@ function App() {
                             USER_TYPES.SUPER_ADMIN,
                             USER_TYPES.ADMIN,
                             USER_TYPES.MOD,
+                            USER_TYPES.SEG_ADMIN,
                             USER_TYPES.MUNICIPAL_SEG_ADMIN
                         ]}
                     />

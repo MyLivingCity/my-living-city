@@ -342,9 +342,8 @@ userRouter.delete(
 	}
 );
 
-userRouter.post("/signup", 
-	async (req, res, next) => 
-	{
+userRouter.post("/signup",
+	async (req, res, next) => {
 		// console.log(req.user);
 		// console.log(req.body);
 		// Types that don't need admin permissions to create
@@ -385,7 +384,7 @@ userRouter.post("/signup",
 					return;
 				}
 				if (!user) {
-					res.status(401).json({message: info?.message || "User not found"});
+					res.status(401).json({ message: info?.message || "User not found" });
 					return;
 				}
 				// TODO: Check if the user has permissions to create a user of this type
@@ -399,7 +398,7 @@ userRouter.post("/signup",
 			passport.authenticate("signup", async (err, user, info) => {
 				if (err) {
 					console.log("Should be error stopping it", err.message)
-					res.status(500).json({error: err.message});
+					res.status(500).json({ error: err.message });
 					return;
 				}
 				if (!user) {
@@ -586,7 +585,7 @@ userRouter.get(
 				}
 			);
 
-			if (theUser.userType === 'SUPER_ADMIN' || theUser.userType === 'ADMIN' || theUser.userType === 'MOD' || theUser.userType === 'MUNICIPAL_SEG_ADMIN') {
+			if (theUser.userType === 'SUPER_ADMIN' || theUser.userType === 'ADMIN' || theUser.userType === 'MOD' || theUser.userType === 'MUNICIPAL_SEG_ADMIN' || theUser.userType === 'SEG_ADMIN') {
 				const allUsers = await prisma.user.findMany({
 					include: {
 						userSegments: true,
@@ -760,7 +759,7 @@ userRouter.put(
 			if (!foundUser) {
 				throw new Error('User not found');
 			}
-			
+
 			// Check if the user has permissions to change the password of the user 
 			// Rights are same as creating a user
 			const hasPermission = checkUserCreationAuthorization(foundUser, req.user);
@@ -889,7 +888,7 @@ userRouter.put(
 				'DEVELOPER'
 			];
 
-			if(theUser.userType === 'SUPER_ADMIN' || theUser.userType === 'ADMIN'){
+			if (theUser.userType === 'SUPER_ADMIN' || theUser.userType === 'ADMIN') {
 				console.log(req.body.banned);
 
 				const {
@@ -1118,9 +1117,9 @@ userRouter.patch(
 
 			const theUser = await prisma.user.findUnique({ where: { id: id } });
 
-			if ( !( theUser.userType === 'SUPER_ADMIN' || theUser.userType === 'ADMIN' || theUser.userType === 'MOD')) {
-        return res.status(401).json("You are not allowed to unban users!");
-      }
+			if (!(theUser.userType === 'SUPER_ADMIN' || theUser.userType === 'ADMIN' || theUser.userType === 'MOD')) {
+				return res.status(401).json("You are not allowed to unban users!");
+			}
 
 			const userIds = req.body.userIds;
 			console.log(userIds);

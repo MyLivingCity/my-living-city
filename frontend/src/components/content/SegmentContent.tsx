@@ -116,7 +116,7 @@ export const SegmentContent: React.FC<SegmentContentProps> = ({token, user, segI
 
     const { data: subSegData } = useAllSubSegmentsWithId(String(segId));
     const { data: segmentData, isLoading: segmentLoading } = useSingleSegmentBySegmentId(segId);
-    const { data: segmentUserData } = useSegmentsUsers(segId);
+    const { data: segmentUserData, isLoading: segmentUserLoading } = useSegmentsUsers(segId);
     // const { data: allUserData } = useAllRegularUsers(token);
 
     // For the Edit User Modal
@@ -202,7 +202,7 @@ export const SegmentContent: React.FC<SegmentContentProps> = ({token, user, segI
             setFilteredUsers([]);
             setActive(1);
         }
-    }, [segmentUserData, userTypeFilter, segmentTypeFilter, searchFilter, subsegmentFilter, sortByValue, segId, allUsers, inSegmentFilter]);
+    }, [segmentUserData, segmentUserLoading, userTypeFilter, segmentTypeFilter, searchFilter, subsegmentFilter, sortByValue, segId, allUsers, inSegmentFilter]);
 
     useEffect(() => {
         if (inSegmentFilter === 'False' && allUsers.length === 0) {

@@ -175,7 +175,7 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
     const userTypes = Object.keys(USER_TYPES);
     const history = useHistory();
     return (
-        <Container style={{ maxWidth: '1600px', margin: 'auto', width: 'fit-content' }}>
+        <Container style={{ maxWidth: '1600px', margin: 'auto' }}>
             <div className='d-flex justify-content-between'>
                 <h2 className='mb-4 mt-4'>Admin Management</h2>
                 <Button

@@ -336,7 +336,8 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
                 if (superSegmentsData.length > 0) {
                     setCreateData(prevData => ({ 
                         ...prevData,
-                        superSegName: superSegmentsData[0].name.toLowerCase()
+                        superSegId: superSegmentsData[0].superSegId,
+                        superSegName: superSegmentsData[0].name.toLowerCase(),
                     }));
                 }
                 setSuperSegments(superSegmentsData);
@@ -379,6 +380,7 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
             }
             setShowNewSeg(false);
             setError(null);
+            window.location.reload();
         } catch (error) {
             console.log(error);
         }
@@ -548,7 +550,7 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
                                                 <>
                                                     <td>
                                                         {segment.name
-                                                            ? capitalizeFirstLetterEachWord(segment.name)
+                                                            ? capitalizeFirstLetterEachWord(segment.name.toLowerCase())
                                                             : ''}
                                                     </td>
                                                     <td>
@@ -722,7 +724,7 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
                                                     <td>
                                                         {segment.superSegName
                                                             ? capitalizeFirstLetterEachWord(
-                                                                segment.superSegName
+                                                                segment.superSegName.toLowerCase()
                                                             )
                                                             : ''}
                                                     </td>
@@ -797,7 +799,7 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
                                                         >
                                                             {(superSegments).map((superSegment) => (
                                                                 <option key={superSegment.superSegId} value={superSegment.name}>
-                                                                    {capitalizeFirstLetterEachWord(superSegment.name.toLowerCase())}
+                                                                    {superSegment.name.toUpperCase()}
                                                                 </option>
                                                             ))}
                                                         </Form.Control>
@@ -865,19 +867,19 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
                                                 <Form.Control
                                                     as='select'
                                                     onChange={(e) => {
-                                                        const newSuperSegName = e.target.value.toLowerCase();
+                                                        const selectedSuperSegId = parseInt(e.target.value, 10);
+                                                        const selectedSuperSegment = superSegments.find(
+                                                            (superSeg) => superSeg.superSegId === selectedSuperSegId);
                                                         setCreateData((prevData) => ({
                                                             ...prevData,
-                                                            superSegId: Number.parseInt(e.target.value),
-                                                            superSegName: superSegments.find(
-                                                                (superSeg) => superSeg.superSegId === Number.parseInt(e.target.value)
-                                                            )?.name.toLowerCase(),
+                                                            superSegId: selectedSuperSegId,
+                                                            superSegName: selectedSuperSegment ? selectedSuperSegment.name.toLowerCase() : '',
                                                         }));
                                                     }}
                                                 >
                                                     {superSegments.map((superSegment) => (
                                                         <option key={superSegment.superSegId} value={superSegment.superSegId}>
-                                                            {capitalizeFirstLetterEachWord(superSegment.name.toLowerCase())}
+                                                            {superSegment.name.toUpperCase()}
                                                         </option>
                                                     ))}
                                                 </Form.Control>

@@ -46,7 +46,7 @@ export const useSegmentInfoAggregate = (segmentId: number) => {
 };
 
 export const useSegmentsUsers = (segmentId: number) => {
-    return useQuery<ISegmentUserInfo, IFetchError>('segment-users', () => getSegmentUsersInfo(segmentId));
+    return useQuery<ISegmentUserInfo, IFetchError>(['segment-users', segmentId], () => getSegmentUsersInfo(segmentId));
 };
 
 export const useSingleSegmentByName = (data: any, trigger: boolean) => {

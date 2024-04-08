@@ -865,7 +865,6 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
                                                 <Form.Control
                                                     as='select'
                                                     onChange={(e) => {
-                                                        const newSuperSegName = e.target.value.toLowerCase();
                                                         setCreateData((prevData) => ({
                                                             ...prevData,
                                                             superSegId: Number.parseInt(e.target.value),

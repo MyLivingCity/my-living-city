@@ -20,6 +20,8 @@ COPY . ./
 RUN chmod 777 ./uploads/ideaImage
 RUN chmod 777 ./uploads/adImage
 RUN chmod 777 ./uploads/avatarImages
+RUN chmod 777 ./prisma/migrations
+RUN chmod 777 ./prisma/migrations/migration_lock.toml
 
 # Environment Vars are now set in Dokku manually to prevent leaking secrets
 # COPY .env.production .env

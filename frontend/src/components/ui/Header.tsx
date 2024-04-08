@@ -12,10 +12,10 @@ import { BanMessageModal } from '../modal/BanMessageModal';
 import { FindBanDetailsWithToken } from 'src/hooks/banHooks';
 import { FindBadPostingBehaviorDetails } from 'src/hooks/badPostingBehaviorHooks';
 import { WarningMessageModal } from '../modal/WarningMessageModal';
-import {useBadPostingThreshhold } from 'src/hooks/threshholdHooks';
+import { useBadPostingThreshhold } from 'src/hooks/threshholdHooks';
 import { useAllUserSegments } from 'src/hooks/userSegmentHooks';
 
-function Header(){
+function Header() {
     const [stripeStatus, setStripeStatus] = useState('');
     const { logout, user, token } = useContext(UserProfileContext);
     const { data } = useUserWithJwtVerbose({
@@ -25,10 +25,10 @@ function Header(){
     // const { data: googleQuery, isLoading: googleQueryLoading } = useGoogleMapSearchLocation({ lat: data?.geo?.lat, lon: data?.geo?.lon }, (data != null && data.geo != null));
 
     // const { data: segData, isLoading: segQueryLoading } = useAllUserSegmentsRefined(token, user?.id || null);
-    const { data: banData, isLoading: banQueryLoading} = FindBanDetailsWithToken(token);
+    const { data: banData, isLoading: banQueryLoading } = FindBanDetailsWithToken(token);
     const { data: badPostingBehaviorData, isLoading: badPostLoading } = FindBadPostingBehaviorDetails(token);
-    const {data: badPostingThreshholdData, isLoading: badPostingThreshholdLoading} = useBadPostingThreshhold(token);
-    const {data: userSegmentData, isLoading: userSegementLoading} = useAllUserSegments( token, user?.id || null);
+    const { data: badPostingThreshholdData, isLoading: badPostingThreshholdLoading } = useBadPostingThreshhold(token);
+    const { data: userSegmentData, isLoading: userSegementLoading } = useAllUserSegments(token, user?.id || null);
 
 
     // const segData = useSingleSegmentByName({
@@ -47,7 +47,7 @@ function Header(){
             setUserSegId(userSegmentData.homeSegmentId);
         }
     }, [userSegmentData]);
-  
+
 
     // useEffect(() => {
     //   const querySegmentData = async () => {
@@ -73,7 +73,7 @@ function Header(){
     //     });
     //   }
     // }, [segData, segQueryLoading])
- 
+
 
     const paymentNotificationStyling: CSS.Properties = {
         backgroundColor: '#f7e4ab',
@@ -134,9 +134,9 @@ function Header(){
     return (
         <div className='outer-header'>
             {stripeStatus !== '' && stripeStatus !== 'active' &&
-        (<Nav style={paymentNotificationStyling}>
-          You have not paid your account payment. To upgrade your account, please go to the <a href='/profile'>profile</a> section.
-        </Nav>)
+                (<Nav style={paymentNotificationStyling}>
+                    You have not paid your account payment. To upgrade your account, please go to the <a href='/profile'>profile</a> section.
+                </Nav>)
             }
 
             <Navbar className='inner-header' bg='light' expand='sm'>
@@ -172,7 +172,7 @@ function Header(){
                         <Nav.Link href='/ideas'>Conversations</Nav.Link>
                         {(user) ? (
                             <>
-                                {((banData && banData.banType === 'WARNING') || !badPostingBehaviorData ||(!user.banned && (badPostingBehaviorData && (badPostingThreshholdData && ((badPostingBehaviorData.bad_post_count + badPostingBehaviorData.post_flag_count) < badPostingThreshholdData.number) && !badPostingBehaviorData.post_comment_ban)))) && (
+                                {((banData && banData.banType === 'WARNING') || !badPostingBehaviorData || (!user.banned && (badPostingBehaviorData && (badPostingThreshholdData && ((badPostingBehaviorData.bad_post_count + badPostingBehaviorData.post_flag_count) < badPostingThreshholdData.number) && !badPostingBehaviorData.post_comment_ban)))) && (
                                     <NavDropdown title='Submit' id='nav-dropdown'>
                                         <Nav.Link href='/submit'>Submit Idea</Nav.Link>
 
@@ -206,6 +206,7 @@ function Header(){
                                 {user.userType === 'SEG_ADMIN' && (
                                     <NavDropdown title='Seg-Admin Tools' id='nav-dropdown'>
                                         <Nav.Link href={'/segment/management/' + userSegId}>Segments</Nav.Link>
+                                        <Nav.Link href='/user/management'>User Manager</Nav.Link>
                                     </NavDropdown>
                                 )}
                                 {user.userType === 'MOD' && (
@@ -224,7 +225,7 @@ function Header(){
                                         <Nav.Link href={`/community-dashboard/${userSegId}`}>Community Dashboard</Nav.Link>
                                     </NavDropdown>
                                 )}
-                                {( user.userType === 'MUNICIPAL' || user.userType === 'MUNICIPAL_SEG_ADMIN') && (
+                                {(user.userType === 'MUNICIPAL' || user.userType === 'MUNICIPAL_SEG_ADMIN') && (
                                     <NavDropdown
                                         title='Dashboard'
                                         id='mdashboard-dropdown'>
@@ -235,7 +236,7 @@ function Header(){
 
                                 {/* <Nav.Link href="/dashboard">Dashboard</Nav.Link> */}
                                 <Nav.Link href='https://mylivingcity.org/community-discussion-platform-help-pages/'>
-                    Help
+                                    Help
                                 </Nav.Link>
                                 <Nav.Link onClick={() => logout()}>Log out</Nav.Link>
                             </>
@@ -245,22 +246,22 @@ function Header(){
                     </Nav>
                 </Navbar.Collapse>
             </Navbar>
-            { user && user.banned && banData && banData.banType === 'SYS_BAN' ? <BanMessageModal/> : null }
-            { user && user.banned && banData && banData.banType === 'POST_BAN' ?
+            {user && user.banned && banData && banData.banType === 'SYS_BAN' ? <BanMessageModal /> : null}
+            {user && user.banned && banData && banData.banType === 'POST_BAN' ?
                 <>
                     <Navbar className='bg-warning text-dark justify-content-center' expand='sm'>
-              Account has been banned from posting
+                        Account has been banned from posting
                     </Navbar>
-                    <WarningMessageModal show={showWarningModal} setShow={setShowWarningModal}/>
+                    <WarningMessageModal show={showWarningModal} setShow={setShowWarningModal} />
                 </>
                 : null
             }
-            { user && user.banned && banData && banData.banType === 'WARNING' ?
+            {user && user.banned && banData && banData.banType === 'WARNING' ?
                 <>
                     <Navbar className='bg-warning text-dark justify-content-center' expand='sm'>
-            Account has been issued a warning
+                        Account has been issued a warning
                     </Navbar>
-                    <WarningMessageModal show={showWarningModal} setShow={setShowWarningModal}/>
+                    <WarningMessageModal show={showWarningModal} setShow={setShowWarningModal} />
                 </>
                 : null
             }

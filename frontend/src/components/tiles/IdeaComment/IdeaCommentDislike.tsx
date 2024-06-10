@@ -7,12 +7,12 @@ import { MLC_COLOUR_THEME } from 'src/lib/constants';
 import { IComment } from '../../../lib/types/data/comment.type';
 
 interface IdeaCommentLikeProps {
-  commentData: IComment
+    commentData: IComment
 }
 
 const IdeaCommentDislike = ({ commentData }: IdeaCommentLikeProps) => {
-    const { 
-        id: commentId, 
+    const {
+        id: commentId,
         ideaId,
         dislikes
     } = commentData;
@@ -31,7 +31,7 @@ const IdeaCommentDislike = ({ commentData }: IdeaCommentLikeProps) => {
     };
 
     const submitHandler = () => {
-    // Check if user is authenticated
+        // Check if user is authenticated
         if (isUserAuthenticated()) {
             submitDislikeMutation();
         } else {
@@ -42,7 +42,7 @@ const IdeaCommentDislike = ({ commentData }: IdeaCommentLikeProps) => {
 
 
     return (
-    // TODO: Implement logic to like a comment
+        // TODO: Implement logic to like a comment
         <IconContext.Provider
             value={{
                 size: '0.7rem',
@@ -55,7 +55,8 @@ const IdeaCommentDislike = ({ commentData }: IdeaCommentLikeProps) => {
                     onClick={submitHandler}
                 >
                     <FaRegThumbsDown />
-                    <span className='ml-1' style={{fontSize: '70%'}}>Dislike</span>
+                    {/*
+                    <span className='ml-1' style={{fontSize: '70%'}}>Dislike</span>*/}
                 </div>
             </div>
         </IconContext.Provider>

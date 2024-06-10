@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { Button, Col, Container, Row, ButtonGroup, Modal, Form } from 'react-bootstrap';
+import { Button, Col, Container, Row, ButtonGroup, Modal, Form, Badge } from 'react-bootstrap';
 import { UserProfileContext } from 'src/contexts/UserProfile.Context';
 import { createCommentFlagUnderIdea, compareCommentFlagsWithThreshold } from 'src/lib/api/flagRoutes';
 import { updateCommentStatus } from 'src/lib/api/commentRoutes';
@@ -12,10 +12,11 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
 import React, { useEffect, useState } from 'react';
 import { useCheckFlagBan } from 'src/hooks/flagHooks';
 import { capitalizeFirstLetterEachWord, capitalizeString } from '../../../lib/utilityFunctions';
-
+// Added May 31
+import { FaRegThumbsUp } from 'react-icons/fa';
 
 interface IdeaCommentTileProps {
-  commentData: IComment;
+    commentData: IComment;
 }
 
 const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
@@ -67,10 +68,10 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
     } = userSegments;
 
     const colouredUserNameHandle = (ideaId: number, homeId?: number, workId?: number, schoolId?: number) => {
-    // let ideaId, homeId, workId, schoolId;
-    // if(superSegmentId){
-    //   ideaId = superSegmentId;
-    // }else{
+        // let ideaId, homeId, workId, schoolId;
+        // if(superSegmentId){
+        //   ideaId = superSegmentId;
+        // }else{
 
         // }
 
@@ -137,7 +138,7 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
 
     const selectOtherReasonHandler = (eventKey: string) => {
         handleShowOther();
-    // setOtherFlagReason(eventKey!)
+        // setOtherFlagReason(eventKey!)
     };
 
     const submitFlagReasonHandler = async (commentId: number, token: string, userId: string, quarantined_at: Date) => {
@@ -168,16 +169,16 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
 
 
     return (
-        <Container fluid className='' >
+        <Container fluid className=''>
             <hr className='bg-primary' />
-            <Row className='justify-content-center' style={{backgroundColor: userType === 'MUNICIPAL' ? '#f0fff0' : ''}}>
-                <Col className='mx-2'>
-
+            <Row className='justify-content-center' style={{ backgroundColor: userType === 'MUNICIPAL' ? '#f0fff0' : '' }}>
+                <Col className='mx-2' style={{ overflow: 'visible' }}>
                     <div className='mt-2'>
                         <h3>{content}</h3>
-                        <br></br>
                     </div>
-                    <div className='d-flex flex-column justify-content-start' style={{ fontSize: '120%' }}>
+
+                    {/* fontSize 120% → 160% */}
+                    <div className='d-flex flex-column justify-content-start' style={{ fontSize: '170%' }}>
                         {superSegmentId ? colouredUserNameHandle(superSegmentId, homeSuperSegmentId, workSuperSegmentId, schoolSuperSegmentId)
                             : <>
                                 {subSegmentId ?
@@ -186,35 +187,36 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
                                     colouredUserNameHandle(segmentId, homeSegmentId, workSegmentId, schoolSegmentId)}
                             </>
                         }
-
-
                     </div>
-                    <div className='d-flex flex-column justify-content-start'>
-                        <div className='py-1' style={{ fontSize: '70%' }}>
-            Likes and Dislikes: {likes} / {dislikes}
-                        </div>
-                        <span className='date text-black-50' style={{ fontSize: '70%' }}>
-            Shared publicly - {timeDifference(new Date(), new Date(createdAt))}
-                        </span>
-                    </div>
+                    <br />
+
                     {isUserAuthenticated() && (
                         <div className='d-flex'>
-                            <IdeaCommentLike commentData={commentData} />
-                            <IdeaCommentDislike commentData={commentData} />
+                            <div className='d-flex align-items-center'>
+                                <IdeaCommentLike commentData={commentData} />
+                                <span>{likes}</span>
+                            </div>
+                            <div className='d-flex align-items-center ml-2 mr-4'>
+                                <IdeaCommentDislike commentData={commentData} />
+                                <span>{dislikes}</span>
+                            </div>
+                            {/*
+                            <IdeaCommentLike commentData={commentData} />  
+                    <IdeaCommentDislike commentData={commentData} /> {dislikes} */}
                             {/* {!reviewed ? (
               <Button onClick={
                 async () => await createCommentFlagAndCheckThreshold(id, token!, new Date())
               }>Flag</Button>
               ) : null} */}
                             {!reviewed ? (
-                                <ButtonGroup className='mr-2 mt-3'>
-                                    {showFlagButton ? (<DropdownButton id='dropdown-basic-button d-flex' style={{ fontSize: '10px', font: '10px sans-serif' }} title='Flag' size='sm'>
-                                        <Dropdown.Item eventKey='Abusive or Inappropriate Language' onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Abusive or Inappropriate Language</Dropdown.Item>
-                                        <Dropdown.Item eventKey='Submission in Wrong Community' onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Submission in Wrong Community</Dropdown.Item>
-                                        <Dropdown.Item eventKey='Spam/Unsolicited Advertisement' onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Spam/Unsolicited Advertisement</Dropdown.Item>
-                                        <Dropdown.Item eventKey='Unrelated to Discussion (Off Topic)' onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Unrelated to Discussion (Off Topic)</Dropdown.Item>
-                                        <Dropdown.Item eventKey='Incomplete Submission (Requires Additional Details)' onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Incomplete Submission (Requires Additional Details)</Dropdown.Item>
-                                        <Dropdown.Item eventKey='Other' onSelect={(eventKey) => selectOtherReasonHandler(eventKey!)}>Other</Dropdown.Item>
+                                <ButtonGroup className='mr-2 mt-3' style={{ overflow: 'visible' }}>
+                                    {showFlagButton ? (<DropdownButton id='dropdown-basic-button' drop='up' style={{ fontSize: '10px', font: '10px sans-serif' }} title='Flag' size='sm'>
+                                        <Dropdown.Item style={{ padding: '0.15rem 1.5rem', fontSize: '14px' }} eventKey='Abusive or Inappropriate Language' onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Abusive or Inappropriate Language</Dropdown.Item>
+                                        <Dropdown.Item style={{ padding: '0.15rem 1.5rem', fontSize: '14px' }} eventKey='Submission in Wrong Community' onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Submission in Wrong Community</Dropdown.Item>
+                                        <Dropdown.Item style={{ padding: '0.15rem 1.5rem', fontSize: '14px' }} eventKey='Spam/Unsolicited Advertisement' onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Spam/Unsolicited Advertisement</Dropdown.Item>
+                                        <Dropdown.Item style={{ padding: '0.15rem 1.5rem', fontSize: '14px' }} eventKey='Unrelated to Discussion (Off Topic)' onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Unrelated to Discussion (Off Topic)</Dropdown.Item>
+                                        <Dropdown.Item style={{ padding: '0.15rem 1.5rem', fontSize: '14px' }} eventKey='Incomplete Submission (Requires Additional Details)' onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Incomplete Submission (Requires Additional Details)</Dropdown.Item>
+                                        <Dropdown.Item style={{ padding: '0.15rem 1.5rem', fontSize: '14px' }} eventKey='Other' onSelect={(eventKey) => selectOtherReasonHandler(eventKey!)}>Other</Dropdown.Item>
                                     </DropdownButton>) : null}
                                 </ButtonGroup>
                             ) : null}
@@ -230,17 +232,17 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
                 <Modal.Body>Are you sure about flagging this post?</Modal.Body>
                 <Modal.Footer>
                     <Button variant='secondary' onClick={handleClose}>
-            Cancel
+                        Cancel
                     </Button>
                     <Button
                         style={{ background: 'red' }}
                         variant='primary'
                         onClick={
-                        // () => submitFlagReasonHandler(parseInt(ideaId), token!, user!.id, ideaData.active, new Date())
-                        // async () => await createCommentFlagAndCheckThreshold(id, token!, user!.id, flagReason, new Date())
+                            // () => submitFlagReasonHandler(parseInt(ideaId), token!, user!.id, ideaData.active, new Date())
+                            // async () => await createCommentFlagAndCheckThreshold(id, token!, user!.id, flagReason, new Date())
                             () => submitFlagReasonHandler(id, token!, user!.id, new Date())
                         }>
-            Flag
+                        Flag
                     </Button>
                 </Modal.Footer>
             </Modal>
@@ -265,10 +267,10 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
 
                         </Form.Group>
                     </Form>
-          Are you sure about flagging this post?</Modal.Body>
+                    Are you sure about flagging this post?</Modal.Body>
                 <Modal.Footer>
                     <Button variant='secondary' onClick={handleCloseOther}>
-            Cancel
+                        Cancel
                     </Button>
                     <Button
                         style={{ background: 'red' }}
@@ -276,11 +278,16 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
                         onClick={
                             () => submitOtherFlagReasonHandler(id, token!, user!.id, new Date())
                         }>
-            Flag
+                        Flag
                     </Button>
                 </Modal.Footer>
             </Modal>
-      
+
+            <div className='d-flex flex-column align-items-end'>
+                <span className='date text-black-50' style={{ fontSize: '90%', fontStyle: 'italic' }}>
+                    {timeDifference(new Date(), new Date(createdAt))}
+                </span>
+            </div>
         </Container>
     );
 };

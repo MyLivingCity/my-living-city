@@ -7,7 +7,7 @@ import { IComment } from '../../../lib/types/data/comment.type';
 import { MLC_COLOUR_THEME } from '../../../lib/constants';
 
 interface IdeaCommentLikeProps {
-    commentData: IComment
+    commentData: IComment;
 }
 
 const IdeaCommentLike = ({ commentData }: IdeaCommentLikeProps) => {
@@ -55,7 +55,7 @@ const IdeaCommentLike = ({ commentData }: IdeaCommentLikeProps) => {
                     <span className='ml-1' style={{fontSize: '70%'}}>Like</span>*/}
                 </div>
             </div>
-        </IconContext.Provider>
+        </IconContext.Provider >
     );
 };
 

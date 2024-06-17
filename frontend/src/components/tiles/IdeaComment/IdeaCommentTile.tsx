@@ -81,6 +81,7 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
         if (userType === 'SUPER_ADMIN') {
             userName = homeSegHandle + ' as Super Admin';
             colour = 'text-danger';
+            //colour = 'text-danger';
         }
         else if (userType === 'ADMIN') {
             userName = homeSegHandle + ' as Admin';
@@ -93,7 +94,8 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
             colour = 'text-danger';
         } else if (userType === 'MUNICIPAL') {
             userName = 'Municipal Account';
-            colour = 'text-warning';
+            //colour = 'text-warning';
+            colour = 'admin';
         } else if (userType === 'BUSINESS') {
             userName = organizationName + '@' + address?.streetAddress + ' as Business Member';
             colour = 'text-primary';
@@ -116,7 +118,7 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
                     break;
             }
         }
-        return (<span className={`name d-block font-weight-bold ${colour}`} style={{ fontSize: '70%' }}>{userName}</span>);
+        return (<span className={`name d-block font-weight-bold ${colour} !important`} style={{ fontSize: '70%' }}>{userName}</span>);
     };
 
     // const flagFunc = async(ideaId: number, token: string, userId: string, ideaActive: boolean, reason: string, quarantined_at: Date) => {
@@ -190,38 +192,32 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
                     </div>
                     <br />
 
-                    {isUserAuthenticated() && (
-                        <div className='d-flex'>
-                            <div className='d-flex align-items-center'>
-                                <IdeaCommentLike commentData={commentData} />
-                                <span>{likes}</span>
-                            </div>
-                            <div className='d-flex align-items-center ml-2 mr-4'>
-                                <IdeaCommentDislike commentData={commentData} />
-                                <span>{dislikes}</span>
-                            </div>
-                            {/*
-                            <IdeaCommentLike commentData={commentData} />  
-                    <IdeaCommentDislike commentData={commentData} /> {dislikes} */}
-                            {/* {!reviewed ? (
-              <Button onClick={
-                async () => await createCommentFlagAndCheckThreshold(id, token!, new Date())
-              }>Flag</Button>
-              ) : null} */}
-                            {!reviewed ? (
-                                <ButtonGroup className='mr-2 mt-3' style={{ overflow: 'visible' }}>
-                                    {showFlagButton ? (<DropdownButton id='dropdown-basic-button' drop='up' style={{ fontSize: '10px', font: '10px sans-serif' }} title='Flag' size='sm'>
-                                        <Dropdown.Item style={{ padding: '0.15rem 1.5rem', fontSize: '14px' }} eventKey='Abusive or Inappropriate Language' onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Abusive or Inappropriate Language</Dropdown.Item>
-                                        <Dropdown.Item style={{ padding: '0.15rem 1.5rem', fontSize: '14px' }} eventKey='Submission in Wrong Community' onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Submission in Wrong Community</Dropdown.Item>
-                                        <Dropdown.Item style={{ padding: '0.15rem 1.5rem', fontSize: '14px' }} eventKey='Spam/Unsolicited Advertisement' onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Spam/Unsolicited Advertisement</Dropdown.Item>
-                                        <Dropdown.Item style={{ padding: '0.15rem 1.5rem', fontSize: '14px' }} eventKey='Unrelated to Discussion (Off Topic)' onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Unrelated to Discussion (Off Topic)</Dropdown.Item>
-                                        <Dropdown.Item style={{ padding: '0.15rem 1.5rem', fontSize: '14px' }} eventKey='Incomplete Submission (Requires Additional Details)' onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Incomplete Submission (Requires Additional Details)</Dropdown.Item>
-                                        <Dropdown.Item style={{ padding: '0.15rem 1.5rem', fontSize: '14px' }} eventKey='Other' onSelect={(eventKey) => selectOtherReasonHandler(eventKey!)}>Other</Dropdown.Item>
-                                    </DropdownButton>) : null}
-                                </ButtonGroup>
-                            ) : null}
+                    <div className='d-flex'>
+                        <div className='d-flex align-items-center'>
+                            <IdeaCommentLike commentData={commentData} />
+                            <span>{likes}</span>
                         </div>
-                    )}
+                        <div className='d-flex align-items-center ml-2 mr-4'>
+                            <IdeaCommentDislike commentData={commentData} />
+                            <span>{dislikes}</span>
+                        </div>
+
+                        {/*  ==  changed June 14 ==
+                        Show Flag button only if user is authenticated 
+                        */}
+                        {isUserAuthenticated() && !reviewed ? (
+                            <ButtonGroup className='mr-2 mt-3' style={{ overflow: 'visible' }}>
+                                {showFlagButton ? (<DropdownButton id='dropdown-basic-button' drop='up' style={{ fontSize: '10px', font: '10px sans-serif' }} title='Flag' size='sm'>
+                                    <Dropdown.Item style={{ padding: '0.15rem 1.5rem', fontSize: '14px' }} eventKey='Abusive or Inappropriate Language' onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Abusive or Inappropriate Language</Dropdown.Item>
+                                    <Dropdown.Item style={{ padding: '0.15rem 1.5rem', fontSize: '14px' }} eventKey='Submission in Wrong Community' onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Submission in Wrong Community</Dropdown.Item>
+                                    <Dropdown.Item style={{ padding: '0.15rem 1.5rem', fontSize: '14px' }} eventKey='Spam/Unsolicited Advertisement' onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Spam/Unsolicited Advertisement</Dropdown.Item>
+                                    <Dropdown.Item style={{ padding: '0.15rem 1.5rem', fontSize: '14px' }} eventKey='Unrelated to Discussion (Off Topic)' onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Unrelated to Discussion (Off Topic)</Dropdown.Item>
+                                    <Dropdown.Item style={{ padding: '0.15rem 1.5rem', fontSize: '14px' }} eventKey='Incomplete Submission (Requires Additional Details)' onSelect={(eventKey) => selectReasonHandler(eventKey!)}>Incomplete Submission (Requires Additional Details)</Dropdown.Item>
+                                    <Dropdown.Item style={{ padding: '0.15rem 1.5rem', fontSize: '14px' }} eventKey='Other' onSelect={(eventKey) => selectOtherReasonHandler(eventKey!)}>Other</Dropdown.Item>
+                                </DropdownButton>) : null}
+                            </ButtonGroup>
+                        ) : null}
+                    </div>
                 </Col>
             </Row>
 

@@ -117,3 +117,22 @@ export const getCommentsOfUser = async (userId: string, token: string | null | u
     const res = await axios.get<IComment[]>(`${API_BASE_URL}/comment/user/${userId}`, getAxiosJwtRequestOption(token!));
     return res.data;
 };
+
+
+export const checkSimilarComments = async (
+    ideaId: number,
+    token: string | null,
+    content: string
+): Promise<{ message: string; similarComments: IComment[] }> => {
+    if (!ideaId || !token) {
+        throw new Error('An ideaId and valid JWT must be specified to check similar comments.');
+    }
+  
+    const res = await axios.post(
+        `${API_BASE_URL}/comment/similarcomments/${ideaId}`,
+        { content },
+        getAxiosJwtRequestOption(token)
+    );
+  
+    return res.data; // Return only the data property of the Axios response
+};

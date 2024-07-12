@@ -88,6 +88,7 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ideaId, allCommentsUnd
                 banned={user?.banned}
                 token={token}
                 setShowCommentSubmitError={setShowCommentSubmitError}
+                ideaId={parseInt(ideaId)}
             />
             <div className='comments-wrapper my-3'>
                 {ideaComments && ideaComments.length === 0 ? (

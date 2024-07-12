@@ -54,5 +54,7 @@ module.exports = {
   // aws configuration
   AWS_CONFIG,
   AWS_S3_BUCKET_NAME,
+  // deepinfra (comment funnel) configuration
+  DEEPINFRA_API_KEY,
 }
 

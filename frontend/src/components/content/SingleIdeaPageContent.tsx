@@ -143,7 +143,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
         setOtherFlagReason('OTHER: ' + val.target.value);
     
     }
-    console.log(proposalIdea);
+    //console.log(proposalIdea);
     const handleHideFlagButton = () => setShowFlagButton(false);
 
     const handleClose = () => setShow(false);

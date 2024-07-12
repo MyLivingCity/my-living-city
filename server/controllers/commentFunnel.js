@@ -1,69 +1,211 @@
 // adapted from UBC_MDSCL 2023-2024 Capstone Team. Uses the DeepInfra API with the Meta Llama 3 large language model
-
-const funnelPrompt = "Given a sentence, analyze its tone as either 'Positive', 'Negative', or 'Neutral' and summarize the top keywords. Make sure Format your output as follows: 0. [Tone] | 1. [Attitude(verb)] | 2. [Keyword1] | 3. [Keyword2] | 4. [Keyword3] | 5. [Keyword4] | 6. [Keyword5]\n Ensure that the keywords are relevant and capture the essence of the sentence. Try to identify the agents (action initiators) and patients (action recipients) in keywords. Do not explain or give any other content! Just seven tag! You only only only need to give me the tags. The sentence is: ";
+require('dotenv').config();
+const OpenAI = require('openai');
+const { DEEPINFRA_API_KEY } = require('../lib/constants');
+const { PrismaClient } = require('@prisma/client')
+const prisma = require('../lib/prismaClient');
+const funnelPrompt = "Given a sentence, analyze its tone as either 'Positive', 'Negative', or 'Neutral' and summarize the top keywords. Make sure to format your output as follows: [Tone] | [Attitude(verb)] | [Keyword1] | [Keyword2] | [Keyword3] | [Keyword4] | [Keyword5]\n Ensure that the keywords are relevant and capture the essence of the sentence. Try to identify the agents (action initiators) and patients (action recipients) in keywords. Do not explain or give any other content! Just seven tags! You only only only need to give me the tags. The sentence is: ";
 
 const apiKey = DEEPINFRA_API_KEY;
 
-async function generateApi(query) {
-  const response = await fetch('https://api.deepinfra.com/v1/openai/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey}`
-    },
-    body: JSON.stringify({
-      model: 'meta-llama/Meta-Llama-3-8B-Instruct',
-      messages: [{ role: 'user', content: query }],
-      stream: false
-    })
-  });
+const openai = new OpenAI({
+    baseURL: 'https://api.deepinfra.com/v1/openai',
+    apiKey: apiKey,
+    dangerouslyAllowBrowser: true, 
+});
 
-  if (!response.ok) {
-    throw new Error(`HTTP error! Status: ${response.status}`);
+async function isCheckSimilarEnabled() {
+  try {
+    const featureToggle = await prisma.feature_Toggle.findUnique({
+      where: { featureName: 'checkSimilar' },
+      select: { isEnabled: true}
+    });
+    return featureToggle.isEnabled;
+  } catch (error){
+      return false;
   }
-
-  const data = await response.json();
-  return data.choices[0].message.content;
 }
 
 async function funnelCommentApi(newComment) {
-  const query = funnelPrompt + newComment;
-  const responseData = await generateApi(query);
+    const query = funnelPrompt + newComment;
+    const completion = await openai.chat.completions.create({
+        messages: [{ role: 'user', content: query }],
+        model: 'meta-llama/Meta-Llama-3-8B-Instruct',
+    })
+    .catch(async (err) => {
+      if (err instanceof OpenAI.APIError) {
+        console.log(err);
+      } else {
+        console.log(err);
+        throw err;
+      }
+    });
 
-  const responseContent = responseData.split('\n')[0].split(' | ');
-  const newCommentWords = [];
-
-  for (const item of responseContent) {
-    try {
-      newCommentWords.push(item.split('. ')[1]);
-    } catch (error) {
-      continue;
+    let commentKeywords = [];
+    if (completion) {
+      commentKeywords = completion.choices[0].message.content.toLowerCase().split(' | ');
     }
-  }
 
-  // Make sure the length of the list is 7
-  if (newCommentWords.length < 7) {
-    newCommentWords.push(...Array(7 - newCommentWords.length).fill('None'));
-  } else if (newCommentWords.length > 7) {
-    newCommentWords.length = 7;
-  }
+    // Make sure the length of the list is 7
+    if (commentKeywords.length < 7) {
+        commentKeywords.push(...Array(7 - commentKeywords.length).fill('none'));
+    } else if (commentKeywords.length > 7) {
+        commentKeywords.length = 7;
+    }
 
-  // Use an object to store them
-  const commentTags = {
-    Tone: newCommentWords[0],
-    Attitude: newCommentWords[1],
-    Keyword1: newCommentWords[2],
-    Keyword2: newCommentWords[3],
-    Keyword3: newCommentWords[4],
-    Keyword4: newCommentWords[5],
-    Keyword5: newCommentWords[6],
-  };
-
-  return commentTags;
+    // Use an object to store them
+    const commentTags = {
+        tone: commentKeywords[0],
+        attitude: commentKeywords[1],
+        keywords: {
+          keyword1: commentKeywords[2],
+          keyword2: commentKeywords[3],
+          keyword3: commentKeywords[4],
+          keyword4: commentKeywords[5],
+          keyword5: commentKeywords[6],
+        },
+    };
+    await prisma.$disconnect();
+    return commentTags;
 }
 
-// Example usage
-const newComment = "Your sentence here.";
-funnelCommentApi(newComment).then(commentTags => {
-  console.log(commentTags);
-});
+async function checkSimilar(commentKeywords, ideaId, loggedInUser) {
+    const enabled = await isCheckSimilarEnabled();
+
+    let similarCommentArray = [];
+    let similarityCountArray = [];
+    
+    if(enabled) {
+      const prismaLikesAndDislikesQuery = {
+        likes: {
+          where: {
+            authorId: loggedInUser?.id
+          }
+        },
+        dislikes: {
+          where: {
+            authorId: loggedInUser?.id
+          }
+        }
+      }
+
+      const commentsQuery = await prisma.ideaComment.findMany({
+        where: { ideaId: ideaId },
+        include: {
+          _count: {
+            select: {
+              likes: true,
+              dislikes: true,
+            }
+          },
+          author: {
+            select: {
+              id: true,
+              email: true,
+              fname: true,
+              lname: true,
+              organizationName: true,
+              userType: true,
+              userSegments: {
+                select: {
+                  id: true,
+                  homeSegmentId: true,
+                  workSegmentId: true,
+                  schoolSegmentId: true,
+                  homeSubSegmentId: true,
+                  workSubSegmentId: true,
+                  schoolSubSegmentId: true,
+                  homeSegHandle: true,
+                  workSegHandle: true,
+                  schoolSegHandle: true,
+                }
+              },
+              address: {
+                select: {
+                  streetAddress: true,
+                  postalCode: true,
+                }
+              }
+            }
+          },
+          // userSeg: {
+          //   select: {
+          //     id: true,
+          //     homeSegmentId: true,
+          //     workSegmentId: true,
+          //     schoolSegmentId: true,
+          //   }
+          // },
+          idea: {
+            select: {
+              id: true,
+              segmentId: true,
+              subSegmentId: true
+            }
+          },
+          // userSeg: {
+          //   select: {
+          //     id: true,
+          //     homeSegmentId: true
+          //   }
+          // },
+
+          ...loggedInUser && { ...prismaLikesAndDislikesQuery }
+        },
+        orderBy: [
+          {
+            likes: {
+              _count: 'desc'
+            }
+          },
+          {
+            updatedAt: 'desc'
+          },
+        ]
+      });
+
+      const comments = commentsQuery.map(commentQuery => ({
+        ...commentQuery,
+        likes: commentQuery.likes ?? [],
+        dislikes: commentQuery.dislikes ?? [],
+      }))
+
+      comments.forEach(comment => {
+        let keywordCount = 0;
+        //only check if comments are similar if they have the same tone
+        if (commentKeywords.tone === comment.tone) {
+          keywordCount++;
+          if (commentKeywords.attitude === comment.attitude) {
+            keywordCount++;
+          }
+          for (const value of Object.values(commentKeywords.keywords)) {
+            if (value !== 'none' && value !== '') {
+              for (const commentValue of Object.values(comment.keywords)) {
+                if(value === commentValue) {
+                  keywordCount++;
+                  break;
+                }
+              }
+            }
+          }
+        }
+        if (keywordCount > 3) {
+          similarCommentArray.push(comment);
+          similarityCountArray.push(keywordCount);
+        }
+      });
+      while (similarCommentArray.length > 5) {
+        // find index of least similar comment
+        let minIndex = similarityCountArray.indexOf(Math.min(...similarityCountArray));
+        similarCommentArray.splice(minIndex, 1);
+        similarityCountArray.splice(minIndex, 1);
+      }
+    }
+    await prisma.$disconnect();
+    return similarCommentArray;
+}
+
+module.exports = {
+  funnelCommentApi,
+  checkSimilar,
+};

@@ -7,6 +7,7 @@ const prisma = require('../lib/prismaClient');
 const { includes } = require('lodash');
 const { checkIfUserIsLoggedIn } = require('../middlewares/checkAuth');
 const { compareCommentsBasedOnLikesAndDislikes } = require('../lib/sortingFunctions');
+const { funnelCommentApi, checkSimilar } = require( './commentFunnel');
 
 commentRouter.get(
   '/',
@@ -205,7 +206,7 @@ commentRouter.post(
       
       if (user) {
         return res.status(400).json({
-          message: 'User is in quaratine',
+          message: 'User is in quarantine',
         });
       } 
 
@@ -308,11 +309,20 @@ commentRouter.post(
 
         if (!match) {
           return res.status(403).json({
-            message: `You are not belonging to the idea's segment or subsegment!`
+            message: `You do not belong to the idea's segment or subsegment!`
           })
         }
       }
+      
+      // TODO: add logic to check if there's obscenity
+      // Comment Funnel logic
+      let tone, attitude, keywords;
+      let keywordsObject = await funnelCommentApi(content);
 
+      tone = keywordsObject.tone;
+      attitude = keywordsObject.attitude;
+      keywords = keywordsObject.keywords;
+      
       const createdComment = await prisma.ideaComment.create({
         data: {
           content,
@@ -321,7 +331,10 @@ commentRouter.post(
           userSegId: theUserSegment.id,
           superSegmentId: theSuperSegmentId,
           segmentId: theSegmentId,
-          subSegmentId: theSubSegmentId
+          subSegmentId: theSubSegmentId,
+          tone: tone,
+          attitude: attitude,
+          keywords: keywords
         },
         include: {
           author: {
@@ -348,6 +361,43 @@ commentRouter.post(
     }
   }
 )
+
+commentRouter.post(
+  '/similarcomments/:ideaId',
+  checkIfUserIsLoggedIn,
+  passport.authenticate('jwt', { session: false }),
+  async (req, res, next) => {
+    try {    
+      //check if there are similar comments to that which the user is trying to post
+      const { content } = req.body;
+      const parsedIdeaId = parseInt(req.params.ideaId);
+      const loggedInUser = req.user;
+      
+      let keywordsObject = await funnelCommentApi(content);
+
+      if (keywordsObject && Object.keys(keywordsObject.keywords).length > 0){
+          const similarComments = await checkSimilar(keywordsObject, parsedIdeaId, loggedInUser);
+          if (similarComments && similarComments[0]) {
+              return res.status(200).json({
+                message: `similar comments found`,
+                similarComments: similarComments
+              })
+          }
+      }
+
+      res.status(200).json({ message: 'No similar comments found.', similarComments: [] });
+    } catch (error) {
+      res.status(400).json({
+        message: `An error occured while trying to check for similar comments.`,
+        details: {
+          errorMessage: error.message,
+          errorStack: error.stack,
+        }
+      });
+    }
+  }
+)
+
 //Changes comment state
 commentRouter.put(
   '/updateState/:commentId',

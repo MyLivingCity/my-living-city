@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { Button, Container,  Modal, Row } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { Button, Container,  Modal, Row, ListGroup } from 'react-bootstrap';
 import IdeaCommentTile from 'src/components/tiles/IdeaComment/IdeaCommentTile';
 import { getUserBanWithToken } from '../../../lib/api/banRoutes';
 import { ICreateCommentInput } from 'src/lib/types/input/createComment.input';
 import { IComment } from '../../../lib/types/data/comment.type';
 import { TEXT_INPUT_LIMIT } from 'src/lib/constants';
+import { checkSimilarComments } from '../../../lib/api/commentRoutes';
 
 interface CommentSubmitModalProps {
   setShow: React.Dispatch<React.SetStateAction<boolean>>;
@@ -16,6 +17,7 @@ interface CommentSubmitModalProps {
   banned?: boolean;
   token: string | null;
   setShowCommentSubmitError: any;
+  ideaId: number;
 }
 
 const CommentSubmitModal = ({
@@ -28,10 +30,26 @@ const CommentSubmitModal = ({
     comments,
     banned,
     token,
+    ideaId,
 }: CommentSubmitModalProps) => {
-    const handleClose = () => setShow(false);
     const [commentText, setCommentText] = useState('');
     const [error, setError] = useState<string | null>(null);
+    const [showSimilarComments, setShowSimilarComments] = useState(false);
+    const [similarCommentsData, setSimilarCommentsData] = useState<IComment[]>([]);
+
+    const handleClose = () => { 
+        setShow(false);
+        setCommentText('');
+        setShowSimilarComments(false);
+    };
+    useEffect(() => {
+        if(!show) {
+            setCommentText('');
+            setShowSimilarComments(false);
+            setSimilarCommentsData([]);
+        }
+    }, [show]);
+    
     const submitHandler = async (values: ICreateCommentInput) => {
         const banDetails = await getUserBanWithToken(token);
         let isBanned = true;
@@ -46,12 +64,17 @@ const CommentSubmitModal = ({
                 alert('You are banned!');
                 throw error;
             }
-            submitComment(values);
-            setCommentText('');
+            const similarCommentsResult = await checkSimilarComments(ideaId, token, commentText);
+            if (similarCommentsResult.similarComments.length > 0) {
+                setSimilarCommentsData(similarCommentsResult.similarComments);
+                setShowSimilarComments(true);
+            } else {
+                submitComment(values);
+                setCommentText('');
+                handleClose();
+            }
         } catch (error) {
             console.log(error);
-        } finally {
-            handleClose();
         }
     };
 
@@ -66,29 +89,33 @@ const CommentSubmitModal = ({
             <Modal.Header closeButton>
                 <Container>
                     <Row className='justify-content-center'>
-                        <Modal.Title>Top 10 Feedbacks</Modal.Title>
+                        <Modal.Title>
+                            {showSimilarComments ? 'Similar Comments Found' : 'Submit Comment'}
+                        </Modal.Title>
                     </Row>
                     <Row className='text-center'>
                         <p>
-              Please take a look at top 10 feedbacks. Do you see your opinion
-              there? Why not encourage participation instead by liking it?
+                            { showSimilarComments
+                                ? 'We found the following similar comments. Consider liking the comment that is most similar to yours or try writing a new comment.'
+                                : 'Add your voice to the conversation.'
+                            }
                         </p>
                     </Row>
                 </Container>
             </Modal.Header>
-            <Modal.Body>
-                {comments && comments.length <= 0 ? (
-                    <p className='text-center'>
-            There are no Feedback Comments for this idea yet. Try posting one!
-                    </p>
-                ) : null}
-                {comments &&
-          comments?.map((comment) => (
-              <div key={comment.id}>
-                  <IdeaCommentTile commentData={comment} />
-              </div>
-          ))}
-            </Modal.Body>
+            {showSimilarComments && similarCommentsData.length > 0 && (
+                <Modal.Body>
+                    <div>
+                        <ListGroup>
+                            {similarCommentsData.map((comment: IComment) => (
+                                <ListGroup.Item key={comment.id}>
+                                    <IdeaCommentTile commentData={comment} />
+                                </ListGroup.Item>
+                            ))}
+                        </ListGroup>
+                    </div>
+                </Modal.Body>
+            )}
             <Modal.Footer className='d-flex flex-column'>
                 <textarea
                     className='w-100'

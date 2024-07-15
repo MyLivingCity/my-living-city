@@ -578,6 +578,11 @@ model IdeaComment {
   notification_dismissed Boolean  @default(false) @map("notification_dismissed")
   quarantined_at         DateTime @default(now()) @map(name: "quarantined_at")
 
+  // Comment Funnel Fields
+  tone                   String?
+  attitude               String?
+  keywords               Json?
+
   // Moderator Fields
   commentFlagNumber Int                   @default(0) @map("comment_flag_num")
   bannedComment     Boolean               @default(false) @map("banned_comment")
@@ -917,4 +922,13 @@ model Work_Details {
   updatedAt  DateTime @default(now()) @map("updated_at")
 
   @@map(name: "work_details")
+}
+
+model Feature_Toggle {
+  id        Int      @id @default(autoincrement())
+  featureName String @unique
+  isEnabled Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@map(name: "feature_toggle")
 }

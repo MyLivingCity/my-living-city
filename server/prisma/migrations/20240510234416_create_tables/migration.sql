@@ -1,5 +1,5 @@
 -- DropForeignKey
-ALTER TABLE "FeedbackRating" DROP CONSTRAINT "FeedbackRating_author_id_fkey";
+/*ALTER TABLE "FeedbackRating" DROP CONSTRAINT "FeedbackRating_author_id_fkey";
 
 -- DropForeignKey
 ALTER TABLE "FeedbackRating" DROP CONSTRAINT "FeedbackRating_proposal_id_fkey";
@@ -29,7 +29,7 @@ ALTER TABLE "public_community_business_profile" DROP CONSTRAINT "public_communit
 ALTER TABLE "public_municipal_profile" DROP CONSTRAINT "public_municipal_profile_userId_fkey";
 
 -- DropForeignKey
-ALTER TABLE "quarantine_notifications" DROP CONSTRAINT "quarantine_notifications_ideaId_ideaTitle_fkey";
+--ALTER TABLE "quarantine_notifications" DROP CONSTRAINT "quarantine_notifications_ideaId_ideaTitle_fkey"; Manual fix of issue with migration
 
 -- DropForeignKey
 ALTER TABLE "quarantine_notifications" DROP CONSTRAINT "quarantine_notifications_userId_fkey";
@@ -151,3 +151,4 @@ ALTER INDEX "user_stripe.userId_unique" RENAME TO "user_stripe_userId_key";
 
 -- RenameIndex
 ALTER INDEX "volunteer_unique" RENAME TO "volunteer_proposal_id_author_id_key";
+*/

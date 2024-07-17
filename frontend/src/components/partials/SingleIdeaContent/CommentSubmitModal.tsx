@@ -86,14 +86,14 @@ const CommentSubmitModal = ({
             size='lg'
             animation={false}
         >
-            <Modal.Header closeButton>
+            <Modal.Header closeButton className='border-0'>
                 <Container>
-                    <Row className='justify-content-center'>
+                    <Row className='justify-content-start'>
                         <Modal.Title>
                             {showSimilarComments ? 'Similar Comments Found' : 'Submit Comment'}
                         </Modal.Title>
                     </Row>
-                    <Row className='text-center'>
+                    <Row className='text-center pt-1'>
                         <p>
                             { showSimilarComments
                                 ? 'We found the following similar comments. Consider liking the comment that is most similar to yours or try writing a new comment.'
@@ -116,7 +116,7 @@ const CommentSubmitModal = ({
                     </div>
                 </Modal.Body>
             )}
-            <Modal.Footer className='d-flex flex-column'>
+            <Modal.Footer className='d-flex flex-column border-0'>
                 <textarea
                     className='w-100'
                     rows={3}

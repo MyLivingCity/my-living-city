@@ -903,7 +903,7 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                     <p> The following works when commenting:</p>
                     <p className='ml-4'>
                         {' '}
-            a. Emphasizes what you see works about the idea and what is the
+            a. Emphasize what you see that works about the idea and what is the
             value that it brings;
                     </p>
                     <p className='ml-4'>
@@ -917,8 +917,8 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                     </p>
                     <p className='ml-4'>
                         {' '}
-            d. Share about where else can this idea go or what new angle can be
-            added to make even better for the whole community.
+            d. Share about where else this idea can go or what new angle can be
+            added to make it even better for the whole community.
                     </p>
                     <p>
                         <strong>
@@ -929,8 +929,15 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                         </strong>
                     </p>
                     <p>
-            By clicking next you verify that MyLivingCity has the right to store
-            your personal information.
+            By clicking next you confirm:</p>
+                    <p className='ml-4'>
+                        {' '}
+            a. Your acceptance to follow these community guidelines; and
+                    </p>
+                    <p className='ml-4'>
+                        {' '}
+            b. That MyLivingCity has the right to store and process 
+            your personal information shared with the platform.
                     </p>
                 </FormikStep>
 
@@ -1062,10 +1069,10 @@ export function FormikStepper({
             case 3:
                 return userType === USER_TYPES.RESIDENTIAL
                     ? 'School Location'
-                    : 'Privacy Policy';
+                    : 'User Agreement and Community Guidelines';
             case 4:
                 return userType === USER_TYPES.RESIDENTIAL
-                    ? 'Privacy Policy'
+                    ? 'User Agreement and Community Guidelines'
                     : 'Submit';
                 // case 5:
                 //     return userType === USER_TYPES.RESIDENTIAL ? "Submit" : "Submit"

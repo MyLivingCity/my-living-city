@@ -20,6 +20,7 @@ import {
     findSegmentByName,
     findSubsegmentsBySegmentId,
     getAllSegmentsWithSuperSegId,
+    getAllSegments,
 } from 'src/lib/api/segmentRoutes';
 import { ISegment, ISubSegment } from 'src/lib/types/data/segment.type';
 import * as Yup from 'yup';
@@ -57,6 +58,7 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
     const [map, showMap] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [segment, setSegment] = useState<ISegment>();
+    const [cities, setCities] = useState<ISegment[]>([]); //temporary as I replace all segments with this
     const [subSegments, setSubSegments] = useState<ISubSegment[]>();
     const [segment2, setSegment2] = useState<ISegment>();
     const [subSegments2, setSubSegments2] = useState<ISubSegment[]>();
@@ -117,6 +119,20 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
             getReachData();
         }
     }, [segment]);
+
+    //set cities data
+    useEffect(() => {
+        const fetchCities = async () => {
+            try {
+                const res = await getAllSegments();
+                setCities(res);
+            } catch (error) {
+                console.error('Error fetching cities:', error);
+            }
+        };
+
+        fetchCities();
+    }, []);
 
     const userTypeInfoContainerStyles: CSS.Properties = {
         marginTop: '40px',
@@ -516,10 +532,10 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                     <Card.Subtitle className='text-muted mb-3'>
             We use this information to find your community!
                     </Card.Subtitle>
-                    <SimpleMap
+                    {/* <SimpleMap
                         iconName={'home'}
                         sendData={(markers: any) => sendData(markers)}
-                    />
+                    /> */}
                 </FormikStep>
 
                 <FormikStep>
@@ -538,10 +554,11 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                                     parseInt(e.target.value),
                                     setSegIds
                                 );
+                                console.log(e.target.value);
                                 refactorStateArray(subIds, 0, null, setSubIds);
                             }}
                         >
-                            {segment && (
+                            {/* {segment && (
                                 <option value={segment?.segId}>
                                     {capitalizeFirstLetterEachWord(segment?.name)}
                                 </option>
@@ -550,7 +567,13 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                                 <option value={segment2?.segId}>
                                     {capitalizeFirstLetterEachWord(segment2?.name)}
                                 </option>
-                            )}
+                            )} */}
+                            <option value=''/>
+                            {cities.map(city => (
+                                <option value={city.segId}>
+                                    {capitalizeFirstLetterEachWord(city.name)}
+                                </option>
+                            ))}
                         </BForm.Control>
                     </BForm.Group>
                     <BForm.Group>
@@ -605,7 +628,7 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                                             type='radio'
                                             id='inline-checkbox'
                                             onClick={() => {
-                                                showMap(true);
+                                                //showMap(true);
                                                 transferHomeToWork(false);
                                             }}
                                         />
@@ -627,10 +650,10 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                                 <Card.Title>
                   Show us on the map where your work is (optional)
                                 </Card.Title>
-                                <SimpleMap
+                                {/* <SimpleMap
                                     iconName={'work'}
                                     sendData={(markers: any) => sendData(markers)}
-                                />
+                                /> */}
                             </>
                         )}
                     </FormikStep>
@@ -653,7 +676,7 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                                     refactorStateArray(subIds, 1, null, setSubIds);
                                 }}
                             >
-                                {segment && (
+                                {/* {segment && (
                                     <option value={segment?.segId}>
                                         {capitalizeFirstLetterEachWord(segment?.name)}
                                     </option>
@@ -662,7 +685,12 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                                     <option value={segment2?.segId}>
                                         {capitalizeFirstLetterEachWord(segment2?.name)}
                                     </option>
-                                )}
+                                )} */}
+                                {cities.map(city => (
+                                    <option value={city.segId}>
+                                        {capitalizeFirstLetterEachWord(city.name)}
+                                    </option>
+                                ))}
                             </BForm.Control>
                         </BForm.Group>
                         <BForm.Group>
@@ -742,7 +770,7 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                                             type='radio'
                                             id='inline-checkbox'
                                             onClick={() => {
-                                                showMap(true);
+                                                //showMap(true);
                                                 transferWorkToSchool(false);
                                             }}
                                         />
@@ -764,10 +792,10 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                                 <Card.Title>
                   Show us on the map where your school is (optional)
                                 </Card.Title>
-                                <SimpleMap
+                                {/* <SimpleMap
                                     iconName={'school'}
                                     sendData={(markers: any) => sendData(markers)}
-                                />
+                                /> */}
                             </>
                         )}
                     </FormikStep>
@@ -790,12 +818,17 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                                     refactorStateArray(subIds, 2, null, setSubIds);
                                 }}
                             >
-                                {segment && (
+                                {/* {segment && (
                                     <option value={segment?.segId}>{segment?.name}</option>
                                 )}
                                 {segment2 && (
                                     <option value={segment2?.segId}>{segment2?.name}</option>
-                                )}
+                                )} */}
+                                {cities.map(city => (
+                                    <option value={city.segId}>
+                                        {capitalizeFirstLetterEachWord(city.name)}
+                                    </option>
+                                ))}
                             </BForm.Control>
                         </BForm.Group>
                         <BForm.Group>
@@ -903,7 +936,7 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                     <p> The following works when commenting:</p>
                     <p className='ml-4'>
                         {' '}
-            a. Emphasize what you see that works about the idea and what is the
+            a. Emphasizes what you see works about the idea and what is the
             value that it brings;
                     </p>
                     <p className='ml-4'>
@@ -917,8 +950,8 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                     </p>
                     <p className='ml-4'>
                         {' '}
-            d. Share about where else this idea can go or what new angle can be
-            added to make it even better for the whole community.
+            d. Share about where else can this idea go or what new angle can be
+            added to make even better for the whole community.
                     </p>
                     <p>
                         <strong>
@@ -929,15 +962,8 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                         </strong>
                     </p>
                     <p>
-            By clicking next you confirm:</p>
-                    <p className='ml-4'>
-                        {' '}
-            a. Your acceptance to follow these community guidelines; and
-                    </p>
-                    <p className='ml-4'>
-                        {' '}
-            b. That MyLivingCity has the right to store and process 
-            your personal information shared with the platform.
+            By clicking next you verify that MyLivingCity has the right to store
+            your personal information.
                     </p>
                 </FormikStep>
 
@@ -1056,7 +1082,7 @@ export function FormikStepper({
         return isLoading ? 'Submitting...' : 'Submit';
     };
     const isHomeMarkerSet = () => {
-        return step === 2 && markers.home.lat === null;
+        return step === 2; //&& markers.home.lat === null;
     };
     const getStepHeader = (step: number) => {
         switch (step) {
@@ -1069,10 +1095,10 @@ export function FormikStepper({
             case 3:
                 return userType === USER_TYPES.RESIDENTIAL
                     ? 'School Location'
-                    : 'User Agreement and Community Guidelines';
+                    : 'Privacy Policy';
             case 4:
                 return userType === USER_TYPES.RESIDENTIAL
-                    ? 'User Agreement and Community Guidelines'
+                    ? 'Privacy Policy'
                     : 'Submit';
                 // case 5:
                 //     return userType === USER_TYPES.RESIDENTIAL ? "Submit" : "Submit"
@@ -1100,13 +1126,14 @@ export function FormikStepper({
             if (isLastStep()) {
                 setInferStep((s) => s - 1);
             }
-            if (step === 8 && markers.school.lat === null) {
-                setStep((s) => s - 2);
-            } else if (step === 6 && markers.work.lat === null) {
-                setStep((s) => s - 2);
-            } else {
-                setStep((s) => s - 1);
-            }
+            // if (step === 8 && markers.school.lat === null) {
+            //     setStep((s) => s - 2);
+            // } else if (step === 6 && markers.work.lat === null) {
+            //     setStep((s) => s - 2);
+            // } else {
+            //     setStep((s) => s - 1);
+            // }
+            setStep((s) => s - 1);
         } else {
             if (step === 3 || step === 1) {
                 setStep((s) => s - 1);
@@ -1120,66 +1147,66 @@ export function FormikStepper({
     //The data is then searched in the back end for a matching segment
     //Then the back end is searched for all the sub-segments of that matching segment.
     async function setSegData(index: number) {
-        let googleQuery: any;
-        let testMode = true;
+        //let googleQuery: any;
+        //let testMode = true;
         try {
             //PLACEHOLDER for GOOGLE API query
             setError(null);
             setIsLoading(true);
-            switch (index) {
-                case 0:
-                    googleQuery = await searchForLocation(markers.home);
-                    console.log('google home query');
-                    break;
-                case 1:
-                    googleQuery = await searchForLocation(markers.work);
-                    console.log('google work query');
-                    break;
-                case 2:
-                    googleQuery = await searchForLocation(markers.school);
-                    console.log('google school query');
-                    break;
-                default:
-            }
-            if (googleQuery.city2) {
-                const seg2 = await findSegmentByName({
-                    segName: googleQuery.city2,
-                    province: googleQuery.province,
-                    country: googleQuery.country,
-                });
-                if (seg2) {
-                    props.setSegment2(seg2);
-                    refactorStateArray(segIds, index, seg2.segId, setSegIds);
+            // switch (index) {
+            //     case 0:
+            //         googleQuery = await searchForLocation(markers.home);
+            //         console.log('google home query');
+            //         break;
+            //     case 1:
+            //         googleQuery = await searchForLocation(markers.work);
+            //         console.log('google work query');
+            //         break;
+            //     case 2:
+            //         googleQuery = await searchForLocation(markers.school);
+            //         console.log('google school query');
+            //         break;
+            //     default:
+            // }
+            // if (googleQuery.city2) {
+            //     const seg2 = await findSegmentByName({
+            //         segName: googleQuery.city2,
+            //         province: googleQuery.province,
+            //         country: googleQuery.country,
+            //     });
+            //     if (seg2) {
+            //         props.setSegment2(seg2);
+            //         refactorStateArray(segIds, index, seg2.segId, setSegIds);
 
-                    //refactorSegIds(index,seg2.segId);
-                    const sub2 = await findSubsegmentsBySegmentId(seg2.segId);
-                    props.setSubSegments2(sub2);
-                    // console.log(`Seg2: ${JSON.stringify(seg2)}`);
-                    // console.log(`SubSeg2: ${JSON.stringify(sub2)}`)
-                } else {
-                    props.setSegment2(null);
-                    props.setSubSegments2(null);
-                }
-            }
-            if (googleQuery.city) {
-                const seg = await findSegmentByName({
-                    segName: googleQuery.city,
-                    province: googleQuery.province,
-                    country: googleQuery.country,
-                });
-                if (seg) {
-                    props.setSegment(seg);
-                    refactorStateArray(segIds, index, seg.segId, setSegIds);
-                    //refactorSegIds(index,seg.segId);
-                    const sub = await findSubsegmentsBySegmentId(seg.segId);
-                    props.setSubSegments(sub);
-                    // console.log(`Seg: ${JSON.stringify(seg)}`);
-                    // console.log(`SubSeg1: ${JSON.stringify(sub)}`)
-                } else {
-                    props.setSegment(null);
-                    props.setSubSegments(null);
-                }
-            }
+            //         //refactorSegIds(index,seg2.segId);
+            //         const sub2 = await findSubsegmentsBySegmentId(seg2.segId);
+            //         props.setSubSegments2(sub2);
+            //         // console.log(`Seg2: ${JSON.stringify(seg2)}`);
+            //         // console.log(`SubSeg2: ${JSON.stringify(sub2)}`)
+            //     } else {
+            //         props.setSegment2(null);
+            //         props.setSubSegments2(null);
+            //     }
+            // }
+            // if (googleQuery.city) {
+            //     const seg = await findSegmentByName({
+            //         segName: googleQuery.city,
+            //         province: googleQuery.province,
+            //         country: googleQuery.country,
+            //     });
+            //     if (seg) {
+            //         props.setSegment(seg);
+            //         refactorStateArray(segIds, index, seg.segId, setSegIds);
+            //         //refactorSegIds(index,seg.segId);
+            //         const sub = await findSubsegmentsBySegmentId(seg.segId);
+            //         props.setSubSegments(sub);
+            //         // console.log(`Seg: ${JSON.stringify(seg)}`);
+            //         // console.log(`SubSeg1: ${JSON.stringify(sub)}`)
+            //     } else {
+            //         props.setSegment(null);
+            //         props.setSubSegments(null);
+            //     }
+            // }
             setStep((s) => s + 1);
         } catch (err) {
             console.log(err);
@@ -1220,48 +1247,51 @@ export function FormikStepper({
                             setInferStep((s) => s + 1);
                         }
                     } else if (step === 2) {
-                        const seg = await setSegData(0);
-                        showMap(false);
+                        //const seg = await setSegData(0);
+                        //showMap(false);
+                        setStep((s) => s + 1);
                     } else if (step === 4 && userType === USER_TYPES.RESIDENTIAL) {
-                        if (markers.work.lat === null) {
-                            setStep((s) => s + 2);
-                            setInferStep((s) => s + 1);
-                            if (workTransfer) {
-                                refactorStateArray(segIds, 1, segIds[0], setSegIds);
-                                refactorStateArray(subIds, 1, subIds[0], setSubIds);
-                                //refactorSegIds(1, segIds[0]);
-                                //refactorSubIds(1, subIds[0]);
-                            }
-                        } else {
-                            const seg = await setSegData(1);
-                            //setStep(s=>s+1);
-                        }
+                        // if (markers.work.lat === null) {
+                        //     setStep((s) => s + 2);
+                        //     setInferStep((s) => s + 1);
+                        //     if (workTransfer) {
+                        //         refactorStateArray(segIds, 1, segIds[0], setSegIds);
+                        //         refactorStateArray(subIds, 1, subIds[0], setSubIds);
+                        //         //refactorSegIds(1, segIds[0]);
+                        //         //refactorSubIds(1, subIds[0]);
+                        //     }
+                        // } else {
+                        //     const seg = await setSegData(1);
+                        //     //setStep(s=>s+1);
+                        // }
+                        const seg = await setSegData(1);
                         showMap(false);
                     } else if (step === 6 && userType === USER_TYPES.RESIDENTIAL) {
                         console.log(segIds);
-                        if (markers.school.lat === null) {
-                            setStep((s) => s + 2);
-                            setInferStep((s) => s + 1);
-                            if (schoolTransfer) {
-                                refactorStateArray(
-                                    segIds,
-                                    2,
-                                    segIds[1] || segIds[0],
-                                    setSegIds
-                                );
-                                refactorStateArray(
-                                    subIds,
-                                    2,
-                                    subIds[1] || subIds[0],
-                                    setSubIds
-                                );
-                                //refactorSegIds(2, segIds[1] || segIds[0]);
-                                //refactorSubIds(2, subIds[1] || subIds[0])
-                            }
-                        } else {
-                            const seg = await setSegData(2);
-                            //setStep(s=>s+1);
-                        }
+                        // if (markers.school.lat === null) {
+                        //     setStep((s) => s + 2);
+                        //     setInferStep((s) => s + 1);
+                        //     if (schoolTransfer) {
+                        //         refactorStateArray(
+                        //             segIds,
+                        //             2,
+                        //             segIds[1] || segIds[0],
+                        //             setSegIds
+                        //         );
+                        //         refactorStateArray(
+                        //             subIds,
+                        //             2,
+                        //             subIds[1] || subIds[0],
+                        //             setSubIds
+                        //         );
+                        //         //refactorSegIds(2, segIds[1] || segIds[0]);
+                        //         //refactorSubIds(2, subIds[1] || subIds[0])
+                        //     }
+                        // } else {
+                        //     const seg = await setSegData(2);
+                        //     //setStep(s=>s+1);
+                        // }
+                        const seg = await setSegData(2);
                         setIsLoading(false);
                     } else if (
                         (step === 8 && userType === USER_TYPES.RESIDENTIAL) ||
@@ -1271,12 +1301,12 @@ export function FormikStepper({
                         setIsLoading(true);
                         //Field setters for the external inputs. Formik can only handle native form elements.
                         //These fields must be added manually.
-                        helpers.setFieldValue('geo.lat', markers.home.lat);
-                        helpers.setFieldValue('geo.lon', markers.home.lon);
-                        helpers.setFieldValue('geo.work_lat', markers.work.lat);
-                        helpers.setFieldValue('geo.work_lon', markers.work.lon);
-                        helpers.setFieldValue('geo.school_lat', markers.school.lat);
-                        helpers.setFieldValue('geo.school_lon', markers.school.lon);
+                        // helpers.setFieldValue('geo.lat', markers.home.lat);
+                        // helpers.setFieldValue('geo.lon', markers.home.lon);
+                        // helpers.setFieldValue('geo.work_lat', markers.work.lat);
+                        // helpers.setFieldValue('geo.work_lon', markers.work.lon);
+                        // helpers.setFieldValue('geo.school_lat', markers.school.lat);
+                        // helpers.setFieldValue('geo.school_lon', markers.school.lon);
 
                         helpers.setFieldValue('homeSegmentId', segIds[0] || null);
                         helpers.setFieldValue('homeSubSegmentId', subIds[0] || null);
@@ -1320,7 +1350,7 @@ export function FormikStepper({
                     </div>
                     <Card>
                         <Card.Header>
-                            <h3>{getStepHeader(inferStep)}</h3>
+                            <h3>{getStepHeader(inferStep)+' InferStep: '+`${inferStep}` + ' Step: '+`${step}`}</h3>
                         </Card.Header>
                         <Card.Body>
                             <Form>
@@ -1353,7 +1383,8 @@ export function FormikStepper({
                                                 className='float-right mt-3 d-flex align-items-center'
                                                 size='lg'
                                                 type='submit'
-                                                disabled={isLoading || isHomeMarkerSet()}
+                                                //disabled={isLoading || isHomeMarkerSet()}
+                                                disabled={isLoading}
                                             >
                                                 {isLoading && (
                                                     <span
@@ -1392,6 +1423,7 @@ export function FormikStepper({
                     if (step === 0) {
                         // values.userType = (userType === USER_TYPES.BUSINESS || userType === USER_TYPES.COMMUNITY) ?  USER_TYPES.IN_PROGRESS : USER_TYPES.RESIDENTIAL;
                         values.userType = userType;
+                        console.log('Step: ' + step);
                         setStep((s) => s + 1);
                     } else if (
                         (isLastStep() && userType === USER_TYPES.RESIDENTIAL) ||
@@ -1399,6 +1431,7 @@ export function FormikStepper({
               userType === USER_TYPES.COMMUNITY) &&
               step === 6)
                     ) {
+                        console.log('Step: ' + step);
                         setIsLoading(true);
                         await new Promise((r) => setTimeout(r, 2000));
                         await props.onSubmit(values, helpers);
@@ -1407,63 +1440,69 @@ export function FormikStepper({
                             setInferStep((s) => s + 1);
                         }
                     } else if (step === 2) {
+                        console.log('Step: ' + step);
                         const seg = await setSegData(0);
                         showMap(false);
                     } else if (step === 4 && userType === USER_TYPES.RESIDENTIAL) {
-                        if (markers.work.lat === null) {
-                            setStep((s) => s + 2);
-                            setInferStep((s) => s + 1);
-                            if (workTransfer) {
-                                refactorStateArray(segIds, 1, segIds[0], setSegIds);
-                                refactorStateArray(subIds, 1, subIds[0], setSubIds);
-                                //refactorSegIds(1, segIds[0]);
-                                //refactorSubIds(1, subIds[0]);
-                            }
-                        } else {
-                            const seg = await setSegData(1);
-                            //setStep(s=>s+1);
-                        }
+                        console.log('Step: ' + step);
+                        // if (markers.work.lat === null) {
+                        //     setStep((s) => s + 2);
+                        //     setInferStep((s) => s + 1);
+                        //     if (workTransfer) {
+                        //         refactorStateArray(segIds, 1, segIds[0], setSegIds);
+                        //         refactorStateArray(subIds, 1, subIds[0], setSubIds);
+                        //         //refactorSegIds(1, segIds[0]);
+                        //         //refactorSubIds(1, subIds[0]);
+                        //     }
+                        // } else {
+                        //     const seg = await setSegData(1);
+                        //     //setStep(s=>s+1);
+                        // }
+                        const seg = await setSegData(1);
                         showMap(false);
                     } else if (step === 6 && userType === USER_TYPES.RESIDENTIAL) {
+                        console.log('Step: ' + step);
                         console.log(segIds);
-                        if (markers.school.lat === null) {
-                            setStep((s) => s + 2);
-                            setInferStep((s) => s + 1);
-                            if (schoolTransfer) {
-                                refactorStateArray(
-                                    segIds,
-                                    2,
-                                    segIds[1] || segIds[0],
-                                    setSegIds
-                                );
-                                refactorStateArray(
-                                    subIds,
-                                    2,
-                                    subIds[1] || subIds[0],
-                                    setSubIds
-                                );
-                                //refactorSegIds(2, segIds[1] || segIds[0]);
-                                //refactorSubIds(2, subIds[1] || subIds[0])
-                            }
-                        } else {
-                            const seg = await setSegData(2);
-                            //setStep(s=>s+1);
-                        }
+                        // if (markers.school.lat === null) {
+                        //     setStep((s) => s + 2);
+                        //     setInferStep((s) => s + 1);
+                        //     if (schoolTransfer) {
+                        //         refactorStateArray(
+                        //             segIds,
+                        //             2,
+                        //             segIds[1] || segIds[0],
+                        //             setSegIds
+                        //         );
+                        //         refactorStateArray(
+                        //             subIds,
+                        //             2,
+                        //             subIds[1] || subIds[0],
+                        //             setSubIds
+                        //         );
+                        //         //refactorSegIds(2, segIds[1] || segIds[0]);
+                        //         //refactorSubIds(2, subIds[1] || subIds[0])
+                        //     }
+                        // } else {
+                        //     const seg = await setSegData(2);
+                        //     //setStep(s=>s+1);
+                        // }
+                        const seg = await setSegData(2);
                         setIsLoading(false);
                     } else if (
                         (step === 8 && userType === USER_TYPES.RESIDENTIAL) ||
             (step === 5 && userType === USER_TYPES.COMMUNITY) ||
             (step === 5 && userType === USER_TYPES.BUSINESS)
                     ) {
+                        console.log('Step: ' + step);
                         setIsLoading(true);
                         //Field setters for the external inputs. Formik can only handle native form elements.
                         //These fields must be added manually.
-                        helpers.setFieldValue('geo.lat', markers.home.lat);
-                        helpers.setFieldValue('geo.lon', markers.home.lon);
-                        helpers.setFieldValue('geo.work_lat', markers.work.lat);
-                        helpers.setFieldValue('geo.work_lon', markers.work.lon);
-                        helpers.setFieldValue('geo.school_lat', markers.school.lat);
-                        helpers.setFieldValue('geo.school_lon', markers.school.lon);
+                        // helpers.setFieldValue('geo.lat', markers.home.lat);
+                        // helpers.setFieldValue('geo.lon', markers.home.lon);
+                        // helpers.setFieldValue('geo.work_lat', markers.work.lat);
+                        // helpers.setFieldValue('geo.work_lon', markers.work.lon);
+                        // helpers.setFieldValue('geo.school_lat', markers.school.lat);
+                        // helpers.setFieldValue('geo.school_lon', markers.school.lon);
                         helpers.setFieldValue('homeSegmentId', segIds[0] || null);
                         helpers.setFieldValue('homeSubSegmentId', subIds[0] || null);
 
@@ -1475,6 +1514,7 @@ export function FormikStepper({
                         setStep((s) => s + 1);
                         setInferStep((s) => s + 1);
                     } else {
+                        console.log('Step: ' + step);
                         setStep((s) => s + 1);
                         setInferStep((s) => s + 1);
                         //helpers.setTouched({});
@@ -1507,7 +1547,7 @@ export function FormikStepper({
                     </div>
                     <Card>
                         <Card.Header>
-                            <h3>{getStepHeader(inferStep)}</h3>
+                            <h3>{getStepHeader(inferStep)+' InferStep: '+`${inferStep}` + ' Step: '+`${step}`}</h3>
                         </Card.Header>
                         <Card.Body>
                             <Form>
@@ -1540,7 +1580,8 @@ export function FormikStepper({
                                                 className='float-right mt-3 d-flex align-items-center'
                                                 size='lg'
                                                 type='submit'
-                                                disabled={isLoading || isHomeMarkerSet()}
+                                                //disabled={isLoading || isHomeMarkerSet()}
+                                                disabled={isLoading}
                                             >
                                                 {isLoading && (
                                                     <span

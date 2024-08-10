@@ -420,11 +420,11 @@ userSegmentRouter.put(
                 where:{id:id}
             })
 
-            const work_Details = await prisma.workDetails.findFirst({
+            const work_Details = await prisma.work_Details.findFirst({
                 where:{userId:id}
             })
 
-            const school_Details = await prisma.schoolDetails.findFirst({
+            const school_Details = await prisma.school_Details.findFirst({
                 where:{userId:id}
             })
 

@@ -78,7 +78,7 @@ export const useCreateFeedbackRatingMutation = (feedbackId: number, proposalId: 
             },
         },
     );
-    const { error } = feedbackRatingMutation;
+    const { error, isSuccess, isLoading } = feedbackRatingMutation;
     const [ parsedErrorObj, setParsedErrorObj ] = useState<IFetchError | null>(null);
 
     useEffect(() => {
@@ -99,5 +99,7 @@ export const useCreateFeedbackRatingMutation = (feedbackId: number, proposalId: 
         ...feedbackRatingMutation,
         submitRatingMutation,
         error: parsedErrorObj,
+        isSuccess,
+        isLoading
     };
 };

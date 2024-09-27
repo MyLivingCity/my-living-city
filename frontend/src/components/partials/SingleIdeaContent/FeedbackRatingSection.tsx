@@ -28,6 +28,7 @@ const FeedbackRatingYesNoSection: React.FC<FeedbackRatingsSectionProps> = ({
         isLoading,
         isError,
         error,
+        refetch
     } = useAllFeedbackRatingsUnderFeedback(feedbackId, proposalId);
 
     const [userHasRated, setUserHasRated] = useState<boolean>(
@@ -73,6 +74,7 @@ const FeedbackRatingYesNoSection: React.FC<FeedbackRatingsSectionProps> = ({
                         proposalId={proposalId}
                         userHasRated={userHasRated}
                         userSubmittedRating={userSubmittedRating}
+                        refetchData={refetch}
                     />
                 )}
             </Row>
@@ -91,6 +93,7 @@ const FeedbackRatingScaleSection: React.FC<FeedbackRatingsSectionProps> = ({
         isLoading,
         isError,
         error,
+        refetch
     } = useAllFeedbackRatingsUnderFeedback(feedbackId, proposalId);
 
     const [userHasRated, setUserHasRated] = useState<boolean>(
@@ -137,6 +140,7 @@ const FeedbackRatingScaleSection: React.FC<FeedbackRatingsSectionProps> = ({
                         proposalId={proposalId}
                         userHasRated={userHasRated}
                         userSubmittedRating={userSubmittedRating}
+                        refetchData={refetch}
                     />
                 )}
             </Row>

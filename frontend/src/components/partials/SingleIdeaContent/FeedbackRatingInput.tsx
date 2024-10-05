@@ -14,6 +14,7 @@ interface FeedbackRatingInputProps {
     userSubmittedRating: number | null;
     proposalId: string;
     feedbackId: string;
+    refetchData: () => void;
 }
 
 const FeedbackRatingYesNoInput = ({
@@ -21,6 +22,7 @@ const FeedbackRatingYesNoInput = ({
     feedbackId,
     userHasRated,
     userSubmittedRating,
+    refetchData
 }: FeedbackRatingInputProps) => {
     const { token, user } = useContext(UserProfileContext);
     const [ratingValue, setRatingValue] = useState<number>(
@@ -35,8 +37,8 @@ const FeedbackRatingYesNoInput = ({
         error,
         isSuccess,
     } = useCreateFeedbackRatingMutation(
-        parseInt(proposalId),
         parseInt(feedbackId),
+        parseInt(proposalId),
         token,
         user
     );
@@ -46,6 +48,10 @@ const FeedbackRatingYesNoInput = ({
     useEffect(() => {
         setShowRatingSubmitError(isError);
     }, [isError]);
+
+    useEffect(() => {
+        refetchData();
+    }, [isSuccess]);
 
     const submitHandler = () => {
         const payload = {
@@ -165,6 +171,7 @@ const FeedbackRatingScaleInput = ({
     feedbackId,
     userHasRated,
     userSubmittedRating,
+    refetchData
 }: FeedbackRatingInputProps) => {
     const { token, user } = useContext(UserProfileContext);
     const [ratingValue, setRatingValue] = useState<number>(
@@ -190,6 +197,10 @@ const FeedbackRatingScaleInput = ({
     useEffect(() => {
         setShowRatingSubmitError(isError);
     }, [isError]);
+
+    useEffect(() => {
+        refetchData();
+    }, [isSuccess]);
 
     const submitHandler = () => {
         const payload = {

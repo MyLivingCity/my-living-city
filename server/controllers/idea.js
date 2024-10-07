@@ -27,7 +27,7 @@ ideaRouter.post(
         else{
           imagePath = null;
         }
-        //check if user is in bad posting behavior table if so res.status(400).json({message: 'User is in bad posting behavior table'})
+        //check if user is in bad posting behavior table if so return res.status(400).json({message: 'User is in bad posting behavior table'})
         const { id } = req.user;
         
         const user = await prisma.bad_Posting_Behavior.findFirst({
@@ -233,10 +233,10 @@ ideaRouter.post(
           }
         });
 
-        res.status(201).json(createdIdea);
+        return res.status(201).json(createdIdea);
       } catch (error) {
         console.error(error);
-        res.status(400).json({
+        return res.status(400).json({
           message: "An error occured while trying to create an Idea.",
           details: {
             errorMessage: error.message,
@@ -256,7 +256,7 @@ ideaRouter.get(
         route: 'welcome to Idea Router'
       })
     } catch (error) {
-      res.status(400).json({
+      return res.status(400).json({
         message: error.message,
         details: {
           errorMessage: error.message,
@@ -279,9 +279,9 @@ ideaRouter.get(
       });
       await imagePathsToS3Url(allIdeas, "idea-proposal");
       console.log("IDeas here" + allIdeas)
-      res.status(200).json(allIdeas);
+      return res.status(200).json(allIdeas);
     } catch (error) {
-      res.status(400).json({
+      return res.status(400).json({
         message: "An error occured while trying to fetch all ideas",
         details: {
           errorMessage: error.message,
@@ -302,9 +302,9 @@ ideaRouter.post(
       const allIdeas = await prisma.idea.findMany(req.body);
       await imagePathsToS3Url(allIdeas, "idea-proposal");
 
-      res.status(200).json(allIdeas);
+      return res.status(200).json(allIdeas);
     } catch (error) {
-      res.status(400).json({
+      return res.status(400).json({
         message: "An error occured while trying to fetch all ideas",
         details: {
           errorMessage: error.message,
@@ -441,10 +441,10 @@ ideaRouter.post(
         }
         return newRow;
       });
-    res.status(200).json(data);
+    return res.status(200).json(data);
   } catch (error) {
     console.error(error);
-    res.status(400).json({
+    return res.status(400).json({
       message: "An error occurred while trying to fetch all ideas",
       details: {
         errorMessage: error.message,
@@ -584,9 +584,9 @@ ideaRouter.get(
         return newRow;
       });
 
-      res.status(200).json(data);
+      return res.status(200).json(data);
     } catch (error) {
-      res.status(400).json({
+      return res.status(400).json({
         message: "An error occured while trying to fetch all ideas",
         details: {
           errorMessage: error.message,
@@ -664,10 +664,10 @@ ideaRouter.get(
         delete result.champion.password;
       }
 
-      res.status(200).json(result);
+      return res.status(200).json(result);
     } catch (error) {
       console.error(error);
-      res.status(400).json({
+      return res.status(400).json({
         message: `An Error occured while trying to fetch idea with id ${req.params.ideaId}.`,
         details: {
           errorMessage: error.message,
@@ -723,10 +723,10 @@ ideaRouter.get(
       }
       await imagePathsToS3Url(foundIdeas, "idea-proposal");
 
-      res.status(200).json(foundIdeas);
+      return res.status(200).json(foundIdeas);
     } catch (error) {
       console.error(error);
-      res.status(400).json({
+      return res.status(400).json({
         message: `An Error occured while trying to fetch idea with id ${req.params.supportingProposalId}.`,
         details: {
           errorMessage: error.message,
@@ -793,7 +793,7 @@ ideaRouter.put(
         },
       });
       console.log("Returns here")
-      res.status(200).json({
+      return res.status(200).json({
         message: "Idea succesfully updated",
         idea: updateIdea,
       });
@@ -801,7 +801,7 @@ ideaRouter.put(
 
 
     } catch (error) {
-      res.status(400).json({
+      return res.status(400).json({
         message: "An error occured while to update an Idea",
         details: {
           errorMessage: error.message,
@@ -845,13 +845,13 @@ ideaRouter.put(
         },
       });
       console.log("Returns here")
-      res.status(200).json({
+      return res.status(200).json({
         message: "Idea succesfully updated",
         idea: updateIdea,
       });
 
     } catch (error) {
-      res.status(400).json({
+      return res.status(400).json({
         message: "An error occured while to update an Idea",
         details: {
           errorMessage: error.message,
@@ -956,12 +956,12 @@ ideaRouter.put(
       });
 
       console.log("Returns here")
-      res.status(200).json({
+      return res.status(200).json({
         message: "Idea succesfully updated",
         idea: updatedIdea,
       });
     } catch (error) {
-      res.status(400).json({
+      return res.status(400).json({
         message: "An error occured while to update an Idea",
         details: {
           errorMessage: error.message,
@@ -1020,13 +1020,13 @@ ideaRouter.delete(
       await prisma.proposal.deleteMany({ where: { ideaId: foundIdea.id } });
       const deletedIdea = await prisma.idea.delete({ where: { id: parsedIdeaId } });
 
-      res.status(200).json({
+      return res.status(200).json({
         message: "Idea succesfully deleted",
         deletedIdea: deletedIdea,
       });
     } catch (error) {
       console.log(error);
-      res.status(400).json({
+      return res.status(400).json({
         message: "An error occured while to delete an Idea",
         details: {
           errorMessage: error.message,
@@ -1045,7 +1045,7 @@ ideaRouter.post(
   async (req, res) => {
     try {
       if (isEmpty(req.body)) {
-        res.status(400).json({
+        return res.status(400).json({
           message: "Request body is empty!"
         })
       }
@@ -1054,7 +1054,7 @@ ideaRouter.post(
       ideaId = parseInt(ideaId);
 
       if (!userId || !ideaId) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `"userId" and/or "ideaId" is missing from the request body!`
         })
       }
@@ -1063,13 +1063,13 @@ ideaRouter.post(
       const theIdea = await prisma.idea.findUnique({ where: { id: ideaId } });
 
       if (!theUser) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `User with id ${userId} cannot be found or does not exists!`
         })
       }
 
       if (!theIdea) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `Idea with id ${ideaId} cannot be found or does not exists!`
         })
       }
@@ -1087,10 +1087,10 @@ ideaRouter.post(
         },
         update: {}
       })
-      res.status(200).json(userIdeaFollow);
+      return res.status(200).json(userIdeaFollow);
     } catch (error) {
       console.log(error);
-      res.status(400).json({
+      return res.status(400).json({
         message: "An error occured while to delete an Idea",
         details: {
           errorMessage: error.message,
@@ -1109,7 +1109,7 @@ ideaRouter.post(
   async (req, res) => {
     try {
       if (isEmpty(req.body)) {
-        res.status(400).json({
+        return res.status(400).json({
           message: "Request body is empty!"
         })
       }
@@ -1118,7 +1118,7 @@ ideaRouter.post(
       ideaId = parseInt(ideaId);
 
       if (!userId || !ideaId) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `"userId" and/or "ideaId" is missing from the request body!`
         })
       }
@@ -1127,13 +1127,13 @@ ideaRouter.post(
       const theIdea = await prisma.idea.findUnique({ where: { id: ideaId } });
 
       if (!theUser) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `User with id ${userId} cannot be found or does not exists!`
         })
       }
 
       if (!theIdea) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `Idea with id ${ideaId} cannot be found or does not exists!`
         })
       }
@@ -1148,16 +1148,16 @@ ideaRouter.post(
       })
 
       if (!theUserIdeaFollow) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `The user ${userId} does not follow the idea ${ideaId}`
         })
       }
 
       const userIdeaFollow = await prisma.userIdeaFollow.delete({ where: { id: theUserIdeaFollow.id } });
-      res.status(200).json(userIdeaFollow);
+      return res.status(200).json(userIdeaFollow);
     } catch (error) {
       console.log(error);
-      res.status(400).json({
+      return res.status(400).json({
         message: "An error occured while to delete an Idea",
         details: {
           errorMessage: error.message,
@@ -1176,7 +1176,7 @@ ideaRouter.post(
   async (req, res) => {
     try {
       if (isEmpty(req.body)) {
-        res.status(400).json({
+        return res.status(400).json({
           message: "Request body is empty!"
         })
       }
@@ -1184,7 +1184,7 @@ ideaRouter.post(
       const { userId, ideaId } = req.body;
 
       if (!userId || !ideaId) {
-        res.status(200).json({
+        return res.status(200).json({
           isFollowed: false
         })
       }
@@ -1193,13 +1193,13 @@ ideaRouter.post(
       const theIdea = await prisma.idea.findFirst({ where: { id: parseInt(ideaId) } });
 
       if (!theUser) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `User with id ${userId} cannot be found or does not exists!`
         })
       }
 
       if (!theIdea) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `Idea with id ${ideaId} cannot be found or does not exists!`
         })
       }
@@ -1214,12 +1214,12 @@ ideaRouter.post(
       })
       const isFollowed = theUserIdeaFollow ? true : false;
 
-      res.status(200).json({
+      return res.status(200).json({
         isFollowed: isFollowed
       })
     } catch (error) {
       console.log(error);
-      res.status(400).json({
+      return res.status(400).json({
         details: {
           errorMessage: error.message,
           errorStack: error.stack,
@@ -1239,7 +1239,7 @@ ideaRouter.get(
       const { userId } = req.params;
 
       if (!userId) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `"userId" is missing or empty from the request body!`
         })
       }
@@ -1247,7 +1247,7 @@ ideaRouter.get(
       const theUser = await prisma.user.findUnique({ where: { id: userId } });
 
       if (!theUser) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `User with id ${userId} cannot be found or does not exists!`
         })
       }
@@ -1263,10 +1263,10 @@ ideaRouter.get(
         const idea = await prisma.idea.findUnique({ where: { id: follow.ideaId } });
         ideas.push(idea);
       }
-      res.status(200).json(ideas);
+      return res.status(200).json(ideas);
     } catch (error) {
       console.log(error);
-      res.status(400).json({
+      return res.status(400).json({
         details: {
           errorMessage: error.message,
           errorStack: error.stack,
@@ -1284,7 +1284,7 @@ ideaRouter.post(
   async (req, res) => {
     try {
       if (isEmpty(req.body)) {
-        res.status(400).json({
+        return res.status(400).json({
           message: "Request body is empty!"
         })
       }
@@ -1293,7 +1293,7 @@ ideaRouter.post(
       ideaId = parseInt(ideaId);
 
       if (!userId || !ideaId) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `"userId" and/or "ideaId" is missing from the request body!`
         })
       }
@@ -1302,13 +1302,13 @@ ideaRouter.post(
       const theIdea = await prisma.idea.findUnique({ where: { id: ideaId } });
 
       if (!theUser) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `User with id ${userId} cannot be found or does not exists!`
         })
       }
 
       if (!theIdea) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `Idea with id ${ideaId} cannot be found or does not exists!`
         })
       }
@@ -1326,10 +1326,10 @@ ideaRouter.post(
         },
         update: {}
       })
-      res.status(200).json(userIdeaEndorse);
+      return res.status(200).json(userIdeaEndorse);
     } catch (error) {
       console.log(error);
-      res.status(400).json({
+      return res.status(400).json({
         message: "An error occured while to endorse an Idea",
         details: {
           errorMessage: error.message,
@@ -1348,7 +1348,7 @@ ideaRouter.post(
   async (req, res) => {
     try {
       if (isEmpty(req.body)) {
-        res.status(400).json({
+        return res.status(400).json({
           message: "Request body is empty!"
         })
       }
@@ -1357,7 +1357,7 @@ ideaRouter.post(
       ideaId = parseInt(ideaId);
 
       if (!userId || !ideaId) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `"userId" and/or "ideaId" is missing from the request body!`
         })
       }
@@ -1366,13 +1366,13 @@ ideaRouter.post(
       const theIdea = await prisma.idea.findUnique({ where: { id: ideaId } });
 
       if (!theUser) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `User with id ${userId} cannot be found or does not exists!`
         })
       }
 
       if (!theIdea) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `Idea with id ${ideaId} cannot be found or does not exists!`
         })
       }
@@ -1387,16 +1387,16 @@ ideaRouter.post(
       })
 
       if (!theUserIdeaEndorse) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `The user ${userId} does not endorse the idea ${ideaId}`
         })
       }
 
       const userIdeaEndorse = await prisma.userIdeaEndorse.delete({ where: { id: theUserIdeaEndorse.id } });
-      res.status(200).json(userIdeaEndorse);
+      return res.status(200).json(userIdeaEndorse);
     } catch (error) {
       console.log(error);
-      res.status(400).json({
+      return res.status(400).json({
         message: "An error occured while to unendorse an Idea",
         details: {
           errorMessage: error.message,
@@ -1415,7 +1415,7 @@ ideaRouter.post(
   async (req, res) => {
     try {
       if (isEmpty(req.body)) {
-        res.status(400).json({
+        return res.status(400).json({
           message: "Request body is empty!"
         })
       }
@@ -1423,7 +1423,7 @@ ideaRouter.post(
       const { userId, ideaId } = req.body;
 
       if (!userId || !ideaId) {
-        res.status(200).json({
+        return res.status(200).json({
           isEndorsed: false
         })
       }
@@ -1432,13 +1432,13 @@ ideaRouter.post(
       const theIdea = await prisma.idea.findUnique({ where: { id: parseInt(ideaId) } });
 
       if (!theUser) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `User with id ${userId} cannot be found or does not exists!`
         })
       }
 
       if (!theIdea) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `Idea with id ${ideaId} cannot be found or does not exists!`
         })
       }
@@ -1453,12 +1453,12 @@ ideaRouter.post(
       })
       const isEndorsed = theUserIdeaEndorse ? true : false;
 
-      res.status(200).json({
+      return res.status(200).json({
         isEndorsed: isEndorsed
       })
     } catch (error) {
       console.log(error);
-      res.status(400).json({
+      return res.status(400).json({
         details: {
           errorMessage: error.message,
           errorStack: error.stack,
@@ -1478,7 +1478,7 @@ ideaRouter.get(
       const { userId } = req.params;
 
       if (!userId) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `"userId" is missing or empty from the request body!`
         })
       }
@@ -1486,7 +1486,7 @@ ideaRouter.get(
       const theUser = await prisma.user.findUnique({ where: { id: userId } });
 
       if (!theUser) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `User with id ${userId} cannot be found or does not exists!`
         })
       }
@@ -1503,10 +1503,10 @@ ideaRouter.get(
         await imagePathsToS3Url([idea]);
         ideas.push(idea);
       }
-      res.status(200).json(ideas);
+      return res.status(200).json(ideas);
     } catch (error) {
       console.log(error);
-      res.status(400).json({
+      return res.status(400).json({
         details: {
           errorMessage: error.message,
           errorStack: error.stack,
@@ -1526,7 +1526,7 @@ ideaRouter.get(
       const { ideaId } = req.params;
 
       if (!ideaId) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `"ideaId" is missing or empty from the request body!`
         })
       }
@@ -1534,7 +1534,7 @@ ideaRouter.get(
       const theIdea = await prisma.idea.findUnique({ where: { id: parseInt(ideaId) } });
 
       if (!theIdea) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `Idea with id ${ideaId} cannot be found or does not exists!`
         })
       }
@@ -1550,10 +1550,10 @@ ideaRouter.get(
         const user = await prisma.user.findUnique({ where: { id: endorse.userId } });
         users.push(user);
       }
-      res.status(200).json(users);
+      return res.status(200).json(users);
     } catch (error) {
       console.log(error);
-      res.status(400).json({
+      return res.status(400).json({
         details: {
           errorMessage: error.message,
           errorStack: error.stack,
@@ -1571,7 +1571,7 @@ ideaRouter.post(
   async (req, res) => {
     try {
       if (isEmpty(req.body)) {
-        res.status(400).json({
+        return res.status(400).json({
           message: "Request body is empty!"
         })
       }
@@ -1579,7 +1579,7 @@ ideaRouter.post(
       const { userId, ideaId } = req.body;
 
       if (!userId || !ideaId) {
-        res.status(200).json({
+        return res.status(200).json({
           isFlagged: false
         })
 
@@ -1588,13 +1588,13 @@ ideaRouter.post(
       const theUser = await prisma.user.findUnique ({ where: { id: userId } });
 
       if (!theUser) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `User with id ${userId} cannot be found or does not exists!`
         })
       }
 
       if (!ideaId) {
-        res.status(200).json({
+        return res.status(200).json({
           isFlagged: false
         })
       }
@@ -1602,7 +1602,7 @@ ideaRouter.post(
       const theIdea = await prisma.idea.findFirst({ where: { id: parseInt(ideaId) } });
 
       if (!theIdea) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `Idea with id ${ideaId} cannot be found or does not exists!`
         })
       }
@@ -1615,10 +1615,10 @@ ideaRouter.post(
       })
 
       const isFlagged = theUserIdeaFlag.length > 0 ? true : false;
-      res.status(200).send(isFlagged);
+      return res.status(200).send(isFlagged);
     } catch (error) {
       console.log(error);
-      res.status(400).json({
+      return res.status(400).json({
         details: {
           errorMessage: error.message,
           errorStack: error.stack,

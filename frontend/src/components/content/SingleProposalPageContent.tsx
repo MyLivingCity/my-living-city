@@ -69,9 +69,9 @@ import { AiOutlineRadiusBottomright, AiOutlineStar } from 'react-icons/ai';
 
 
 interface SingleIdeaPageContentProps {
-  ideaData: IIdeaWithRelationship;
-  proposalData: any;
-  ideaId: string;
+    ideaData: IIdeaWithRelationship;
+    proposalData: any;
+    ideaId: string;
 }
 
 const getSegmentName = (segment: string | undefined): string => {
@@ -142,8 +142,10 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     // Social Media share for this Idea page
     // const shareUrl = 'http://github.com';
     // const shareUrl = 'https://app.mylivingcity.org'
-    const shareUrl = window.location.href;
+
+    const shareUrl = `https://app.mylivingcity.org/proposals/${proposalId}`;
     const shareTitle = `My Living City Idea! ${titleText}`;
+    const shareDescription = `Check out this Proposal on My Living City! ${descriptionText}`;
 
 
     /**
@@ -248,8 +250,8 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
             await postCreateCollabotator(
                 proposalId,
                 values,
-        user!.banned,
-        token
+                user!.banned,
+                token
             );
 
             setError(null);
@@ -257,7 +259,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
             window.location.reload();
         } catch (error) {
             const genericMessage =
-        'An error occured while trying to create an Proposal.';
+                'An error occured while trying to create an Proposal.';
             const errorObj = handlePotentialAxiosError(genericMessage, error);
             setError(errorObj);
         } finally {
@@ -275,8 +277,8 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
             await postCreateVolunteer(
                 proposalId,
                 values,
-        user!.banned,
-        token
+                user!.banned,
+                token
             );
 
             setError(null);
@@ -301,8 +303,8 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
             await postCreateDonor(
                 proposalId,
                 values,
-        user!.banned,
-        token
+                user!.banned,
+                token
             );
 
             setError(null);
@@ -365,7 +367,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     const allCommentsUnderIdea = useAllCommentsUnderIdea(ideaId, token);
 
     const canEndorse = user?.userType === USER_TYPES.BUSINESS || user?.userType === USER_TYPES.COMMUNITY
-    || user?.userType === USER_TYPES.MUNICIPAL || user?.userType === USER_TYPES.MUNICIPAL_SEG_ADMIN;
+        || user?.userType === USER_TYPES.MUNICIPAL || user?.userType === USER_TYPES.MUNICIPAL_SEG_ADMIN;
     const [showEndorseButton, setShowEndorseButton] = useState(false);
 
     useEffect(() => {
@@ -452,7 +454,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
     const selectOtherReasonHandler = (eventKey: string) => {
         handleShowOther();
-    // setOtherFlagReason(eventKey!)
+        // setOtherFlagReason(eventKey!)
     };
 
     const submitFlagReasonHandler = async (ideaId: number, token: string, userId: string, ideaActive: boolean, quarantined_at: Date) => {
@@ -557,7 +559,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                             <Modal.Body>Are you sure about flagging this post?</Modal.Body>
                             <Modal.Footer>
                                 <Button variant='secondary' onClick={handleClose}>
-                  Cancel
+                                    Cancel
                                 </Button>
                                 <Button
                                     style={{ background: 'red' }}
@@ -568,7 +570,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                             incrementPostFlagCount(token, ideaId);
                                         }
                                     }>
-                  Flag
+                                    Flag
                                 </Button>
                             </Modal.Footer>
                         </Modal>
@@ -593,10 +595,10 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
                                     </Form.Group>
                                 </Form>
-                Are you sure about flagging this post?</Modal.Body>
+                                Are you sure about flagging this post?</Modal.Body>
                             <Modal.Footer>
                                 <Button variant='secondary' onClick={handleCloseOther}>
-                  Cancel
+                                    Cancel
                                 </Button>
                                 <Button
                                     style={{ background: 'red' }}
@@ -604,7 +606,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                     onClick={
                                         () => submitOtherFlagReasonHandler(parseInt(ideaId), token!, user!.id, ideaData.active, new Date())
                                     }>
-                  Flag
+                                    Flag
                                 </Button>
                             </Modal.Footer>
                         </Modal>
@@ -617,7 +619,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                     {/* <h4 className='h5'>As: {userType}</h4> */}
                                     {superSegment ? (
                                         <h4 className='h5'>
-                      District:{' '}
+                                            District:{' '}
                                             {superSegment
                                                 ? capitalizeFirstLetterEachWord(superSegment.name)
                                                 : 'N/A'}
@@ -625,13 +627,13 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                     ) : null}
                                     {segment ? (
                                         <h4 className='h5'>
-                      Municipality:{' '}
+                                            Municipality:{' '}
                                             {getSegmentName(segment.name)}
                                         </h4>
                                     ) : null}
                                     {subSegment ? (
                                         <h4 className='h5'>
-                      Neighborhood:{' '}
+                                            Neighborhood:{' '}
                                             {subSegment
                                                 ? capitalizeFirstLetterEachWord(subSegment.name)
                                                 : 'N/A'}
@@ -642,7 +644,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                     ) : null}
                                     {!!ideaData.champion && (
                                         <h4 className='h5'>
-                      Championed By: {ideaData?.champion?.fname}@
+                                            Championed By: {ideaData?.champion?.fname}@
                                             {ideaData?.champion?.address?.streetAddress}
                                         </h4>
                                     )}
@@ -650,7 +652,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
                                     {state ? (
                                         <h4 className='h5'>
-                      Status: <span>{state}</span>
+                                            Status: <span>{state}</span>
                                         </h4>
                                     ) : null}
 
@@ -749,7 +751,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                             <h2>Project Information:</h2>
                             <p>
                                 {projectInfo?.description ||
-                  'Project has been initialized. Please describe the project!'}
+                                    'Project has been initialized. Please describe the project!'}
                             </p>
                         </Col>
                     )}
@@ -769,45 +771,39 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                 <FacebookShareButton
                                     className='mx-2'
                                     url={shareUrl}
-                                    quote={shareTitle}
+                                    quote={shareDescription}
+                                    hashtag={shareTitle}
                                 >
                                     <FacebookIcon size={32} round />
                                 </FacebookShareButton>
                                 <TwitterShareButton
                                     className='mx-2'
                                     url={shareUrl}
-                                    title={shareTitle}
+                                    title={shareTitle + '\n' + shareDescription}
                                 >
                                     <TwitterIcon size={32} round />
                                 </TwitterShareButton>
                                 <WhatsappShareButton
                                     className='mx-2'
                                     url={shareUrl}
-                                    title={shareTitle}
+                                    title={shareTitle + '\n' + shareDescription}
                                 >
                                     <WhatsappIcon size={32} round />
                                 </WhatsappShareButton>
                                 <LineShareButton
                                     className='mx-2'
                                     url={shareUrl}
-                                    title={shareTitle}
+                                    title={shareTitle + '\n' + shareDescription}
                                 >
                                     <LineIcon size={32} round />
                                 </LineShareButton>
                                 <RedditShareButton
                                     className='mx-2'
                                     url={shareUrl}
-                                    title={shareTitle}
+                                    title={shareTitle + '\n' + shareDescription + '\n' + shareUrl}
                                 >
                                     <RedditIcon size={32} round />
                                 </RedditShareButton>
-                                <EmailShareButton
-                                    className='mx-2'
-                                    url={shareUrl}
-                                    title={shareTitle}
-                                >
-                                    <EmailIcon size={32} round />
-                                </EmailShareButton>
                             </div>
                             {author?.userType === 'RESIDENTIAL' ?
                                 <div>{author?.fname}@{author?.address?.streetAddress} as {userType}</div> :
@@ -834,7 +830,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                             variant='primary'
                                             onClick={() => setModalShowCollaborator(true)}
                                         >
-                      Join
+                                            Join
                                         </Button>
                                         <Modal
                                             show={modalShowCollaborator}
@@ -845,7 +841,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                         >
                                             <Modal.Header closeButton>
                                                 <Modal.Title id='contained-modal-title-vcenter'>
-                          Collaborate
+                                                    Collaborate
                                                 </Modal.Title>
                                             </Modal.Header>
                                             <Modal.Body>
@@ -943,7 +939,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                     </Table>
                                 ) : (
                                     <p style={{ margin: '0rem', textAlign: 'center' }}>
-                    No collaborators yet, be the first!
+                                        No collaborators yet, be the first!
                                     </p>
                                 )}
                             </Card.Body>
@@ -971,7 +967,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                     </Table>
                                 ) : (
                                     <p style={{ margin: '0rem', textAlign: 'center' }}>
-                    No collaborators yet, be the first!
+                                        No collaborators yet, be the first!
                                     </p>
                                 )}
                             </Card.Body>
@@ -995,7 +991,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                             variant='primary'
                                             onClick={() => setModalShowVolunteer(true)}
                                         >
-                      Sign-up
+                                            Sign-up
                                         </Button>
                                         <Modal
                                             show={modalShowVolunteer}
@@ -1006,7 +1002,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                         >
                                             <Modal.Header closeButton>
                                                 <Modal.Title id='contained-modal-title-vcenter'>
-                          Volunteer
+                                                    Volunteer
                                                 </Modal.Title>
                                             </Modal.Header>
                                             <Modal.Body>
@@ -1101,7 +1097,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                     </Table>
                                 ) : (
                                     <p style={{ margin: '0rem', textAlign: 'center' }}>
-                    No volunteers yet, be the first!
+                                        No volunteers yet, be the first!
                                     </p>
                                 )}
                             </Card.Body>
@@ -1126,7 +1122,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                     </Table>
                                 ) : (
                                     <p style={{ margin: '0rem', textAlign: 'center' }}>
-                    No volunteers yet, be the first!
+                                        No volunteers yet, be the first!
                                     </p>
                                 )}
                             </Card.Body>
@@ -1151,7 +1147,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                             variant='primary'
                                             onClick={() => setModalShowDonor(true)}
                                         >
-                      Donate
+                                            Donate
                                         </Button>
                                         <Modal
                                             show={modalShowDonor}
@@ -1162,7 +1158,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                         >
                                             <Modal.Header closeButton>
                                                 <Modal.Title id='contained-modal-title-vcenter'>
-                          Donate
+                                                    Donate
                                                 </Modal.Title>
                                             </Modal.Header>
                                             <Modal.Body>
@@ -1231,7 +1227,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                     </Table>
                                 ) : (
                                     <p style={{ margin: '0rem', textAlign: 'center' }}>
-                    No donors yet, be the first!
+                                        No donors yet, be the first!
                                     </p>
                                 )}
                             </Card.Body>
@@ -1256,7 +1252,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                     </Table>
                                 ) : (
                                     <p style={{ margin: '0rem', textAlign: 'center' }}>
-                    No donors yet, be the first!
+                                        No donors yet, be the first!
                                     </p>
                                 )}
                             </Card.Body>
@@ -1274,7 +1270,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                 dismissible
                                 onClose={() => setShowProposalSegmentError(false)}
                             >
-                Error! You cannot propose ideas for communities to which you do not belong.
+                                Error! You cannot propose ideas for communities to which you do not belong.
                             </Alert>
                         ) : null}
                         <Card.Header>
@@ -1284,7 +1280,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
                                 <h4 className='text-center my-auto text-muted'>
                                     <Button onClick={() => redirectToIdeaSubmit()}>
-                    Propose Idea
+                                        Propose Idea
                                     </Button>
                                 </h4>
                             </div>
@@ -1324,24 +1320,24 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                                     <td>
                                                         {Number(suggestion?.subSegment?.id) ? (
                                                             Number(suggestion?.subSegment?.id) ===
-                                suggestion?.author?.userSegments?.homeSubSegmentId ? (
+                                                                suggestion?.author?.userSegments?.homeSubSegmentId ? (
                                                                     `${suggestion?.author?.userSegments?.homeSegHandle} As Resident`
                                                                 ) : Number(suggestion?.subSegment?.id) ===
-                                suggestion?.author?.userSegments?.workSubSegmentId ? (
+                                                                suggestion?.author?.userSegments?.workSubSegmentId ? (
                                                                         suggestion?.author?.userSegments?.workSegHandle || `${suggestion?.author?.userSegments?.homeSegHandle} As Worker`
                                                                     ) : Number(suggestion?.subSegment?.id) ===
-                                suggestion?.author?.userSegments?.schoolSubSegmentID ? (
+                                                                suggestion?.author?.userSegments?.schoolSubSegmentID ? (
                                                                             `${suggestion?.author?.userSegments?.schoolSegHandle} As Student`
                                                                         ) : `${suggestion?.author?.userSegments?.homeSegHandle} As Resident`
                                                         ) : Number(suggestion?.segment?.segId) ? (
                                                             Number(suggestion?.segment?.segId) ===
-                                suggestion?.author?.userSegments?.homeSegmentId ? (
+                                                                suggestion?.author?.userSegments?.homeSegmentId ? (
                                                                     `${suggestion?.author?.displayFName}@${suggestion?.author?.displayLName} As Resident`
                                                                 ) : Number(suggestion?.segment?.segId) ===
-                                Number(suggestion?.author?.userSegments?.workSegmentId) ? (
+                                                                Number(suggestion?.author?.userSegments?.workSegmentId) ? (
                                                                         suggestion?.author?.userSegments?.workSegHandle || `${suggestion?.author?.userSegments?.homeSegHandle} As Worker`
                                                                     ) : Number(suggestion?.segment?.segId) ===
-                                suggestion?.author?.userSegments?.schoolSegmentId ? (
+                                                                suggestion?.author?.userSegments?.schoolSegmentId ? (
                                                                             `${suggestion?.author?.userSegments?.schoolSegHandle} As Student`
                                                                         ) : `${suggestion?.author?.userSegments?.homeSegHandle} As Resident`
                                                         ) : `${suggestion?.author?.userSegments?.homeSegHandle} As Resident`}
@@ -1362,7 +1358,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                 </Table>
                             ) : (
                                 <p style={{ margin: '0rem', textAlign: 'center' }}>
-                  No suggestions yet, be the first!
+                                    No suggestions yet, be the first!
                                 </p>
                             )}
                         </Card.Body>
@@ -1514,7 +1510,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
             )}
 
             {endorsedUsers && endorsedUsers.length > 0 &&
-        <EndorsedUsersSection endorsedUsers={endorsedUsers} />
+                <EndorsedUsersSection endorsedUsers={endorsedUsers} />
             }
 
             <Row>

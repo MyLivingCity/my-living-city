@@ -12,21 +12,21 @@ const { deleteImage } = require('../lib/imageBucket');
 proposalRouter.post(
     '/create',
     passport.authenticate('jwt', { session: false }),
-    
+
     async (req, res) => {
         try {
             //check if user is in bad posting behavior table if so res.status(400).json({message: 'User is in bad posting behavior table'}) 
             const { id } = req.user;
             const user = await prisma.bad_Posting_Behavior.findFirst({
-            where: {
-                userId: id,
-                post_comment_ban: true,
-            },
+                where: {
+                    userId: id,
+                    post_comment_ban: true,
+                },
             });
             if (user) {
-            return res.status(400).json({
-                message: 'User is in bad posting behavior table',
-            });
+                return res.status(400).json({
+                    message: 'User is in bad posting behavior table',
+                });
             }
             let {
                 ideaId,
@@ -218,7 +218,7 @@ proposalRouter.get(
                             segment: true,
                             subSegment: true,
                             superSegment: true,
-                            
+
                             ratings: true,
                             comments: true,
                             author: {
@@ -328,16 +328,30 @@ proposalRouter.get(
                             superSegment: true,
                             ratings: true,
                             comments: true,
-                          
+
                             author: {
                                 select: {
                                     fname: true,
                                     lname: true,
                                     displayFName: true,
                                     displayLName: true,
-                                    userSegments: true,  
+                                    userSegments: true,
                                     School_Details: true,
-                                    Work_Details: true,                               
+                                    Work_Details: true,
+                                    userSegments: {
+                                        select: {
+                                            id: true,
+                                            homeSegmentId: true,
+                                            workSegmentId: true,
+                                            schoolSegmentId: true,
+                                            homeSubSegmentId: true,
+                                            workSubSegmentId: true,
+                                            schoolSubSegmentId: true,
+                                            homeSegHandle: true,
+                                            workSegHandle: true,
+                                            schoolSegHandle: true,
+                                        }
+                                    },
                                 }
                             }
                         },

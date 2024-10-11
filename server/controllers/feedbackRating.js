@@ -11,22 +11,22 @@ feedbackRatingRouter.post(
         try {
             const { id: userId } = req.user;
             const { ratingExplanation, rating } = req.body;
-            const  parsedProposalId = parseInt(req.params.feedbackId); // THESE GOT FLIPPED SOMEHOW BE CAREFUL
-            const  parsedFeedbackId = parseInt(req.params.proposalId);
-          
-            if(!parsedFeedbackId || !parsedProposalId) {
-                return res.status(400).json({ 
-                    message: `A valid ideaId must be specified in the route paramater.`, 
+            const parsedProposalId = parseInt(req.params.proposalId);
+            const parsedFeedbackId = parseInt(req.params.feedbackId);
+
+            if (!parsedFeedbackId || !parsedProposalId) {
+                return res.status(400).json({
+                    message: `A valid ideaId must be specified in the route paramater.`,
                 });
             }
 
-            const foundFeedback = await prisma.proposal.findUnique({ where: {id: parsedProposalId}});
-            if(!foundFeedback) {
+            const foundFeedback = await prisma.proposal.findUnique({ where: { id: parsedProposalId } });
+            if (!foundFeedback) {
                 console.log("PARSEY BOy:  " + parsedProposalId)
                 console.log("FEEDBACKBOY" + parsedFeedbackId)
-                return res.status(404).json({ 
-                    
-                    message: `The propsal with that listed ID (${parsedProposalId}) does not exist.`, 
+                return res.status(404).json({
+
+                    message: `The propsal with that listed ID (${parsedProposalId}) does not exist.`,
                 });
             }
 
@@ -38,12 +38,12 @@ feedbackRatingRouter.post(
                 }
             });
 
-            if(userAlreadyCreatedRating) {
-                return res.status(400).json({ 
+            if (userAlreadyCreatedRating) {
+                return res.status(400).json({
                     message: `You have already rated this feedback. You cannot rate a feedback twice.`,
                     details: {
                         errorMessage: "A rating can only be voted on once."
-                    } 
+                    }
                 });
             }
 
@@ -65,14 +65,14 @@ feedbackRatingRouter.post(
             res.status(400).json({
                 message: `An error occured while trying to create a rating for feedback ${req.params.feedbackId} for proposal ${req.params.proposalId}.`,
                 details: {
-                  errorMessage: error.message,
-                  errorStack: error.stack,
+                    errorMessage: error.message,
+                    errorStack: error.stack,
                 }
-              });
+            });
         } finally {
             await prisma.$disconnect();
         }
-    } 
+    }
 )
 
 feedbackRatingRouter.get(
@@ -95,21 +95,21 @@ feedbackRatingRouter.get(
             }
 
             const ratings = await prisma.feedbackRating.findMany({
-                 where: {
+                where: {
                     proposalId: parsedProposalId,
-                    feedbackId: parsedFeedbackId 
-                } 
+                    feedbackId: parsedFeedbackId
+                }
             });
-            
+
             res.status(200).json(ratings);
-        }  catch (error) {
+        } catch (error) {
             res.status(400).json({
                 message: `An error occured while trying to get all ratings for feedback ${req.params.feedbackId} for proposal ${req.params.proposalId}.`,
                 details: {
-                  errorMessage: error.message,
-                  errorStack: error.stack,
+                    errorMessage: error.message,
+                    errorStack: error.stack,
                 }
-              });
+            });
         } finally {
             await prisma.$disconnect();
         }
@@ -139,12 +139,12 @@ feedbackRatingRouter.get(
 
             const ratings = await prisma.feedbackRating.findMany({
                 where: {
-                   proposalId: parsedProposalId,
-                   feedbackId: parsedFeedbackId 
-               } 
-           });
-           if (req.params.type === "YESNO") {
-            const yesRatings = await prisma.feedbackRating.aggregate({
+                    proposalId: parsedProposalId,
+                    feedbackId: parsedFeedbackId
+                }
+            });
+            if (req.params.type === "YESNO") {
+                const yesRatings = await prisma.feedbackRating.aggregate({
                     where: {
                         proposalId: parsedProposalId,
                         feedbackId: parsedFeedbackId,
@@ -188,15 +188,15 @@ feedbackRatingRouter.get(
             res.status(200).json({
                 ratings,
                 summary,
-                });
-        }  catch (error) {
+            });
+        } catch (error) {
             res.status(400).json({
                 message: `An error occured while trying to get all ratings for feedback ${req.params.feedbackId} for proposal ${req.params.proposalId}.`,
                 details: {
-                  errorMessage: error.message,
-                  errorStack: error.stack,
+                    errorMessage: error.message,
+                    errorStack: error.stack,
                 }
-              });
+            });
         } finally {
             await prisma.$disconnect();
         }

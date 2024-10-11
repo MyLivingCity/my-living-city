@@ -7,19 +7,20 @@ import {
     FieldInputProps,
     Form,
     Formik,
-    FormikConfig
+    FormikConfig,
 } from 'formik';
 import React, { useContext, useEffect, useState } from 'react';
 import SimpleMap from '../map/SimpleMap';
 import {
     capitalizeFirstLetterEachWord,
     refactorStateArray,
-    wipeLocalStorage
+    wipeLocalStorage,
 } from 'src/lib/utilityFunctions';
 import {
     findSegmentByName,
     findSubsegmentsBySegmentId,
-    getAllSegmentsWithSuperSegId
+    getAllSegmentsWithSuperSegId,
+    getAllSegments,
 } from 'src/lib/api/segmentRoutes';
 import { ISegment, ISubSegment } from 'src/lib/types/data/segment.type';
 import * as Yup from 'yup';
@@ -35,14 +36,14 @@ import ImageUploader from 'react-images-upload';
 import { ROUTES, TEXT_INPUT_LIMIT, USER_TYPES } from 'src/lib/constants';
 import {
     RegisterPageContentReach,
-    CheckBoxItem
+    CheckBoxItem,
 } from './RegisterPageContentReach';
 import CSS from 'csstype';
 import PricingPlanSelector from '../partials/PricingPlanSelector';
 
 interface RegisterPageContentProps {}
 type Props = FieldHookConfig<string> & {
-    field: FieldInputProps<string>;
+  field: FieldInputProps<string>;
 };
 
 export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
@@ -50,15 +51,15 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
     const [markers, sendData]: any = useState({
         home: { lat: null, lon: null },
         work: { lat: null, lon: null },
-        school: { lat: null, lon: null }
+        school: { lat: null, lon: null },
     });
     const [isLoading, setIsLoading] = useState(false);
     const [submitError, setSubmitError] = useState('');
     const [map, showMap] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [segment, setSegment] = useState<ISegment>();
+    const [segments, setSegments] = useState<ISegment[]>([]);
     const [subSegments, setSubSegments] = useState<ISubSegment[]>();
-    const [segment2, setSegment2] = useState<ISegment>();
     const [subSegments2, setSubSegments2] = useState<ISubSegment[]>();
     const [subIds, setSubIds] = useState<any[]>([]);
     const [segIds, setSegIds] = useState<any[]>([]);
@@ -93,7 +94,7 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
         let region: CheckBoxItem = {
             label: segment?.superSegName,
             value: 'SuperSeg',
-            children: []
+            children: [],
         };
 
         const res = await getAllSegmentsWithSuperSegId(segment?.superSegId);
@@ -101,7 +102,7 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
         res.forEach((segment) => {
             region.children?.push({
                 label: segment?.name,
-                value: segment?.segId
+                value: segment?.segId,
             });
         });
 
@@ -112,28 +113,27 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
     useEffect(() => {
         if (
             segment !== null &&
-            (userType === USER_TYPES.BUSINESS ||
-                userType === USER_TYPES.COMMUNITY)
+      (userType === USER_TYPES.BUSINESS || userType === USER_TYPES.COMMUNITY)
         ) {
             getReachData();
         }
     }, [segment]);
 
     const userTypeInfoContainerStyles: CSS.Properties = {
-        marginTop: '40px'
+        marginTop: '40px',
     };
 
     const inline: CSS.Properties = {
         display: 'inline',
-        marginLeft: '10px'
+        marginLeft: '10px',
     };
 
     const marginBot: CSS.Properties = {
-        marginBottom: '20px'
+        marginBottom: '20px',
     };
 
     return (
-        <div className="register-page-content">
+        <div className='register-page-content'>
             <FormikStepper
                 initialValues={{
                     email: '',
@@ -147,7 +147,7 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                         streetAddress2: '',
                         city: '',
                         postalCode: '',
-                        country: ''
+                        country: '',
                     },
                     geo: {
                         lon: undefined,
@@ -155,18 +155,18 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                         work_lat: undefined,
                         work_lon: undefined,
                         school_lat: undefined,
-                        school_lon: undefined
+                        school_lon: undefined,
                     },
                     workDetails: {
                         streetAddress: '',
                         postalCode: '',
-                        company: ''
+                        company: '',
                     },
                     schoolDetails: {
                         streetAddress: '',
                         postalCode: '',
                         faculty: '',
-                        programCompletionDate: undefined
+                        programCompletionDate: undefined,
                     },
                     homeSegmentId: undefined,
                     workSegmentId: undefined,
@@ -175,11 +175,12 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                     workSubSegmentId: undefined,
                     schoolSubSegmentId: undefined,
                     userType: USER_TYPES.RESIDENTIAL,
-                    reachSegmentIds: []
+                    reachSegmentIds: [],
                 }}
                 markers={markers}
                 setSegment={setSegment}
-                setSegment2={setSegment2}
+                setSegments={setSegments}
+                // setSegment2={setSegment2}
                 setSubSegments={setSubSegments}
                 setSubSegments2={setSubSegments2}
                 setSubIds={setSubIds}
@@ -198,20 +199,13 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                         setIsLoading(true);
                         setSubmitError('');
                         // console.log(values, segmentRequests);
-                        await postRegisterUser(
-                            values,
-                            segmentRequests,
-                            true,
-                            avatar
-                        );
+                        await postRegisterUser(values, segmentRequests, true, avatar);
                         if (userType === USER_TYPES.RESIDENTIAL) {
                             wipeLocalStorage();
                             window.location.href = ROUTES.CHECKEMAIL;
                         }
                     } catch (error: any) {
-                        setSubmitError(
-                            'An error occurred while creating your account.'
-                        );
+                        setSubmitError('An error occurred while creating your account.');
                         console.log(error);
                         wipeLocalStorage();
                     } finally {
@@ -221,7 +215,7 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
             >
                 <FormikStep>
                     <h3>Please select your account type:</h3>
-                    <BForm.Group className="m-4">
+                    <BForm.Group className='m-4'>
                         <PricingPlanSelector
                             onClickParam={(type: any) => setUserType(type)}
                         />
@@ -247,8 +241,144 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                         </div> */}
                     </BForm.Group>
                 </FormikStep>
-                {(userType === USER_TYPES.BUSINESS ||
-                    userType === USER_TYPES.COMMUNITY) && (
+                {(userType === USER_TYPES.BUSINESS || userType === USER_TYPES.COMMUNITY) && (
+                    <FormikStep
+                        validationSchema={Yup.object().shape({
+                            password: Yup.string().min(
+                                8,
+                                'Password is too short, 8 characters minimum'
+                            ),
+                            confirmPassword: Yup.string().oneOf(
+                                [Yup.ref('password'), null],
+                                'Passwords must match'
+                            ),
+                            email: Yup.string()
+                                .email('Invalid email')
+                                .test('Unique Email', 'Email already in use', function (value) {
+                                    return new Promise((resolve, reject) => {
+                                        getUserWithEmail(value).then((res) => {
+                                            res === 200 ? resolve(false) : resolve(true);
+                                        });
+                                    });
+                                }),
+                        })}
+                    >
+                        <BForm.Group>
+                            <BForm.Label>Email address</BForm.Label>
+                            <Field required name='email' type='email' as={BForm.Control} />
+                            <ErrorMessage name='email'>
+                                {(msg) => (
+                                    <p className='text-danger'>
+                                        {msg}
+                                        <br></br>
+                                    </p>
+                                )}
+                            </ErrorMessage>
+                        </BForm.Group>
+                        <BForm.Group>
+                            <BForm.Label>Password</BForm.Label>
+                            <Field
+                                required
+                                name='password'
+                                type='password'
+                                as={BForm.Control}
+                            />
+                            <ErrorMessage name='password'>
+                                {(msg) => (
+                                    <p className='text-danger'>
+                                        {msg}
+                                        <br></br>
+                                    </p>
+                                )}
+                            </ErrorMessage>
+                        </BForm.Group>
+                        <BForm.Group>
+                            <BForm.Label>Confirm Password</BForm.Label>
+                            <Field
+                                required
+                                name='confirmPassword'
+                                type='password'
+                                as={BForm.Control}
+                            />
+                            <ErrorMessage name='confirmPassword'>
+                                {(msg) => (
+                                    <p className='text-danger'>
+                                        {msg}
+                                        <br></br>
+                                    </p>
+                                )}
+                            </ErrorMessage>
+                        </BForm.Group>
+                        <BForm.Group>
+                            <BForm.Label>Organization Name</BForm.Label>
+                            <Field
+                                required
+                                name='organizationName'
+                                type='text'
+                                as={BForm.Control}
+                            />
+                        </BForm.Group>
+                        <BForm.Group>
+                            <BForm.Label>Contact First Name</BForm.Label>
+                            <Field required name='fname '>
+                                {({ field }: Props) => (
+                                    <BForm.Control
+                                        {...field}
+                                        type='text'
+                                        maxLength={TEXT_INPUT_LIMIT.NAME}
+                                    />
+                                )}
+                            </Field>
+                        </BForm.Group>
+                        <BForm.Group>
+                            <BForm.Label>Contact Last Name</BForm.Label>
+                            <Field required name='lname'>
+                                {({ field }: Props) => (
+                                    <BForm.Control
+                                        {...field}
+                                        type='text'
+                                        maxLength={TEXT_INPUT_LIMIT.NAME}
+                                    />
+                                )}
+                            </Field>
+                        </BForm.Group>
+                        <BForm.Group>
+                            <Field
+                                name='imagePath'
+                                type='file'
+                                fileContainerStyle={{ backgroundColor: '#F8F9FA' }}
+                                withPreview={true}
+                                onChange={(pic: any) => setAvatar(pic[0])}
+                                imgExtension={['.jpg', '.jpeg', '.png', '.webp']}
+                                buttonText='Select Profile Picture'
+                                maxFileSize={2097152}
+                                label={'Max file size 2mb, \n jpg, jpeg, png, webp'}
+                                singleImage={true}
+                                as={ImageUploader}
+                            />
+                            {/* <ImageUploader name="imagePath" fileContainerStyle={{backgroundColor: "#F8F9FA"}}withPreview={true} onChange={pic=>console.log(pic)} imgExtension={['.jpg','.jpeg','.png','.webp']} buttonText="Select Idea Image" maxFileSize={10485760} label={"Max file size 10mb, \n jpg, jpeg, png, webp"} singleImage={true}/> */}
+                        </BForm.Group>
+                        <BForm.Group>
+                            <BForm.Label>Street Name</BForm.Label>
+                            <Field
+                                required
+                                name='address.streetAddress'
+                                type='text'
+                                as={BForm.Control}
+                            />
+                        </BForm.Group>
+                        {/* <BForm.Group>
+                        <BForm.Label>Profile Image Upload</BForm.Label>
+                        <BForm.Control type="file" name="image" onChange={(e:any)=> setSelectedFile(e.target.files[0])}/>
+                    </BForm.Group> */}
+                        <BForm.Group>
+                            <BForm.Label>ZIP / Postal Code</BForm.Label>
+                            <Field name='address.postalCode' type='text' as={BForm.Control} />
+                        </BForm.Group>
+                    </FormikStep>
+                )}
+
+                {userType != USER_TYPES.BUSINESS && userType != USER_TYPES.COMMUNITY && (
                     <FormikStep
                         validationSchema={Yup.object().shape({
                             password: Yup.string().min(
@@ -265,32 +395,21 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                                     'Unique Email',
                                     'Email already in use',
                                     function (value) {
-                                        return new Promise(
-                                            (resolve, reject) => {
-                                                getUserWithEmail(value).then(
-                                                    (res) => {
-                                                        res === 200
-                                                            ? resolve(false)
-                                                            : resolve(true);
-                                                    }
-                                                );
-                                            }
-                                        );
+                                        return new Promise((resolve, reject) => {
+                                            getUserWithEmail(value).then((res) => {
+                                                res === 200 ? resolve(false) : resolve(true);
+                                            });
+                                        });
                                     }
-                                )
+                                ),
                         })}
                     >
                         <BForm.Group>
                             <BForm.Label>Email address</BForm.Label>
-                            <Field
-                                required
-                                name="email"
-                                type="email"
-                                as={BForm.Control}
-                            />
-                            <ErrorMessage name="email">
+                            <Field required name='email' type='email' as={BForm.Control} />
+                            <ErrorMessage name='email'>
                                 {(msg) => (
-                                    <p className="text-danger">
+                                    <p className='text-danger'>
                                         {msg}
                                         <br></br>
                                     </p>
@@ -301,13 +420,13 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                             <BForm.Label>Password</BForm.Label>
                             <Field
                                 required
-                                name="password"
-                                type="password"
+                                name='password'
+                                type='password'
                                 as={BForm.Control}
                             />
-                            <ErrorMessage name="password">
+                            <ErrorMessage name='password'>
                                 {(msg) => (
-                                    <p className="text-danger">
+                                    <p className='text-danger'>
                                         {msg}
                                         <br></br>
                                     </p>
@@ -318,13 +437,13 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                             <BForm.Label>Confirm Password</BForm.Label>
                             <Field
                                 required
-                                name="confirmPassword"
-                                type="password"
+                                name='confirmPassword'
+                                type='password'
                                 as={BForm.Control}
                             />
-                            <ErrorMessage name="confirmPassword">
+                            <ErrorMessage name='confirmPassword'>
                                 {(msg) => (
-                                    <p className="text-danger">
+                                    <p className='text-danger'>
                                         {msg}
                                         <br></br>
                                     </p>
@@ -332,33 +451,24 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                             </ErrorMessage>
                         </BForm.Group>
                         <BForm.Group>
-                            <BForm.Label>Organization Name</BForm.Label>
-                            <Field
-                                required
-                                name="organizationName"
-                                type="text"
-                                as={BForm.Control}
-                            />
-                        </BForm.Group>
-                        <BForm.Group>
-                            <BForm.Label>Contact First Name</BForm.Label>
-                            <Field required name="fname ">
+                            <BForm.Label>First Name</BForm.Label>
+                            <Field required name='fname'>
                                 {({ field }: Props) => (
                                     <BForm.Control
                                         {...field}
-                                        type="text"
+                                        type='text'
                                         maxLength={TEXT_INPUT_LIMIT.NAME}
                                     />
                                 )}
                             </Field>
                         </BForm.Group>
                         <BForm.Group>
-                            <BForm.Label>Contact Last Name</BForm.Label>
-                            <Field required name="lname">
+                            <BForm.Label>Last Name</BForm.Label>
+                            <Field required name='lname'>
                                 {({ field }: Props) => (
                                     <BForm.Control
                                         {...field}
-                                        type="text"
+                                        type='text'
                                         maxLength={TEXT_INPUT_LIMIT.NAME}
                                     />
                                 )}
@@ -366,24 +476,15 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                         </BForm.Group>
                         <BForm.Group>
                             <Field
-                                name="imagePath"
-                                type="file"
-                                fileContainerStyle={{
-                                    backgroundColor: '#F8F9FA'
-                                }}
+                                name='imagePath'
+                                type='file'
+                                fileContainerStyle={{ backgroundColor: '#F8F9FA' }}
                                 withPreview={true}
                                 onChange={(pic: any) => setAvatar(pic[0])}
-                                imgExtension={[
-                                    '.jpg',
-                                    '.jpeg',
-                                    '.png',
-                                    '.webp'
-                                ]}
-                                buttonText="Select Profile Picture"
+                                imgExtension={['.jpg', '.jpeg', '.png', '.webp']}
+                                buttonText='Select Profile Picture'
                                 maxFileSize={2097152}
-                                label={
-                                    'Max file size 2mb, \n jpg, jpeg, png, webp'
-                                }
+                                label={'Max file size 2mb, \n jpg, jpeg, png, webp'}
                                 singleImage={true}
                                 as={ImageUploader}
                             />
@@ -393,240 +494,72 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                             <BForm.Label>Street Name</BForm.Label>
                             <Field
                                 required
-                                name="address.streetAddress"
-                                type="text"
+                                name='address.streetAddress'
+                                type='text'
                                 as={BForm.Control}
                             />
                         </BForm.Group>
                         {/* <BForm.Group>
-                        <BForm.Label>Profile Image Upload</BForm.Label>
-                        <BForm.Control type="file" name="image" onChange={(e:any)=> setSelectedFile(e.target.files[0])}/>
-                    </BForm.Group> */}
+                            <BForm.Label>Profile Image Upload</BForm.Label>
+                            <BForm.Control type="file" name="image" onChange={(e:any)=> setSelectedFile(e.target.files[0])}/>
+                        </BForm.Group> */}
                         <BForm.Group>
                             <BForm.Label>ZIP / Postal Code</BForm.Label>
                             <Field
-                                name="address.postalCode"
-                                type="text"
+                                name='address.postalCode'
+                                type='text'
                                 as={BForm.Control}
                             />
                         </BForm.Group>
                     </FormikStep>
                 )}
-
-                {userType != USER_TYPES.BUSINESS &&
-                    userType != USER_TYPES.COMMUNITY && (
-                        <FormikStep
-                            validationSchema={Yup.object().shape({
-                                password: Yup.string().min(
-                                    8,
-                                    'Password is too short, 8 characters minimum'
-                                ),
-                                confirmPassword: Yup.string().oneOf(
-                                    [Yup.ref('password'), null],
-                                    'Passwords must match'
-                                ),
-                                email: Yup.string()
-                                    .email('Invalid email')
-                                    .test(
-                                        'Unique Email',
-                                        'Email already in use',
-                                        function (value) {
-                                            return new Promise(
-                                                (resolve, reject) => {
-                                                    getUserWithEmail(
-                                                        value
-                                                    ).then((res) => {
-                                                        res === 200
-                                                            ? resolve(false)
-                                                            : resolve(true);
-                                                    });
-                                                }
-                                            );
-                                        }
-                                    )
-                            })}
-                        >
-                            <BForm.Group>
-                                <BForm.Label>Email address</BForm.Label>
-                                <Field
-                                    required
-                                    name="email"
-                                    type="email"
-                                    as={BForm.Control}
-                                />
-                                <ErrorMessage name="email">
-                                    {(msg) => (
-                                        <p className="text-danger">
-                                            {msg}
-                                            <br></br>
-                                        </p>
-                                    )}
-                                </ErrorMessage>
-                            </BForm.Group>
-                            <BForm.Group>
-                                <BForm.Label>Password</BForm.Label>
-                                <Field
-                                    required
-                                    name="password"
-                                    type="password"
-                                    as={BForm.Control}
-                                />
-                                <ErrorMessage name="password">
-                                    {(msg) => (
-                                        <p className="text-danger">
-                                            {msg}
-                                            <br></br>
-                                        </p>
-                                    )}
-                                </ErrorMessage>
-                            </BForm.Group>
-                            <BForm.Group>
-                                <BForm.Label>Confirm Password</BForm.Label>
-                                <Field
-                                    required
-                                    name="confirmPassword"
-                                    type="password"
-                                    as={BForm.Control}
-                                />
-                                <ErrorMessage name="confirmPassword">
-                                    {(msg) => (
-                                        <p className="text-danger">
-                                            {msg}
-                                            <br></br>
-                                        </p>
-                                    )}
-                                </ErrorMessage>
-                            </BForm.Group>
-                            <BForm.Group>
-                                <BForm.Label>First Name</BForm.Label>
-                                <Field required name="fname">
-                                    {({ field }: Props) => (
-                                        <BForm.Control
-                                            {...field}
-                                            type="text"
-                                            maxLength={TEXT_INPUT_LIMIT.NAME}
-                                        />
-                                    )}
-                                </Field>
-                            </BForm.Group>
-                            <BForm.Group>
-                                <BForm.Label>Last Name</BForm.Label>
-                                <Field required name="lname">
-                                    {({ field }: Props) => (
-                                        <BForm.Control
-                                            {...field}
-                                            type="text"
-                                            maxLength={TEXT_INPUT_LIMIT.NAME}
-                                        />
-                                    )}
-                                </Field>
-                            </BForm.Group>
-                            <BForm.Group>
-                                <Field
-                                    name="imagePath"
-                                    type="file"
-                                    fileContainerStyle={{
-                                        backgroundColor: '#F8F9FA'
-                                    }}
-                                    withPreview={true}
-                                    onChange={(pic: any) => setAvatar(pic[0])}
-                                    imgExtension={[
-                                        '.jpg',
-                                        '.jpeg',
-                                        '.png',
-                                        '.webp'
-                                    ]}
-                                    buttonText="Select Profile Picture"
-                                    maxFileSize={2097152}
-                                    label={
-                                        'Max file size 2mb, \n jpg, jpeg, png, webp'
-                                    }
-                                    singleImage={true}
-                                    as={ImageUploader}
-                                />
-                                {/* <ImageUploader name="imagePath" fileContainerStyle={{backgroundColor: "#F8F9FA"}}withPreview={true} onChange={pic=>console.log(pic)} imgExtension={['.jpg','.jpeg','.png','.webp']} buttonText="Select Idea Image" maxFileSize={10485760} label={"Max file size 10mb, \n jpg, jpeg, png, webp"} singleImage={true}/> */}
-                            </BForm.Group>
-                            <BForm.Group>
-                                <BForm.Label>Street Name</BForm.Label>
-                                <Field
-                                    required
-                                    name="address.streetAddress"
-                                    type="text"
-                                    as={BForm.Control}
-                                />
-                            </BForm.Group>
-                            {/* <BForm.Group>
-                            <BForm.Label>Profile Image Upload</BForm.Label>
-                            <BForm.Control type="file" name="image" onChange={(e:any)=> setSelectedFile(e.target.files[0])}/>
-                        </BForm.Group> */}
-                            <BForm.Group>
-                                <BForm.Label>ZIP / Postal Code</BForm.Label>
-                                <Field
-                                    name="address.postalCode"
-                                    type="text"
-                                    as={BForm.Control}
-                                />
-                            </BForm.Group>
-                        </FormikStep>
-                    )}
-                <FormikStep>
-                    <Card.Title>
-                        Show us on the map where your home is
-                    </Card.Title>
-                    <Card.Subtitle className="text-muted mb-3">
-                        We use this information to find your community!
+                {/* <FormikStep>
+                    <Card.Title>Show us on the map where your home is</Card.Title>
+                    <Card.Subtitle className='text-muted mb-3'>
+            We use this information to find your community!
                     </Card.Subtitle>
                     <SimpleMap
                         iconName={'home'}
                         sendData={(markers: any) => sendData(markers)}
                     />
-                </FormikStep>
+                </FormikStep> */}
 
                 <FormikStep>
                     <BForm.Group>
-                        {segment || segment2 ? null : (
-                            <p>
-                                Your home municipality is not registered in our
-                                system.
-                            </p>
+                        {segment ? null : (
+                            <p>Your home municipality is not registered in our system.</p>
                         )}
                         <BForm.Label>Select your home municipality</BForm.Label>
                         <BForm.Control
-                            name="homeSegmentId"
-                            as="select"
+                            name='homeSegmentId'
+                            as='select'
                             onChange={(e) => {
-                                refactorStateArray(
-                                    segIds,
-                                    0,
-                                    parseInt(e.target.value),
-                                    setSegIds
+                                // Find the selected segment from the dropdown and set it as the single selected segment
+                                const selectedSegment = segments.find(
+                                    (seg) => seg.segId === parseInt(e.target.value)
                                 );
-                                refactorStateArray(subIds, 0, null, setSubIds);
+                                if (selectedSegment) {
+                                    setSegment(selectedSegment); // Set the single segment for the user
+                                    refactorStateArray(segIds, 0, selectedSegment.segId, setSegIds);
+                                    refactorStateArray(subIds, 0, null, setSubIds); // Clear subsegment
+                                }
                             }}
                         >
-                            {segment && (
-                                <option value={segment?.segId}>
-                                    {capitalizeFirstLetterEachWord(
-                                        segment?.name
-                                    )}
+                            <option hidden>Select a municipality</option>
+                            {segments.map((seg: ISegment) => (
+                                <option key={seg.segId} value={seg.segId}>
+                                    {capitalizeFirstLetterEachWord(seg.name)}
                                 </option>
-                            )}
-                            {segment2 && (
-                                <option value={segment2?.segId}>
-                                    {capitalizeFirstLetterEachWord(
-                                        segment2?.name
-                                    )}
-                                </option>
-                            )}
+                            ))}
                         </BForm.Control>
+                        {console.log('STEP 2 is being rendered')}
                     </BForm.Group>
+
                     <BForm.Group>
-                        <BForm.Label>
-                            Select your Neighbourhood (optional)
-                        </BForm.Label>
+                        <BForm.Label>Select your Neighbourhood (optional)</BForm.Label>
                         <BForm.Control
-                            name="homeSubName"
-                            as="select"
+                            name='homeSubName'
+                            as='select'
                             onChange={(e) => {
                                 refactorStateArray(
                                     subIds,
@@ -640,14 +573,14 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                             {displaySubSegList(segIds[0])}
                         </BForm.Control>
                         <p>
-                            Don't see your Municipality?
+              Don't see your Municipality?
                             <Button
                                 onClick={() => {
                                     setShowModal(true);
                                 }}
-                                variant="link text-primary"
+                                variant='link text-primary'
                             >
-                                Click here
+                Click here
                             </Button>
                         </p>
                     </BForm.Group>
@@ -665,15 +598,14 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                         {!map ? (
                             <div>
                                 <Card.Title>
-                                    Do you work in a different municipality or
-                                    neighbourhood?
-                                    <div className="float-right">
+                  Do you work in a different municipality or neighbourhood?
+                                    <div className='float-right'>
                                         <BForm.Check
                                             inline
-                                            label="yes"
-                                            name="group1"
-                                            type="radio"
-                                            id="inline-checkbox"
+                                            label='yes'
+                                            name='group1'
+                                            type='radio'
+                                            id='inline-checkbox'
                                             onClick={() => {
                                                 showMap(true);
                                                 transferHomeToWork(false);
@@ -681,10 +613,10 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                                         />
                                         <BForm.Check
                                             inline
-                                            label="no"
-                                            name="group1"
-                                            type="radio"
-                                            id="inline-checkbox"
+                                            label='no'
+                                            name='group1'
+                                            type='radio'
+                                            id='inline-checkbox'
                                             onClick={() => {
                                                 transferHomeToWork(true);
                                             }}
@@ -695,15 +627,12 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                         ) : (
                             <>
                                 <Card.Title>
-                                    Show us on the map where your work is
-                                    (optional)
+                  Show us on the map where your work is (optional)
                                 </Card.Title>
-                                <SimpleMap
+                                {/* <SimpleMap
                                     iconName={'work'}
-                                    sendData={(markers: any) =>
-                                        sendData(markers)
-                                    }
-                                />
+                                    sendData={(markers: any) => sendData(markers)}
+                                /> */}
                             </>
                         )}
                     </FormikStep>
@@ -714,8 +643,8 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                         <BForm.Group>
                             <BForm.Label>Your Work Municipality is</BForm.Label>
                             <BForm.Control
-                                name="workSegmentId"
-                                as="select"
+                                name='workSegmentId'
+                                as='select'
                                 onChange={(e) => {
                                     refactorStateArray(
                                         segIds,
@@ -723,35 +652,26 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                                         parseInt(e.target.value),
                                         setSegIds
                                     );
-                                    refactorStateArray(
-                                        subIds,
-                                        1,
-                                        null,
-                                        setSubIds
-                                    );
+                                    refactorStateArray(subIds, 1, null, setSubIds);
                                 }}
                             >
                                 {segment && (
                                     <option value={segment?.segId}>
-                                        {capitalizeFirstLetterEachWord(
-                                            segment?.name
-                                        )}
+                                        {capitalizeFirstLetterEachWord(segment?.name)}
                                     </option>
                                 )}
-                                {segment2 && (
+                                {/* {segment2 && (
                                     <option value={segment2?.segId}>
-                                        {capitalizeFirstLetterEachWord(
-                                            segment2?.name
-                                        )}
+                                        {capitalizeFirstLetterEachWord(segment2?.name)}
                                     </option>
-                                )}
+                                )} */}
                             </BForm.Control>
                         </BForm.Group>
                         <BForm.Group>
                             <BForm.Label>Select your Neighbourhood</BForm.Label>
                             <BForm.Control
-                                name="workSubName"
-                                as="select"
+                                name='workSubName'
+                                as='select'
                                 onChange={(e) => {
                                     refactorStateArray(
                                         subIds,
@@ -765,38 +685,38 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                                 {displaySubSegList(segIds[1])}
                             </BForm.Control>
                             <p>
-                                Don't see your Municipality?
+                Don't see your Municipality?
                                 <Button
                                     onClick={() => {
                                         setShowModal(true);
                                     }}
-                                    variant="link text-primary"
+                                    variant='link text-primary'
                                 >
-                                    Click here
+                  Click here
                                 </Button>
                             </p>
                         </BForm.Group>
                         <BForm.Group>
                             <BForm.Label>Work Street Name</BForm.Label>
                             <Field
-                                name="workDetails.streetAddress"
-                                type="text"
+                                name='workDetails.streetAddress'
+                                type='text'
                                 as={BForm.Control}
                             />
                         </BForm.Group>
                         <BForm.Group>
                             <BForm.Label>Work ZIP / Postal Code</BForm.Label>
                             <Field
-                                name="workDetails.postalCode"
-                                type="text"
+                                name='workDetails.postalCode'
+                                type='text'
                                 as={BForm.Control}
                             />
                         </BForm.Group>
                         <BForm.Group>
                             <BForm.Label>Company</BForm.Label>
                             <Field
-                                name="workDetails.company"
-                                type="text"
+                                name='workDetails.company'
+                                type='text'
                                 as={BForm.Control}
                             />
                         </BForm.Group>
@@ -814,16 +734,15 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                     <FormikStep>
                         {!map ? (
                             <div>
-                                <Card.Title className="mb-4">
-                                    Do you study in a different municipality or
-                                    neighbourhood?
-                                    <div className="float-right">
+                                <Card.Title className='mb-4'>
+                  Do you study in a different municipality or neighbourhood?
+                                    <div className='float-right'>
                                         <BForm.Check
                                             inline
-                                            label="yes"
-                                            name="group1"
-                                            type="radio"
-                                            id="inline-checkbox"
+                                            label='yes'
+                                            name='group1'
+                                            type='radio'
+                                            id='inline-checkbox'
                                             onClick={() => {
                                                 showMap(true);
                                                 transferWorkToSchool(false);
@@ -831,10 +750,10 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                                         />
                                         <BForm.Check
                                             inline
-                                            label="no"
-                                            name="group1"
-                                            type="radio"
-                                            id="inline-checkbox"
+                                            label='no'
+                                            name='group1'
+                                            type='radio'
+                                            id='inline-checkbox'
                                             onClick={() => {
                                                 transferWorkToSchool(true);
                                             }}
@@ -845,15 +764,12 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                         ) : (
                             <>
                                 <Card.Title>
-                                    Show us on the map where your school is
-                                    (optional)
+                  Show us on the map where your school is (optional)
                                 </Card.Title>
-                                <SimpleMap
+                                {/* <SimpleMap
                                     iconName={'school'}
-                                    sendData={(markers: any) =>
-                                        sendData(markers)
-                                    }
-                                />
+                                    sendData={(markers: any) => sendData(markers)}
+                                /> */}
                             </>
                         )}
                     </FormikStep>
@@ -862,12 +778,10 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                 {userType === USER_TYPES.RESIDENTIAL && (
                     <FormikStep>
                         <BForm.Group>
-                            <BForm.Label>
-                                Your School Municipality is
-                            </BForm.Label>
+                            <BForm.Label>Your School Municipality is</BForm.Label>
                             <BForm.Control
-                                name="schoolSegmentId"
-                                as="select"
+                                name='schoolSegmentId'
+                                as='select'
                                 onChange={(e) => {
                                     refactorStateArray(
                                         segIds,
@@ -875,31 +789,22 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                                         parseInt(e.target.value),
                                         setSegIds
                                     );
-                                    refactorStateArray(
-                                        subIds,
-                                        2,
-                                        null,
-                                        setSubIds
-                                    );
+                                    refactorStateArray(subIds, 2, null, setSubIds);
                                 }}
                             >
                                 {segment && (
-                                    <option value={segment?.segId}>
-                                        {segment?.name}
-                                    </option>
+                                    <option value={segment?.segId}>{segment?.name}</option>
                                 )}
-                                {segment2 && (
-                                    <option value={segment2?.segId}>
-                                        {segment2?.name}
-                                    </option>
-                                )}
+                                {/* {segment2 && (
+                                    <option value={segment2?.segId}>{segment2?.name}</option>
+                                )} */}
                             </BForm.Control>
                         </BForm.Group>
                         <BForm.Group>
                             <BForm.Label>Select your Neighbourhood</BForm.Label>
                             <BForm.Control
-                                name="schoolSubName"
-                                as="select"
+                                name='schoolSubName'
+                                as='select'
                                 onChange={(e) => {
                                     refactorStateArray(
                                         subIds,
@@ -913,48 +818,46 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                                 {displaySubSegList(segIds[2])}
                             </BForm.Control>
                             <p>
-                                Don't see your Municipality?
+                Don't see your Municipality?
                                 <Button
                                     onClick={() => {
                                         setShowModal(true);
                                     }}
-                                    variant="link text-primary"
+                                    variant='link text-primary'
                                 >
-                                    Click here
+                  Click here
                                 </Button>
                             </p>
                         </BForm.Group>
                         <BForm.Group>
                             <BForm.Label>School Street Name</BForm.Label>
                             <Field
-                                name="schoolDetails.streetAddress"
-                                type="text"
+                                name='schoolDetails.streetAddress'
+                                type='text'
                                 as={BForm.Control}
                             />
                         </BForm.Group>
                         <BForm.Group>
                             <BForm.Label>School ZIP / Postal Code</BForm.Label>
                             <Field
-                                name="schoolDetails.postalCode"
-                                type="text"
+                                name='schoolDetails.postalCode'
+                                type='text'
                                 as={BForm.Control}
                             />
                         </BForm.Group>
                         <BForm.Group>
-                            <BForm.Label>
-                                Faculty / Department of Study
-                            </BForm.Label>
+                            <BForm.Label>Faculty / Department of Study</BForm.Label>
                             <Field
-                                name="schoolDetails.faculty"
-                                type="text"
+                                name='schoolDetails.faculty'
+                                type='text'
                                 as={BForm.Control}
                             />
                         </BForm.Group>
                         <BForm.Group>
                             <BForm.Label>Program Completion Date</BForm.Label>
                             <Field
-                                name="schoolDetails.programCompletionDate"
-                                type="date"
+                                name='schoolDetails.programCompletionDate'
+                                type='date'
                                 as={BForm.Control}
                             />
                         </BForm.Group>
@@ -969,7 +872,7 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                 )}
 
                 {(userType === USER_TYPES.BUSINESS ||
-                    userType === USER_TYPES.COMMUNITY) && (
+          userType === USER_TYPES.COMMUNITY) && (
                     <FormikStep>
                         <RegisterPageContentReach
                             data={reachData}
@@ -981,76 +884,70 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
 
                 <FormikStep>
                     <p>
-                        It takes a lot to bring an idea to form, and as a user
-                        on the MLC Community Discussion Platform the following
-                        agreements will enable the interactions that turn ideas
-                        into reality:
+            It takes a lot to bring an idea to form, and as a user on the MLC
+            Community Discussion Platform the following agreements will enable
+            the interactions that turn ideas into reality:
                     </p>
                     <p>
                         <strong>
                             {' '}
-                            1. Ideas, comments and people are treated with
-                            respect;
+              1. Ideas, comments and people are treated with respect;
                         </strong>
                     </p>
                     <p>
                         <strong>
                             {' '}
-                            2. Commenting on an idea is designed to flesh it out
-                            in more detail to get as much constructive feedback
-                            and viewpoints from the community.
+              2. Commenting on an idea is designed to flesh it out in more
+              detail to get as much constructive feedback and viewpoints from
+              the community.
                         </strong>
                     </p>
                     <p> The following works when commenting:</p>
-                    <p className="ml-4">
+                    <p className='ml-4'>
                         {' '}
-                        a. Emphasize what you see that works about the idea and
-                        what is the value that it brings;
+            a. Emphasize what you see that works about the idea and what is the
+            value that it brings;
                     </p>
-                    <p className="ml-4">
+                    <p className='ml-4'>
                         {' '}
-                        b. Identify areas that don’t work and suggest how they
-                        can be improved;
+            b. Identify areas that don’t work and suggest how they can be
+            improved;
                     </p>
-                    <p className="ml-4">
+                    <p className='ml-4'>
                         {' '}
-                        c. Opinions and judgments don’t add value to the
-                        conversation; and
+            c. Opinions and judgments don’t add value to the conversation; and
                     </p>
-                    <p className="ml-4">
+                    <p className='ml-4'>
                         {' '}
-                        d. Share about where else this idea can go or what new
-                        angle can be added to make it even better for the whole
-                        community.
+            d. Share about where else this idea can go or what new angle can be
+            added to make it even better for the whole community.
                     </p>
                     <p>
                         <strong>
                             {' '}
-                            3. Your ideas and experience is valuable and we want
-                            to hear from everyone how to make this an actual
-                            project that works in the community.
+              3. Your ideas and experience is valuable and we want to hear from
+              everyone how to make this an actual project that works in the
+              community.
                         </strong>
                     </p>
-                    <p>By clicking next you confirm:</p>
-                    <p className="ml-4">
+                    <p>
+            By clicking next you confirm:</p>
+                    <p className='ml-4'>
                         {' '}
-                        a. Your acceptance to follow these community guidelines;
-                        and
+            a. Your acceptance to follow these community guidelines; and
                     </p>
-                    <p className="ml-4">
+                    <p className='ml-4'>
                         {' '}
-                        b. That MyLivingCity has the right to store and process
-                        your personal information shared with the platform.
+            b. That MyLivingCity has the right to store and process 
+            your personal information shared with the platform.
                     </p>
                 </FormikStep>
 
                 <FormikStep>
-                    {submitError && (
-                        <Alert variant="danger">{submitError}</Alert>
-                    )}
+                    {submitError && <Alert variant='danger'>{submitError}</Alert>}
                     <h3>
-                        To complete registration press submit! Make sure to
-                        check your email for a verification code!{' '}
+            To complete registration press submit! Make sure to check your email
+            for a verification code!{' '}
                     </h3>
                     {/* Stripe Payment Implementation Goes Here */}
                     {/* <BForm.Group> */}
@@ -1062,33 +959,27 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                 </FormikStep> */}
 
                 {(userType === USER_TYPES.BUSINESS ||
-                    userType === USER_TYPES.COMMUNITY) && (
+          userType === USER_TYPES.COMMUNITY) && (
                     <FormikStep>
                         <BForm.Group>
-                            <h4>
-                                Would you like to setup Complementary Ad now?
-                            </h4>
-                            <p>
-                                You would be able to create ad later at the ad
-                                manager
-                            </p>
+                            <h4>Would you like to setup Complementary Ad now?</h4>
+                            <p>You would be able to create ad later at the ad manager</p>
                             <BForm.Check
                                 inline
-                                name="createAdRadio"
-                                label="Yes"
-                                type="radio"
-                                id="inline-checkbox"
+                                name='createAdRadio'
+                                label='Yes'
+                                type='radio'
+                                id='inline-checkbox'
                                 onClick={() => {
-                                    window.location.href =
-                                        ROUTES.SUBMIT_ADVERTISEMENT;
+                                    window.location.href = ROUTES.SUBMIT_ADVERTISEMENT;
                                 }}
                             />
                             <BForm.Check
                                 inline
-                                name="createAdRadio"
-                                label="No"
-                                type="radio"
-                                id="inline-checkbox"
+                                name='createAdRadio'
+                                label='No'
+                                type='radio'
+                                id='inline-checkbox'
                                 onClick={() => {
                                     window.location.href = ROUTES.LOGIN;
                                 }}
@@ -1102,33 +993,31 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
 };
 
 export interface FormikStepProps
-    extends Pick<
-        FormikConfig<IRegisterInput>,
-        'children' | 'validationSchema'
-    > {
-    // setSegmentId?: any;
+  extends Pick<FormikConfig<IRegisterInput>, 'children' | 'validationSchema'> {
+  // setSegmentId?: any;
 }
 
 export function FormikStep({ children }: FormikStepProps) {
     return <>{children}</>;
 }
 export interface FormikStepperProps extends FormikConfig<IRegisterInput> {
-    initialValues: IRegisterInput;
-    markers: any;
-    setSegment: any;
-    setSegment2: any;
-    setSubSegments: any;
-    setSubSegments2: any;
-    showMap: any;
-    setSubIds: any;
-    setSegIds: any;
-    segIds: any;
-    subIds: any;
-    workTransfer: boolean;
-    schoolTransfer: boolean;
-    avatar: any;
-    userType: any;
-    reachSegmentIds: any;
+  initialValues: IRegisterInput;
+  markers: any;
+  setSegment: any;
+  setSegments: any;
+//   setSegment2: any;
+  setSubSegments: any;
+  setSubSegments2: any;
+  showMap: any;
+  setSubIds: any;
+  setSegIds: any;
+  segIds: any;
+  subIds: any;
+  workTransfer: boolean;
+  schoolTransfer: boolean;
+  avatar: any;
+  userType: any;
+  reachSegmentIds: any;
 }
 export function FormikStepper({
     children,
@@ -1158,9 +1047,9 @@ export function FormikStepper({
     const [error, setError] = useState<IFetchError | null>(null);
     //Functions for handling button states.
     const isLastStep = () => {
-        // if (userType === USER_TYPES.RESIDENTIAL) {
-        //     return step === childrenArray.length - 2;
-        // } else {
+    // if (userType === USER_TYPES.RESIDENTIAL) {
+    //     return step === childrenArray.length - 2;
+    // } else {
         return step === childrenArray.length - 1;
     };
     const nextOrLoading = () => {
@@ -1179,9 +1068,7 @@ export function FormikStepper({
             case 1:
                 return 'Home Location';
             case 2:
-                return userType === USER_TYPES.RESIDENTIAL
-                    ? 'Work Location'
-                    : 'Reach';
+                return userType === USER_TYPES.RESIDENTIAL ? 'Work Location' : 'Reach';
             case 3:
                 return userType === USER_TYPES.RESIDENTIAL
                     ? 'School Location'
@@ -1190,15 +1077,13 @@ export function FormikStepper({
                 return userType === USER_TYPES.RESIDENTIAL
                     ? 'User Agreement and Community Guidelines'
                     : 'Submit';
-            // case 5:
-            //     return userType === USER_TYPES.RESIDENTIAL ? "Submit" : "Submit"
+                // case 5:
+                //     return userType === USER_TYPES.RESIDENTIAL ? "Submit" : "Submit"
             case 5:
-                return userType === USER_TYPES.RESIDENTIAL
-                    ? 'Submit'
-                    : 'Create Ad'; //Removed  "Complementary" due to sizing problems
+                return userType === USER_TYPES.RESIDENTIAL ? 'Submit' : 'Create Ad'; //Removed  "Complementary" due to sizing problems
             default:
                 return '';
-            // }
+      // }
         }
     };
 
@@ -1238,74 +1123,62 @@ export function FormikStepper({
     //The data is then searched in the back end for a matching segment
     //Then the back end is searched for all the sub-segments of that matching segment.
     async function setSegData(index: number) {
-        let googleQuery: any;
-        let testMode = true;
+        console.log('SETSEGDATA CALLED, INDEX:', index);
         try {
-            //PLACEHOLDER for GOOGLE API query
             setError(null);
             setIsLoading(true);
+            let fetchedSegments: ISegment[] = []; // Initialize as an empty array
+            let selectedSegment: ISegment | null = null; // Initialize selected segment as null
+    
+            // Fetch the segments based on the index
             switch (index) {
                 case 0:
-                    googleQuery = await searchForLocation(markers.home);
-                    console.log('google home query');
+                    console.log('Attempting home segment fetch');
+                    fetchedSegments = await getAllSegments(); // Fetch all segments
+                    console.log('Fetched home segments:', fetchedSegments);
+                    props.setSegments(fetchedSegments); // Update segments state
+                    if (fetchedSegments.length > 0) {
+                        selectedSegment = fetchedSegments[0]; // Select the first segment as default
+                    }
                     break;
                 case 1:
-                    googleQuery = await searchForLocation(markers.work);
-                    console.log('google work query');
+                    console.log('Attempting work segment fetch');
+                    fetchedSegments = await getAllSegments(); // Fetch all segments
+                    props.setSegments(fetchedSegments);
+                    if (fetchedSegments.length > 0) {
+                        selectedSegment = fetchedSegments[0];
+                    }
                     break;
                 case 2:
-                    googleQuery = await searchForLocation(markers.school);
-                    console.log('google school query');
+                    console.log('Attempting school segment fetch');
+                    fetchedSegments = await getAllSegments(); // Fetch all segments
+                    props.setSegments(fetchedSegments);
+                    if (fetchedSegments.length > 0) {
+                        selectedSegment = fetchedSegments[0];
+                    }
                     break;
                 default:
+                    console.error('Unknown index in setSegData');
             }
-            if (googleQuery.city2) {
-                const seg2 = await findSegmentByName({
-                    segName: googleQuery.city2,
-                    province: googleQuery.province,
-                    country: googleQuery.country
-                });
-                if (seg2) {
-                    props.setSegment2(seg2);
-                    refactorStateArray(segIds, index, seg2.segId, setSegIds);
-
-                    //refactorSegIds(index,seg2.segId);
-                    const sub2 = await findSubsegmentsBySegmentId(seg2.segId);
-                    props.setSubSegments2(sub2);
-                    // console.log(`Seg2: ${JSON.stringify(seg2)}`);
-                    // console.log(`SubSeg2: ${JSON.stringify(sub2)}`)
-                } else {
-                    props.setSegment2(null);
-                    props.setSubSegments2(null);
-                }
+    
+            // Set the selected segment (single segment)
+            if (selectedSegment) {
+                props.setSegment(selectedSegment); // Keep this single segment for saving
+                refactorStateArray(segIds, index, selectedSegment.segId || null, setSegIds);
+            } else {
+                console.warn('No segments fetched');
             }
-            if (googleQuery.city) {
-                const seg = await findSegmentByName({
-                    segName: googleQuery.city,
-                    province: googleQuery.province,
-                    country: googleQuery.country
-                });
-                if (seg) {
-                    props.setSegment(seg);
-                    refactorStateArray(segIds, index, seg.segId, setSegIds);
-                    //refactorSegIds(index,seg.segId);
-                    const sub = await findSubsegmentsBySegmentId(seg.segId);
-                    props.setSubSegments(sub);
-                    // console.log(`Seg: ${JSON.stringify(seg)}`);
-                    // console.log(`SubSeg1: ${JSON.stringify(sub)}`)
-                } else {
-                    props.setSegment(null);
-                    props.setSubSegments(null);
-                }
-            }
+    
             setStep((s) => s + 1);
         } catch (err) {
-            console.log(err);
-            //placeHolder
-            //Need to do better error handling here.
-            //setError(new Error(err.response.data));
+            console.error('Error fetching segment:', err);
+            setError(new Error('An error occurred while fetching the segment'));
+        } finally {
+            setIsLoading(false);
         }
     }
+    
+    
     if (userType === USER_TYPES.RESIDENTIAL) {
         return (
             <Formik
@@ -1314,8 +1187,8 @@ export function FormikStepper({
                 onSubmit={async (values, helpers) => {
                     if (
                         step === 4 &&
-                        (userType === USER_TYPES.BUSINESS ||
-                            userType === USER_TYPES.COMMUNITY)
+            (userType === USER_TYPES.BUSINESS ||
+              userType === USER_TYPES.COMMUNITY)
                     ) {
                         values.reachSegmentIds = reachSegmentIds;
                     }
@@ -1326,9 +1199,9 @@ export function FormikStepper({
                         setStep((s) => s + 1);
                     } else if (
                         (isLastStep() && userType === USER_TYPES.RESIDENTIAL) ||
-                        ((userType === USER_TYPES.BUSINESS ||
-                            userType === USER_TYPES.COMMUNITY) &&
-                            step === 6)
+            ((userType === USER_TYPES.BUSINESS ||
+              userType === USER_TYPES.COMMUNITY) &&
+              step === 6)
                     ) {
                         setIsLoading(true);
                         await new Promise((r) => setTimeout(r, 2000));
@@ -1337,29 +1210,21 @@ export function FormikStepper({
                             setStep((s) => s + 1);
                             setInferStep((s) => s + 1);
                         }
+                    } else if (step === 1) {
+                        console.log('STEP 1------------------------------');
+                        const seg = await setSegData(0);
+                        // showMap(false);
                     } else if (step === 2) {
+                        console.log('STEP 2------------------------------');
                         const seg = await setSegData(0);
                         showMap(false);
-                    } else if (
-                        step === 4 &&
-                        userType === USER_TYPES.RESIDENTIAL
-                    ) {
+                    } else if (step === 4 && userType === USER_TYPES.RESIDENTIAL) {
                         if (markers.work.lat === null) {
                             setStep((s) => s + 2);
                             setInferStep((s) => s + 1);
                             if (workTransfer) {
-                                refactorStateArray(
-                                    segIds,
-                                    1,
-                                    segIds[0],
-                                    setSegIds
-                                );
-                                refactorStateArray(
-                                    subIds,
-                                    1,
-                                    subIds[0],
-                                    setSubIds
-                                );
+                                refactorStateArray(segIds, 1, segIds[0], setSegIds);
+                                refactorStateArray(subIds, 1, subIds[0], setSubIds);
                                 //refactorSegIds(1, segIds[0]);
                                 //refactorSubIds(1, subIds[0]);
                             }
@@ -1368,10 +1233,7 @@ export function FormikStepper({
                             //setStep(s=>s+1);
                         }
                         showMap(false);
-                    } else if (
-                        step === 6 &&
-                        userType === USER_TYPES.RESIDENTIAL
-                    ) {
+                    } else if (step === 6 && userType === USER_TYPES.RESIDENTIAL) {
                         console.log(segIds);
                         if (markers.school.lat === null) {
                             setStep((s) => s + 2);
@@ -1399,8 +1261,8 @@ export function FormikStepper({
                         setIsLoading(false);
                     } else if (
                         (step === 8 && userType === USER_TYPES.RESIDENTIAL) ||
-                        (step === 5 && userType === USER_TYPES.COMMUNITY) ||
-                        (step === 5 && userType === USER_TYPES.BUSINESS)
+            (step === 5 && userType === USER_TYPES.COMMUNITY) ||
+            (step === 5 && userType === USER_TYPES.BUSINESS)
                     ) {
                         setIsLoading(true);
                         //Field setters for the external inputs. Formik can only handle native form elements.
@@ -1409,40 +1271,16 @@ export function FormikStepper({
                         helpers.setFieldValue('geo.lon', markers.home.lon);
                         helpers.setFieldValue('geo.work_lat', markers.work.lat);
                         helpers.setFieldValue('geo.work_lon', markers.work.lon);
-                        helpers.setFieldValue(
-                            'geo.school_lat',
-                            markers.school.lat
-                        );
-                        helpers.setFieldValue(
-                            'geo.school_lon',
-                            markers.school.lon
-                        );
+                        helpers.setFieldValue('geo.school_lat', markers.school.lat);
+                        helpers.setFieldValue('geo.school_lon', markers.school.lon);
 
-                        helpers.setFieldValue(
-                            'homeSegmentId',
-                            segIds[0] || null
-                        );
-                        helpers.setFieldValue(
-                            'homeSubSegmentId',
-                            subIds[0] || null
-                        );
+                        helpers.setFieldValue('homeSegmentId', segIds[0] || null);
+                        helpers.setFieldValue('homeSubSegmentId', subIds[0] || null);
 
-                        helpers.setFieldValue(
-                            'workSubSegmentId',
-                            subIds[1] || null
-                        );
-                        helpers.setFieldValue(
-                            'workSegmentId',
-                            segIds[1] || null
-                        );
-                        helpers.setFieldValue(
-                            'schoolSubSegmentId',
-                            subIds[2] || null
-                        );
-                        helpers.setFieldValue(
-                            'schoolSegmentId',
-                            segIds[2] || null
-                        );
+                        helpers.setFieldValue('workSubSegmentId', subIds[1] || null);
+                        helpers.setFieldValue('workSegmentId', segIds[1] || null);
+                        helpers.setFieldValue('schoolSubSegmentId', subIds[2] || null);
+                        helpers.setFieldValue('schoolSegmentId', segIds[2] || null);
                         helpers.setFieldValue('imagePath', avatar);
                         setStep((s) => s + 1);
                         setInferStep((s) => s + 1);
@@ -1457,7 +1295,7 @@ export function FormikStepper({
                 }}
             >
                 <div>
-                    <div className="stepper mb-4">
+                    <div className='stepper mb-4'>
                         <Stepper
                             steps={[
                                 { title: `${getStepHeader(0)}` },
@@ -1465,7 +1303,7 @@ export function FormikStepper({
                                 { title: `${getStepHeader(2)}` },
                                 { title: `${getStepHeader(3)}` },
                                 { title: `${getStepHeader(4)}` },
-                                { title: `${getStepHeader(5)}` }
+                                { title: `${getStepHeader(5)}` },
                             ]}
                             activeStep={inferStep}
                             circleTop={0}
@@ -1484,59 +1322,48 @@ export function FormikStepper({
                             <Form>
                                 {currentChild}
                                 {error && (
-                                    <Alert
-                                        variant="danger"
-                                        className="error-alert"
-                                    >
+                                    <Alert variant='danger' className='error-alert'>
                                         {error.message}
                                     </Alert>
                                 )}
-                                <div className="text-center">
-                                    {(step > 0 &&
-                                        userType === USER_TYPES.RESIDENTIAL) ||
-                                    (!isLastStep() &&
-                                        step > 0 &&
-                                        userType !== USER_TYPES.RESIDENTIAL) ? (
-                                        <Button
-                                            className="float-left mt-3"
-                                            size="lg"
-                                            variant="outline-primary"
-                                            onClick={() => {
-                                                handleBackButton();
-                                            }}
-                                        >
-                                            Back
-                                        </Button>
-                                    ) : null}
+                                <div className='text-center'>
+                                    {(step > 0 && userType === USER_TYPES.RESIDENTIAL) ||
+                  (!isLastStep() &&
+                    step > 0 &&
+                    userType !== USER_TYPES.RESIDENTIAL) ? (
+                                            <Button
+                                                className='float-left mt-3'
+                                                size='lg'
+                                                variant='outline-primary'
+                                                onClick={() => {
+                                                    handleBackButton();
+                                                }}
+                                            >
+                      Back
+                                            </Button>
+                                        ) : null}
 
                                     {isLastStep() &&
-                                    userType !==
-                                        USER_TYPES.RESIDENTIAL ? null : (
-                                        <Button
-                                            className="float-right mt-3 d-flex align-items-center"
-                                            size="lg"
-                                            type="submit"
-                                            disabled={
-                                                isLoading || isHomeMarkerSet()
-                                            }
-                                        >
-                                            {isLoading && (
-                                                <span
-                                                    className="spinner-border spinner-border-sm"
-                                                    role="status"
-                                                    aria-hidden="true"
-                                                ></span>
-                                            )}
-                                            {(isLastStep() &&
-                                                userType ===
-                                                    USER_TYPES.RESIDENTIAL) ||
-                                            (userType !==
-                                                USER_TYPES.RESIDENTIAL &&
-                                                step === 6)
-                                                ? submitOrSubmitting()
-                                                : nextOrLoading()}
-                                        </Button>
-                                    )}
+                  userType !== USER_TYPES.RESIDENTIAL ? null : (
+                                            <Button
+                                                className='float-right mt-3 d-flex align-items-center'
+                                                size='lg'
+                                                type='submit'
+                                                disabled={isLoading || isHomeMarkerSet()}
+                                            >
+                                                {isLoading && (
+                                                    <span
+                                                        className='spinner-border spinner-border-sm'
+                                                        role='status'
+                                                        aria-hidden='true'
+                                                    ></span>
+                                                )}
+                                                {(isLastStep() && userType === USER_TYPES.RESIDENTIAL) ||
+                      (userType !== USER_TYPES.RESIDENTIAL && step === 6)
+                                                    ? submitOrSubmitting()
+                                                    : nextOrLoading()}
+                                            </Button>
+                                        )}
                                 </div>
                             </Form>
                         </Card.Body>
@@ -1552,8 +1379,8 @@ export function FormikStepper({
                 onSubmit={async (values, helpers) => {
                     if (
                         step === 4 &&
-                        (userType === USER_TYPES.BUSINESS ||
-                            userType === USER_TYPES.COMMUNITY)
+            (userType === USER_TYPES.BUSINESS ||
+              userType === USER_TYPES.COMMUNITY)
                     ) {
                         values.reachSegmentIds = reachSegmentIds;
                     }
@@ -1564,9 +1391,9 @@ export function FormikStepper({
                         setStep((s) => s + 1);
                     } else if (
                         (isLastStep() && userType === USER_TYPES.RESIDENTIAL) ||
-                        ((userType === USER_TYPES.BUSINESS ||
-                            userType === USER_TYPES.COMMUNITY) &&
-                            step === 6)
+            ((userType === USER_TYPES.BUSINESS ||
+              userType === USER_TYPES.COMMUNITY) &&
+              step === 6)
                     ) {
                         setIsLoading(true);
                         await new Promise((r) => setTimeout(r, 2000));
@@ -1578,26 +1405,13 @@ export function FormikStepper({
                     } else if (step === 2) {
                         const seg = await setSegData(0);
                         showMap(false);
-                    } else if (
-                        step === 4 &&
-                        userType === USER_TYPES.RESIDENTIAL
-                    ) {
+                    } else if (step === 4 && userType === USER_TYPES.RESIDENTIAL) {
                         if (markers.work.lat === null) {
                             setStep((s) => s + 2);
                             setInferStep((s) => s + 1);
                             if (workTransfer) {
-                                refactorStateArray(
-                                    segIds,
-                                    1,
-                                    segIds[0],
-                                    setSegIds
-                                );
-                                refactorStateArray(
-                                    subIds,
-                                    1,
-                                    subIds[0],
-                                    setSubIds
-                                );
+                                refactorStateArray(segIds, 1, segIds[0], setSegIds);
+                                refactorStateArray(subIds, 1, subIds[0], setSubIds);
                                 //refactorSegIds(1, segIds[0]);
                                 //refactorSubIds(1, subIds[0]);
                             }
@@ -1606,10 +1420,7 @@ export function FormikStepper({
                             //setStep(s=>s+1);
                         }
                         showMap(false);
-                    } else if (
-                        step === 6 &&
-                        userType === USER_TYPES.RESIDENTIAL
-                    ) {
+                    } else if (step === 6 && userType === USER_TYPES.RESIDENTIAL) {
                         console.log(segIds);
                         if (markers.school.lat === null) {
                             setStep((s) => s + 2);
@@ -1637,8 +1448,8 @@ export function FormikStepper({
                         setIsLoading(false);
                     } else if (
                         (step === 8 && userType === USER_TYPES.RESIDENTIAL) ||
-                        (step === 5 && userType === USER_TYPES.COMMUNITY) ||
-                        (step === 5 && userType === USER_TYPES.BUSINESS)
+            (step === 5 && userType === USER_TYPES.COMMUNITY) ||
+            (step === 5 && userType === USER_TYPES.BUSINESS)
                     ) {
                         setIsLoading(true);
                         //Field setters for the external inputs. Formik can only handle native form elements.
@@ -1647,39 +1458,15 @@ export function FormikStepper({
                         helpers.setFieldValue('geo.lon', markers.home.lon);
                         helpers.setFieldValue('geo.work_lat', markers.work.lat);
                         helpers.setFieldValue('geo.work_lon', markers.work.lon);
-                        helpers.setFieldValue(
-                            'geo.school_lat',
-                            markers.school.lat
-                        );
-                        helpers.setFieldValue(
-                            'geo.school_lon',
-                            markers.school.lon
-                        );
-                        helpers.setFieldValue(
-                            'homeSegmentId',
-                            segIds[0] || null
-                        );
-                        helpers.setFieldValue(
-                            'homeSubSegmentId',
-                            subIds[0] || null
-                        );
+                        helpers.setFieldValue('geo.school_lat', markers.school.lat);
+                        helpers.setFieldValue('geo.school_lon', markers.school.lon);
+                        helpers.setFieldValue('homeSegmentId', segIds[0] || null);
+                        helpers.setFieldValue('homeSubSegmentId', subIds[0] || null);
 
-                        helpers.setFieldValue(
-                            'workSubSegmentId',
-                            subIds[1] || null
-                        );
-                        helpers.setFieldValue(
-                            'workSegmentId',
-                            segIds[1] || null
-                        );
-                        helpers.setFieldValue(
-                            'schoolSubSegmentId',
-                            subIds[2] || null
-                        );
-                        helpers.setFieldValue(
-                            'schoolSegmentId',
-                            segIds[2] || null
-                        );
+                        helpers.setFieldValue('workSubSegmentId', subIds[1] || null);
+                        helpers.setFieldValue('workSegmentId', segIds[1] || null);
+                        helpers.setFieldValue('schoolSubSegmentId', subIds[2] || null);
+                        helpers.setFieldValue('schoolSegmentId', segIds[2] || null);
                         helpers.setFieldValue('imagePath', avatar);
                         setStep((s) => s + 1);
                         setInferStep((s) => s + 1);
@@ -1694,7 +1481,7 @@ export function FormikStepper({
                 }}
             >
                 <div>
-                    <div className="stepper mb-4">
+                    <div className='stepper mb-4'>
                         <Stepper
                             steps={[
                                 { title: `${getStepHeader(0)}` },
@@ -1702,7 +1489,7 @@ export function FormikStepper({
                                 { title: `${getStepHeader(2)}` },
                                 { title: `${getStepHeader(3)}` },
                                 { title: `${getStepHeader(4)}` },
-                                { title: `${getStepHeader(5)}` }
+                                { title: `${getStepHeader(5)}` },
                                 // {title: `${getStepHeader(6)}`}
                             ]}
                             activeStep={inferStep}
@@ -1722,59 +1509,48 @@ export function FormikStepper({
                             <Form>
                                 {currentChild}
                                 {error && (
-                                    <Alert
-                                        variant="danger"
-                                        className="error-alert"
-                                    >
+                                    <Alert variant='danger' className='error-alert'>
                                         {error.message}
                                     </Alert>
                                 )}
-                                <div className="text-center">
-                                    {(step > 0 &&
-                                        userType === USER_TYPES.RESIDENTIAL) ||
-                                    (!isLastStep() &&
-                                        step > 0 &&
-                                        userType !== USER_TYPES.RESIDENTIAL) ? (
-                                        <Button
-                                            className="float-left mt-3"
-                                            size="lg"
-                                            variant="outline-primary"
-                                            onClick={() => {
-                                                handleBackButton();
-                                            }}
-                                        >
-                                            Back
-                                        </Button>
-                                    ) : null}
+                                <div className='text-center'>
+                                    {(step > 0 && userType === USER_TYPES.RESIDENTIAL) ||
+                  (!isLastStep() &&
+                    step > 0 &&
+                    userType !== USER_TYPES.RESIDENTIAL) ? (
+                                            <Button
+                                                className='float-left mt-3'
+                                                size='lg'
+                                                variant='outline-primary'
+                                                onClick={() => {
+                                                    handleBackButton();
+                                                }}
+                                            >
+                      Back
+                                            </Button>
+                                        ) : null}
 
                                     {isLastStep() &&
-                                    userType !==
-                                        USER_TYPES.RESIDENTIAL ? null : (
-                                        <Button
-                                            className="float-right mt-3 d-flex align-items-center"
-                                            size="lg"
-                                            type="submit"
-                                            disabled={
-                                                isLoading || isHomeMarkerSet()
-                                            }
-                                        >
-                                            {isLoading && (
-                                                <span
-                                                    className="spinner-border spinner-border-sm"
-                                                    role="status"
-                                                    aria-hidden="true"
-                                                ></span>
-                                            )}
-                                            {(isLastStep() &&
-                                                userType ===
-                                                    USER_TYPES.RESIDENTIAL) ||
-                                            (userType !==
-                                                USER_TYPES.RESIDENTIAL &&
-                                                step === 6)
-                                                ? submitOrSubmitting()
-                                                : nextOrLoading()}
-                                        </Button>
-                                    )}
+                  userType !== USER_TYPES.RESIDENTIAL ? null : (
+                                            <Button
+                                                className='float-right mt-3 d-flex align-items-center'
+                                                size='lg'
+                                                type='submit'
+                                                disabled={isLoading || isHomeMarkerSet()}
+                                            >
+                                                {isLoading && (
+                                                    <span
+                                                        className='spinner-border spinner-border-sm'
+                                                        role='status'
+                                                        aria-hidden='true'
+                                                    ></span>
+                                                )}
+                                                {(isLastStep() && userType === USER_TYPES.RESIDENTIAL) ||
+                      (userType !== USER_TYPES.RESIDENTIAL && step === 6)
+                                                    ? submitOrSubmitting()
+                                                    : nextOrLoading()}
+                                            </Button>
+                                        )}
                                 </div>
                             </Form>
                         </Card.Body>

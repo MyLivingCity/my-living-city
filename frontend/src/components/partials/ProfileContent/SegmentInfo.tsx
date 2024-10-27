@@ -269,6 +269,7 @@ export const SegmentInfo: React.FC<SegmentInfoProps> = ({ user, token, title, ty
                                 </ListGroup>
                                 <ListGroup variant='flush'>
                                     <ListGroupItem>{capitalizeString(displayFName)}@{capitalizeString(displayLName)}</ListGroupItem>
+                                    {/* <ListGroupItem>{capitalizeString(user.userSegments?.homeSegHandle)}</ListGroupItem> */}
                                     <ListGroupItem>{capitalizeString(street)}</ListGroupItem>
                                     <ListGroupItem>{capitalizeString(formCity)}</ListGroupItem>
                                     <ListGroupItem>{postalCode.toUpperCase()}</ListGroupItem>

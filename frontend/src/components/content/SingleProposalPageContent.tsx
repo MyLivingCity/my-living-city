@@ -11,7 +11,7 @@ import {
     Alert,
     Table, ButtonGroup,
 } from 'react-bootstrap';
-import { IIdeaWithRelationship } from '../../lib/types/data/idea.type';
+import { IIdea, IIdeaWithRelationship } from '../../lib/types/data/idea.type';
 import {
     capitalizeFirstLetterEachWord,
     capitalizeString,
@@ -66,6 +66,7 @@ import { getMyUserSegmentInfo } from '../../lib/api/userSegmentRoutes';
 import { useAllUserSegments } from 'src/hooks/userSegmentHooks';
 import { BsPeople, BsHeartHalf } from 'react-icons/bs';
 import { AiOutlineRadiusBottomright, AiOutlineStar } from 'react-icons/ai';
+import { IUser } from 'src/lib/types/data/user.type';
 
 
 interface SingleIdeaPageContentProps {
@@ -110,6 +111,11 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
         projectInfo,
     } = ideaData;
+
+    console.log('segment', segment);
+    console.log('sub segment', subSegment);
+    console.log('super segment', superSegment);
+    console.log('ideaData', ideaData);
 
     const {
         id: proposalId,
@@ -474,6 +480,58 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
     };
 
+    const getHandleBySegmentId = (segmentId: number, userData: IUser) => {
+        const address = userData.address;
+        const organizationName = userData.organizationName;
+
+        const homeId = userData.userSegments?.homeSegmentId;
+        const workId = userData.userSegments?.workSegmentId;
+        const schoolId = userData.userSegments?.schoolSegmentId;
+
+        const homeSegHandle = userData.userSegments?.homeSegHandle;
+        const workSegHandle = userData.userSegments?.workSegHandle;
+        const schoolSegHandle = userData.userSegments?.schoolSegHandle;
+
+        let userName = 'Unknown';
+        if (userType === 'MUNICIPAL_SEG_ADMIN') {
+            userName = 'Municipal Admin';
+        } else if (userType === 'MUNICIPAL') {
+            userName = 'Municipal Account';
+        } else if (userType === 'BUSINESS' || userType === 'Community') {
+            userName = organizationName + '@' + address?.streetAddress;
+        } else {
+            switch (segmentId) {
+                case homeId:
+                    userName = homeSegHandle ?? 'Unknown';
+                    break;
+                case workId:
+                    userName = workSegHandle ?? 'Unknown';
+                    break;
+                case schoolId:
+                    userName = schoolSegHandle ?? 'Unknown';
+                    break;
+            }
+
+            userName = `${userName} as ${author?.userType}`;
+        }
+
+        return userName;
+    };
+
+    const getUserHandle = (ideaData: IIdeaWithRelationship) => {
+        const { subSegmentId, segmentId, superSegmentId, author } = ideaData;
+
+        if (!author) return;
+        
+        if (subSegmentId) {
+            return getHandleBySegmentId(subSegmentId, author);
+        } else if (segmentId) {
+            return getHandleBySegmentId(segmentId, author);
+        } else if (superSegmentId) {
+            return getHandleBySegmentId(superSegmentId, author);
+        }
+    };
+
     if (!active) {
         return (
             <div>Proposal Is Currently Inactive</div>
@@ -809,10 +867,8 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                     <EmailIcon size={32} round />
                                 </EmailShareButton>
                             </div>
-                            {author?.userType === 'RESIDENTIAL' ?
-                                <div>{author?.fname}@{author?.address?.streetAddress} as {userType}</div> :
-                                <div>{author?.organizationName}@{author?.address?.streetAddress}</div>
-                            }
+                            {/* Change this logic to use a new function that grabs the alias handle according to subsegment of idea */}
+                            {getUserHandle(ideaData)}
                         </Card.Footer>
                     </Col>
                 </Row>

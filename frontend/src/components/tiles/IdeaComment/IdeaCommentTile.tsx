@@ -67,7 +67,7 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
         homeSegHandle, workSegHandle, schoolSegHandle
     } = userSegments;
 
-    const colouredUserNameHandle = (ideaId: number, homeId?: number, workId?: number, schoolId?: number) => {
+    const colouredUserNameHandle = (segmentId: number, homeId?: number, workId?: number, schoolId?: number) => {
         // let ideaId, homeId, workId, schoolId;
         // if(superSegmentId){
         //   ideaId = superSegmentId;
@@ -103,7 +103,7 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
             userName = organizationName + '@' + address?.streetAddress + ' as Community Member';
             colour = 'text-primary';
         } else {
-            switch (ideaId) {
+            switch (segmentId) {
                 case homeId:
                     userName = homeSegHandle + ' as Resident';
                     colour = 'text-primary';

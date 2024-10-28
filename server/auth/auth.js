@@ -349,28 +349,30 @@ passport.use(
 )
 
 const sendEmailVerification = async (user) => {
-  transporter = nodemailer.createTransport({
-    host: 'smtp-mail.outlook.com',
-    port: 587,
-    auth: {
-      user: process.env.EMAIL,
-      pass: process.env.EMAIL_PASSWORD
-    }
-  });
-  let token = Math.random().toString(36).substr(2, 6);
-  token = token.toUpperCase();
-  await prisma.user.update({
-    where: {
-      id: user.id,
-    },
-    data: {
-      verifiedToken: token,
-    },
-  });
-  const appUrl = process.env.APP_URL || 'http://localhost:3000';
-  var url = process.env.APP_URL || 'http://localhost:3001';
-  url += `/emailVerification/checkVerificationCode/${user.id}/${token}`;
-  const mailOptions = {
+  try {
+    const transporter = nodemailer.createTransport({
+      host: 'smtp-mail.outlook.com',
+      port: 587,
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_PASSWORD
+      }
+    });
+
+    let token = Math.random().toString(36).substr(2, 6).toUpperCase();
+
+    await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        verifiedToken: token,
+      },
+    }); 
+    const appUrl = process.env.APP_URL || 'http://localhost:3000';
+    let url = `${appUrl}/emailVerification/checkVerificationCode/${user.id}/${token}`;
+
+    const mailOptions = {
     from: 'MyLivingCity Email Verification<' + process.env.EMAIL + '>', // sender address
     to: user.email, // list of receivers
     subject: "Email Verification", // Subject line
@@ -614,9 +616,12 @@ const sendEmailVerification = async (user) => {
     </body>
     </html>`
 
-
-
   };
-  await transporter.sendMail(mailOptions);
-}
 
+  // Send the email and catch errors
+  await transporter.sendMail(mailOptions);
+} catch (error) {
+  console.error('Error sending verification email:', error);
+  throw new Error('Failed to send verification email.');
+}
+};

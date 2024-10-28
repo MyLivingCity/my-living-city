@@ -27,7 +27,7 @@ ideaRouter.post(
       else {
         imagePath = null;
       }
-      //check if user is in bad posting behavior table if so res.status(400).json({message: 'User is in bad posting behavior table'})
+      //check if user is in bad posting behavior table if so return res.status(400).json({message: 'User is in bad posting behavior table'})
       const { id } = req.user;
 
       const user = await prisma.bad_Posting_Behavior.findFirst({
@@ -36,151 +36,122 @@ ideaRouter.post(
           post_comment_ban: true,
         },
       });
-
-      if (user) {
-        return res.status(400).json({
-          message: 'User is in bad posting behavior table',
-        });
-      }
+    }
 
       //if there's no object in the request body
       if (isEmpty(req.body)) {
-        return res.status(400).json({
-          message: 'The objects in the request body are missing',
-          details: {
-            errorMessage: 'Creating an idea must supply necessary fields explicitly.',
-            errorStack: 'necessary fields must be provided in the body with a valid id found in the database.',
-          }
-        })
-      }
+      return res.status(400).json({
+        message: 'The objects in the request body are missing',
+        details: {
+          errorMessage: 'Creating an idea must supply necessary fields explicitly.',
+          errorStack: 'necessary fields must be provided in the body with a valid id found in the database.',
+        }
+      })
+    }
 
 
 
-      // passport middleware provides this based on JWT
-      const { email } = req.user;
+    // passport middleware provides this based on JWT
+    const { email } = req.user;
 
-      const theUserSegment = await prisma.userSegments.findFirst({ where: { userId: id } });
+    const theUserSegment = await prisma.userSegments.findFirst({ where: { userId: id } });
 
-      const { homeSuperSegId, workSuperSegId, schoolSuperSegId, homeSegmentId, workSegmentId, schoolSegmentId, homeSubSegmentId, workSubSegmentId, schoolSubSegmentId } = theUserSegment;
+    const { homeSuperSegId, workSuperSegId, schoolSuperSegId, homeSegmentId, workSegmentId, schoolSegmentId, homeSubSegmentId, workSubSegmentId, schoolSubSegmentId } = theUserSegment;
 
-      let { categoryId, superSegmentId, segmentId, subSegmentId, banned, title,
-        description,
-        proposal_role,
-        requirements,
-        proposal_benefits,
-        communityImpact,
-        natureImpact,
-        artsImpact,
-        energyImpact,
-        manufacturingImpact,
-        supportingProposalId,
-        state,
-        //TODO
-      } = req.body;
-      console.log(req.body)
+    let { categoryId, superSegmentId, segmentId, subSegmentId, banned, title,
+      description,
+      proposal_role,
+      requirements,
+      proposal_benefits,
+      communityImpact,
+      natureImpact,
+      artsImpact,
+      energyImpact,
+      manufacturingImpact,
+      supportingProposalId,
+      state,
+      //TODO
+    } = req.body;
+    console.log(req.body)
 
-      if (supportingProposalId) {
-        supportingProposalId = parseInt(supportingProposalId);
-      }
-      categoryId = parseInt(categoryId);
+    if (supportingProposalId) {
+      supportingProposalId = parseInt(supportingProposalId);
+    }
+    categoryId = parseInt(categoryId);
 
-      if (subSegmentId) {
-        subSegmentId = parseInt(subSegmentId);
-      } else if (segmentId) {
-        segmentId = parseInt(segmentId);
-      } else if (superSegmentId) {
-        superSegmentId = parseInt(superSegmentId);
-      }
+    if (subSegmentId) {
+      subSegmentId = parseInt(subSegmentId);
+    } else if (segmentId) {
+      segmentId = parseInt(segmentId);
+    } else if (superSegmentId) {
+      superSegmentId = parseInt(superSegmentId);
+    }
 
-      banned = (banned === 'true');
+    banned = (banned === 'true');
 
-      if (banned === true) {
-        error += 'You are banned';
-        errorMessage += 'You must be un-banned before you can post ideas';
-        errorStack += 'Users can not post ideas with a pending ban status of true';
-      }
-      // Check if category id is added
-      if (!categoryId || !isInteger(categoryId)) {
-        error += 'An Idea must be under a specific category.';
-        errorMessage += 'Creating an idea must explicitly be supplied with a "categoryId" field.';
+    if (banned === true) {
+      error += 'You are banned';
+      errorMessage += 'You must be un-banned before you can post ideas';
+      errorStack += 'Users can not post ideas with a pending ban status of true';
+    }
+    // Check if category id is added
+    if (!categoryId || !isInteger(categoryId)) {
+      error += 'An Idea must be under a specific category.';
+      errorMessage += 'Creating an idea must explicitly be supplied with a "categoryId" field.';
+      errorStack += '"CategoryId" must be defined in the body with a valid id found in the database.';
+    } else {
+      const theCategory = await prisma.category.findUnique({ where: { id: categoryId } });
+
+      if (!theCategory) {
+        error += 'An Idea must be under a valid category.';
+        errorMessage += 'Creating an idea must explicitly be supplied with valid a "categoryId" field.';
         errorStack += '"CategoryId" must be defined in the body with a valid id found in the database.';
-      } else {
-        const theCategory = await prisma.category.findUnique({ where: { id: categoryId } });
-
-        if (!theCategory) {
-          error += 'An Idea must be under a valid category.';
-          errorMessage += 'Creating an idea must explicitly be supplied with valid a "categoryId" field.';
-          errorStack += '"CategoryId" must be defined in the body with a valid id found in the database.';
-        }
       }
+    }
 
-      if (isInteger(subSegmentId)) {
-        theSubSegment = await prisma.subSegments.findUnique({ where: { id: subSegmentId } });
+    if (isInteger(subSegmentId)) {
+      theSubSegment = await prisma.subSegments.findUnique({ where: { id: subSegmentId } });
 
-        if (!theSubSegment) {
-          error += 'Sub segment id must be valid.';
-          errorMessage += 'Creating an idea must explicitly be supplied with a valid "subSegmentId" field.';
-          errorStack += '"subSegmentId" must be provided with a valid id found in the database.';
-        } else if (subSegmentId == homeSubSegmentId || subSegmentId == workSubSegmentId || subSegmentId == schoolSubSegmentId) {
-          segmentId = theSubSegment.segId;
+      if (!theSubSegment) {
+        error += 'Sub segment id must be valid.';
+        errorMessage += 'Creating an idea must explicitly be supplied with a valid "subSegmentId" field.';
+        errorStack += '"subSegmentId" must be provided with a valid id found in the database.';
+      } else if (subSegmentId == homeSubSegmentId || subSegmentId == workSubSegmentId || subSegmentId == schoolSubSegmentId) {
+        segmentId = theSubSegment.segId;
 
-          const theSegment = await prisma.segments.findUnique({ where: { segId: segmentId } });
-
-          superSegmentId = theSegment.superSegId;
-        } else {
-          error += 'You must belongs to the subSemgent you want to post to. ';
-          errorMessage += 'Your subsegment ids don\'t match the subsegment id you porvided. ';
-          errorStack += 'User does\'t belongs to the subsegment he/she wants to post idea to. '
-        }
-      } else if (isInteger(segmentId)) {
         const theSegment = await prisma.segments.findUnique({ where: { segId: segmentId } });
 
-        if (!theSegment) {
-          error += 'An Idea must belong to a municipality.';
-          errorMessage += 'Creating an idea must explicitly be supplied with a valid "segmentId" field.';
-          errorStack += '"segmentId" must be defined in the body with a valid id found in the database.';
-        } else if (segmentId == homeSegmentId || segmentId == workSegmentId || segmentId == schoolSegmentId) {
-          superSegmentId = theSegment.superSegId;
-        } else {
-          error += 'You must belongs to the semgent you want to post to. ';
-          errorMessage += 'Your segment ids don\'t match the segment id you porvided. ';
-          errorStack += 'User does\'t belongs to the segment he/she wants to post idea to. '
-        }
-      } else if (isInteger(superSegmentId)) {
-        const theSuperSegment = await prisma.superSegment.findUnique({ where: { superSegId: superSegmentId } });
-
-        if (!theSuperSegment) {
-          error += 'An Idea must belong to a area.';
-          errorMessage += 'Creating an idea must explicitly be supplied with a valid "superSegmentId" field.';
-          errorStack += '"segmentId" must be defined in the body with a valid id found in the database.';
-        } else if (superSegmentId != homeSuperSegId && superSegmentId != workSuperSegId && superSegmentId != schoolSegmentId) {
-          error += 'You must belongs to the superSemgent you want to post to. ';
-          errorMessage += 'Your subsegment ids don\'t match the superSegment id you porvided. ';
-          errorStack += 'User does\'t belongs to the superSegment he/she wants to post idea to. '
-        }
+        superSegmentId = theSegment.superSegId;
       } else {
-        error += 'An idea must belongs to a area';
-        errorMessage += 'Creating an idea must explicitly be supplied with a valid "superSegmentId" or "segmentId" or "subSegmentId" field.';
-        errorStack += 'One of the area id must explicitly be supplied with a valid id found in the database. '
+        error += 'You must belongs to the subSemgent you want to post to. ';
+        errorMessage += 'Your subsegment ids don\'t match the subsegment id you porvided. ';
+        errorStack += 'User does\'t belongs to the subsegment he/she wants to post idea to. '
       }
+    } else if (isInteger(segmentId)) {
+      const theSegment = await prisma.segments.findUnique({ where: { segId: segmentId } });
 
-
-
-      // Parse data
-      const geoData = JSON.parse(req.body.geo);
-      //if geoData parse failed
-      if (!typeof geoData == "object") {
-        error += 'Geo data parse error! ';
-        errorMessage += 'Something is wrong about the text string of geo data! ';
-        errorStack += 'Geo data json string parsing failed! '
+      if (!theSegment) {
+        error += 'An Idea must belong to a municipality.';
+        errorMessage += 'Creating an idea must explicitly be supplied with a valid "segmentId" field.';
+        errorStack += '"segmentId" must be defined in the body with a valid id found in the database.';
+      } else if (segmentId == homeSegmentId || segmentId == workSegmentId || segmentId == schoolSegmentId) {
+        superSegmentId = theSegment.superSegId;
+      } else {
+        error += 'You must belongs to the semgent you want to post to. ';
+        errorMessage += 'Your segment ids don\'t match the segment id you porvided. ';
+        errorStack += 'User does\'t belongs to the segment he/she wants to post idea to. '
       }
+    } else if (isInteger(superSegmentId)) {
+      const theSuperSegment = await prisma.superSegment.findUnique({ where: { superSegId: superSegmentId } });
 
-      const addressData = JSON.parse(req.body.addressData);
-
-      if (!typeof addressData == "object") {
-        error += 'Address data parse error! ';
-        errorMessage += 'Something is wrong about the text string of address data! ';
-        errorStack += 'Address data json string parsing failed! '
+      if (!theSuperSegment) {
+        error += 'An Idea must belong to a area.';
+        errorMessage += 'Creating an idea must explicitly be supplied with a valid "superSegmentId" field.';
+        errorStack += '"segmentId" must be defined in the body with a valid id found in the database.';
+      } else if (superSegmentId != homeSuperSegId && superSegmentId != workSuperSegId && superSegmentId != schoolSegmentId) {
+        error += 'You must belongs to the superSemgent you want to post to. ';
+        errorMessage += 'Your subsegment ids don\'t match the superSegment id you porvided. ';
+        errorStack += 'User does\'t belongs to the superSegment he/she wants to post idea to. '
       }
 
       //If there's error in error holder
@@ -233,10 +204,10 @@ ideaRouter.post(
         }
       });
 
-      res.status(201).json(createdIdea);
+      return res.status(201).json(createdIdea);
     } catch (error) {
       console.error(error);
-      res.status(400).json({
+      return res.status(400).json({
         message: "An error occured while trying to create an Idea.",
         details: {
           errorMessage: error.message,
@@ -246,6 +217,89 @@ ideaRouter.post(
     } finally {
       await prisma.$disconnect();
     }
+
+
+
+    // Parse data
+    const geoData = JSON.parse(req.body.geo);
+    //if geoData parse failed
+    if (!typeof geoData == "object") {
+      error += 'Geo data parse error! ';
+      errorMessage += 'Something is wrong about the text string of geo data! ';
+      errorStack += 'Geo data json string parsing failed! '
+    }
+
+    const addressData = JSON.parse(req.body.addressData);
+
+    if (!typeof addressData == "object") {
+      error += 'Address data parse error! ';
+      errorMessage += 'Something is wrong about the text string of address data! ';
+      errorStack += 'Address data json string parsing failed! '
+    }
+
+    //If there's error in error holder
+    if (error || errorMessage || errorStack) {
+      await deleteImage("idea-proposal", imagePath); // delete image if idea/proposal creation errors out
+      return res.status(400).json({
+        message: error,
+        details: {
+          errorMessage: errorMessage,
+          errorStack: errorStack
+        }
+      });
+    }
+    let notification_dismissed = false
+    let quarantined_at = new Date()
+    const ideaData = {
+      categoryId,
+      superSegmentId,
+      segmentId,
+      subSegmentId,
+      authorId: id,
+      imagePath: imagePath,
+      title,
+      description,
+      proposal_role,
+      requirements,
+      proposal_benefits,
+      communityImpact,
+      natureImpact,
+      artsImpact,
+      energyImpact,
+      manufacturingImpact,
+      supportingProposalId,
+      state,
+      notification_dismissed,
+      quarantined_at,
+    };
+
+    // Create an idea and make the author JWT bearer
+    const createdIdea = await prisma.idea.create({
+      data: {
+        geo: { create: geoData },
+        address: { create: addressData },
+        ...ideaData
+      },
+      include: {
+        geo: true,
+        address: true,
+        category: true,
+      }
+    });
+
+    res.status(201).json(createdIdea);
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({
+      message: "An error occured while trying to create an Idea.",
+      details: {
+        errorMessage: error.message,
+        errorStack: error.stack,
+      }
+    });
+  } finally {
+  await prisma.$disconnect();
+}
   });
 
 ideaRouter.get(
@@ -256,7 +310,7 @@ ideaRouter.get(
         route: 'welcome to Idea Router'
       })
     } catch (error) {
-      res.status(400).json({
+      return res.status(400).json({
         message: error.message,
         details: {
           errorMessage: error.message,
@@ -279,9 +333,9 @@ ideaRouter.get(
       });
       await imagePathsToS3Url(allIdeas, "idea-proposal");
       console.log("IDeas here" + allIdeas)
-      res.status(200).json(allIdeas);
+      return res.status(200).json(allIdeas);
     } catch (error) {
-      res.status(400).json({
+      return res.status(400).json({
         message: "An error occured while trying to fetch all ideas",
         details: {
           errorMessage: error.message,
@@ -302,9 +356,9 @@ ideaRouter.post(
       const allIdeas = await prisma.idea.findMany(req.body);
       await imagePathsToS3Url(allIdeas, "idea-proposal");
 
-      res.status(200).json(allIdeas);
+      return res.status(200).json(allIdeas);
     } catch (error) {
-      res.status(400).json({
+      return res.status(400).json({
         message: "An error occured while trying to fetch all ideas",
         details: {
           errorMessage: error.message,
@@ -441,10 +495,10 @@ ideaRouter.post(
         }
         return newRow;
       });
-      res.status(200).json(data);
+      return res.status(200).json(data);
     } catch (error) {
       console.error(error);
-      res.status(400).json({
+      return res.status(400).json({
         message: "An error occurred while trying to fetch all ideas",
         details: {
           errorMessage: error.message,
@@ -584,9 +638,9 @@ ideaRouter.get(
         return newRow;
       });
 
-      res.status(200).json(data);
+      return res.status(200).json(data);
     } catch (error) {
-      res.status(400).json({
+      return res.status(400).json({
         message: "An error occured while trying to fetch all ideas",
         details: {
           errorMessage: error.message,
@@ -678,10 +732,10 @@ ideaRouter.get(
         delete result.champion.password;
       }
 
-      res.status(200).json(result);
+      return res.status(200).json(result);
     } catch (error) {
       console.error(error);
-      res.status(400).json({
+      return res.status(400).json({
         message: `An Error occured while trying to fetch idea with id ${req.params.ideaId}.`,
         details: {
           errorMessage: error.message,
@@ -737,10 +791,10 @@ ideaRouter.get(
       }
       await imagePathsToS3Url(foundIdeas, "idea-proposal");
 
-      res.status(200).json(foundIdeas);
+      return res.status(200).json(foundIdeas);
     } catch (error) {
       console.error(error);
-      res.status(400).json({
+      return res.status(400).json({
         message: `An Error occured while trying to fetch idea with id ${req.params.supportingProposalId}.`,
         details: {
           errorMessage: error.message,
@@ -807,7 +861,7 @@ ideaRouter.put(
         },
       });
       console.log("Returns here")
-      res.status(200).json({
+      return res.status(200).json({
         message: "Idea succesfully updated",
         idea: updateIdea,
       });
@@ -815,7 +869,7 @@ ideaRouter.put(
 
 
     } catch (error) {
-      res.status(400).json({
+      return res.status(400).json({
         message: "An error occured while to update an Idea",
         details: {
           errorMessage: error.message,
@@ -859,13 +913,13 @@ ideaRouter.put(
         },
       });
       console.log("Returns here")
-      res.status(200).json({
+      return res.status(200).json({
         message: "Idea succesfully updated",
         idea: updateIdea,
       });
 
     } catch (error) {
-      res.status(400).json({
+      return res.status(400).json({
         message: "An error occured while to update an Idea",
         details: {
           errorMessage: error.message,
@@ -970,12 +1024,12 @@ ideaRouter.put(
       });
 
       console.log("Returns here")
-      res.status(200).json({
+      return res.status(200).json({
         message: "Idea succesfully updated",
         idea: updatedIdea,
       });
     } catch (error) {
-      res.status(400).json({
+      return res.status(400).json({
         message: "An error occured while to update an Idea",
         details: {
           errorMessage: error.message,
@@ -1034,13 +1088,13 @@ ideaRouter.delete(
       await prisma.proposal.deleteMany({ where: { ideaId: foundIdea.id } });
       const deletedIdea = await prisma.idea.delete({ where: { id: parsedIdeaId } });
 
-      res.status(200).json({
+      return res.status(200).json({
         message: "Idea succesfully deleted",
         deletedIdea: deletedIdea,
       });
     } catch (error) {
       console.log(error);
-      res.status(400).json({
+      return res.status(400).json({
         message: "An error occured while to delete an Idea",
         details: {
           errorMessage: error.message,
@@ -1059,7 +1113,7 @@ ideaRouter.post(
   async (req, res) => {
     try {
       if (isEmpty(req.body)) {
-        res.status(400).json({
+        return res.status(400).json({
           message: "Request body is empty!"
         })
       }
@@ -1068,7 +1122,7 @@ ideaRouter.post(
       ideaId = parseInt(ideaId);
 
       if (!userId || !ideaId) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `"userId" and/or "ideaId" is missing from the request body!`
         })
       }
@@ -1077,13 +1131,13 @@ ideaRouter.post(
       const theIdea = await prisma.idea.findUnique({ where: { id: ideaId } });
 
       if (!theUser) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `User with id ${userId} cannot be found or does not exists!`
         })
       }
 
       if (!theIdea) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `Idea with id ${ideaId} cannot be found or does not exists!`
         })
       }
@@ -1101,10 +1155,10 @@ ideaRouter.post(
         },
         update: {}
       })
-      res.status(200).json(userIdeaFollow);
+      return res.status(200).json(userIdeaFollow);
     } catch (error) {
       console.log(error);
-      res.status(400).json({
+      return res.status(400).json({
         message: "An error occured while to delete an Idea",
         details: {
           errorMessage: error.message,
@@ -1123,7 +1177,7 @@ ideaRouter.post(
   async (req, res) => {
     try {
       if (isEmpty(req.body)) {
-        res.status(400).json({
+        return res.status(400).json({
           message: "Request body is empty!"
         })
       }
@@ -1132,7 +1186,7 @@ ideaRouter.post(
       ideaId = parseInt(ideaId);
 
       if (!userId || !ideaId) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `"userId" and/or "ideaId" is missing from the request body!`
         })
       }
@@ -1141,13 +1195,13 @@ ideaRouter.post(
       const theIdea = await prisma.idea.findUnique({ where: { id: ideaId } });
 
       if (!theUser) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `User with id ${userId} cannot be found or does not exists!`
         })
       }
 
       if (!theIdea) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `Idea with id ${ideaId} cannot be found or does not exists!`
         })
       }
@@ -1162,16 +1216,16 @@ ideaRouter.post(
       })
 
       if (!theUserIdeaFollow) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `The user ${userId} does not follow the idea ${ideaId}`
         })
       }
 
       const userIdeaFollow = await prisma.userIdeaFollow.delete({ where: { id: theUserIdeaFollow.id } });
-      res.status(200).json(userIdeaFollow);
+      return res.status(200).json(userIdeaFollow);
     } catch (error) {
       console.log(error);
-      res.status(400).json({
+      return res.status(400).json({
         message: "An error occured while to delete an Idea",
         details: {
           errorMessage: error.message,
@@ -1190,7 +1244,7 @@ ideaRouter.post(
   async (req, res) => {
     try {
       if (isEmpty(req.body)) {
-        res.status(400).json({
+        return res.status(400).json({
           message: "Request body is empty!"
         })
       }
@@ -1198,7 +1252,7 @@ ideaRouter.post(
       const { userId, ideaId } = req.body;
 
       if (!userId || !ideaId) {
-        res.status(200).json({
+        return res.status(200).json({
           isFollowed: false
         })
       }
@@ -1207,13 +1261,13 @@ ideaRouter.post(
       const theIdea = await prisma.idea.findFirst({ where: { id: parseInt(ideaId) } });
 
       if (!theUser) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `User with id ${userId} cannot be found or does not exists!`
         })
       }
 
       if (!theIdea) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `Idea with id ${ideaId} cannot be found or does not exists!`
         })
       }
@@ -1228,12 +1282,12 @@ ideaRouter.post(
       })
       const isFollowed = theUserIdeaFollow ? true : false;
 
-      res.status(200).json({
+      return res.status(200).json({
         isFollowed: isFollowed
       })
     } catch (error) {
       console.log(error);
-      res.status(400).json({
+      return res.status(400).json({
         details: {
           errorMessage: error.message,
           errorStack: error.stack,
@@ -1253,7 +1307,7 @@ ideaRouter.get(
       const { userId } = req.params;
 
       if (!userId) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `"userId" is missing or empty from the request body!`
         })
       }
@@ -1261,7 +1315,7 @@ ideaRouter.get(
       const theUser = await prisma.user.findUnique({ where: { id: userId } });
 
       if (!theUser) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `User with id ${userId} cannot be found or does not exists!`
         })
       }
@@ -1277,10 +1331,10 @@ ideaRouter.get(
         const idea = await prisma.idea.findUnique({ where: { id: follow.ideaId } });
         ideas.push(idea);
       }
-      res.status(200).json(ideas);
+      return res.status(200).json(ideas);
     } catch (error) {
       console.log(error);
-      res.status(400).json({
+      return res.status(400).json({
         details: {
           errorMessage: error.message,
           errorStack: error.stack,
@@ -1298,7 +1352,7 @@ ideaRouter.post(
   async (req, res) => {
     try {
       if (isEmpty(req.body)) {
-        res.status(400).json({
+        return res.status(400).json({
           message: "Request body is empty!"
         })
       }
@@ -1307,7 +1361,7 @@ ideaRouter.post(
       ideaId = parseInt(ideaId);
 
       if (!userId || !ideaId) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `"userId" and/or "ideaId" is missing from the request body!`
         })
       }
@@ -1316,13 +1370,13 @@ ideaRouter.post(
       const theIdea = await prisma.idea.findUnique({ where: { id: ideaId } });
 
       if (!theUser) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `User with id ${userId} cannot be found or does not exists!`
         })
       }
 
       if (!theIdea) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `Idea with id ${ideaId} cannot be found or does not exists!`
         })
       }
@@ -1340,10 +1394,10 @@ ideaRouter.post(
         },
         update: {}
       })
-      res.status(200).json(userIdeaEndorse);
+      return res.status(200).json(userIdeaEndorse);
     } catch (error) {
       console.log(error);
-      res.status(400).json({
+      return res.status(400).json({
         message: "An error occured while to endorse an Idea",
         details: {
           errorMessage: error.message,
@@ -1362,7 +1416,7 @@ ideaRouter.post(
   async (req, res) => {
     try {
       if (isEmpty(req.body)) {
-        res.status(400).json({
+        return res.status(400).json({
           message: "Request body is empty!"
         })
       }
@@ -1371,7 +1425,7 @@ ideaRouter.post(
       ideaId = parseInt(ideaId);
 
       if (!userId || !ideaId) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `"userId" and/or "ideaId" is missing from the request body!`
         })
       }
@@ -1380,13 +1434,13 @@ ideaRouter.post(
       const theIdea = await prisma.idea.findUnique({ where: { id: ideaId } });
 
       if (!theUser) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `User with id ${userId} cannot be found or does not exists!`
         })
       }
 
       if (!theIdea) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `Idea with id ${ideaId} cannot be found or does not exists!`
         })
       }
@@ -1401,16 +1455,16 @@ ideaRouter.post(
       })
 
       if (!theUserIdeaEndorse) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `The user ${userId} does not endorse the idea ${ideaId}`
         })
       }
 
       const userIdeaEndorse = await prisma.userIdeaEndorse.delete({ where: { id: theUserIdeaEndorse.id } });
-      res.status(200).json(userIdeaEndorse);
+      return res.status(200).json(userIdeaEndorse);
     } catch (error) {
       console.log(error);
-      res.status(400).json({
+      return res.status(400).json({
         message: "An error occured while to unendorse an Idea",
         details: {
           errorMessage: error.message,
@@ -1429,7 +1483,7 @@ ideaRouter.post(
   async (req, res) => {
     try {
       if (isEmpty(req.body)) {
-        res.status(400).json({
+        return res.status(400).json({
           message: "Request body is empty!"
         })
       }
@@ -1437,7 +1491,7 @@ ideaRouter.post(
       const { userId, ideaId } = req.body;
 
       if (!userId || !ideaId) {
-        res.status(200).json({
+        return res.status(200).json({
           isEndorsed: false
         })
       }
@@ -1446,13 +1500,13 @@ ideaRouter.post(
       const theIdea = await prisma.idea.findUnique({ where: { id: parseInt(ideaId) } });
 
       if (!theUser) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `User with id ${userId} cannot be found or does not exists!`
         })
       }
 
       if (!theIdea) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `Idea with id ${ideaId} cannot be found or does not exists!`
         })
       }
@@ -1467,12 +1521,12 @@ ideaRouter.post(
       })
       const isEndorsed = theUserIdeaEndorse ? true : false;
 
-      res.status(200).json({
+      return res.status(200).json({
         isEndorsed: isEndorsed
       })
     } catch (error) {
       console.log(error);
-      res.status(400).json({
+      return res.status(400).json({
         details: {
           errorMessage: error.message,
           errorStack: error.stack,
@@ -1492,7 +1546,7 @@ ideaRouter.get(
       const { userId } = req.params;
 
       if (!userId) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `"userId" is missing or empty from the request body!`
         })
       }
@@ -1500,7 +1554,7 @@ ideaRouter.get(
       const theUser = await prisma.user.findUnique({ where: { id: userId } });
 
       if (!theUser) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `User with id ${userId} cannot be found or does not exists!`
         })
       }
@@ -1517,10 +1571,10 @@ ideaRouter.get(
         await imagePathsToS3Url([idea]);
         ideas.push(idea);
       }
-      res.status(200).json(ideas);
+      return res.status(200).json(ideas);
     } catch (error) {
       console.log(error);
-      res.status(400).json({
+      return res.status(400).json({
         details: {
           errorMessage: error.message,
           errorStack: error.stack,
@@ -1540,7 +1594,7 @@ ideaRouter.get(
       const { ideaId } = req.params;
 
       if (!ideaId) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `"ideaId" is missing or empty from the request body!`
         })
       }
@@ -1548,7 +1602,7 @@ ideaRouter.get(
       const theIdea = await prisma.idea.findUnique({ where: { id: parseInt(ideaId) } });
 
       if (!theIdea) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `Idea with id ${ideaId} cannot be found or does not exists!`
         })
       }
@@ -1564,10 +1618,10 @@ ideaRouter.get(
         const user = await prisma.user.findUnique({ where: { id: endorse.userId } });
         users.push(user);
       }
-      res.status(200).json(users);
+      return res.status(200).json(users);
     } catch (error) {
       console.log(error);
-      res.status(400).json({
+      return res.status(400).json({
         details: {
           errorMessage: error.message,
           errorStack: error.stack,
@@ -1585,7 +1639,7 @@ ideaRouter.post(
   async (req, res) => {
     try {
       if (isEmpty(req.body)) {
-        res.status(400).json({
+        return res.status(400).json({
           message: "Request body is empty!"
         })
       }
@@ -1593,7 +1647,7 @@ ideaRouter.post(
       const { userId, ideaId } = req.body;
 
       if (!userId || !ideaId) {
-        res.status(200).json({
+        return res.status(200).json({
           isFlagged: false
         })
 
@@ -1602,13 +1656,13 @@ ideaRouter.post(
       const theUser = await prisma.user.findUnique({ where: { id: userId } });
 
       if (!theUser) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `User with id ${userId} cannot be found or does not exists!`
         })
       }
 
       if (!ideaId) {
-        res.status(200).json({
+        return res.status(200).json({
           isFlagged: false
         })
       }
@@ -1616,7 +1670,7 @@ ideaRouter.post(
       const theIdea = await prisma.idea.findFirst({ where: { id: parseInt(ideaId) } });
 
       if (!theIdea) {
-        res.status(400).json({
+        return res.status(400).json({
           message: `Idea with id ${ideaId} cannot be found or does not exists!`
         })
       }
@@ -1629,10 +1683,10 @@ ideaRouter.post(
       })
 
       const isFlagged = theUserIdeaFlag.length > 0 ? true : false;
-      res.status(200).send(isFlagged);
+      return res.status(200).send(isFlagged);
     } catch (error) {
       console.log(error);
-      res.status(400).json({
+      return res.status(400).json({
         details: {
           errorMessage: error.message,
           errorStack: error.stack,

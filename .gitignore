@@ -20,3 +20,6 @@ selenium/chromedriver.exe
 node_modules
 
 ignore_me
+
+dbbackup
+.gitignore

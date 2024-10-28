@@ -1,4 +1,4 @@
-import {Button, Card, Col, Row, Image, ButtonGroup, Table} from 'react-bootstrap';
+import { Button, Card, Col, Row, Image, ButtonGroup, Table } from 'react-bootstrap';
 import { IIdeaWithRelationship } from '../../lib/types/data/idea.type';
 import { incrementPostFlagCount } from 'src/lib/api/badPostingBehaviorRoutes';
 import { useSingleProposal } from 'src/hooks/proposalHooks';
@@ -18,8 +18,6 @@ import {
     RedditIcon,
     LineShareButton,
     LineIcon,
-    EmailShareButton,
-    EmailIcon,
     WhatsappShareButton,
     WhatsappIcon,
 } from 'react-share';
@@ -30,11 +28,11 @@ import React, { useContext, useEffect, useState } from 'react';
 import { API_BASE_URL, USER_TYPES } from 'src/lib/constants';
 import { UserProfileContext } from 'src/contexts/UserProfile.Context';
 import { createFlagUnderIdea, compareIdeaFlagsWithThreshold } from 'src/lib/api/flagRoutes';
-import { 
-    followIdeaByUser, 
-    unfollowIdeaByUser, 
-    updateIdeaStatus, 
-    endorseIdeaByUser, 
+import {
+    followIdeaByUser,
+    unfollowIdeaByUser,
+    updateIdeaStatus,
+    endorseIdeaByUser,
     unendorseIdeaByUser,
 } from 'src/lib/api/ideaRoutes';
 import { useCheckIdeaFollowedByUser, useCheckIdeaEndorsedByUser, useGetEndorsedUsersByIdea, useCheckIdeaFlaggedByUser } from 'src/hooks/ideaHooks';
@@ -49,8 +47,8 @@ import { useCheckFlagBan } from 'src/hooks/flagHooks';
 import EndorsedUsersSection from '../partials/SingleIdeaContent/EndorsedUsersSection';
 
 interface SingleIdeaPageContentProps {
-  ideaData: IIdeaWithRelationship;
-  ideaId: string;
+    ideaData: IIdeaWithRelationship;
+    ideaId: string;
 }
 
 const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
@@ -84,12 +82,14 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
     const { title: catTitle } = category!;
 
     const parsedDate = new Date(createdAt);
-  
+
     // Social Media share for this Idea page
     // const shareUrl = 'http://github.com';
     // const shareUrl = 'https://app.mylivingcity.org'
-    const shareUrl = window.location.href;
+
+    const shareUrl = `https://app.mylivingcity.org/ideas/${ideaId}`;
     const shareTitle = `My Living City Idea! ${title}`;
+    const shareDescription = `Check out this idea on My Living City! ${description}`;
 
     /**
    * Checks to see if the Idea's state is of Proposal and if the proposal information
@@ -110,7 +110,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
     };
 
     const shouldDisplayChampionButton = (): boolean => {
-  
+
 
         return !ideaData.champion && !!ideaData.isChampionable;
     };
@@ -121,14 +121,14 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
     const [endorsedUsers, setEndorsedUsers] = useState<any[]>([]);
 
     // API hooks for this component
-    const {user, token} = useContext(UserProfileContext);
-    const {data: isFollowingPost, isLoading: isFollowingPostLoading} = useCheckIdeaFollowedByUser(token, (user ? user.id : user), ideaId);
-    const {data: isEndorsingPost, isLoading: isEndorsingPostLoading} = useCheckIdeaEndorsedByUser(token, (user ? user.id : user), ideaId);
-    const {data: endorsedUsersData, isLoading: isEndorsedUsersDataLoading} = useGetEndorsedUsersByIdea(token, ideaId);
-    const {data: proposal} = useSingleProposal('' + (supportedProposal ? supportedProposal!.id : ''));
-    const {data: proposalIdea } = useSingleIdea('' + (supportedProposal ? supportedProposal!.ideaId : ''));
-    const {data: flagBanData, isLoading: flagBanDataLoading} = useCheckFlagBan(token, (user ? user.id : ''));
-    const {data: isFlagged, isLoading: isFlaggedLoading} = useCheckIdeaFlaggedByUser(token, (user ? user.id : user), ideaId);
+    const { user, token } = useContext(UserProfileContext);
+    const { data: isFollowingPost, isLoading: isFollowingPostLoading } = useCheckIdeaFollowedByUser(token, (user ? user.id : user), ideaId);
+    const { data: isEndorsingPost, isLoading: isEndorsingPostLoading } = useCheckIdeaEndorsedByUser(token, (user ? user.id : user), ideaId);
+    const { data: endorsedUsersData, isLoading: isEndorsedUsersDataLoading } = useGetEndorsedUsersByIdea(token, ideaId);
+    const { data: proposal } = useSingleProposal('' + (supportedProposal ? supportedProposal!.id : ''));
+    const { data: proposalIdea } = useSingleIdea('' + (supportedProposal ? supportedProposal!.ideaId : ''));
+    const { data: flagBanData, isLoading: flagBanDataLoading } = useCheckFlagBan(token, (user ? user.id : ''));
+    const { data: isFlagged, isLoading: isFlaggedLoading } = useCheckIdeaFlaggedByUser(token, (user ? user.id : user), ideaId);
     // API hooks for children components
     const allRatingsUnderIdea = useAllRatingsUnderIdea(ideaId);
     const commentAggregateUnderIdea = useCommentAggregateUnderIdea(ideaId);
@@ -141,7 +141,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
     const [otherFlagReason, setOtherFlagReason] = useState('');
     function getOtherFlagReason(val: any) {
         setOtherFlagReason('OTHER: ' + val.target.value);
-    
+
     }
     //console.log(proposalIdea);
     const handleHideFlagButton = () => setShowFlagButton(false);
@@ -152,8 +152,8 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
     const handleCloseOther = () => setShowOther(false);
     const handleShowOther = () => setShowOther(true);
 
-    const canEndorse = user?.userType === USER_TYPES.BUSINESS || user?.userType === USER_TYPES.COMMUNITY 
-  || user?.userType === USER_TYPES.MUNICIPAL || user?.userType === USER_TYPES.MUNICIPAL_SEG_ADMIN; 
+    const canEndorse = user?.userType === USER_TYPES.BUSINESS || user?.userType === USER_TYPES.COMMUNITY
+        || user?.userType === USER_TYPES.MUNICIPAL || user?.userType === USER_TYPES.MUNICIPAL_SEG_ADMIN;
 
     useEffect(() => {
         if (!isEndorsingPostLoading) {
@@ -215,13 +215,13 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
             setFollowingPost(!followingPost);
         }
     };
-    if(!active){
-        return(
+    if (!active) {
+        return (
             <div>Idea Is Currently Inactive</div>
         );
     }
-    const flagFunc = async(ideaId: number, token: string, userId: string, ideaActive: boolean, reason: string, quarantined_at: Date) => {
-  
+    const flagFunc = async (ideaId: number, token: string, userId: string, ideaActive: boolean, reason: string, quarantined_at: Date) => {
+
         await createFlagUnderIdea(ideaId, reason, token!);
         const thresholdExceeded = await compareIdeaFlagsWithThreshold(ideaId, token!);
         await updateIdeaStatus(token, ideaId.toString(), !thresholdExceeded, false, false, quarantined_at);
@@ -235,7 +235,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
     const selectOtherReasonHandler = (eventKey: string) => {
         handleShowOther();
-    // setOtherFlagReason(eventKey!)
+        // setOtherFlagReason(eventKey!)
     };
 
     const submitFlagReasonHandler = async (ideaId: number, token: string, userId: string, ideaActive: boolean, quarantined_at: Date) => {
@@ -248,7 +248,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
         handleCloseOther();
         handleHideFlagButton();
         await flagFunc(ideaId, token, userId, ideaActive, otherFlagReason, quarantined_at);
-   
+
     };
 
 
@@ -298,7 +298,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                                                 selectReasonHandler(eventKey!)
                                                             }
                                                         >
-                              Abusive or Inappropriate Language
+                                                            Abusive or Inappropriate Language
                                                         </Dropdown.Item>
                                                         <Dropdown.Item
                                                             eventKey='Submission in Wrong Community'
@@ -306,7 +306,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                                                 selectReasonHandler(eventKey!)
                                                             }
                                                         >
-                              Submission in Wrong Community
+                                                            Submission in Wrong Community
                                                         </Dropdown.Item>
                                                         <Dropdown.Item
                                                             eventKey='Spam/Unsolicited Advertisement'
@@ -314,7 +314,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                                                 selectReasonHandler(eventKey!)
                                                             }
                                                         >
-                              Spam/Unsolicited Advertisement
+                                                            Spam/Unsolicited Advertisement
                                                         </Dropdown.Item>
                                                         <Dropdown.Item
                                                             eventKey='Unrelated to Discussion (Off Topic)'
@@ -322,7 +322,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                                                 selectReasonHandler(eventKey!)
                                                             }
                                                         >
-                              Unrelated to Discussion (Off Topic)
+                                                            Unrelated to Discussion (Off Topic)
                                                         </Dropdown.Item>
                                                         <Dropdown.Item
                                                             eventKey='Incomplete Submission (Requires Additional Details)'
@@ -330,8 +330,8 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                                                 selectReasonHandler(eventKey!)
                                                             }
                                                         >
-                              Incomplete Submission (Requires Additional
-                              Details)
+                                                            Incomplete Submission (Requires Additional
+                                                            Details)
                                                         </Dropdown.Item>
                                                         <Dropdown.Item
                                                             eventKey='Other'
@@ -339,7 +339,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                                                 selectOtherReasonHandler(eventKey!)
                                                             }
                                                         >
-                              Other
+                                                            Other
                                                         </Dropdown.Item>
                                                     </DropdownButton>
                                                 ) : null}
@@ -390,18 +390,18 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                     onClick={() => {
                                         submitFlagReasonHandler(
                                             parseInt(ideaId),
-                      token!,
-                      user!.id,
-                      ideaData.active,
-                      new Date()
+                                            token!,
+                                            user!.id,
+                                            ideaData.active,
+                                            new Date()
                                         );
                                         incrementPostFlagCount(token, ideaId);
                                     }}
                                 >
-                  Flag
+                                    Flag
                                 </Button>
                                 <Button variant='secondary' onClick={handleClose}>
-                  Cancel
+                                    Cancel
                                 </Button>
                             </Modal.Footer>
                         </Modal>
@@ -417,8 +417,8 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                         controlId='exampleForm.ControlTextarea1'
                                     >
                                         <Form.Label>
-                      Please provide a short note of your reason for flagging
-                      this post:
+                                            Please provide a short note of your reason for flagging
+                                            this post:
                                         </Form.Label>
                                         <Form.Control
                                             className='otherFlagReason'
@@ -429,11 +429,11 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                         />
                                     </Form.Group>
                                 </Form>
-                Are you sure about flagging this post?
+                                Are you sure about flagging this post?
                             </Modal.Body>
                             <Modal.Footer>
                                 <Button variant='secondary' onClick={handleCloseOther}>
-                  Cancel
+                                    Cancel
                                 </Button>
                                 <Button
                                     style={{ background: 'red' }}
@@ -441,14 +441,14 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                     onClick={() =>
                                         submitOtherFlagReasonHandler(
                                             parseInt(ideaId),
-                      token!,
-                      user!.id,
-                      ideaData.active,
-                      new Date()
+                                            token!,
+                                            user!.id,
+                                            ideaData.active,
+                                            new Date()
                                         )
                                     }
                                 >
-                  Flag
+                                    Flag
                                 </Button>
                             </Modal.Footer>
                         </Modal>
@@ -464,8 +464,8 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                         controlId='exampleForm.ControlTextarea1'
                                     >
                                         <Form.Label>
-                      Please provide a short note of your reason for flagging
-                      this post:
+                                            Please provide a short note of your reason for flagging
+                                            this post:
                                         </Form.Label>
                                         <Form.Control
                                             className='otherFlagReason'
@@ -476,11 +476,11 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                         />
                                     </Form.Group>
                                 </Form>
-                Are you sure about flagging this post?
+                                Are you sure about flagging this post?
                             </Modal.Body>
                             <Modal.Footer>
                                 <Button variant='secondary' onClick={handleCloseOther}>
-                  Cancel
+                                    Cancel
                                 </Button>
                                 <Button
                                     style={{ background: 'red' }}
@@ -488,14 +488,14 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                     onClick={() =>
                                         submitOtherFlagReasonHandler(
                                             parseInt(ideaId),
-                      token!,
-                      user!.id,
-                      ideaData.active,
-                      new Date()
+                                            token!,
+                                            user!.id,
+                                            ideaData.active,
+                                            new Date()
                                         )
                                     }
                                 >
-                  Flag
+                                    Flag
                                 </Button>
                             </Modal.Footer>
                         </Modal>
@@ -526,7 +526,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                     {/* <h4 className='h5'>As: {userType}</h4> */}
                                     {superSegment ? (
                                         <h4 className='h5'>
-                      District:{' '}
+                                            District:{' '}
                                             {superSegment
                                                 ? capitalizeFirstLetterEachWord(superSegment.name)
                                                 : 'N/A'}
@@ -534,7 +534,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                     ) : null}
                                     {segment ? (
                                         <h4 className='h5'>
-                      Municipality:{' '}
+                                            Municipality:{' '}
                                             {segment
                                                 ? capitalizeFirstLetterEachWord(segment.name)
                                                 : 'N/A'}
@@ -542,7 +542,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                     ) : null}
                                     {subSegment ? (
                                         <h4 className='h5'>
-                      Neighborhood:{' '}
+                                            Neighborhood:{' '}
                                             {subSegment
                                                 ? capitalizeFirstLetterEachWord(subSegment.name)
                                                 : 'N/A'}
@@ -550,13 +550,13 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                     ) : null}
                                     {!!ideaData.champion && (
                                         <h4 className='h5'>
-                      Championed By: {ideaData?.champion?.fname}@
+                                            Championed By: {ideaData?.champion?.fname}@
                                             {ideaData?.champion?.address?.streetAddress}
                                         </h4>
                                     )}
                                     {/* <h5 className='h5'>Created: {parsedDate.toLocaleDateString()}</h5> */}
                                     <h4 className='h5'>
-                    Status: <span>{state}</span>
+                                        Status: <span>{state}</span>
                                     </h4>
                                     <br />
                                     <table>
@@ -565,46 +565,46 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                             <td className='lead px-1'>{description}</td>
                                         </tr>
                                         <br />
-                                        { communityImpact?.trim() ?
+                                        {communityImpact?.trim() ?
                                             <tr>
                                                 <td className='px-4'><strong>Community and Place: </strong></td>
                                                 <td className='px-4'>{communityImpact}</td>
                                             </tr>
                                             : null
                                         }
-                                        { communityImpact?.trim() ? <br /> : null }
-                                        { natureImpact?.trim() ?
+                                        {communityImpact?.trim() ? <br /> : null}
+                                        {natureImpact?.trim() ?
                                             <tr>
                                                 <td className='px-4'><strong>Nature and Food Security: </strong></td>
                                                 <td className='px-4'>{natureImpact}</td>
                                             </tr>
                                             : null
                                         }
-                                        { natureImpact?.trim() ? <br /> : null }
-                                        { artsImpact?.trim() ?
+                                        {natureImpact?.trim() ? <br /> : null}
+                                        {artsImpact?.trim() ?
                                             <tr>
                                                 <td className='px-4'><strong>Arts, Culture, and Education: </strong></td>
                                                 <td className='px-4'>{artsImpact}</td>
                                             </tr>
                                             : null
                                         }
-                                        { artsImpact?.trim() ? <br /> : null }
-                                        { energyImpact?.trim() ?
+                                        {artsImpact?.trim() ? <br /> : null}
+                                        {energyImpact?.trim() ?
                                             <tr>
                                                 <td className='px-4'><strong>Water and Energy: </strong></td>
                                                 <td className='px-4'>{energyImpact}</td>
                                             </tr>
                                             : null
                                         }
-                                        { energyImpact?.trim() ? <br /> : null }
-                                        { manufacturingImpact?.trim() ?
+                                        {energyImpact?.trim() ? <br /> : null}
+                                        {manufacturingImpact?.trim() ?
                                             <tr>
                                                 <td className='px-4'><strong>Manufacturing and Waste: </strong></td>
                                                 <td className='px-4'>{manufacturingImpact}</td>
                                             </tr>
                                             : null
                                         }
-                                        { manufacturingImpact?.trim() ? <br /> : null }
+                                        {manufacturingImpact?.trim() ? <br /> : null}
                                     </table>
                                 </Col>
                             </Row>
@@ -627,7 +627,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                             <h2>Project Information:</h2>
                             <p>
                                 {projectInfo?.description ||
-                  'Project has been initialized. Please describe the project!'}
+                                    'Project has been initialized. Please describe the project!'}
                             </p>
                         </Col>
                     )}
@@ -647,47 +647,41 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                 <FacebookShareButton
                                     className='mx-2'
                                     url={shareUrl}
-                                    quote={shareTitle}
+                                    quote={shareDescription}
+                                    hashtag={shareTitle}
                                 >
                                     <FacebookIcon size={32} round />
                                 </FacebookShareButton>
                                 <TwitterShareButton
                                     className='mx-2'
                                     url={shareUrl}
-                                    title={shareTitle}
+                                    title={shareTitle + '\n' + shareDescription}
                                 >
                                     <TwitterIcon size={32} round />
                                 </TwitterShareButton>
                                 <WhatsappShareButton
                                     className='mx-2'
                                     url={shareUrl}
-                                    title={shareTitle}
+                                    title={shareTitle + '\n' + shareDescription}
                                 >
                                     <WhatsappIcon size={32} round />
                                 </WhatsappShareButton>
                                 <LineShareButton
                                     className='mx-2'
                                     url={shareUrl}
-                                    title={shareTitle}
+                                    title={shareTitle + '\n' + shareDescription}
                                 >
                                     <LineIcon size={32} round />
                                 </LineShareButton>
                                 <RedditShareButton
                                     className='mx-2'
                                     url={shareUrl}
-                                    title={shareTitle}
+                                    title={shareTitle + '\n' + shareDescription + '\n' + shareUrl}
                                 >
                                     <RedditIcon size={32} round />
                                 </RedditShareButton>
-                                <EmailShareButton
-                                    className='mx-2'
-                                    url={shareUrl}
-                                    title={shareTitle}
-                                >
-                                    <EmailIcon size={32} round />
-                                </EmailShareButton>
                             </div>
-                            { author?.userType === 'RESIDENTIAL' ?
+                            {author?.userType === 'RESIDENTIAL' ?
                                 author?.displayFName ?
                                     <div>{author?.displayFName}@{author?.displayLName} as {userType}</div> :
                                     <div>{author?.fname}@{author?.address?.streetAddress} as {userType}</div>
@@ -741,7 +735,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                 <LoadingSpinner />
             ) : (
                 endorsedUsers &&
-        endorsedUsers.length > 0 && (
+                endorsedUsers.length > 0 && (
                     <EndorsedUsersSection endorsedUsers={endorsedUsers} />
                 )
             )}

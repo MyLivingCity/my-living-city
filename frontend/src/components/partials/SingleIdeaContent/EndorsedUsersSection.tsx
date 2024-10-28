@@ -10,7 +10,6 @@ interface EndorsedUsersSectionProps {
 
 const EndorsedUsersSection: React.FC<EndorsedUsersSectionProps> = ({ endorsedUsers }) => {
     useEffect(() => {
-
     }, [endorsedUsers]);
 
     return (
@@ -27,7 +26,7 @@ const EndorsedUsersSection: React.FC<EndorsedUsersSectionProps> = ({ endorsedUse
                             {endorsedUsers.map((user) => (
                                 <tr key={user.id}>
                                     <td>
-                                        {user.organizationName}
+                                        {user.organizationName || `${user.userType} Endorser - No Affiliated Organization.` } 
                                     </td>
                                 </tr>
                             ))

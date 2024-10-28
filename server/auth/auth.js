@@ -278,10 +278,9 @@ passport.use(
         };
 
         if (parsedUser.verified === false) {
-          sendEmailVerification(parsedUser);
-          done(null, false, {
-            message:
-              "User is not verified. Please check your email for verification link.",
+          await sendEmailVerification(parsedUser);
+          return done(null, false, {
+            message: "User is not verified. Please check your email for verification link.",
           });
         }
 

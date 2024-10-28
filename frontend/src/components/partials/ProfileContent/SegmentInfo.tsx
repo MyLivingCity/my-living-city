@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Col, Row, Card, ListGroup, ListGroupItem, Button, Form } from 'react-bootstrap';
 import { IUser } from '../../../lib/types/data/user.type';
 import { capitalizeString } from '../../../lib/utilityFunctions';
@@ -28,8 +28,7 @@ interface SegmentInfoProps {
 
 interface SegmentData {
     segmentId: number;
-    displayFName: string;
-    displayLName: string;
+    segmentHandle: string;
     street: string;
     city: string;
     postalCode: string;
@@ -75,8 +74,19 @@ const NeighborhoodDropdown: React.FC<NeighborhoodDropdownProps> = ({ subSegments
 };
 
 
-export const SegmentInfo: React.FC<SegmentInfoProps> = ({ user, token, title, type, segmentData, geoData, segments, edit, setEdit, deleteFunction, updateFunction }) => {
-
+export const SegmentInfo: React.FC<SegmentInfoProps> = ({
+    user,
+    token,
+    title,
+    type,
+    segmentData,
+    geoData,
+    segments,
+    edit,
+    setEdit,
+    deleteFunction,
+    updateFunction
+}) => {
     function handleEdit() {
         // TODO: Add confirmation modal (optional) and then edit
         setEdit(!edit);
@@ -114,8 +124,8 @@ export const SegmentInfo: React.FC<SegmentInfoProps> = ({ user, token, title, ty
     const [markers, sendData]: any = useState({ home: { lat: null, lon: null }, work: { lat: null, lon: null }, school: { lat: null, lon: null } });
 
     // Display data
-    const [displayFName, setDisplayFName] = useState<string>(segmentData.displayFName);
-    const [displayLName, setDisplayLName] = useState<string>(segmentData.displayLName);
+    const [displayFName, setDisplayFName] = useState<string>('');
+    const [displayLName, setDisplayLName] = useState<string>('');
     const [street, setStreet] = useState<string>(segmentData.street);
     const [postalCode, setPostalCode] = useState<string>(segmentData.postalCode);
     const [subSegments, setSubSegments] = useState<ISubSegment[]>([]);
@@ -129,6 +139,15 @@ export const SegmentInfo: React.FC<SegmentInfoProps> = ({ user, token, title, ty
     const [streetMessage, setStreetMessage] = useState('');
     const [cityMessage, setCityMessage] = useState('');
     const [postalCodeMessage, setPostalCodeMessage] = useState('');
+
+    useEffect(() => {
+        if (!segmentData.segmentHandle) return;
+
+        const [handleFName, handleLName] = segmentData.segmentHandle.split('@');
+
+        setDisplayFName(handleFName);
+        setDisplayLName(handleLName);
+    }, []);
 
     // Update neighborhood dropdown (sugsegment) when (municipality) segment changes
     function handleSegmentChange(e: any) {

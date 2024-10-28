@@ -1652,8 +1652,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                         type={'home'}
                         segmentData={{
                             segmentId: userSegments?.homeSegmentId ? userSegments?.homeSegmentId : 0,
-                            displayFName: displayFName ? displayFName : UNKNOWN,
-                            displayLName: displayLName ? displayLName : UNKNOWN,
+                            segmentHandle: userSegments?.homeSegHandle ?? '',
                             street: streetAddress ? streetAddress : UNKNOWN,
                             city: userSegments?.homeSegmentName ? userSegments?.homeSegmentName : NOT_SELECTED,
                             postalCode: postalCode ? postalCode : UNKNOWN,
@@ -1678,8 +1677,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                             type={'work'}
                             segmentData={{
                                 segmentId: userSegments?.workSegmentId ? userSegments?.workSegmentId : 0,
-                                displayFName: workData!.displayFName ? workData!.displayFName : UNKNOWN,
-                                displayLName: workData!.displayLName ? workData!.displayLName : UNKNOWN,
+                                segmentHandle: userSegments?.workSegHandle ?? '',
                                 street: workData!.streetAddress ? workData!.streetAddress : UNKNOWN,
                                 city: userSegments?.workSegmentName ? userSegments?.workSegmentName : NOT_SELECTED,
                                 postalCode: workData!.postalCode ? workData!.postalCode : UNKNOWN,
@@ -1708,8 +1706,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                             type={'school'}
                             segmentData={{
                                 segmentId: userSegments?.schoolSegmentId ? userSegments?.schoolSegmentId : 0,
-                                displayFName: schoolData!.displayFName ? schoolData!.displayFName : UNKNOWN,
-                                displayLName: schoolData!.displayLName ? schoolData!.displayLName : UNKNOWN,
+                                segmentHandle: userSegments?.schoolSegHandle ?? '',
                                 street: schoolData!.streetAddress ? schoolData!.streetAddress : UNKNOWN,
                                 city: userSegments?.schoolSegmentName ? userSegments?.schoolSegmentName : NOT_SELECTED,
                                 postalCode: schoolData!.postalCode ? schoolData!.postalCode : UNKNOWN,

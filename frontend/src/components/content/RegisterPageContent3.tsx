@@ -110,6 +110,23 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
         setReachData(data);
     };
 
+
+    // Updates neighborhood (subsegment) dropdown when a segment is selected from the municipality(segment) dropdown
+    const handleSegmentChange = async (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedSegmentId = parseInt(event.target.value);
+        const selectedSegment = segments.find((seg) => seg.segId === selectedSegmentId);
+
+        if (selectedSegment) {
+            setSegment(selectedSegment);
+
+            const subsegments = await findSubsegmentsBySegmentId(selectedSegment.segId);
+            setSubSegments(subsegments);
+
+            refactorStateArray(segIds, 0, selectedSegment.segId, setSegIds);
+            refactorStateArray(subIds, 0, null, setSubIds);
+        }
+    };
+
     useEffect(() => {
         if (
             segment !== null &&
@@ -533,6 +550,7 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                         <BForm.Control
                             name='homeSegmentId'
                             as='select'
+                            // onChange={handleSegmentChange}
                             onChange={(e) => {
                                 // Find the selected segment from the dropdown and set it as the single selected segment
                                 const selectedSegment = segments.find(
@@ -592,284 +610,6 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                         segmentRequests={segmentRequests}
                     />
                 </FormikStep>
-
-                {userType === USER_TYPES.RESIDENTIAL && (
-                    <FormikStep>
-                        {!map ? (
-                            <div>
-                                <Card.Title>
-                  Do you work in a different municipality or neighbourhood?
-                                    <div className='float-right'>
-                                        <BForm.Check
-                                            inline
-                                            label='yes'
-                                            name='group1'
-                                            type='radio'
-                                            id='inline-checkbox'
-                                            onClick={() => {
-                                                showMap(true);
-                                                transferHomeToWork(false);
-                                            }}
-                                        />
-                                        <BForm.Check
-                                            inline
-                                            label='no'
-                                            name='group1'
-                                            type='radio'
-                                            id='inline-checkbox'
-                                            onClick={() => {
-                                                transferHomeToWork(true);
-                                            }}
-                                        />
-                                    </div>
-                                </Card.Title>
-                            </div>
-                        ) : (
-                            <>
-                                <Card.Title>
-                  Show us on the map where your work is (optional)
-                                </Card.Title>
-                                {/* <SimpleMap
-                                    iconName={'work'}
-                                    sendData={(markers: any) => sendData(markers)}
-                                /> */}
-                            </>
-                        )}
-                    </FormikStep>
-                )}
-
-                {userType === USER_TYPES.RESIDENTIAL && (
-                    <FormikStep>
-                        <BForm.Group>
-                            <BForm.Label>Your Work Municipality is</BForm.Label>
-                            <BForm.Control
-                                name='workSegmentId'
-                                as='select'
-                                onChange={(e) => {
-                                    refactorStateArray(
-                                        segIds,
-                                        1,
-                                        parseInt(e.target.value),
-                                        setSegIds
-                                    );
-                                    refactorStateArray(subIds, 1, null, setSubIds);
-                                }}
-                            >
-                                {segment && (
-                                    <option value={segment?.segId}>
-                                        {capitalizeFirstLetterEachWord(segment?.name)}
-                                    </option>
-                                )}
-                                {/* {segment2 && (
-                                    <option value={segment2?.segId}>
-                                        {capitalizeFirstLetterEachWord(segment2?.name)}
-                                    </option>
-                                )} */}
-                            </BForm.Control>
-                        </BForm.Group>
-                        <BForm.Group>
-                            <BForm.Label>Select your Neighbourhood</BForm.Label>
-                            <BForm.Control
-                                name='workSubName'
-                                as='select'
-                                onChange={(e) => {
-                                    refactorStateArray(
-                                        subIds,
-                                        1,
-                                        parseInt(e.target.value),
-                                        setSubIds
-                                    );
-                                }}
-                            >
-                                <option hidden></option>
-                                {displaySubSegList(segIds[1])}
-                            </BForm.Control>
-                            <p>
-                Don't see your Municipality?
-                                <Button
-                                    onClick={() => {
-                                        setShowModal(true);
-                                    }}
-                                    variant='link text-primary'
-                                >
-                  Click here
-                                </Button>
-                            </p>
-                        </BForm.Group>
-                        <BForm.Group>
-                            <BForm.Label>Work Street Name</BForm.Label>
-                            <Field
-                                name='workDetails.streetAddress'
-                                type='text'
-                                as={BForm.Control}
-                            />
-                        </BForm.Group>
-                        <BForm.Group>
-                            <BForm.Label>Work ZIP / Postal Code</BForm.Label>
-                            <Field
-                                name='workDetails.postalCode'
-                                type='text'
-                                as={BForm.Control}
-                            />
-                        </BForm.Group>
-                        <BForm.Group>
-                            <BForm.Label>Company</BForm.Label>
-                            <Field
-                                name='workDetails.company'
-                                type='text'
-                                as={BForm.Control}
-                            />
-                        </BForm.Group>
-                        <RequestSegmentModal
-                            showModal={showModal}
-                            setShowModal={setShowModal}
-                            index={1}
-                            setSegmentRequests={setSegmentRequests}
-                            segmentRequests={segmentRequests}
-                        />
-                    </FormikStep>
-                )}
-
-                {userType === USER_TYPES.RESIDENTIAL && (
-                    <FormikStep>
-                        {!map ? (
-                            <div>
-                                <Card.Title className='mb-4'>
-                  Do you study in a different municipality or neighbourhood?
-                                    <div className='float-right'>
-                                        <BForm.Check
-                                            inline
-                                            label='yes'
-                                            name='group1'
-                                            type='radio'
-                                            id='inline-checkbox'
-                                            onClick={() => {
-                                                showMap(true);
-                                                transferWorkToSchool(false);
-                                            }}
-                                        />
-                                        <BForm.Check
-                                            inline
-                                            label='no'
-                                            name='group1'
-                                            type='radio'
-                                            id='inline-checkbox'
-                                            onClick={() => {
-                                                transferWorkToSchool(true);
-                                            }}
-                                        />
-                                    </div>
-                                </Card.Title>
-                            </div>
-                        ) : (
-                            <>
-                                <Card.Title>
-                  Show us on the map where your school is (optional)
-                                </Card.Title>
-                                {/* <SimpleMap
-                                    iconName={'school'}
-                                    sendData={(markers: any) => sendData(markers)}
-                                /> */}
-                            </>
-                        )}
-                    </FormikStep>
-                )}
-
-                {userType === USER_TYPES.RESIDENTIAL && (
-                    <FormikStep>
-                        <BForm.Group>
-                            <BForm.Label>Your School Municipality is</BForm.Label>
-                            <BForm.Control
-                                name='schoolSegmentId'
-                                as='select'
-                                onChange={(e) => {
-                                    refactorStateArray(
-                                        segIds,
-                                        2,
-                                        parseInt(e.target.value),
-                                        setSegIds
-                                    );
-                                    refactorStateArray(subIds, 2, null, setSubIds);
-                                }}
-                            >
-                                {segment && (
-                                    <option value={segment?.segId}>{segment?.name}</option>
-                                )}
-                                {/* {segment2 && (
-                                    <option value={segment2?.segId}>{segment2?.name}</option>
-                                )} */}
-                            </BForm.Control>
-                        </BForm.Group>
-                        <BForm.Group>
-                            <BForm.Label>Select your Neighbourhood</BForm.Label>
-                            <BForm.Control
-                                name='schoolSubName'
-                                as='select'
-                                onChange={(e) => {
-                                    refactorStateArray(
-                                        subIds,
-                                        2,
-                                        parseInt(e.target.value),
-                                        setSubIds
-                                    );
-                                }}
-                            >
-                                <option hidden></option>
-                                {displaySubSegList(segIds[2])}
-                            </BForm.Control>
-                            <p>
-                Don't see your Municipality?
-                                <Button
-                                    onClick={() => {
-                                        setShowModal(true);
-                                    }}
-                                    variant='link text-primary'
-                                >
-                  Click here
-                                </Button>
-                            </p>
-                        </BForm.Group>
-                        <BForm.Group>
-                            <BForm.Label>School Street Name</BForm.Label>
-                            <Field
-                                name='schoolDetails.streetAddress'
-                                type='text'
-                                as={BForm.Control}
-                            />
-                        </BForm.Group>
-                        <BForm.Group>
-                            <BForm.Label>School ZIP / Postal Code</BForm.Label>
-                            <Field
-                                name='schoolDetails.postalCode'
-                                type='text'
-                                as={BForm.Control}
-                            />
-                        </BForm.Group>
-                        <BForm.Group>
-                            <BForm.Label>Faculty / Department of Study</BForm.Label>
-                            <Field
-                                name='schoolDetails.faculty'
-                                type='text'
-                                as={BForm.Control}
-                            />
-                        </BForm.Group>
-                        <BForm.Group>
-                            <BForm.Label>Program Completion Date</BForm.Label>
-                            <Field
-                                name='schoolDetails.programCompletionDate'
-                                type='date'
-                                as={BForm.Control}
-                            />
-                        </BForm.Group>
-                        <RequestSegmentModal
-                            showModal={showModal}
-                            setShowModal={setShowModal}
-                            index={2}
-                            setSegmentRequests={setSegmentRequests}
-                            segmentRequests={segmentRequests}
-                        />
-                    </FormikStep>
-                )}
 
                 {(userType === USER_TYPES.BUSINESS ||
           userType === USER_TYPES.COMMUNITY) && (
@@ -1042,6 +782,18 @@ export function FormikStepper({
     const currentChild = childrenArray[
         step
     ] as React.ReactElement<FormikStepProps>;
+
+    //DEBUGGING useEffect to see the current step
+    useEffect(() => {
+        console.log('Step changed to:', step);
+        // Add any logic that should trigger when the step changes
+    }, [step]);
+
+    useEffect(() => {
+        console.log('InferStep changed to:', inferStep);
+        // Add any logic that should trigger when the step changes
+    }, [inferStep]);
+
     const [isLoading, setIsLoading] = useState(false);
     // const [segIds, setSegIds] = useState<number[]>([]);
     const [error, setError] = useState<IFetchError | null>(null);
@@ -1059,7 +811,10 @@ export function FormikStepper({
         return isLoading ? 'Submitting...' : 'Submit';
     };
     const isHomeMarkerSet = () => {
-        return step === 2 && markers.home.lat === null;
+        return step === 2 && (!subIds[0] || subIds[0] === null);
+    };
+    const isHomeSegmentSelected = () => {
+        // return step === 2 && markers.home.lat === null;
     };
     const getStepHeader = (step: number) => {
         switch (step) {
@@ -1068,18 +823,12 @@ export function FormikStepper({
             case 1:
                 return 'Home Location';
             case 2:
-                return userType === USER_TYPES.RESIDENTIAL ? 'Work Location' : 'Reach';
-            case 3:
-                return userType === USER_TYPES.RESIDENTIAL
-                    ? 'School Location'
-                    : 'User Agreement and Community Guidelines';
-            case 4:
                 return userType === USER_TYPES.RESIDENTIAL
                     ? 'User Agreement and Community Guidelines'
                     : 'Submit';
                 // case 5:
                 //     return userType === USER_TYPES.RESIDENTIAL ? "Submit" : "Submit"
-            case 5:
+            case 3:
                 return userType === USER_TYPES.RESIDENTIAL ? 'Submit' : 'Create Ad'; //Removed  "Complementary" due to sizing problems
             default:
                 return '';
@@ -1119,9 +868,7 @@ export function FormikStepper({
             }
         }
     };
-    //This function calls the google api to receive data on the map location
-    //The data is then searched in the back end for a matching segment
-    //Then the back end is searched for all the sub-segments of that matching segment.
+
     async function setSegData(index: number) {
         console.log('SETSEGDATA CALLED, INDEX:', index);
         try {
@@ -1165,11 +912,20 @@ export function FormikStepper({
             if (selectedSegment) {
                 props.setSegment(selectedSegment); // Keep this single segment for saving
                 refactorStateArray(segIds, index, selectedSegment.segId || null, setSegIds);
+
+                // Fetch sub-segments based on the selected segment ID
+                const subsegments = await findSubsegmentsBySegmentId(selectedSegment.segId);
+                props.setSubSegments(subsegments); // Update the sub-segments state
+
+                // Update the state for sub-segment IDs
+                refactorStateArray(subIds, index, subsegments[0]?.subSegId || null, setSubIds);
             } else {
                 console.warn('No segments fetched');
+                props.setSubSegments([]);
             }
     
             setStep((s) => s + 1);
+            console.log('Current Step:', step);
         } catch (err) {
             console.error('Error fetching segment:', err);
             setError(new Error('An error occurred while fetching the segment'));
@@ -1190,10 +946,12 @@ export function FormikStepper({
             (userType === USER_TYPES.BUSINESS ||
               userType === USER_TYPES.COMMUNITY)
                     ) {
+                        console.log('STEP 4 --------------------------------------------------');
                         values.reachSegmentIds = reachSegmentIds;
                     }
 
                     if (step === 0) {
+                        console.log('STEP 0------------------------------');
                         // values.userType = (userType === USER_TYPES.BUSINESS || userType === USER_TYPES.COMMUNITY) ?  USER_TYPES.IN_PROGRESS : USER_TYPES.RESIDENTIAL;
                         values.userType = userType;
                         setStep((s) => s + 1);
@@ -1203,6 +961,7 @@ export function FormikStepper({
               userType === USER_TYPES.COMMUNITY) &&
               step === 6)
                     ) {
+                        console.log('STEP LAST------------------------------');
                         setIsLoading(true);
                         await new Promise((r) => setTimeout(r, 2000));
                         await props.onSubmit(values, helpers);
@@ -1211,56 +970,14 @@ export function FormikStepper({
                             setInferStep((s) => s + 1);
                         }
                     } else if (step === 1) {
-                        console.log('STEP 1------------------------------');
-                        const seg = await setSegData(0);
-                        // showMap(false);
-                    } else if (step === 2) {
                         console.log('STEP 2------------------------------');
                         const seg = await setSegData(0);
                         showMap(false);
-                    } else if (step === 4 && userType === USER_TYPES.RESIDENTIAL) {
-                        if (markers.work.lat === null) {
-                            setStep((s) => s + 2);
-                            setInferStep((s) => s + 1);
-                            if (workTransfer) {
-                                refactorStateArray(segIds, 1, segIds[0], setSegIds);
-                                refactorStateArray(subIds, 1, subIds[0], setSubIds);
-                                //refactorSegIds(1, segIds[0]);
-                                //refactorSubIds(1, subIds[0]);
-                            }
-                        } else {
-                            const seg = await setSegData(1);
-                            //setStep(s=>s+1);
-                        }
-                        showMap(false);
-                    } else if (step === 6 && userType === USER_TYPES.RESIDENTIAL) {
-                        console.log(segIds);
-                        if (markers.school.lat === null) {
-                            setStep((s) => s + 2);
-                            setInferStep((s) => s + 1);
-                            if (schoolTransfer) {
-                                refactorStateArray(
-                                    segIds,
-                                    2,
-                                    segIds[1] || segIds[0],
-                                    setSegIds
-                                );
-                                refactorStateArray(
-                                    subIds,
-                                    2,
-                                    subIds[1] || subIds[0],
-                                    setSubIds
-                                );
-                                //refactorSegIds(2, segIds[1] || segIds[0]);
-                                //refactorSubIds(2, subIds[1] || subIds[0])
-                            }
-                        } else {
-                            const seg = await setSegData(2);
-                            //setStep(s=>s+1);
-                        }
-                        setIsLoading(false);
-                    } else if (
-                        (step === 8 && userType === USER_TYPES.RESIDENTIAL) ||
+                        setInferStep((s) => s + 1);
+                    } 
+                    
+                    else if (
+                        (step === 3 && userType === USER_TYPES.RESIDENTIAL) ||
             (step === 5 && userType === USER_TYPES.COMMUNITY) ||
             (step === 5 && userType === USER_TYPES.BUSINESS)
                     ) {
@@ -1284,9 +1001,15 @@ export function FormikStepper({
                         helpers.setFieldValue('imagePath', avatar);
                         setStep((s) => s + 1);
                         setInferStep((s) => s + 1);
+                        console.log('STEP 8-----------------------------------');
+                        console.log('inferstep inceremented');
+                        // console.log('home markers here:', markers.home.lat);
                     } else {
                         setStep((s) => s + 1);
                         setInferStep((s) => s + 1);
+                        console.log('STEP: ELSE ---------------------------------------------------');
+                        console.log('inferStep incremented: step unknownm this is in the else statement');
+                        // console.log('home markers here:', markers.home.lat);
                         //helpers.setTouched({});
                     }
                     //These fields added here due to update reasons. If these fields are in the above section the state is not updated. Due to setFieldValue being async.
@@ -1302,8 +1025,8 @@ export function FormikStepper({
                                 { title: `${getStepHeader(1)}` },
                                 { title: `${getStepHeader(2)}` },
                                 { title: `${getStepHeader(3)}` },
-                                { title: `${getStepHeader(4)}` },
-                                { title: `${getStepHeader(5)}` },
+                                // { title: `${getStepHeader(4)}` },
+                                // { title: `${getStepHeader(5)}` },
                             ]}
                             activeStep={inferStep}
                             circleTop={0}

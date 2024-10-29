@@ -28,8 +28,8 @@ import { CONTENT, Toastie } from '../partials/LandingContent/CategoriesSection';
 import ImageUploader from 'react-images-upload';
 
 interface SubmitIdeaPageContentProps {
-  categories: ICategory[] | undefined;
-  segData: ISegmentData[];
+    categories: ICategory[] | undefined;
+    segData: ISegmentData[];
 }
 
 /**
@@ -45,7 +45,6 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
     const { token, user } = useContext(UserProfileContext);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<IFetchError | null>(null);
-    const [crop, setCrop] = useState({ aspect: 16 / 9 });
     const history = useHistory();
     const handleCommunityChange = (index: number) => {
         if (updatedSegData[index].segType === 'Segment') {
@@ -63,38 +62,27 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
             formik.setFieldValue('subSegmentId', undefined);
             formik.setFieldValue('segmentId', undefined);
         }
-        formik.setFieldValue('userType', updatedSegData[index].userType);
     };
-    const submitHandler = async (values: ICreateIdeaInput) => {
-        try {
-            const metThreshhold = await checkUser(token, user!.id);
-            try {
-                setError(null);
-                setIsLoading(true);
-                setTimeout(() => console.log('timeout'), 5000);
-                const banDetails = await getUserBanWithToken(token);
-                let banned = true;
-                if (!user!.banned || !banDetails || banDetails.banType === 'WARNING') {
-                    banned = false;
-                }
-                const res = await postCreateIdea(values, banned, token);
 
-                setError(null);
-                history.push('/ideas/' + res.id);
-                formik.resetForm();
-            } catch (error) {
-                const genericMessage =
-          'An error occured while trying to create an Proposal.';
-                const errorObj = handlePotentialAxiosError(genericMessage, error);
-                setError(errorObj);
-            } finally {
-                setIsLoading(false);
+    const submitHandler = async (values: ICreateIdeaInput) => {
+        setError(null);
+        setIsLoading(true);
+
+        try {
+            const banDetails = await getUserBanWithToken(token);
+            let banned = true;
+
+            if (!user!.banned || !banDetails || banDetails.banType === 'WARNING') {
+                banned = false;
             }
+
+            const res = await postCreateIdea(values, banned, token);
+
+            setError(null);
+            history.push('/ideas/' + res.id);
+            formik.resetForm();
         } catch (error) {
-            //print the error message attached to the error object
-            const genericMessage =
-        'You have too many bad posts / post flagged. Post was NOT submittted.';
-            const errorObj = handlePotentialAxiosError(genericMessage, error);
+            const errorObj = handlePotentialAxiosError('An error occurred while trying to create a Proposal.', error);
             setError(errorObj);
         } finally {
             setIsLoading(false);
@@ -106,17 +94,19 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
     const supportedProposal = urlParams.get('supportedProposal');
     const communityOfInterest = urlParams.get('communityOfInterest');
     const parsedProposalId = parseInt(supportedProposal!);
-    let updatedSegData : ISegmentData[] = [];
+    let updatedSegData: ISegmentData[] = [];
     const destructuredSegData = Object.entries(segData);
+    console.log('segData', segData);
+    console.log('destructuredSegData', destructuredSegData);
     if (destructuredSegData !== null) {
 
         if (
             destructuredSegData[2] &&
-      destructuredSegData[2][1] &&
-      destructuredSegData[2][1].toString() !== '' &&
-      destructuredSegData[3] &&
-      destructuredSegData[3][1] &&
-      destructuredSegData[3][1].toString() !== ''
+            destructuredSegData[2][1] &&
+            destructuredSegData[2][1].toString() !== '' &&
+            destructuredSegData[3] &&
+            destructuredSegData[3][1] &&
+            destructuredSegData[3][1].toString() !== ''
         ) {
             updatedSegData.push({
                 id: parseInt(destructuredSegData[2][1].toString()),
@@ -125,13 +115,14 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
                 userType: 'Resident'
             });
         }
+
         if (
             destructuredSegData[8] &&
-      destructuredSegData[8][1] &&
-      destructuredSegData[8][1].toString() !== '' &&
-      destructuredSegData[9] &&
-      destructuredSegData[9][1] &&
-      destructuredSegData[9][1].toString() !== ''
+            destructuredSegData[8][1] &&
+            destructuredSegData[8][1].toString() !== '' &&
+            destructuredSegData[9] &&
+            destructuredSegData[9][1] &&
+            destructuredSegData[9][1].toString() !== ''
         ) {
             updatedSegData.push({
                 id: parseInt(destructuredSegData[8][1].toString()),
@@ -142,13 +133,13 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
         }
 
         if (
-            destructuredSegData[9][1].toString() !==  destructuredSegData[13][1].toString() &&
-      destructuredSegData[10] &&
-      destructuredSegData[10][1] &&
-      destructuredSegData[10][1].toString() !== '' &&
-      destructuredSegData[11] &&
-      destructuredSegData[11][1] &&
-      destructuredSegData[11][1].toString() !== ''
+            destructuredSegData[9][1].toString() !== destructuredSegData[13][1].toString() &&
+            destructuredSegData[10] &&
+            destructuredSegData[10][1] &&
+            destructuredSegData[10][1].toString() !== '' &&
+            destructuredSegData[11] &&
+            destructuredSegData[11][1] &&
+            destructuredSegData[11][1].toString() !== ''
         ) {
             updatedSegData.push({
                 id: parseInt(destructuredSegData[10][1].toString()),
@@ -159,13 +150,13 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
         }
 
         if (
-            destructuredSegData[11][1].toString() !==  destructuredSegData[13][1].toString() &&
-      destructuredSegData[12] &&
-      destructuredSegData[12][1] &&
-      destructuredSegData[12][1].toString() !== '' &&
-      destructuredSegData[13] &&
-      destructuredSegData[13][1] &&
-      destructuredSegData[13][1].toString() !== ''
+            destructuredSegData[11][1].toString() !== destructuredSegData[13][1].toString() &&
+            destructuredSegData[12] &&
+            destructuredSegData[12][1] &&
+            destructuredSegData[12][1].toString() !== '' &&
+            destructuredSegData[13] &&
+            destructuredSegData[13][1] &&
+            destructuredSegData[13][1].toString() !== ''
         ) {
             updatedSegData.push({
                 id: parseInt(destructuredSegData[12][1].toString()),
@@ -177,11 +168,11 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
 
         if (
             destructuredSegData[14] &&
-      destructuredSegData[14][1] &&
-      destructuredSegData[14][1].toString() !== '' &&
-      destructuredSegData[15] &&
-      destructuredSegData[15][1] &&
-      destructuredSegData[15][1].toString() !== ''
+            destructuredSegData[14][1] &&
+            destructuredSegData[14][1].toString() !== '' &&
+            destructuredSegData[15] &&
+            destructuredSegData[15][1] &&
+            destructuredSegData[15][1].toString() !== ''
         ) {
             updatedSegData.push({
                 id: parseInt(destructuredSegData[14][1].toString()),
@@ -192,13 +183,13 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
         }
 
         if (
-     
+
             destructuredSegData[16] &&
-      destructuredSegData[16][1] &&
-      destructuredSegData[16][1].toString() !== '' &&
-      destructuredSegData[17] &&
-      destructuredSegData[17][1] &&
-      destructuredSegData[17][1].toString() !== ''
+            destructuredSegData[16][1] &&
+            destructuredSegData[16][1].toString() !== '' &&
+            destructuredSegData[17] &&
+            destructuredSegData[17][1] &&
+            destructuredSegData[17][1].toString() !== ''
         ) {
             updatedSegData.push({
                 id: parseInt(destructuredSegData[16][1].toString()),
@@ -209,13 +200,13 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
         }
 
         if (
-            destructuredSegData[17][1].toString() !==  destructuredSegData[19][1].toString() &&
-      destructuredSegData[18] &&
-      destructuredSegData[18][1] &&
-      destructuredSegData[18][1].toString() !== '' &&
-      destructuredSegData[19] &&
-      destructuredSegData[19][1] &&
-      destructuredSegData[19][1].toString() !== ''
+            destructuredSegData[17][1].toString() !== destructuredSegData[19][1].toString() &&
+            destructuredSegData[18] &&
+            destructuredSegData[18][1] &&
+            destructuredSegData[18][1].toString() !== '' &&
+            destructuredSegData[19] &&
+            destructuredSegData[19][1] &&
+            destructuredSegData[19][1].toString() !== ''
         ) {
             updatedSegData.push({
                 id: parseInt(destructuredSegData[18][1].toString()),
@@ -231,13 +222,13 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
                 {communityOfInterest}
             </option>;
         }
-    
+
         return segData &&
-    segData.map((seg, index) => (
-        <option key={String(seg.name)} value={index}>
-            {`${capitalizeString(seg.name)} as ${capitalizeString(seg.userType)} `} 
-        </option>
-    ));
+            segData.map((seg, index) => (
+                <option key={String(seg.name)} value={index}>
+                    {`${capitalizeString(seg.name)} as ${capitalizeString(seg.userType)} `}
+                </option>
+            ));
     };
 
     const formik = useFormik<ICreateIdeaInput>({
@@ -266,8 +257,8 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
                 lat: undefined,
                 lon: undefined,
             },
-            segmentId: undefined,
-            subSegmentId: undefined,
+            segmentId: 2,
+            subSegmentId: 5,
             superSegmentId: undefined,
             //supportingProposalId that is not null
             supportingProposalId: parsedProposalId,
@@ -277,11 +268,21 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
 
     useEffect(() => {
         if (segData) {
+
+            const communityOfInterest = urlParams.get('communityOfInterest');
+            if (communityOfInterest) {
+                let foundIndex = 0;
+                for (let obj of updatedSegData) {
+                    if (obj.name == communityOfInterest) {
+                        handleCommunityChange(foundIndex);
+                        return;
+                    }
+                    foundIndex++;
+                }
+            }
             handleCommunityChange(0);
         }
     }, []);
-    console.log('Structured', updatedSegData );
-    console.log('DeStructured', destructuredSegData);
     return (
         <Container className='submit-idea-page-content'>
             <Row className='mb-4 mt-4 justify-content-center'>
@@ -300,17 +301,17 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
                                 value={formik.values.categoryId}
                             >
                                 {categories &&
-                  categories.map((cat) => (
-                      <option
-                          key={String(cat.id)}
-                          value={Number(cat.id)}
-                          style={{
-                              textTransform: 'capitalize',
-                          }}
-                      >
-                          {capitalizeString(cat.title)}
-                      </option>
-                  ))}
+                                    categories.map((cat) => (
+                                        <option
+                                            key={String(cat.id)}
+                                            value={Number(cat.id)}
+                                            style={{
+                                                textTransform: 'capitalize',
+                                            }}
+                                        >
+                                            {capitalizeString(cat.title)}
+                                        </option>
+                                    ))}
                             </Form.Control>
                         </Form.Group>
                         <Form.Group>

@@ -29,6 +29,7 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ideaId, allCommentsUnd
 
     // ===================== REMOVING DEACTIVATED COMMENTS ========================
     if(ideaComments){
+        console.log('ideaComments', ideaComments);
         for(let i = 0; i < ideaComments.length; i++){
             if(!ideaComments[i].active){
                 ideaComments.splice(i, 1);

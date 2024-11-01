@@ -33,7 +33,7 @@ export const storeUserAndTokenInLocalStorage = (token: string, user: IUser): voi
  */
 export const storeTokenExpiryInLocalStorage = (minutesOffset: number = TOKEN_EXPIRY) => {
     const tokenExpiry = new Date();
-    tokenExpiry.setMinutes( tokenExpiry.getMinutes() + minutesOffset );
+    tokenExpiry.setMinutes(tokenExpiry.getMinutes() + minutesOffset);
     localStorage.setItem('token-expiry', tokenExpiry.toISOString());
 };
 
@@ -58,7 +58,7 @@ export const wipeLocalStorage = () => {
  * @param s A string to capitalize
  * @returns A new string with the first character capitalized
  */
-export const capitalizeString = (s: string) => {
+export const capitalizeString = (s: string | undefined) => {
     if (s === null || s === undefined) {
         return s;
     }
@@ -67,11 +67,11 @@ export const capitalizeString = (s: string) => {
 
 // Capitalize the first letter of string on each word
 export const capitalizeFirstLetterEachWord = (str: string) => {
-    if (!str) {  
-        return ''; 
+    if (!str) {
+        return '';
     }
     let s = str.split(' ');
-	
+
     for (var i = 0, x = s.length; i < x; i++) {
         s[i] = s[i][0].toUpperCase() + s[i].substr(1);
     }
@@ -158,8 +158,8 @@ export const timeDifference = (current: Date, previous: Date): string => {
  * @returns A new string that truncates the original
  */
 export const truncateString = (
-    str: string, 
-    numberOfChars: number, 
+    str: string,
+    numberOfChars: number,
     includeDots: boolean = true
 ): string => {
     let parsedString = str;
@@ -245,7 +245,7 @@ export const checkIfUserHasRated = (ratings: IRating[] | IFeedbackRating[] | und
 };
 
 export const findUserRatingSubmission = (
-    ratings?: IRating[], 
+    ratings?: IRating[],
     userId?: string
 ): number | null => {
     if (!ratings || !userId) {

@@ -51,6 +51,7 @@ import {
     getUserGeoData,
 } from 'src/lib/api/userRoutes';
 import { getAllSegments } from 'src/lib/api/segmentRoutes';
+import { patchUserSegment } from 'src/lib/api/userSegmentRoutes';
 
 interface ProfileContentProps {
     user: IUser;
@@ -84,14 +85,34 @@ const updateSchoolSegmentDetail = async (
     data: any
 ) => {
     if (user === undefined) {
+        return;
     } else {
+        // Build segment handle for UserSegment table
+        const segmentHandle = `${data.displayFName}@${data.displayLName}`;
+
+        // Update the userSegement work handle
+        await patchUserSegment(user, {
+            schoolSegHandle: segmentHandle
+        });
+
+        // Update the user details
         await updateSchoolSegmentDetails(user, data);
     }
 };
 
 const updateWorkSegmentDetail = async (user: string | undefined, data: any) => {
     if (user === undefined) {
+        return;
     } else {
+        // Build segment handle for UserSegment table
+        const segmentHandle = `${data.displayFName}@${data.displayLName}`;
+
+        // Update the userSegement work handle
+        await patchUserSegment(user, {
+            workSegHandle: segmentHandle
+        });
+
+        // Update the user details
         await updateWorkSegmentDetails(user, data);
     }
 };
@@ -99,6 +120,15 @@ const updateWorkSegmentDetail = async (user: string | undefined, data: any) => {
 const updateHomeSegmentDetail = async (user: string | undefined, data: any) => {
     if (user === undefined) {
     } else {
+        // Build segment handle for UserSegment table
+        const segmentHandle = `${data.displayFName}@${data.displayLName}`;
+
+        // Update the userSegement work handle
+        await patchUserSegment(user, {
+            homeSegHandle: segmentHandle
+        });
+
+        // Update the user details
         await updateHomeSegmentDetails(user, data);
     }
 };
@@ -570,52 +600,52 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                         </thead>
                                         <tbody id='formLinksBody'>
                                             {links &&
-                        links.map((link) => (
-                            <tr
-                            // Matches the key to the current index of the link in links
-                                key={links.indexOf(link)}
-                            >
-                                <td>
-                                    <Form.Control
-                                        as='select'
-                                        onChange={(e) => {
-                                            // Updates the link type in the links array
-                                            updateLinkType(e.target.value, link);
-                                        }}
-                                        defaultValue={link.linkType}
-                                    >
-                                        {LinkTypes.map((linkType) => (
-                                            <option>{linkType}</option>
-                                        ))}
-                                    </Form.Control>
-                                </td>
-                                <td>
-                                    <Form.Control
-                                        type='text'
-                                        placeholder='Link'
-                                        defaultValue={link.link}
-                                        onChange={(e) => {
-                                            // Updates the link in the links array
-                                            updateLink(e.target.value, link);
-                                        }}
-                                        maxLength={TEXT_INPUT_LIMIT.EXTERNAL_LINK}
-                                    />
-                                </td>
-                                <td>
-                                    <NavDropdown title='Controls' id='nav-dropdown'>
-                                        <Dropdown.Item
-                                            class='deleteButton'
-                                            onClick={() => {
-                                                // Deletes the row from the table
-                                                deleteRow(link);
-                                            }}
-                                        >
-                                  Delete
-                                        </Dropdown.Item>
-                                    </NavDropdown>
-                                </td>
-                            </tr>
-                        ))}
+                                                links.map((link) => (
+                                                    <tr
+                                                        // Matches the key to the current index of the link in links
+                                                        key={links.indexOf(link)}
+                                                    >
+                                                        <td>
+                                                            <Form.Control
+                                                                as='select'
+                                                                onChange={(e) => {
+                                                                    // Updates the link type in the links array
+                                                                    updateLinkType(e.target.value, link);
+                                                                }}
+                                                                defaultValue={link.linkType}
+                                                            >
+                                                                {LinkTypes.map((linkType) => (
+                                                                    <option>{linkType}</option>
+                                                                ))}
+                                                            </Form.Control>
+                                                        </td>
+                                                        <td>
+                                                            <Form.Control
+                                                                type='text'
+                                                                placeholder='Link'
+                                                                defaultValue={link.link}
+                                                                onChange={(e) => {
+                                                                    // Updates the link in the links array
+                                                                    updateLink(e.target.value, link);
+                                                                }}
+                                                                maxLength={TEXT_INPUT_LIMIT.EXTERNAL_LINK}
+                                                            />
+                                                        </td>
+                                                        <td>
+                                                            <NavDropdown title='Controls' id='nav-dropdown'>
+                                                                <Dropdown.Item
+                                                                    class='deleteButton'
+                                                                    onClick={() => {
+                                                                        // Deletes the row from the table
+                                                                        deleteRow(link);
+                                                                    }}
+                                                                >
+                                                                    Delete
+                                                                </Dropdown.Item>
+                                                            </NavDropdown>
+                                                        </td>
+                                                    </tr>
+                                                ))}
                                         </tbody>
                                     </Table>
                                 </Form.Group>
@@ -927,51 +957,51 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                         </thead>
                                         <tbody id='formLinksBody'>
                                             {links &&
-                        links.map((link) => (
-                            <tr
-                            // Matches the key to the current index of the link in links
-                                key={links.indexOf(link)}
-                            >
-                                <td>
-                                    <Form.Control
-                                        as='select'
-                                        onChange={(e) => {
-                                            // Updates the link type in the links array
-                                            updateLinkType(e.target.value, link);
-                                        }}
-                                        defaultValue={link.linkType}
-                                    >
-                                        {LinkTypes.map((linkType) => (
-                                            <option>{linkType}</option>
-                                        ))}
-                                    </Form.Control>
-                                </td>
-                                <td>
-                                    <Form.Control
-                                        type='text'
-                                        placeholder='Link'
-                                        defaultValue={link.link}
-                                        onChange={(e) => {
-                                            // Updates the link in the links array
-                                            updateLink(e.target.value, link);
-                                        }}
-                                    />
-                                </td>
-                                <td>
-                                    <NavDropdown title='Controls' id='nav-dropdown'>
-                                        <Dropdown.Item
-                                            class='deleteButton'
-                                            onClick={() => {
-                                                // Deletes the row from the table
-                                                deleteRow(link);
-                                            }}
-                                        >
-                                  Delete
-                                        </Dropdown.Item>
-                                    </NavDropdown>
-                                </td>
-                            </tr>
-                        ))}
+                                                links.map((link) => (
+                                                    <tr
+                                                        // Matches the key to the current index of the link in links
+                                                        key={links.indexOf(link)}
+                                                    >
+                                                        <td>
+                                                            <Form.Control
+                                                                as='select'
+                                                                onChange={(e) => {
+                                                                    // Updates the link type in the links array
+                                                                    updateLinkType(e.target.value, link);
+                                                                }}
+                                                                defaultValue={link.linkType}
+                                                            >
+                                                                {LinkTypes.map((linkType) => (
+                                                                    <option>{linkType}</option>
+                                                                ))}
+                                                            </Form.Control>
+                                                        </td>
+                                                        <td>
+                                                            <Form.Control
+                                                                type='text'
+                                                                placeholder='Link'
+                                                                defaultValue={link.link}
+                                                                onChange={(e) => {
+                                                                    // Updates the link in the links array
+                                                                    updateLink(e.target.value, link);
+                                                                }}
+                                                            />
+                                                        </td>
+                                                        <td>
+                                                            <NavDropdown title='Controls' id='nav-dropdown'>
+                                                                <Dropdown.Item
+                                                                    class='deleteButton'
+                                                                    onClick={() => {
+                                                                        // Deletes the row from the table
+                                                                        deleteRow(link);
+                                                                    }}
+                                                                >
+                                                                    Delete
+                                                                </Dropdown.Item>
+                                                            </NavDropdown>
+                                                        </td>
+                                                    </tr>
+                                                ))}
                                         </tbody>
                                     </Table>
                                 </Form.Group>
@@ -1560,7 +1590,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                             </ListGroupItem>
                                             <ListGroupItem>
                                                 <strong>Email: </strong>
-                                            </ListGroupItem>  
+                                            </ListGroupItem>
                                             <ListGroupItem>
                                                 <strong>User Type: </strong>
                                             </ListGroupItem>
@@ -1622,12 +1652,11 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                         type={'home'}
                         segmentData={{
                             segmentId: userSegments?.homeSegmentId ? userSegments?.homeSegmentId : 0,
-                            displayFName: displayFName? displayFName: UNKNOWN,
-                            displayLName: displayLName? displayLName: UNKNOWN,
+                            segmentHandle: userSegments?.homeSegHandle ?? '',
                             street: streetAddress ? streetAddress : UNKNOWN,
-                            city: userSegments?.homeSegmentName ? userSegments?.homeSegmentName: NOT_SELECTED,
+                            city: userSegments?.homeSegmentName ? userSegments?.homeSegmentName : NOT_SELECTED,
                             postalCode: postalCode ? postalCode : UNKNOWN,
-                            neighborhood: userSegments?.homeSubSegmentName? userSegments?.homeSubSegmentName: NOT_SELECTED,
+                            neighborhood: userSegments?.homeSubSegmentName ? userSegments?.homeSubSegmentName : NOT_SELECTED,
                         }}
                         geoData={{
                             lat: geoData!.lat ? geoData!.lat : 0,
@@ -1648,8 +1677,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                             type={'work'}
                             segmentData={{
                                 segmentId: userSegments?.workSegmentId ? userSegments?.workSegmentId : 0,
-                                displayFName: workData!.displayFName ? workData!.displayFName : UNKNOWN,
-                                displayLName: workData!.displayLName ? workData!.displayLName : UNKNOWN,
+                                segmentHandle: userSegments?.workSegHandle ?? '',
                                 street: workData!.streetAddress ? workData!.streetAddress : UNKNOWN,
                                 city: userSegments?.workSegmentName ? userSegments?.workSegmentName : NOT_SELECTED,
                                 postalCode: workData!.postalCode ? workData!.postalCode : UNKNOWN,
@@ -1666,7 +1694,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                             updateFunction={updateWorkSegmentDetail}
                         ></SegmentInfo>
                     ) : (
-                        <Button variant='primary' onClick={() => {setShowWorkSegment(true); setEditWorkSegment(true); }}>Add Work Segment</Button>
+                        <Button variant='primary' onClick={() => { setShowWorkSegment(true); setEditWorkSegment(true); }}>Add Work Segment</Button>
                     )}
                 </Row>
                 <Row className='mt-3'>
@@ -1678,8 +1706,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                             type={'school'}
                             segmentData={{
                                 segmentId: userSegments?.schoolSegmentId ? userSegments?.schoolSegmentId : 0,
-                                displayFName: schoolData!.displayFName ? schoolData!.displayFName : UNKNOWN,
-                                displayLName: schoolData!.displayLName ? schoolData!.displayLName : UNKNOWN,
+                                segmentHandle: userSegments?.schoolSegHandle ?? '',
                                 street: schoolData!.streetAddress ? schoolData!.streetAddress : UNKNOWN,
                                 city: userSegments?.schoolSegmentName ? userSegments?.schoolSegmentName : NOT_SELECTED,
                                 postalCode: schoolData!.postalCode ? schoolData!.postalCode : UNKNOWN,
@@ -1696,7 +1723,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                             updateFunction={updateSchoolSegmentDetail}
                         ></SegmentInfo>
                     ) : (
-                        <Button variant='primary' onClick={() => {setShowSchoolSegment(true); setEditSchoolSegment(true); }}>Add School Segment</Button>
+                        <Button variant='primary' onClick={() => { setShowSchoolSegment(true); setEditSchoolSegment(true); }}>Add School Segment</Button>
                     )}
                 </Row>
             </Container>

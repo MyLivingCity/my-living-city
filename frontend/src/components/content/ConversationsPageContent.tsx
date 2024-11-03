@@ -1,4 +1,4 @@
-import React, {  } from 'react';
+import React, { } from 'react';
 import { Col, Container, Carousel } from 'react-bootstrap';
 import { IIdeaWithAggregations } from '../../lib/types/data/idea.type';
 import { IProposalWithAggregations } from 'src/lib/types/data/proposal.type';
@@ -7,8 +7,8 @@ import ProposalTile from '../tiles/ProposalTile';
 import PlaceholderIdeaTile from '../tiles/PlaceholderIdeaTile';
 
 interface ConversationsPageContentProps {
-  ideas: IIdeaWithAggregations[] | undefined;
-  proposals: IProposalWithAggregations[] | undefined;
+    ideas: IIdeaWithAggregations[] | undefined;
+    proposals: IProposalWithAggregations[] | undefined;
 }
 
 const ConversationsPageContent: React.FC<ConversationsPageContentProps> = ({
@@ -25,15 +25,25 @@ const ConversationsPageContent: React.FC<ConversationsPageContentProps> = ({
         <Container className='conversations-page-content'>
             <style>
                 {`
+        .carousel-item {
+        position: relative; /* Ensure controls are positioned within each item */
+        }
         .carousel-control-next,
         .carousel-control-prev {
+            position: absolute;
+            top: 50%; /* Center vertically within the carousel slide */
+            transform: translateY(-50%); /* Adjust for centering */
+            width: auto;
             filter: invert(100%);
         }
+
         .carousel-control-next {
-            right: -8rem;
+            right: 0rem; /* Adjust as needed */
         }
+
         .carousel-control-prev {
-            left: -8rem;
+            left: 0rem; /* Adjust as needed */
+            
         }
         .carousel-item.active, .carousel-item-next, .carousel-item-prev {
           display: flex;
@@ -45,32 +55,37 @@ const ConversationsPageContent: React.FC<ConversationsPageContentProps> = ({
         }
         .carousel-indicators {
           display: none;
+        }
+        .carousel-inner {
+            padding: 1.5rem;
+            }
         `}
             </style>
 
             <h3 style={{ paddingTop: '1rem' }}>Proposals</h3>
             <hr />
-            { proposals && proposals.length > 0 ? (<Carousel controls={true} interval={null} slide={true} fade={false}>
+            {proposals && proposals.length > 0 ? (<Carousel controls={true} interval={null} slide={true} fade={false}>
                 {[...Array(proposalTotalPages)].map((x, i) => (
                     <Carousel.Item key={i} >
                         {filteredIdeasOfProposals && proposals
                             ? filteredIdeasOfProposals.slice(i * 6, i * 6 + 6).map((idea) => {
-                                return idea && 
-                (
-                    <Col
-                        key={idea.id}
-                        md={6}
-                        lg={4}
-                        className='pt-3 align-items-stretch'
-                    >
-                        <ProposalTile
-                            proposalData={{id: proposals!.filter(obj => { if (obj.ideaId == idea.id) return obj;})[0]?.id, ideaId: idea.id, idea}}
-                            showFooter={true}
-                            postType={idea.state === 'IDEA' ? 'Idea' : 'Proposal'}
-                      
-                        />
-                    </Col>
-                ); })
+                                return idea &&
+                                    (
+                                        <Col
+                                            key={idea.id}
+                                            md={6}
+                                            lg={4}
+                                            className='pt-3 align-items-stretch'
+                                        >
+                                            <ProposalTile
+                                                proposalData={{ id: proposals!.filter(obj => { if (obj.ideaId == idea.id) return obj; })[0]?.id, ideaId: idea.id, idea }}
+                                                showFooter={true}
+                                                postType={idea.state === 'IDEA' ? 'Idea' : 'Proposal'}
+
+                                            />
+                                        </Col>
+                                    );
+                            })
                             : [...Array(12)].map((x, i) => (
                                 <Col
                                     key={i}
@@ -83,7 +98,7 @@ const ConversationsPageContent: React.FC<ConversationsPageContentProps> = ({
                             ))}
                     </Carousel.Item>
                 ))}
-            </Carousel>) : <div>Sorry, there are no proposals submitted yet.</div> }
+            </Carousel>) : <div>Sorry, there are no proposals submitted yet.</div>}
             <br></br>
             <h3 style={{ paddingTop: '1rem' }}>Ideas</h3>
             <hr />
@@ -92,7 +107,7 @@ const ConversationsPageContent: React.FC<ConversationsPageContentProps> = ({
                     <Carousel.Item key={i} id='slick'>
                         {filteredIdeasWithNoProposals
                             ? filteredIdeasWithNoProposals.slice(i * 6, i * 6 + 6).map((idea) => {
-                                return idea && idea.active ? 
+                                return idea && idea.active ?
                                     (
                                         <Col
                                             key={idea.id}
@@ -106,7 +121,8 @@ const ConversationsPageContent: React.FC<ConversationsPageContentProps> = ({
                                                 postType={idea.state === 'IDEA' ? 'Idea' : 'Proposal'}
                                             />
                                         </Col>
-                                    ) : null;})
+                                    ) : null;
+                            })
                             : [...Array(12)].map((x, i) => (
                                 <Col
                                     key={i}

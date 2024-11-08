@@ -6,6 +6,8 @@ const { argon2Hash, argon2ConfirmHash } = require('../lib/utilityFunctions');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const nodemailer = require('nodemailer');
 const { getSegmentInfo } = require('../helpers/userSegmentHelpers');
+const { google } = require('googleapis');
+const OAuth2 = google.auth.OAuth2;
 
 passport.use(
   "signup",
@@ -278,15 +280,15 @@ passport.use(
         };
 
         if (parsedUser.verified === false) {
-          sendEmailVerification(parsedUser);
-          done(null, false, {
+          await sendEmailVerification(parsedUser);
+          return done(null, false, {
             message:
               "User is not verified. Please check your email for verification link.",
           });
         }
 
         if (parsedUser.status === false) {
-          done(null, false, { message: "Account is deactivated. Please contact Admin for assitance" })
+          return done(null, false, { message: "Account is deactivated. Please contact Admin for assitance" })
         }
 
         return done(null, parsedUser, { message: "Logged in succesfully" });
@@ -349,27 +351,44 @@ passport.use(
 )
 
 const sendEmailVerification = async (user) => {
-  transporter = nodemailer.createTransport({
-    host: 'smtp-mail.outlook.com',
-    port: 587,
+  // Set up OAuth2 client with credentials from environment variables
+  const oauth2Client = new OAuth2(
+    process.env.GOOGLE_CLIENT_ID,
+    process.env.GOOGLE_CLIENT_SECRET,
+    "https://developers.google.com/oauthplayground" // redirect URI for OAuth2
+  );
+
+  oauth2Client.setCredentials({
+    refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
+  });
+
+  // Get a fresh access token
+  const accessToken = await oauth2Client.getAccessToken();
+
+  // Configure Nodemailer with OAuth2 for Gmail
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
     auth: {
+      type: 'OAuth2',
       user: process.env.EMAIL,
-      pass: process.env.EMAIL_PASSWORD
-    }
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
+      accessToken: accessToken.token,
+    },
   });
-  let token = Math.random().toString(36).substr(2, 6);
-  token = token.toUpperCase();
+
+  // Generate a unique verification token for the user
+  let token = Math.random().toString(36).substr(2, 6).toUpperCase();
   await prisma.user.update({
-    where: {
-      id: user.id,
-    },
-    data: {
-      verifiedToken: token,
-    },
+    where: { id: user.id },
+    data: { verifiedToken: token },
   });
+
+  // Create the verification link
   const appUrl = process.env.APP_URL || 'http://localhost:3000';
-  var url = process.env.APP_URL || 'http://localhost:3001';
-  url += `/emailVerification/checkVerificationCode/${user.id}/${token}`;
+  const url = `${appUrl}/emailVerification/checkVerificationCode/${user.id}/${token}`;
+
   const mailOptions = {
     from: 'MyLivingCity Email Verification<' + process.env.EMAIL + '>', // sender address
     to: user.email, // list of receivers

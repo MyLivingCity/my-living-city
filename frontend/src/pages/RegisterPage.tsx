@@ -1,4 +1,4 @@
-import RegisterPageContent from '../components/content/RegisterPageContent';
+import RegisterPageContent from '../components/content/RegisterPageContent3';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import useUserRoles from '../hooks/useUserRoles';
 // import { UserProfileContext } from '../contexts/UserProfile.Context';

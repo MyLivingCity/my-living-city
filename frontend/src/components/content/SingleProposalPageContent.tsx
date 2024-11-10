@@ -728,78 +728,63 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
 
                                     <br />
-                                    <table>
-
-                                        <tr>
-                                            <td className='h5'><strong>Description:</strong></td>
-                                            <td className='lead px-1'>{descriptionText}</td>
-                                        </tr>
-                                        <br />
-                                        {proposorText?.trim() ?
+                                    <table className='info-table'>
+                                        <tbody>
                                             <tr>
-                                                <td className='px-4'><strong>Proposer Info:</strong></td>
-                                                <td className='px-4'>{proposorText}</td>
+                                                <td className='h5'><strong>Description:</strong></td>
+                                                <td className='lead px-1'>{descriptionText}</td>
                                             </tr>
-                                            : null
-                                        }
-                                        {proposorText?.trim() ? <br /> : null}
-                                        {benefitText?.trim() ?
-                                            <tr>
-                                                <td className='px-4'><strong>Community Benefits:</strong></td>
-                                                <td className='px-4'>{benefitText}</td>
-                                            </tr>
-                                            : null
-                                        }
-                                        {benefitText?.trim() ? <br /> : null}
-                                        {proposalText?.trim() ?
-                                            <tr>
-                                                <td className='px-4'><strong>Requirements:</strong></td>
-                                                <td className='px-4'>{proposalText}</td>
-                                            </tr>
-                                            : null
-                                        }
-                                        {proposalText?.trim() ? <br /> : null}
-                                        {communityImpact?.trim() ?
-                                            <tr>
-                                                <td className='px-4'><strong>Community and Place:</strong></td>
-                                                <td className='px-4'>{communityImpact}</td>
-                                            </tr>
-                                            : null
-                                        }
-                                        {communityImpact?.trim() ? <br /> : null}
-                                        {natureImpact?.trim() ?
-                                            <tr>
-                                                <td className='px-4'><strong>Nature and Food Security:</strong></td>
-                                                <td className='px-4'>{natureImpact}</td>
-                                            </tr>
-                                            : null
-                                        }
-                                        {natureImpact?.trim() ? <br /> : null}
-                                        {artsImpact?.trim() ?
-                                            <tr>
-                                                <td className='px-4'><strong>Arts, Culture, and Education:</strong></td>
-                                                <td className='px-4'>{artsImpact}</td>
-                                            </tr>
-                                            : null
-                                        }
-                                        {artsImpact?.trim() ? <br /> : null}
-                                        {energyImpact?.trim() ?
-                                            <tr>
-                                                <td className='px-4'><strong>Water and Energy:</strong></td>
-                                                <td className='px-4'>{energyImpact}</td>
-                                            </tr>
-                                            : null
-                                        }
-                                        {energyImpact?.trim() ? <br /> : null}
-                                        {manufacturingImpact?.trim() ?
-                                            <tr>
-                                                <td className='px-4'><strong>Manufacturing and Waste:</strong></td>
-                                                <td className='px-4'>{manufacturingImpact}</td>
-                                            </tr>
-                                            : null
-                                        }
-                                        {manufacturingImpact?.trim() ? <br /> : null}
+                                            {proposorText?.trim() ? (
+                                                <tr>
+                                                    <td className='h5'><strong>Proposer Info:</strong></td>
+                                                    <td className='lead px-1'>{proposorText}</td>
+                                                </tr>
+                                            ) : null}
+                                            {benefitText?.trim() ? (
+                                                <tr>
+                                                    <td className='h5'><strong>Community Benefits:</strong></td>
+                                                    <td className='lead px-1'>{benefitText}</td>
+                                                </tr>
+                                            ) : null}
+                                            {proposalText?.trim() ? (
+                                                <tr>
+                                                    <td className='h5'><strong>Requirements:</strong></td>
+                                                    <td className='lead px-1'>{proposalText}</td>
+                                                </tr>
+                                            ) : null}
+                                            {communityImpact?.trim() ? (
+                                                <tr>
+                                                    <td className='h5'><strong>Community and Place:</strong></td>
+                                                    <td className='lead px-1'>{communityImpact}</td>
+                                                </tr>
+                                            ) : null}
+                                            {natureImpact?.trim() ? (
+                                                <tr>
+                                                    <td className='h5'><strong>Nature and Food Security:</strong></td>
+                                                    <td className='lead px-1'>{natureImpact}</td>
+                                                </tr>
+                                            ) : null}
+                                            {artsImpact?.trim() ? (
+                                                <tr>
+                                                    <td className='h5'><strong>Arts, Culture, and Education:</strong></td>
+                                                    <td className='lead px-1'>{artsImpact}</td>
+                                                </tr>
+                                            ) : null}
+                                            {energyImpact?.trim() ? (
+                                                <tr>
+                                                    <td className='h5'><strong>Water and Energy:</strong></td>
+                                                    <td className='lead px-1'>{energyImpact}</td>
+                                                </tr>
+                                            ) : null}
+                                            {manufacturingImpact?.trim() ? (
+                                                <tr>
+                                                    <td className='h5'><strong>Manufacturing and Waste:</strong></td>
+                                                    <td className='lead px-1'>{manufacturingImpact}</td>
+                                                </tr>
+                                            ) : null}
+                                        </tbody>
                                     </table>
+
                                 </Col>
                             </Row>
                         </Card.Body>

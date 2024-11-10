@@ -1,3 +1,35 @@
 // .single-idea-content {
 //   margin-top: 2rem;
 // }
+
+.info-container {
+    display: flex;
+    margin: 8px 0;
+    align-items: center;
+}
+
+.title {
+    font-weight: bold;
+    text-align: left;
+    margin: 0;
+    /* Ensure there's no default margin that could affect alignment */
+}
+
+.value {
+    text-align: left;
+    /* Ensure both elements have the same text alignment */
+    margin: 0;
+    /* Ensure there's no default margin that could affect alignment */
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .info-container {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    .value {
+        text-align: right;
+    }
+}

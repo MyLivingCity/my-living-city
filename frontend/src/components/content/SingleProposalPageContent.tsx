@@ -672,47 +672,60 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                         <Card.Body>
                             <Row>
                                 <Col>
-                                    <h4 className='h5'>Category: {capitalizeString(catTitle)}</h4>
+                                    <div className='info-container'>
+                                        <h5 className='title'>Category:&nbsp;</h5>
+                                        <h5 className='value'>{capitalizeString(catTitle)}</h5>
+                                    </div>
                                     {/* <h4 className='h5'>Posted by: {author?.fname}@{author?.address?.streetAddress}</h4> */}
                                     {/* <h4 className='h5'>As: {userType}</h4> */}
                                     {superSegment ? (
-                                        <h4 className='h5'>
-                                            District:{' '}
-                                            {superSegment
-                                                ? capitalizeFirstLetterEachWord(superSegment.name)
-                                                : 'N/A'}
-                                        </h4>
+                                        <div className='info-container'>
+                                            <h5 className='title'>District:&nbsp;</h5>
+                                            <h5 className='value'>
+                                                {superSegment ? capitalizeFirstLetterEachWord(superSegment.name) : 'N/A'}
+                                            </h5>
+                                        </div>
                                     ) : null}
+
                                     {segment ? (
-                                        <h4 className='h5'>
-                                            Municipality:{' '}
-                                            {getSegmentName(segment.name)}
-                                        </h4>
+                                        <div className='info-container'>
+                                            <h5 className='title'>Municipality:&nbsp;</h5>
+                                            <h5 className='value'>{getSegmentName(segment.name)}</h5>
+                                        </div>
                                     ) : null}
+
                                     {subSegment ? (
-                                        <h4 className='h5'>
-                                            Neighborhood:{' '}
-                                            {subSegment
-                                                ? capitalizeFirstLetterEachWord(subSegment.name)
-                                                : 'N/A'}
-                                        </h4>
+                                        <div className='info-container'>
+                                            <h5 className='title'>Neighborhood:&nbsp;</h5>
+                                            <h5 className='value'>
+                                                {subSegment ? capitalizeFirstLetterEachWord(subSegment.name) : 'N/A'}
+                                            </h5>
+                                        </div>
                                     ) : null}
+
                                     {location ? (
-                                        <h4 className='h5'>Location: {location}</h4>
+                                        <div className='info-container'>
+                                            <h5 className='title'>Location:&nbsp;</h5>
+                                            <h5 className='value'>{location}</h5>
+                                        </div>
                                     ) : null}
+
                                     {!!ideaData.champion && (
-                                        <h4 className='h5'>
-                                            Championed By: {ideaData?.champion?.fname}@
-                                            {ideaData?.champion?.address?.streetAddress}
-                                        </h4>
+                                        <div className='info-container'>
+                                            <h5 className='title'>Championed By:&nbsp;</h5>
+                                            <h5 className='value'>
+                                                {ideaData?.champion?.fname}@{ideaData?.champion?.address?.streetAddress}
+                                            </h5>
+                                        </div>
                                     )}
-                                    {/* <h5 className='h5'>Created: {parsedDate.toLocaleDateString()}</h5> */}
 
                                     {state ? (
-                                        <h4 className='h5'>
-                                            Status: <span>{state}</span>
-                                        </h4>
+                                        <div className='info-container'>
+                                            <h5 className='title'>Status:&nbsp;</h5>
+                                            <h5 className='value'><span>{state}</span></h5>
+                                        </div>
                                     ) : null}
+
 
                                     <br />
                                     <table>

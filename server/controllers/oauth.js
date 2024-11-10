@@ -8,7 +8,7 @@ const oAuth2Client = new google.auth.OAuth2(
   process.env.REDIRECT_URI
 );
 
-// Step 1: Initiate Google OAuth Flow
+// Initiate Google OAuth Flow: can generate a new refresh token when needed
 router.get('/auth/google', (req, res) => {
   const authUrl = oAuth2Client.generateAuthUrl({
     access_type: 'offline',
@@ -17,12 +17,11 @@ router.get('/auth/google', (req, res) => {
   res.redirect(authUrl);
 });
 
-// Step 2: Handle Google Callback
+/*  Exchange authorization code for access token to login to email verification account */
 router.get('/auth/callback', async (req, res) => {
   const code = req.query.code;
   
   try {
-    // Exchange authorization code for access token 
     const { tokens } = await oAuth2Client.getToken(code);
     oAuth2Client.setCredentials(tokens);
 

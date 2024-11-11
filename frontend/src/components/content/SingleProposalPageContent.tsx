@@ -821,49 +821,28 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                     {/* Share functionality */}
 
                     <Col sm={12}>
-                        <Card.Footer className='mt-1 d-flex justify-content-between'>
-                            <div>Posted: {parsedDate.toLocaleDateString()}</div>
-                            <div>
-                                <FacebookShareButton
-                                    className='mx-2'
-                                    url={shareUrl}
-                                    quote={shareDescription}
-                                    hashtag={shareTitle}
-                                >
+                        <Card.Footer className='footer mt-1 d-flex justify-content-between align-items-center'>
+                            <div className='footer-posted'>Posted: {parsedDate.toLocaleDateString()}</div>
+                            <div className='footer-icons'>
+                                <FacebookShareButton className='mx-2' url={shareUrl} quote={shareDescription} hashtag={shareTitle}>
                                     <FacebookIcon size={32} round />
                                 </FacebookShareButton>
-                                <TwitterShareButton
-                                    className='mx-2'
-                                    url={shareUrl}
-                                    title={shareTitle + '\n' + shareDescription}
-                                >
+                                <TwitterShareButton className='mx-2' url={shareUrl} title={shareTitle + '\n' + shareDescription}>
                                     <TwitterIcon size={32} round />
                                 </TwitterShareButton>
-                                <WhatsappShareButton
-                                    className='mx-2'
-                                    url={shareUrl}
-                                    title={shareTitle + '\n' + shareDescription}
-                                >
+                                <WhatsappShareButton className='mx-2' url={shareUrl} title={shareTitle + '\n' + shareDescription}>
                                     <WhatsappIcon size={32} round />
                                 </WhatsappShareButton>
-                                <LineShareButton
-                                    className='mx-2'
-                                    url={shareUrl}
-                                    title={shareTitle + '\n' + shareDescription}
-                                >
+                                <LineShareButton className='mx-2' url={shareUrl} title={shareTitle + '\n' + shareDescription}>
                                     <LineIcon size={32} round />
                                 </LineShareButton>
-                                <RedditShareButton
-                                    className='mx-2'
-                                    url={shareUrl}
-                                    title={shareTitle + '\n' + shareDescription + '\n' + shareUrl}
-                                >
+                                <RedditShareButton className='mx-2' url={shareUrl} title={shareTitle + '\n' + shareDescription + '\n' + shareUrl}>
                                     <RedditIcon size={32} round />
                                 </RedditShareButton>
                             </div>
-                            {/* Change this logic to use a new function that grabs the alias handle according to subsegment of idea */}
-                            {getUserHandle(ideaData)}
+                            <div className='footer-handle'>{getUserHandle(ideaData)}</div>
                         </Card.Footer>
+
                     </Col>
                 </Row>
             </Card>

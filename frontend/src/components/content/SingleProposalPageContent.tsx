@@ -67,6 +67,7 @@ import { useAllUserSegments } from 'src/hooks/userSegmentHooks';
 import { BsPeople, BsHeartHalf } from 'react-icons/bs';
 import { AiOutlineRadiusBottomright, AiOutlineStar } from 'react-icons/ai';
 import { IUser } from 'src/lib/types/data/user.type';
+import SuggestedIdeasTable from '../partials/SingleProposalContent/SuggestedIdeasTable';
 
 
 interface SingleIdeaPageContentProps {
@@ -1318,77 +1319,9 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                 </h4>
                             </div>
                         </Card.Header>
-                        <Card.Body>
+                        <Card.Body style={{padding: 0}}>
                             {suggestedIdeas.length > 0 ? (
-                                <Table style={{ margin: '0rem' }} hover>
-                                    <thead>
-                                        <tr>
-                                            <th>Author</th>
-                                            <th>Idea</th>
-                                            <th className='align-center text-center'><AiOutlineStar /></th>
-                                            <th className='align-center text-center'><BsPeople /></th>
-                                            <th className='align-center text-center'><BsHeartHalf /></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {suggestedIdeas.map((suggestion: any, index: number) => {
-
-                                            const averageRating = suggestion.ratings.reduce((sum: number, rating: any) => sum + rating.rating, 0) / suggestion.ratings.length;
-
-                                            const positiveRatings = suggestion.ratings.reduce((sum: number, rating: any) => {
-                                                if (rating.rating > 0) {
-                                                    return sum + 1;
-                                                }
-                                                return sum;
-                                            }, 0);
-
-                                            const negativeRatings = suggestion.ratings.reduce((sum: number, rating: any) => {
-                                                if (rating.rating < 0) {
-                                                    return sum - 1;
-                                                }
-                                                return sum;
-                                            }, 0);
-                                            return (
-                                                <tr key={suggestion.id}>
-                                                    <td>
-                                                        {Number(suggestion?.subSegment?.id) ? (
-                                                            Number(suggestion?.subSegment?.id) ===
-                                                                suggestion?.author?.userSegments?.homeSubSegmentId ? (
-                                                                    `${suggestion?.author?.userSegments?.homeSegHandle} As Resident`
-                                                                ) : Number(suggestion?.subSegment?.id) ===
-                                                                suggestion?.author?.userSegments?.workSubSegmentId ? (
-                                                                        suggestion?.author?.userSegments?.workSegHandle || `${suggestion?.author?.userSegments?.homeSegHandle} As Worker`
-                                                                    ) : Number(suggestion?.subSegment?.id) ===
-                                                                suggestion?.author?.userSegments?.schoolSubSegmentID ? (
-                                                                            `${suggestion?.author?.userSegments?.schoolSegHandle} As Student`
-                                                                        ) : `${suggestion?.author?.userSegments?.homeSegHandle} As Resident`
-                                                        ) : Number(suggestion?.segment?.segId) ? (
-                                                            Number(suggestion?.segment?.segId) ===
-                                                                suggestion?.author?.userSegments?.homeSegmentId ? (
-                                                                    `${suggestion?.author?.displayFName}@${suggestion?.author?.displayLName} As Resident`
-                                                                ) : Number(suggestion?.segment?.segId) ===
-                                                                Number(suggestion?.author?.userSegments?.workSegmentId) ? (
-                                                                        suggestion?.author?.userSegments?.workSegHandle || `${suggestion?.author?.userSegments?.homeSegHandle} As Worker`
-                                                                    ) : Number(suggestion?.segment?.segId) ===
-                                                                suggestion?.author?.userSegments?.schoolSegmentId ? (
-                                                                            `${suggestion?.author?.userSegments?.schoolSegHandle} As Student`
-                                                                        ) : `${suggestion?.author?.userSegments?.homeSegHandle} As Resident`
-                                                        ) : `${suggestion?.author?.userSegments?.homeSegHandle} As Resident`}
-                                                    </td>
-
-                                                    <td>
-                                                        <a href={'/ideas/' + suggestion.id}>
-                                                            {suggestion.title}
-                                                        </a>
-                                                    </td>
-                                                    <td className='align-center text-center'>{isNaN(averageRating) ? 0 : averageRating}</td>
-                                                    <td className='align-middle text-center'>{suggestion.ratings.length + suggestion.comments.length}</td>
-                                                    <td className='align-middle text-center'>{positiveRatings} / {negativeRatings}</td>
-                                                </tr>
-                                            );
-                                        })}
-                                    </tbody>
-                                </Table>
+                                <SuggestedIdeasTable suggestedIdeas={suggestedIdeas} />
                             ) : (
                                 <p style={{ margin: '0rem', textAlign: 'center' }}>
                                     No suggestions yet, be the first!

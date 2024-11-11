@@ -67,7 +67,7 @@ import { useAllUserSegments } from 'src/hooks/userSegmentHooks';
 import { BsPeople, BsHeartHalf } from 'react-icons/bs';
 import { AiOutlineRadiusBottomright, AiOutlineStar } from 'react-icons/ai';
 import { IUser } from 'src/lib/types/data/user.type';
-import SuggestedIdeasTable from '../partials/SingleProposalContent/SuggestedIdeasTable';
+import SuggestedIdeasTable from '../partials/SuggestedIdeasTable';
 
 
 interface SingleIdeaPageContentProps {

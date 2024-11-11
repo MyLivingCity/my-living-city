@@ -176,7 +176,7 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
             <Row className='justify-content-center' style={{ backgroundColor: userType === 'MUNICIPAL' ? '#f0fff0' : '' }}>
                 <Col className='mx-2' style={{ overflow: 'visible' }}>
                     <div className='mt-2'>
-                        <h3>{content}</h3>
+                        <p>{content}</p>
                     </div>
 
                     {/* fontSize 120% → 160% */}

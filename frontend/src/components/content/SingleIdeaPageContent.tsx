@@ -521,90 +521,93 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                   }
                   `}
                                     </style>
-                                    <h4 className='h5'>Category: {capitalizeString(catTitle)}</h4>
+
+                                    <div className='info-container'>
+                                        <h5 className='title'>Category:&nbsp;</h5>
+                                        <h5 className='value'>{capitalizeString(catTitle)}</h5>
+                                    </div>
                                     {/* <h4 className='h5'>Posted by: {author?.fname}@{author?.address?.streetAddress}</h4> */}
                                     {/* <h4 className='h5'>As: {userType}</h4> */}
                                     {superSegment ? (
-                                        <h4 className='h5'>
-                                            District:{' '}
-                                            {superSegment
-                                                ? capitalizeFirstLetterEachWord(superSegment.name)
-                                                : 'N/A'}
-                                        </h4>
+                                        <div className='info-container'>
+                                            <h5 className='title'>District:&nbsp;</h5>
+                                            <h5 className='value'>
+                                                {superSegment ? capitalizeFirstLetterEachWord(superSegment.name) : 'N/A'}
+                                            </h5>
+                                        </div>
                                     ) : null}
+
                                     {segment ? (
-                                        <h4 className='h5'>
-                                            Municipality:{' '}
-                                            {segment
-                                                ? capitalizeFirstLetterEachWord(segment.name)
-                                                : 'N/A'}
-                                        </h4>
+                                        <div className='info-container'>
+                                            <h5 className='title'>Municipality:&nbsp;</h5>
+                                            <h5 className='value'>{capitalizeFirstLetterEachWord(segment.name)}</h5>
+                                        </div>
                                     ) : null}
+
                                     {subSegment ? (
-                                        <h4 className='h5'>
-                                            Neighborhood:{' '}
-                                            {subSegment
-                                                ? capitalizeFirstLetterEachWord(subSegment.name)
-                                                : 'N/A'}
-                                        </h4>
+                                        <div className='info-container'>
+                                            <h5 className='title'>Neighborhood:&nbsp;</h5>
+                                            <h5 className='value'>
+                                                {subSegment ? capitalizeFirstLetterEachWord(subSegment.name) : 'N/A'}
+                                            </h5>
+                                        </div>
                                     ) : null}
+
                                     {!!ideaData.champion && (
-                                        <h4 className='h5'>
-                                            Championed By: {ideaData?.champion?.fname}@
-                                            {ideaData?.champion?.address?.streetAddress}
-                                        </h4>
+                                        <div className='info-container'>
+                                            <h5 className='title'>Championed By:&nbsp;</h5>
+                                            <h5 className='value'>
+                                                {ideaData?.champion?.fname}@{ideaData?.champion?.address?.streetAddress}
+                                            </h5>
+                                        </div>
                                     )}
-                                    {/* <h5 className='h5'>Created: {parsedDate.toLocaleDateString()}</h5> */}
-                                    <h4 className='h5'>
-                                        Status: <span>{state}</span>
-                                    </h4>
+
+                                    {state ? (
+                                        <div className='info-container'>
+                                            <h5 className='title'>Status:&nbsp;</h5>
+                                            <h5 className='value'><span>{state}</span></h5>
+                                        </div>
+                                    ) : null}
+
                                     <br />
-                                    <table>
-                                        <tr>
-                                            <td className='h5'><strong>Description: </strong></td>
-                                            <td className='lead px-1'>{description}</td>
-                                        </tr>
-                                        <br />
-                                        {communityImpact?.trim() ?
+
+                                    <table className='info-table'>
+                                        <tbody>
                                             <tr>
-                                                <td className='px-4'><strong>Community and Place: </strong></td>
-                                                <td className='px-4'>{communityImpact}</td>
+                                                <td className='h5'><strong>Description:</strong></td>
+                                                <td className='lead px-1'>{description}</td>
                                             </tr>
-                                            : null
-                                        }
-                                        {communityImpact?.trim() ? <br /> : null}
-                                        {natureImpact?.trim() ?
-                                            <tr>
-                                                <td className='px-4'><strong>Nature and Food Security: </strong></td>
-                                                <td className='px-4'>{natureImpact}</td>
-                                            </tr>
-                                            : null
-                                        }
-                                        {natureImpact?.trim() ? <br /> : null}
-                                        {artsImpact?.trim() ?
-                                            <tr>
-                                                <td className='px-4'><strong>Arts, Culture, and Education: </strong></td>
-                                                <td className='px-4'>{artsImpact}</td>
-                                            </tr>
-                                            : null
-                                        }
-                                        {artsImpact?.trim() ? <br /> : null}
-                                        {energyImpact?.trim() ?
-                                            <tr>
-                                                <td className='px-4'><strong>Water and Energy: </strong></td>
-                                                <td className='px-4'>{energyImpact}</td>
-                                            </tr>
-                                            : null
-                                        }
-                                        {energyImpact?.trim() ? <br /> : null}
-                                        {manufacturingImpact?.trim() ?
-                                            <tr>
-                                                <td className='px-4'><strong>Manufacturing and Waste: </strong></td>
-                                                <td className='px-4'>{manufacturingImpact}</td>
-                                            </tr>
-                                            : null
-                                        }
-                                        {manufacturingImpact?.trim() ? <br /> : null}
+                                            {communityImpact?.trim() ? (
+                                                <tr>
+                                                    <td className='h5'><strong>Community and Place:</strong></td>
+                                                    <td className='lead px-1'>{communityImpact}</td>
+                                                </tr>
+                                            ) : null}
+                                            {natureImpact?.trim() ? (
+                                                <tr>
+                                                    <td className='h5'><strong>Nature and Food Security:</strong></td>
+                                                    <td className='lead px-1'>{natureImpact}</td>
+                                                </tr>
+                                            ) : null}
+                                            {artsImpact?.trim() ? (
+                                                <tr>
+                                                    <td className='h5'><strong>Arts, Culture, and Education:</strong></td>
+                                                    <td className='lead px-1'>{artsImpact}</td>
+                                                </tr>
+                                            ) : null}
+                                            {energyImpact?.trim() ? (
+                                                <tr>
+                                                    <td className='h5'><strong>Water and Energy:</strong></td>
+                                                    <td className='lead px-1'>{energyImpact}</td>
+                                                </tr>
+                                            ) : null}
+                                            {manufacturingImpact?.trim() ? (
+                                                <tr>
+                                                    <td className='h5'><strong>Manufacturing and Waste:</strong></td>
+                                                    <td className='lead px-1'>{manufacturingImpact}</td>
+                                                </tr>
+                                            ) : null}
+                                        </tbody>
                                     </table>
                                 </Col>
                             </Row>
@@ -641,53 +644,34 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                     {/* Share functionality */}
 
                     <Col sm={12}>
-                        <Card.Footer className='mt-1 d-flex justify-content-between'>
-                            <div>Posted: {parsedDate.toLocaleDateString()}</div>
-                            <div>
-                                <FacebookShareButton
-                                    className='mx-2'
-                                    url={shareUrl}
-                                    quote={shareDescription}
-                                    hashtag={shareTitle}
-                                >
+                        <Card.Footer className='footer mt-1 d-flex justify-content-between align-items-center'>
+                            <div className='footer-posted'>Posted: {parsedDate.toLocaleDateString()}</div>
+                            <div className='footer-icons'>
+                                <FacebookShareButton className='mx-2' url={shareUrl} quote={shareDescription} hashtag={shareTitle}>
                                     <FacebookIcon size={32} round />
                                 </FacebookShareButton>
-                                <TwitterShareButton
-                                    className='mx-2'
-                                    url={shareUrl}
-                                    title={shareTitle + '\n' + shareDescription}
-                                >
+                                <TwitterShareButton className='mx-2' url={shareUrl} title={shareTitle + '\n' + shareDescription}>
                                     <TwitterIcon size={32} round />
                                 </TwitterShareButton>
-                                <WhatsappShareButton
-                                    className='mx-2'
-                                    url={shareUrl}
-                                    title={shareTitle + '\n' + shareDescription}
-                                >
+                                <WhatsappShareButton className='mx-2' url={shareUrl} title={shareTitle + '\n' + shareDescription}>
                                     <WhatsappIcon size={32} round />
                                 </WhatsappShareButton>
-                                <LineShareButton
-                                    className='mx-2'
-                                    url={shareUrl}
-                                    title={shareTitle + '\n' + shareDescription}
-                                >
+                                <LineShareButton className='mx-2' url={shareUrl} title={shareTitle + '\n' + shareDescription}>
                                     <LineIcon size={32} round />
                                 </LineShareButton>
-                                <RedditShareButton
-                                    className='mx-2'
-                                    url={shareUrl}
-                                    title={shareTitle + '\n' + shareDescription + '\n' + shareUrl}
-                                >
+                                <RedditShareButton className='mx-2' url={shareUrl} title={shareTitle + '\n' + shareDescription + '\n' + shareUrl}>
                                     <RedditIcon size={32} round />
                                 </RedditShareButton>
                             </div>
-                            {author?.userType === 'RESIDENTIAL' ?
-                                author?.displayFName ?
-                                    <div>{author?.displayFName}@{author?.displayLName} as {userType}</div> :
-                                    <div>{author?.fname}@{author?.address?.streetAddress} as {userType}</div>
-                                :
-                                <div>{author?.organizationName}@{author?.address?.streetAddress}</div>
-                            }
+                            <div className='footer-handle'>
+                                {author?.userType === 'RESIDENTIAL' ?
+                                    author?.displayFName ?
+                                        <div>{author?.displayFName}@{author?.displayLName} as {userType}</div> :
+                                        <div>{author?.fname}@{author?.address?.streetAddress} as {userType}</div>
+                                    :
+                                    <div>{author?.organizationName}@{author?.address?.streetAddress}</div>
+                                }
+                            </div>
                         </Card.Footer>
                     </Col>
                 </Row>

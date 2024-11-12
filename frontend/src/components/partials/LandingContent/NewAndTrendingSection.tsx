@@ -267,15 +267,25 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
         <Container className='system' id='hanging-icons'>
             <style>
                 {`
+        .carousel-item {
+        position: relative; /* Ensure controls are positioned within each item */
+        }
         .carousel-control-next,
         .carousel-control-prev {
+            position: absolute;
+            top: 50%; /* Center vertically within the carousel slide */
+            transform: translateY(-50%); /* Adjust for centering */
+            width: auto;
             filter: invert(100%);
         }
+
         .carousel-control-next {
-            right: -8rem;
+            right: 0rem; /* Adjust as needed */
         }
+
         .carousel-control-prev {
-            left: -8rem;
+            left: 0rem; /* Adjust as needed */
+            
         }
         .carousel-item.active, .carousel-item-next, .carousel-item-prev {
           display: flex;
@@ -287,6 +297,10 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
         }
         .carousel-indicators {
           display: none;
+        }
+        .carousel-inner {
+            padding: 1.5rem;
+            }
         `}
             </style>
 

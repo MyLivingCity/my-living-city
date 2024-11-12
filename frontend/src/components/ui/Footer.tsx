@@ -9,6 +9,7 @@ export default function Footer() {
             {/* Mobile View <= 768px */}
             <Row className='d-md-none'>
                 <AdsSectionPage />
+                
             </Row>
         </div>
     );

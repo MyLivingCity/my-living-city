@@ -15,16 +15,16 @@ import LoadingSpinner from 'src/components/ui/LoadingSpinner';
 import ErrorMessage from 'src/components/ui/ErrorMessage';
 
 interface IIdeaWithAggregationsWithNew extends IIdeaWithAggregations {
-  isNew?: boolean;
+    isNew?: boolean;
 }
 
 interface NewAndTrendingProps {
-  topIdeas: IIdeaWithAggregationsWithNew[];
-  postType?: string;
-  isDashboard?: boolean;
-  showCustomFilter?: boolean;
-  isLoading?: boolean;
-  isError?: boolean;
+    topIdeas: IIdeaWithAggregationsWithNew[];
+    postType?: string;
+    isDashboard?: boolean;
+    showCustomFilter?: boolean;
+    isLoading?: boolean;
+    isError?: boolean;
 }
 
 const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
@@ -202,18 +202,18 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
         float: 'right',
     };
 
- 
+
     const isIdeaNew = (idea: IIdeaWithAggregationsWithNew): boolean => {
         const NEW_POST_DURATION = 10; // Number of days to consider a post as "new"
-  
+
         const currentTime = new Date().getTime();
         const postTime = new Date(idea.createdAt).getTime();
         const timeDiff = currentTime - postTime;
         const daysDiff = timeDiff / (1000 * 3600 * 24); // Convert milliseconds to days
-  
+
         return daysDiff <= NEW_POST_DURATION;
     };
-  
+
     const sortedIdeas = topIdeas.slice().sort((a, b) => {
         const calculateTotalScore = (idea: IIdeaWithAggregationsWithNew) => {
             const RATING_WEIGHT = 1;
@@ -221,36 +221,36 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
             const LIKES_WEIGHT = 1;
             const NEW_POST_DURATION = 10; // Number of days to consider a post as "new"
             const NEG_RATINGS_WEIGHT = 1.5;
-  
+
             const ratingScore = idea.ratingAvg || 0;
             const isNew = isIdeaNew(idea);
             const newPostScore = isNew ? NEW_POST_WEIGHT : 0;
             const likesScore = idea.posRatings || 0;
             const negRatingsScore = idea.negRatings || 0;
-  
+
             // Calculate the duration since the post creation
             const currentTime = new Date().getTime();
             const postTime = new Date(idea.createdAt).getTime();
             const timeDiff = currentTime - postTime;
             const daysDiff = timeDiff / (1000 * 3600 * 24); // Convert milliseconds to days
-  
+
             // Calculate the decay factor for the new post score based on duration
             const decayFactor = Math.max(0, 1 - daysDiff / NEW_POST_DURATION);
-  
+
             // Calculate the total score considering weights, decay factor, and negRatings
             const totalScore =
-        ratingScore * RATING_WEIGHT +
-        newPostScore * decayFactor +
-        likesScore * LIKES_WEIGHT -
-        negRatingsScore * NEG_RATINGS_WEIGHT;
-  
-      
+                ratingScore * RATING_WEIGHT +
+                newPostScore * decayFactor +
+                likesScore * LIKES_WEIGHT -
+                negRatingsScore * NEG_RATINGS_WEIGHT;
+
+
             return totalScore;
         };
-  
+
         const scoreA = calculateTotalScore(a);
         const scoreB = calculateTotalScore(b);
-  
+
         if (scoreA > scoreB) {
             return -1;
         } else if (scoreA < scoreB) {
@@ -258,24 +258,34 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
         } else {
             const dateA = new Date(a.createdAt).getTime();
             const dateB = new Date(b.createdAt).getTime();
-  
+
             return dateB - dateA;
         }
     });
-  
+
     return (
         <Container className='system' id='hanging-icons'>
             <style>
                 {`
+        .carousel-item {
+        position: relative; /* Ensure controls are positioned within each item */
+        }
         .carousel-control-next,
         .carousel-control-prev {
+            position: absolute;
+            top: 50%; /* Center vertically within the carousel slide */
+            transform: translateY(-50%); /* Adjust for centering */
+            width: auto;
             filter: invert(100%);
         }
+
         .carousel-control-next {
-            right: -8rem;
+            right: 0rem; /* Adjust as needed */
         }
+
         .carousel-control-prev {
-            left: -8rem;
+            left: 0rem; /* Adjust as needed */
+            
         }
         .carousel-item.active, .carousel-item-next, .carousel-item-prev {
           display: flex;
@@ -287,6 +297,10 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
         }
         .carousel-indicators {
           display: none;
+        }
+        .carousel-inner {
+            padding: 1.5rem;
+            }
         `}
             </style>
 
@@ -326,7 +340,7 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
                     <Carousel controls={true} interval={null} slide={true} fade={false}>
                         {[...Array(topIdeasPages)].map((x, i) => (
                             <Carousel.Item key={i}>
-          
+
                                 {sortedIdeas && allProposals ? (
                                     sortedIdeas.slice(i * 6, i * 6 + 6).map((idea) => {
                                         return doesIdeaPassFilter(idea) ? (
@@ -370,7 +384,7 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
                                         </Col>
                                     ))
                                 )}
-          
+
                             </Carousel.Item>
                         ))}
                     </Carousel>
@@ -395,32 +409,32 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
                             <Collapse in={isCategoriesOpen}>
                                 <div>
                                     {categories &&
-                    categories.map((category, i) => {
-                        return (
-                            <div key={i}>
-                                <input
-                                    defaultChecked={filterConfig.category.includes(
-                                        category.id
-                                    )}
-                                    type='checkbox'
-                                    id={category.title}
-                                    name={category.title}
-                                    value={category.id}
-                                    onClick={(e) =>
-                                        handleCategory(e, category.id)
-                                    }
-                                />
-                                <label
-                                    style={{ paddingLeft: '10px' }}
-                                    htmlFor={category.title}
-                                >
-                                    {capitalizeFirstLetterEachWord(
-                                        category.title
-                                    )}
-                                </label>
-                            </div>
-                        );
-                    })}
+                                        categories.map((category, i) => {
+                                            return (
+                                                <div key={i}>
+                                                    <input
+                                                        defaultChecked={filterConfig.category.includes(
+                                                            category.id
+                                                        )}
+                                                        type='checkbox'
+                                                        id={category.title}
+                                                        name={category.title}
+                                                        value={category.id}
+                                                        onClick={(e) =>
+                                                            handleCategory(e, category.id)
+                                                        }
+                                                    />
+                                                    <label
+                                                        style={{ paddingLeft: '10px' }}
+                                                        htmlFor={category.title}
+                                                    >
+                                                        {capitalizeFirstLetterEachWord(
+                                                            category.title
+                                                        )}
+                                                    </label>
+                                                </div>
+                                            );
+                                        })}
                                 </div>
                             </Collapse>
                             <br />
@@ -456,7 +470,7 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
                                             style={{ paddingLeft: '10px' }}
                                             htmlFor='communityAndPlace'
                                         >
-                      Community and Place
+                                            Community and Place
                                         </label>
                                     </div>
                                     <div>
@@ -476,7 +490,7 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
                                             style={{ paddingLeft: '10px' }}
                                             htmlFor='natureAndFoodSecurity'
                                         >
-                      Nature and Food Security
+                                            Nature and Food Security
                                         </label>
                                     </div>
                                     <div>
@@ -496,7 +510,7 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
                                             style={{ paddingLeft: '10px' }}
                                             htmlFor='artsCultureAndEducation'
                                         >
-                      Arts, Culture, and Education
+                                            Arts, Culture, and Education
                                         </label>
                                     </div>
                                     <div>
@@ -516,7 +530,7 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
                                             style={{ paddingLeft: '10px' }}
                                             htmlFor='waterAndEnergy'
                                         >
-                      Water and Energy
+                                            Water and Energy
                                         </label>
                                     </div>
                                     <div>
@@ -536,7 +550,7 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
                                             style={{ paddingLeft: '10px' }}
                                             htmlFor='manufacturingAndWaste'
                                         >
-                      Manufacturing and Waste
+                                            Manufacturing and Waste
                                         </label>
                                     </div>
                                 </div>
@@ -559,28 +573,28 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
                             <Collapse in={isSuperSegOpen}>
                                 <div>
                                     {allSuperSegments &&
-                    allSuperSegments.map((superSeg, i) => {
-                        return (
-                            <div key={i}>
-                                <input
-                                    defaultChecked={filterConfig.superSeg.includes(
-                                        superSeg.superSegId
-                                    )}
-                                    type='checkbox'
-                                    id={superSeg.name}
-                                    name={superSeg.name}
-                                    value={superSeg.superSegId}
-                                    onClick={(e) => handleSuperSeg(e, superSeg.superSegId)}
-                                />
-                                <label
-                                    style={{ paddingLeft: '10px' }}
-                                    htmlFor={superSeg.name}
-                                >
-                                    {capitalizeFirstLetterEachWord(superSeg.name)}
-                                </label>
-                            </div>
-                        );
-                    })}
+                                        allSuperSegments.map((superSeg, i) => {
+                                            return (
+                                                <div key={i}>
+                                                    <input
+                                                        defaultChecked={filterConfig.superSeg.includes(
+                                                            superSeg.superSegId
+                                                        )}
+                                                        type='checkbox'
+                                                        id={superSeg.name}
+                                                        name={superSeg.name}
+                                                        value={superSeg.superSegId}
+                                                        onClick={(e) => handleSuperSeg(e, superSeg.superSegId)}
+                                                    />
+                                                    <label
+                                                        style={{ paddingLeft: '10px' }}
+                                                        htmlFor={superSeg.name}
+                                                    >
+                                                        {capitalizeFirstLetterEachWord(superSeg.name)}
+                                                    </label>
+                                                </div>
+                                            );
+                                        })}
                                 </div>
                             </Collapse>
                             <br />
@@ -601,28 +615,28 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
                             <Collapse in={isSegOpen}>
                                 <div>
                                     {allSegments &&
-                    allSegments.map((seg, i) => {
-                        return (
-                            <div key={i}>
-                                <input
-                                    defaultChecked={filterConfig.seg.includes(
-                                        seg.segId
-                                    )}
-                                    type='checkbox'
-                                    id={seg.name}
-                                    name={seg.name}
-                                    value={seg.segId}
-                                    onClick={(e) => handleSeg(e, seg.segId)}
-                                />
-                                <label
-                                    style={{ paddingLeft: '10px' }}
-                                    htmlFor={seg.name}
-                                >
-                                    {capitalizeFirstLetterEachWord(seg.name)}
-                                </label>
-                            </div>
-                        );
-                    })}
+                                        allSegments.map((seg, i) => {
+                                            return (
+                                                <div key={i}>
+                                                    <input
+                                                        defaultChecked={filterConfig.seg.includes(
+                                                            seg.segId
+                                                        )}
+                                                        type='checkbox'
+                                                        id={seg.name}
+                                                        name={seg.name}
+                                                        value={seg.segId}
+                                                        onClick={(e) => handleSeg(e, seg.segId)}
+                                                    />
+                                                    <label
+                                                        style={{ paddingLeft: '10px' }}
+                                                        htmlFor={seg.name}
+                                                    >
+                                                        {capitalizeFirstLetterEachWord(seg.name)}
+                                                    </label>
+                                                </div>
+                                            );
+                                        })}
                                 </div>
                             </Collapse>
                             <br />

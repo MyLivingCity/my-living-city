@@ -110,23 +110,6 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
         setReachData(data);
     };
 
-
-    // Updates neighborhood (subsegment) dropdown when a segment is selected from the municipality(segment) dropdown
-    const handleSegmentChange = async (event: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedSegmentId = parseInt(event.target.value);
-        const selectedSegment = segments.find((seg) => seg.segId === selectedSegmentId);
-
-        if (selectedSegment) {
-            setSegment(selectedSegment);
-
-            const subsegments = await findSubsegmentsBySegmentId(selectedSegment.segId);
-            setSubSegments(subsegments);
-
-            refactorStateArray(segIds, 0, selectedSegment.segId, setSegIds);
-            refactorStateArray(subIds, 0, null, setSubIds);
-        }
-    };
-
     useEffect(() => {
         if (
             segment !== null &&
@@ -550,7 +533,6 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                         <BForm.Control
                             name='homeSegmentId'
                             as='select'
-                            // onChange={handleSegmentChange}
                             onChange={(e) => {
                                 // Find the selected segment from the dropdown and set it as the single selected segment
                                 const selectedSegment = segments.find(

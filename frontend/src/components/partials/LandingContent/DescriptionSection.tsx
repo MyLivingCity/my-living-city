@@ -8,8 +8,8 @@ interface DescriptionSectionProps {
 
 const DescriptionSection = (props: DescriptionSectionProps) => {
     return (
-        <Container className='py-5'>
-            <h2 className='pb-1 border-bottom display-6 text-left'>Share your Ideas</h2>
+        <Container style={{ paddingBottom: '1rem', paddingTop: '2rem' }}>
+            <h2 className='pb-1 border-bottom display-6 text-left' style={{ paddingInline: '1.5rem' }}>Share your Ideas</h2>
             <Row className='py-3'>
                 <Col className='text-center py-2'>
                     <a href={ROUTES.REGISTER}><FaRegUserCircle size={100} /></a>

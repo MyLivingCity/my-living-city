@@ -184,6 +184,7 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
 
     const titleStyle: CSS.Properties = {
         display: 'inline',
+        paddingInline: '2.5rem'
     };
 
     const filterButtonStyle: CSS.Properties = {

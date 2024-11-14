@@ -80,27 +80,27 @@ const CategoriesSection = (props: CategoriesSectionProps) => {
 
     return (
         <Container className='py-5'>
-            <h2 className='pb-1 border-bottom display-6 text-left' style={{ paddingInline: '2.5rem' }}>Impact Areas</h2>
+            <h2 className='pb-1 border-bottom display-6 text-left' style={{ paddingInline: '1rem' }}>Impact Areas</h2>
             <Row className='justify-content-center g-5 pt-4'>
-                <Col xs={6} sm={4} lg={2}>
+                <Col xs={4} sm={3} lg={2}>
                     <a href='javascript:void(0)'><Toastie header={CONTENT.nature.header} subHeader={CONTENT.nature.subHeader} body={CONTENT.nature.body} img='/categories/MLC-Icons-Green-01.png' /></a>
-                    <p className='text-center py-3'>Nature and Food Security</p>
+                    <p className='text-center p-2'>Nature and Food Security</p>
                 </Col>
-                <Col xs={6} sm={4} lg={2}>
+                <Col xs={4} sm={3} lg={2}>
                     <a href='javascript:void(0)'><Toastie header={CONTENT.water.header} subHeader={CONTENT.water.subHeader} body={CONTENT.water.body} img='/categories/MLC-Icons-Green-02.png' /></a>
-                    <p className='text-center py-3'>Water & Energy</p>
+                    <p className='text-center p-2'>Water & Energy</p>
                 </Col>
-                <Col xs={6} sm={4} lg={2}>
+                <Col xs={4} sm={3} lg={2}>
                     <a href='javascript:void(0)'><Toastie header={CONTENT.manufacturing.header} subHeader={CONTENT.manufacturing.subHeader} body={CONTENT.manufacturing.body} img='/categories/MLC-Icons-Green-03.png' /></a>
-                    <p className='text-center py-3'>Manufacturing & Waste</p>
+                    <p className='text-center p-2'>Manufacturing & Waste</p>
                 </Col>
-                <Col xs={6} sm={4} lg={2}>
+                <Col xs={4} sm={3} lg={2}>
                     <a href='javascript:void(0)'><Toastie header={CONTENT.arts.header} subHeader={CONTENT.arts.subHeader} body={CONTENT.arts.body} img='/categories/MLC-Icons-Green-04.png' /></a>
-                    <p className='text-center py-3'>Arts, Culture & Education</p>
+                    <p className='text-center p-2'>Arts, Culture & Education</p>
                 </Col>
-                <Col xs={6} sm={4} lg={2}>
+                <Col xs={4} sm={3} lg={2}>
                     <a href='javascript:void(0)'><Toastie header={CONTENT.community.header} subHeader={CONTENT.community.subHeader} body={CONTENT.community.body} img='/categories/MLC-Icons-Green-05.png' /></a>
-                    <p className='text-center py-3'>Community & Place</p>
+                    <p className='text-center p-2'>Community & Place</p>
                 </Col>
             </Row>
         </Container>

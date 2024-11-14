@@ -139,7 +139,7 @@ function Header() {
                 </Nav>)
             }
 
-            <Navbar className='inner-header' bg='light' expand='sm'>
+            <Navbar style={{ backgroundColor: '#549762' }} className='inner-header' expand='sm'>
                 <Navbar.Brand href='/'>
                     <img
                         src='/MyLivingCityIcon.png'

@@ -12,16 +12,20 @@ const DescriptionSection = (props: DescriptionSectionProps) => {
             <h2 className='pb-1 border-bottom display-6 text-left' style={{ paddingInline: '1.5rem' }}>Share your Ideas</h2>
             <Row className='py-3'>
                 <Col className='text-center py-2'>
-                    <a href={ROUTES.REGISTER}><FaRegUserCircle size={100} /></a>
-                    <p className='lead text-center pt-3'>Create your account</p>
+                    <a href={ROUTES.REGISTER} className='custom-button'><FaRegUserCircle size={100} className='icon' />
+                    </a>
+                    <p className='lead text-center pt-1'>Create your account</p>
                 </Col>
                 <Col className='text-center py-2'>
-                    <a href={ROUTES.SUBMIT_IDEA}><FaClipboard size={100} /></a>
-                    <p className='lead text-center pt-3'>Post your Idea</p>
+                    <a href={ROUTES.SUBMIT_IDEA} className='custom-button'><FaClipboard size={100} className='icon' />
+                    </a>
+                    <p className='lead text-center pt-1'>Post your Idea</p>
+
                 </Col>
                 <Col className='text-center py-2'>
-                    <a href={ROUTES.CONVERSATIONS}><FaComments size={100} /></a>
-                    <p className='lead text-center pt-3'>Take part in Discussion</p>
+                    <a href={ROUTES.CONVERSATIONS} className='custom-button'><FaComments size={100} className='icon' />
+                    </a>
+                    <p className='lead text-center pt-1'>Take part in Discussion</p>
                 </Col>
             </Row>
         </Container>

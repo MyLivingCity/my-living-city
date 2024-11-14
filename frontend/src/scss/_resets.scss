@@ -214,3 +214,21 @@ select {
         width: 80%;
     }
 }
+
+.custom-button {
+    display: inline-block;
+    background-color: #549762;
+    /* Dark green */
+    padding: 1rem;
+    border-radius: 0.25rem;
+    text-decoration: none;
+}
+
+.custom-button:hover {
+    background-color: #004d00;
+    /* Darker green on hover */
+}
+
+.custom-button .icon {
+    color: white;
+}

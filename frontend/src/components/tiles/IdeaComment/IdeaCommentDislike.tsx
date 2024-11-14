@@ -45,7 +45,7 @@ const IdeaCommentDislike = ({ commentData }: IdeaCommentLikeProps) => {
         // TODO: Implement logic to like a comment
         <IconContext.Provider
             value={{
-                size: '0.7rem',
+                size: '24px',
                 color: isUserAuthenticated() && checkIfUserHasDisliked() ? MLC_COLOUR_THEME.redWarning : '',
             }}
         >

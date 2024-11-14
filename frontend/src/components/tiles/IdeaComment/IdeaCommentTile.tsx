@@ -118,7 +118,7 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
                     break;
             }
         }
-        return (<span className={`name d-block font-weight-bold ${colour} !important`} style={{ fontSize: '70%' }}>{userName}</span>);
+        return (<span className={`name d-block ${colour} !important`} style={{ fontSize: '70%' }}>{userName}</span>);
     };
 
     // const flagFunc = async(ideaId: number, token: string, userId: string, ideaActive: boolean, reason: string, quarantined_at: Date) => {
@@ -176,11 +176,10 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
             <Row className='justify-content-center' style={{ backgroundColor: userType === 'MUNICIPAL' ? '#f0fff0' : '' }}>
                 <Col className='mx-2' style={{ overflow: 'visible' }}>
                     <div className='mt-2'>
-                        <h3>{content}</h3>
+                        <p>{content}</p>
                     </div>
 
-                    {/* fontSize 120% → 160% */}
-                    <div className='d-flex flex-column justify-content-start' style={{ fontSize: '170%' }}>
+                    <div className='d-flex flex-column justify-content-start' style={{ fontSize: '140%' }}>
                         {superSegmentId ? colouredUserNameHandle(superSegmentId, homeSuperSegmentId, workSuperSegmentId, schoolSuperSegmentId)
                             : <>
                                 {subSegmentId ?

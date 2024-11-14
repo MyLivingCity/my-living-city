@@ -148,6 +148,12 @@ function Header() {
                         className='d-inline-block alight-top'
                         alt='My Living City Logo'
                     />
+                    <img
+                        src='/MyLivingCity_Logo_NameOnly.png'
+                        height='30'
+                        className='d-inline-block align-top ml-2'
+                        alt='App Name'
+                    />
                 </Navbar.Brand>
                 {(user) ? (
                     <>

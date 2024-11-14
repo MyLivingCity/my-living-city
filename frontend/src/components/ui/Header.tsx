@@ -139,7 +139,7 @@ function Header() {
                 </Nav>)
             }
 
-            <Navbar style={{ backgroundColor: '#549762' }} className='inner-header' expand='sm'>
+            <Navbar style={{ backgroundColor: '#B5DB86' }} className='inner-header' expand='sm'>
                 <Navbar.Brand href='/'>
                     <img
                         src='/MyLivingCityIcon.png'
@@ -165,7 +165,7 @@ function Header() {
                 ) : (
                     <></>
                 )}
-                <Navbar.Toggle aria-controls='basic-navbar-nav' />
+                <Navbar.Toggle aria-controls='basic-navbar-nav' style={{ background: 'white' }} />
                 <Navbar.Collapse id='basic-navbar-nav'>
                     <Nav className='ml-auto'>
                         <Nav.Link href='/'>Home</Nav.Link>

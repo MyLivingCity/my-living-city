@@ -18,6 +18,7 @@ export interface IIdea {
   categoryId: number;
   segmentId: number; //
   subSegmentId?: number; //
+  superSegmentId?: number;
   title: string;
   description: string;
   proposal_role: string;

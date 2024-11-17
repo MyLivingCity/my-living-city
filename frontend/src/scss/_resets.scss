@@ -219,9 +219,15 @@ select {
     display: inline-block;
     background-color: #549762;
     /* Dark green */
-    padding: 1rem;
-    border-radius: 0.25rem;
+    padding: 1.5rem 1.5rem;
+    /* Increased horizontal padding for better proportions */
+    border-radius: 50%;
+    /* Increased for a more rounded button */
     text-decoration: none;
+    color: white;
+    /* Ensures the text is visible */
+    text-align: center;
+    /* Centers the text */
 }
 
 .custom-button:hover {
@@ -231,4 +237,17 @@ select {
 
 .custom-button .icon {
     color: white;
+    height: 50%;
+    width: 90%;
+}
+
+@media (max-width: 768px) {
+    .custom-button .icon {
+        width: 100%;
+        /* Full width on mobile screens */
+    }
+}
+
+.logo-text-white {
+    filter: brightness(0) invert(1);
 }

@@ -139,14 +139,20 @@ function Header() {
                 </Nav>)
             }
 
-            <Navbar className='inner-header' bg='light' expand='sm'>
+            <Navbar style={{ backgroundColor: '#549762' }} className='inner-header' expand='sm'>
                 <Navbar.Brand href='/'>
                     <img
-                        src='/MyLivingCityIcon.png'
+                        src='/MyLivingCityIcon-Transparent.png'
                         width='30'
                         height='30'
-                        className='d-inline-block alight-top'
+                        className='d-inline-block alight-top logo-text-white'
                         alt='My Living City Logo'
+                    />
+                    <img
+                        src='/MyLivingCity_Logo_NameOnly.png'
+                        height='30'
+                        className='d-inline-block align-top ml-2 logo-text-white'
+                        alt='App Name'
                     />
                 </Navbar.Brand>
                 {(user) ? (
@@ -165,7 +171,7 @@ function Header() {
                 ) : (
                     <></>
                 )}
-                <Navbar.Toggle aria-controls='basic-navbar-nav' />
+                <Navbar.Toggle aria-controls='basic-navbar-nav' style={{ background: 'white' }} />
                 <Navbar.Collapse id='basic-navbar-nav'>
                     <Nav className='ml-auto'>
                         <Nav.Link href='/'>Home</Nav.Link>

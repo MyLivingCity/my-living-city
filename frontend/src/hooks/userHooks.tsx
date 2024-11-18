@@ -34,7 +34,6 @@ export const useUserWithUserId = (userId: string) => {
     );
 };
 
-
 export const useUserWithJwtVerbose = ({ jwtAuthToken, shouldTrigger }: UseUserWithJwtInput) => {
     return useQuery<IUser, AxiosError>(
         'user-verbose',
@@ -48,3 +47,4 @@ export const useUserWithJwtVerbose = ({ jwtAuthToken, shouldTrigger }: UseUserWi
 
 export const useBannedUsers = (token: string | null) => {
     return useQuery<IBanUserInfo[], IFetchError>(`banned-users`, () => getAllBannedUsers());
+};

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useQuery } from 'react-query';
 import { Table, Dropdown, Container, Button, Form, NavDropdown } from 'react-bootstrap';
 import { updateUser, getUserBanHistory, removeFlagQuarantine, removePostCommentQuarantine, deleteUser, postRegisterUser, getUserWithEmail, updateUserPassword } from 'src/lib/api/userRoutes';
-import { USER_TYPES } from 'src/lib/constants';
+import { API_BASE_URL, USER_TYPES } from 'src/lib/constants';
 import { IComment } from 'src/lib/types/data/comment.type';
 import { ICommentFlag, IFlag } from 'src/lib/types/data/flag.type';
 import { IIdeaWithAggregations } from 'src/lib/types/data/idea.type';
@@ -24,16 +25,17 @@ interface UserManagementContentProps {
     token: string | null;
     user: IUser | null;
     flags: IFlag[] | undefined;
-    commentFlags: ICommentFlag[] | undefined; 
+    commentFlags: ICommentFlag[] | undefined;
     ideas: IIdeaWithAggregations[] | undefined;
     proposals: IProposalWithAggregations[] | undefined;
     comments: IComment[] | undefined;
     bans: IBanUser[] | undefined;
     segs?: ISuperSegment[] | undefined;
     subSeg?: ISegment[] | undefined;
+    userVerbose?: IUser | null;
 }
 
-export function formatBanHistory(banhistory: any){
+export function formatBanHistory(banhistory: any) {
     // iterate through ban history and format it
     let banHistory = banhistory.map((ban: any) => {
         if (ban.type === 'USER') {
@@ -47,7 +49,7 @@ export function formatBanHistory(banhistory: any){
                     <td>Banned Until: {ban.userBannedUntil}</td>
                 </tr>
             );
-        } else if (ban.type === 'COMMENT'){
+        } else if (ban.type === 'COMMENT') {
             return (
                 <tr>
                     <td>Ban Reason: {ban.reason}</td>
@@ -56,7 +58,7 @@ export function formatBanHistory(banhistory: any){
                     <td>Banned At: {ban.createdAt}</td>
                 </tr>
             );
-        } else if (ban.type === 'IDEA'){
+        } else if (ban.type === 'IDEA') {
             return (
                 <tr>
                     <td>Ban Reason: {ban.reason}</td>
@@ -66,13 +68,13 @@ export function formatBanHistory(banhistory: any){
                 </tr>
             );
         } else {
-            return<tr><td>Invalid</td></tr>;
+            return <tr><td>Invalid</td></tr>;
         }
     });
     return banHistory;
 }
 
-export const UserManagementContent: React.FC<UserManagementContentProps> = ({users, token, user, flags, commentFlags, ideas, proposals, comments, bans, segs, subSeg}) => {
+export const UserManagementContent: React.FC<UserManagementContentProps> = ({ users, token, user, flags, commentFlags, ideas, proposals, comments, bans, segs, subSeg, userVerbose }) => {
     const [filteredUsers, setFilteredUsers] = useState<IUser[]>([]);
     const [municipalFilteredUsers, setMunicipalFilteredUsers] = useState<IUser[]>([]);
     const [hideControls, setHideControls] = useState('');
@@ -121,15 +123,15 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
 
     let userFalseFlags: number[] = [];
     let userFlags: number[] = [];
-    if(users && flags){
-        for(let i = 0; i < users.length; i++){
+    if (users && flags) {
+        for (let i = 0; i < users.length; i++) {
             let counter = 0;
             let flagCounter = 0;
-            for(let z = 0; z < flags.length; z++){
-                if(users[i].id === flags[z].flaggerId && flags[z].falseFlag === true){
+            for (let z = 0; z < flags.length; z++) {
+                if (users[i].id === flags[z].flaggerId && flags[z].falseFlag === true) {
                     counter++;
                     flagCounter++;
-                }else if(users[i].id === flags[z].flaggerId){
+                } else if (users[i].id === flags[z].flaggerId) {
                     flagCounter++;
                 }
             }
@@ -137,15 +139,15 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
             userFlags.push(flagCounter);
         }
     }
-    if(users && commentFlags){
-        for(let i = 0; i < users.length; i++){
+    if (users && commentFlags) {
+        for (let i = 0; i < users.length; i++) {
             let counter = 0;
             let flagCounter = 0;
-            for(let z = 0; z < commentFlags.length; z++){
-                if(users[i].id === commentFlags[z].flaggerId && commentFlags[z].falseFlag === true){
+            for (let z = 0; z < commentFlags.length; z++) {
+                if (users[i].id === commentFlags[z].flaggerId && commentFlags[z].falseFlag === true) {
                     counter++;
                     flagCounter++;
-                } else if(users[i].id === commentFlags[z].flaggerId){
+                } else if (users[i].id === commentFlags[z].flaggerId) {
                     flagCounter++;
                 }
             }
@@ -172,7 +174,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
         const form = event.target as HTMLFormElement;
         const formData = new FormData(form);
 
-    
+
         const registerData: IRegisterInput = {
             userRoleId: undefined,
             email: formData.get('inputEmail') as string,
@@ -232,7 +234,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
             } else {
                 await postRegisterUser(registerData, null, false, null, token);
                 console.log('User registered successfully!');
-                form.reset();    
+                form.reset();
             }
         } catch (error) {
             console.error('Error registering user:', error);
@@ -241,7 +243,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
 
 
     const capitalizeString = (s: string) => {
-        if (s === null){
+        if (s === null) {
             return;
         }
         return s.charAt(0).toUpperCase() + s.slice(1);
@@ -278,7 +280,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
         );
     };
 
-    const handlePasswordChange = async ( newPassword: string) => {
+    const handlePasswordChange = async (newPassword: string) => {
         console.log(newPassword);
         if (modalUser) {
             try {
@@ -291,34 +293,47 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
     };
 
     useEffect(() => {
-        if (users) {
-            // Filter out specific user types or conditions if needed
-            const filteredUsers = users.filter(user =>
-                user.userType !== USER_TYPES.SUPER_ADMIN &&
-                user.userType !== USER_TYPES.ADMIN &&
-                user.userType !== USER_TYPES.MOD &&
-                user.userType !== USER_TYPES.SEG_MOD &&
-                user.userType !== USER_TYPES.MUNICIPAL_SEG_ADMIN &&
-                user.userType !== USER_TYPES.SEG_ADMIN
-            );
-            setFilteredUsers(filteredUsers);
-        }
+        const filterUsers = async () => {
+            if (users) {
+                // Filter out specific user types or conditions if needed
+                const filteredUsers = users.filter(user =>
+                    user.userType !== USER_TYPES.SUPER_ADMIN &&
+                    user.userType !== USER_TYPES.ADMIN &&
+                    user.userType !== USER_TYPES.MOD &&
+                    user.userType !== USER_TYPES.SEG_MOD &&
+                    user.userType !== USER_TYPES.MUNICIPAL_SEG_ADMIN &&
+                    user.userType !== USER_TYPES.SEG_ADMIN
+                );
+                console.log(filteredUsers);
+                console.log(user);
+                setFilteredUsers(filteredUsers);
+            }
+        };
+        filterUsers();
     }, [users]);
 
     useEffect(() => {
-        if (users) {
-            // Filter out specific user types or conditions if needed
-            const municipalFilteredUsers = users.filter(user => user.userType === 'MUNICIPAL');
-            setMunicipalFilteredUsers(municipalFilteredUsers);
-        }
-    }, [users]);
+        const filterMunicipalUsers = async () => {
+            if (users && userVerbose) {
+                // Filter out specific user types or conditions if needed
+                const municipalFilteredUsers = users.filter(
+                    user =>
+                        user.userType === 'MUNICIPAL' &&
+                        userVerbose.userSegments?.homeSegmentName &&
+                        user.email.toLowerCase().includes(userVerbose.userSegments?.homeSegmentName.toLowerCase())
+                );
+                setMunicipalFilteredUsers(municipalFilteredUsers);
+            }
+        };
+        filterMunicipalUsers();
+    }, [users, userVerbose]);
 
     const [validEmail, setValidEmail] = useState(true);
 
 
     if (user?.userType === USER_TYPES.MUNICIPAL_SEG_ADMIN) {
         return (
-            <Container style={{maxWidth: '100%', marginLeft: 50}}>
+            <Container style={{ maxWidth: '100%', marginLeft: 50 }}>
                 <h2 className='mb-4 mt-4'>Municipality of <UserSegPlainText email={user.email} id={user.id} token={token} /> User Management</h2>
                 <Button variant='primary' className='mb-4 mt-4' onClick={() => toggleCreateAccountForm()}>{buttonText}</Button>
                 {showCreateAccountForm && (
@@ -363,10 +378,10 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                     </thead>
                     <tbody>
                         {municipalFilteredUsers?.map((req: IUser, index: number) => (
-                            req.userType === 'MUNICIPAL' && String(<UserSegPlainText email={req.email} id={req.id} token={token} />).toLowerCase() === String(<UserSegPlainText email={user.email} id={user.id} token={token} />).toLowerCase()  ? (
+                            req.userType === 'MUNICIPAL' && String(<UserSegPlainText email={req.email} id={req.id} token={token} />).toLowerCase() === String(<UserSegPlainText email={user.email} id={user.id} token={token} />).toLowerCase() ? (
                                 <tr key={req.id}>
-                        
-                                    {req.id !== hideControls ? 
+
+                                    {req.id !== hideControls ?
                                         <>
                                             <td className='align-middle'>{req.email}</td>
                                             <td className='text-center align-middle'>{req.organizationName ? req.organizationName : 'N/A'}</td>
@@ -375,20 +390,20 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                                             <td className='text-center align-middle'>{req.userType}</td>
                                         </> :
                                         <>
-                                            <td><Form.Control type='text' defaultValue={req.email} onChange={(e)=>req.email = e.target.value}/></td>
-                                            <td><Form.Control type='text' defaultValue={req.organizationName} onChange={(e)=>req.organizationName = e.target.value}/></td>
-                                            <td><Form.Control type='text' defaultValue={req.fname} onChange={(e)=>req.fname = e.target.value}/></td>
-                                            <td><Form.Control type='text' defaultValue={req.lname} onChange={(e)=>req.lname = e.target.value}/></td>
-                                            <td className='text-center align-middle '><Button onClick={()=> setShowUserFlagsModal(true)}>Info</Button></td>
-                    
+                                            <td><Form.Control type='text' defaultValue={req.email} onChange={(e) => req.email = e.target.value} /></td>
+                                            <td><Form.Control type='text' defaultValue={req.organizationName} onChange={(e) => req.organizationName = e.target.value} /></td>
+                                            <td><Form.Control type='text' defaultValue={req.fname} onChange={(e) => req.fname = e.target.value} /></td>
+                                            <td><Form.Control type='text' defaultValue={req.lname} onChange={(e) => req.lname = e.target.value} /></td>
+                                            <td className='text-center align-middle '><Button onClick={() => setShowUserFlagsModal(true)}>Info</Button></td>
+
                                         </>
                                     }
 
                                     <td>
-                                        {req.id !== hideControls ? 
+                                        {req.id !== hideControls ?
                                             <NavDropdown title='Controls' id='nav-dropdown' className='text-center align-middle '>
                                                 <Dropdown.Item
-                                                    onClick={()=>{
+                                                    onClick={() => {
                                                         setHideControls(req.id);
                                                         setReviewed(req.reviewed);
                                                         setModalUser(req);
@@ -406,13 +421,13 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                                             </NavDropdown>
                                             : <>
                                                 <div className='d-flex justify-content-between'>
-                                                    <Button size='sm' variant='outline-danger' className='mr-2 mb-2 text-center align-middle' onClick={()=>setHideControls('')}>Cancel</Button>
+                                                    <Button size='sm' variant='outline-danger' className='mr-2 mb-2 text-center align-middle' onClick={() => setHideControls('')}>Cancel</Button>
                                                     <Button
                                                         size='sm'
                                                         className='mr-2 mb-2 text-center align-middle'
-                                                        onClick={()=>{
+                                                        onClick={() => {
                                                             setHideControls('');
-                                
+
                                                             updateUser(req, token, user);
                                                         }}>Save</Button>
                                                 </div>
@@ -421,24 +436,25 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
 
                                     </td>
                                 </tr>
-                            ): null))}
+                            ) : null))}
                     </tbody>
                 </Table>
-            
+
                 <br></br>
                 {/* <UserSegmentHandler/> */}
-                {showUserSegmentCard && <UserSegmentInfoCard email={email} id={id} token={token}/>}
+                {showUserSegmentCard && <UserSegmentInfoCard email={email} id={id} token={token} />}
             </Container>
         );
-    } else { 
+    } else {
         return (
             <Container style={{ maxWidth: '1600px', margin: 'auto' }}>
                 {showUserFlagsModal ?
-                    <UserFlagsModal show={showUserFlagsModal} setShow={setShowUserFlagsModal} user={modalUser!} flags={flags} commentFlags={commentFlags} ideas={ideas} proposals={proposals} comments={comments}/>
+
+                    <UserFlagsModal show={showUserFlagsModal} setShow={setShowUserFlagsModal} user={modalUser!} flags={flags} commentFlags={commentFlags} ideas={ideas} proposals={proposals} comments={comments} />
                     : null
                 }
                 {showUserBanModal ?
-                    <UserManagementBanModal show={showUserBanModal} setShow={setShowUserBanModal} modalUser={modalUser!} currentUser={user!} token={token}/>
+                    <UserManagementBanModal show={showUserBanModal} setShow={setShowUserBanModal} modalUser={modalUser!} currentUser={user!} token={token} />
                     : null
                 }
                 {showUserUnbanModal ?
@@ -446,7 +462,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                     : null
                 }
                 {showUserBanHistoryModal ?
-                    <UserManagementBanHistoryModal show={showUserBanHistoryModal} setShow={setShowUserBanHistoryModal} modalUser={modalUser!} currentUser={user!} token={token} data={banHistory!}/>
+                    <UserManagementBanHistoryModal show={showUserBanHistoryModal} setShow={setShowUserBanHistoryModal} modalUser={modalUser!} currentUser={user!} token={token} data={banHistory!} />
                     : null
                 }
                 {showEditUserModal ?
@@ -458,7 +474,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                         show={showChangePasswordModal}
                         onHide={() => setShowChangePasswordModal(false)}
                         onSubmit={handlePasswordChange}
-                        modalUser={modalUser} 
+                        modalUser={modalUser}
                     />
                 )}
 
@@ -468,20 +484,20 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                     {(user?.userType === USER_TYPES.SUPER_ADMIN || user?.userType === USER_TYPES.ADMIN) && (
                         <Button variant='primary' className='mb-4 mt-4' onClick={() => toggleCreateAccountForm()}>{buttonText}</Button>
                     )}
-                </div>    
+                </div>
                 {(user?.userType === USER_TYPES.SUPER_ADMIN || user?.userType === USER_TYPES.ADMIN) && showCreateAccountForm &&
                     (
                         <Form onSubmit={handleSubmit}>
                             <div className='form-row'>
                                 <div className='form-group col-md-12'>
                                     <label htmlFor='inputData'>User Type</label>
-                                    <Form.Control as='select' required name='inputType' onChange={(event) => { setSelectedUserType(event.target.value);}}>
+                                    <Form.Control as='select' required name='inputType' onChange={(event) => { setSelectedUserType(event.target.value); }}>
                                         <option value=''>Select User Type</option>
                                         {userTypes.filter(
                                             item => item === USER_TYPES.RESIDENTIAL ||
-                                            item === USER_TYPES.COMMUNITY || 
-                                            item === USER_TYPES.MUNICIPAL ||
-                                            item === USER_TYPES.BUSINESS
+                                                item === USER_TYPES.COMMUNITY ||
+                                                item === USER_TYPES.MUNICIPAL ||
+                                                item === USER_TYPES.BUSINESS
                                         ).map(item => <option key={item}>{item}</option>)}
                                     </Form.Control>
                                 </div>
@@ -519,7 +535,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                                             onChange={() => setValidEmail(true)}
                                         />
                                         <Form.Control.Feedback type='invalid'>
-                                        Email is already in use.
+                                            Email is already in use.
                                         </Form.Control.Feedback>
                                     </Form.Group>
                                 </div>
@@ -528,7 +544,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                                     <input type='password' className='form-control' id='inputPassword' name='inputPassword' placeholder='Password' required />
                                 </div>
                             </div>
-        
+
                             <div className='form-row'>
                                 <div className='form-group col-md-6'>
                                     <label htmlFor='InputHomeRegion'>Home Region</label>
@@ -612,7 +628,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                                     </div>
                                 </>
                             )}
-        
+
                             <button type='submit' className='btn btn-primary mr-2 mb-2'>Submit</button>
                         </Form>
                     )
@@ -652,9 +668,9 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                                                 console.log(subSeg);
                                             }
                                         }}>
-                                        {req.id !== hideControls ? 
+                                        {req.id !== hideControls ?
                                             <>
-                                                <td className='align-middle' style={{wordBreak: 'break-word'}}>{req.email}</td>
+                                                <td className='align-middle' style={{ wordBreak: 'break-word' }}>{req.email}</td>
                                                 <td className='text-center align-middle'>{req.organizationName ? req.organizationName : 'N/A'}</td>
                                                 <td className='text-center align-middle'>{req.fname}</td>
                                                 <td className='text-center align-middle'>{req.lname}</td>
@@ -664,16 +680,16 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                                                 <td className='text-center align-middle'>{req?.userSegments?.workSegmentName || 'NA'}</td>
                                                 <td className='text-center align-middle'>{userFlags![index].toString()}</td>
                                                 <td className='text-center align-middle'>{userFalseFlags![index].toString()}</td>
-                                                <td className='text-center align-middle'>{req.banned ? 'Yes' : 'No' }</td> 
+                                                <td className='text-center align-middle'>{req.banned ? 'Yes' : 'No'}</td>
                                                 <td className='text-center align-middle'>{req.reviewed ? 'Yes' : 'No'}</td>
                                                 <td className='text-center align-middle'>{req.verified ? 'Yes' : 'No'}</td>
                                             </> :
                                             <>
-                                                <td><Form.Control type='text' defaultValue={req.email} onChange={(e)=>req.email = e.target.value}/></td>
-                                                <td><Form.Control type='text' defaultValue={req.organizationName} onChange={(e)=>req.organizationName = e.target.value}/></td>
-                                                <td><Form.Control type='text' defaultValue={req.fname} onChange={(e)=>req.fname = e.target.value}/></td>
-                                                <td><Form.Control type='text' defaultValue={req.lname} onChange={(e)=>req.lname = e.target.value}/></td>
-                                                <td><Form.Control as='select' onChange={(e)=>{(req.userType as string) = e.target.value;}}>
+                                                <td><Form.Control type='text' defaultValue={req.email} onChange={(e) => req.email = e.target.value} /></td>
+                                                <td><Form.Control type='text' defaultValue={req.organizationName} onChange={(e) => req.organizationName = e.target.value} /></td>
+                                                <td><Form.Control type='text' defaultValue={req.fname} onChange={(e) => req.fname = e.target.value} /></td>
+                                                <td><Form.Control type='text' defaultValue={req.lname} onChange={(e) => req.lname = e.target.value} /></td>
+                                                <td><Form.Control as='select' onChange={(e) => { (req.userType as string) = e.target.value; }}>
                                                     {userTypes
                                                         .filter((type => type !== 'SUPER_ADMIN'))
                                                         .filter((type => type !== 'ADMIN'))
@@ -689,49 +705,49 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                                                         )}
                                                 </Form.Control>
                                                 </td>
-                                                <td className='text-center align-middle '><Button onClick={()=> setShowUserFlagsModal(true)}>Info</Button></td>
+                                                <td className='text-center align-middle '><Button onClick={() => setShowUserFlagsModal(true)}>Info</Button></td>
                                                 <td></td>
-                                                <td className='text-center align-middle'>{req.banned ? 'Yes' : 'No' }</td>
+                                                <td className='text-center align-middle'>{req.banned ? 'Yes' : 'No'}</td>
                                                 <td className='text-center align-middle' ><Form.Check
                                                     type='switch'
                                                     checked={reviewed}
-                                                    onChange={(e)=>{
+                                                    onChange={(e) => {
                                                         setReviewed(e.target.checked);
                                                         req.reviewed = e.target.checked;
                                                     }}
-                                                    id='reviewed-switch'/>
-                                                </td>    
+                                                    id='reviewed-switch' />
+                                                </td>
                                                 <td className='text-center align-middle'>{req.verified ? 'Yes' : 'No'}</td>
                                             </>
                                         }
 
                                         <td onClick={e => e.stopPropagation()}>
-                                            {req.id !== hideControls ? 
+                                            {req.id !== hideControls ?
                                                 <NavDropdown title='Controls' id='nav-dropdown'>
                                                     <Dropdown.Item
-                                                        onClick={()=>{
+                                                        onClick={() => {
                                                             setHideControls(req.id);
                                                             setReviewed(req.reviewed);
                                                             setModalUser(req);
                                                         }}>Edit</Dropdown.Item>
                                                     <Dropdown.Item
-                                                        onClick={()=>{
+                                                        onClick={() => {
                                                             setModalUser(req);
                                                             setShowChangePasswordModal(true);
                                                         }}>Change User Password</Dropdown.Item>
                                                     <Dropdown.Item
-                                                        onClick={()=>
+                                                        onClick={() =>
                                                             UserSegmentHandler(req.email, req.id)
                                                         }>View Segments</Dropdown.Item>
-                                                    {req.banned ? 
+                                                    {req.banned ?
                                                         <Dropdown.Item
-                                                            onClick={()=> {
+                                                            onClick={() => {
                                                                 setModalUser(req);
                                                                 setShowUserUnbanModal(true);
                                                             }}>Modify Ban</Dropdown.Item>
                                                         :
                                                         <Dropdown.Item
-                                                            onClick={()=> {
+                                                            onClick={() => {
                                                                 setModalUser(req);
                                                                 setShowUserBanModal(true);
                                                             }}>Ban User</Dropdown.Item>
@@ -744,15 +760,15 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                                                         })} >Ban History</Dropdown.Item>
                                                     <Dropdown.Item onClick={() => removeFlagQuarantine(req.id)}>Remove Flag Quarantine</Dropdown.Item>
                                                     <Dropdown.Item onClick={() => removePostCommentQuarantine(req.id)}>Remove Post Comment Quarantine</Dropdown.Item>
-                                                    {req.verified !== true && 
-                                    <Dropdown.Item
-                                        onClick={async () => {
-                                            req.verified = true;
-                                            let response = await updateUser(req, token, user);
-                                            if (response?.user?.verified === true) {
-                                                handleUpdatedLocalUserData(response.user);
-                                            }
-                                        }}>Verify Email</Dropdown.Item>
+                                                    {req.verified !== true &&
+                                                        <Dropdown.Item
+                                                            onClick={async () => {
+                                                                req.verified = true;
+                                                                let response = await updateUser(req, token, user);
+                                                                if (response?.user?.verified === true) {
+                                                                    handleUpdatedLocalUserData(response.user);
+                                                                }
+                                                            }}>Verify Email</Dropdown.Item>
                                                     }
                                                     <Dropdown.Item
                                                         onClick={() => {
@@ -762,18 +778,18 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
                                                             }
                                                         }}
                                                         className='text-danger'>
-                                                    Delete
+                                                        Delete
                                                     </Dropdown.Item>
                                                 </NavDropdown>
                                                 : <>
                                                     <div className='d-flex justify-content-between'>
-                                                        <Button size='sm' variant='outline-danger' className='mr-2 mb-2 text-center align-middle' onClick={()=>setHideControls('')}>Cancel</Button>
+                                                        <Button size='sm' variant='outline-danger' className='mr-2 mb-2 text-center align-middle' onClick={() => setHideControls('')}>Cancel</Button>
                                                         <Button
                                                             size='sm'
                                                             className='mr-2 mb-2 text-center align-middle'
-                                                            onClick={()=>{
+                                                            onClick={() => {
                                                                 setHideControls('');
-                                
+
                                                                 updateUser(req, token, user);
                                                             }}>Save</Button>
                                                     </div>
@@ -782,15 +798,15 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({use
 
                                         </td>
                                     </tr>
-                                ): null))}
+                                ) : null))}
                         </tbody>
                     </Table>
                 </Form>
                 <br></br>
                 {/* <UserSegmentHandler/> */}
-                {showUserSegmentCard && <UserSegmentInfoCard email={email} id={id} token={token}/>}
+                {showUserSegmentCard && <UserSegmentInfoCard email={email} id={id} token={token} />}
             </Container>
-            
+
         );
     }
 };

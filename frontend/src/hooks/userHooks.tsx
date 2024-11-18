@@ -16,7 +16,7 @@ export const useAllRegularUsers = (token: string | null) => {
     return useQuery<IUser[], IFetchError>(`regular-users`, () => getAllRegularUsers(token));
 };
 
-export const useUserWithJwt = ({ jwtAuthToken, shouldTrigger}: UseUserWithJwtInput) => {
+export const useUserWithJwt = ({ jwtAuthToken, shouldTrigger }: UseUserWithJwtInput) => {
     return useQuery<IUser, AxiosError>(
         'user',
         () => getUserWithJWT({ jwtAuthToken }),
@@ -34,7 +34,8 @@ export const useUserWithUserId = (userId: string) => {
     );
 };
 
-export const useUserWithJwtVerbose = ({ jwtAuthToken, shouldTrigger}: UseUserWithJwtInput) => {
+
+export const useUserWithJwtVerbose = ({ jwtAuthToken, shouldTrigger }: UseUserWithJwtInput) => {
     return useQuery<IUser, AxiosError>(
         'user-verbose',
         () => getUserWithJWTVerbose({ jwtAuthToken }),
@@ -47,4 +48,3 @@ export const useUserWithJwtVerbose = ({ jwtAuthToken, shouldTrigger}: UseUserWit
 
 export const useBannedUsers = (token: string | null) => {
     return useQuery<IBanUserInfo[], IFetchError>(`banned-users`, () => getAllBannedUsers());
-};

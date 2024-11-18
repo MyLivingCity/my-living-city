@@ -319,6 +319,14 @@ userRouter.delete(
 				where: { userId: foundUser.id },
 			});
 
+			await prisma.school_Details.deleteMany({
+				where: { userId: foundUser.id },
+			});
+
+			await prisma.work_Details.deleteMany({
+				where: { userId: foundUser.id },
+			});
+
 			// Delete the user record
 			await prisma.user.delete({
 				where: { id: foundUser.id },

@@ -19,6 +19,7 @@ import { IRegisterInput } from './../../lib/types/input/register.input';
 import { ISegment, ISuperSegment } from 'src/lib/types/data/segment.type';
 import { EditUserInfoModal } from '../modal/EditUserInfoModal';
 import UserChangePasswordModal from '../modal/UserChangePasswordModal';
+import { postUserSegmentInfo } from 'src/lib/api/userSegmentRoutes';
 
 interface UserManagementContentProps {
     users: IUser[] | undefined;
@@ -168,12 +169,8 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        console.log('Made it Submit');
-
-
         const form = event.target as HTMLFormElement;
         const formData = new FormData(form);
-
 
         const registerData: IRegisterInput = {
             userRoleId: undefined,
@@ -216,13 +213,13 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
                 programCompletionDate: new Date(),
             },
 
-            homeSegmentId: user?.userType === USER_TYPES.SUPER_ADMIN || user?.userType === USER_TYPES.ADMIN ? newHomeID : user?.userSegments?.homeSegmentId,
-            workSegmentId: user?.userType === USER_TYPES.SUPER_ADMIN || user?.userType === USER_TYPES.ADMIN ? newWorkID : undefined,
-            schoolSegmentId: user?.userType === USER_TYPES.SUPER_ADMIN || user?.userType === USER_TYPES.ADMIN ? newSchoolID : undefined,
+            homeSegmentId: userVerbose?.userType === USER_TYPES.SUPER_ADMIN || userVerbose?.userType === USER_TYPES.ADMIN ? newHomeID : userVerbose?.userSegments?.homeSegmentId,
+            workSegmentId: userVerbose?.userType === USER_TYPES.SUPER_ADMIN || userVerbose?.userType === USER_TYPES.ADMIN ? newWorkID : undefined,
+            schoolSegmentId: userVerbose?.userType === USER_TYPES.SUPER_ADMIN || userVerbose?.userType === USER_TYPES.ADMIN ? newSchoolID : undefined,
             homeSubSegmentId: undefined,
             workSubSegmentId: undefined,
             schoolSubSegmentId: undefined,
-            userType: user?.userType === USER_TYPES.SUPER_ADMIN || user?.userType === USER_TYPES.ADMIN ? selectedUserType : 'MUNICIPAL',
+            userType: userVerbose?.userType === USER_TYPES.SUPER_ADMIN || userVerbose?.userType === USER_TYPES.ADMIN ? selectedUserType : 'MUNICIPAL',
             reachSegmentIds: [],
             verified: true,
         };
@@ -319,8 +316,8 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
                 const municipalFilteredUsers = users.filter(
                     user =>
                         user.userType === 'MUNICIPAL' &&
-                        userVerbose.userSegments?.homeSegmentName &&
-                        user.email.toLowerCase().includes(userVerbose.userSegments?.homeSegmentName.toLowerCase())
+                        userVerbose.userSegments?.homeSegmentId &&
+                        user.userSegments?.homeSegmentId == userVerbose.userSegments.homeSegmentId
                 );
                 setMunicipalFilteredUsers(municipalFilteredUsers);
             }

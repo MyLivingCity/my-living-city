@@ -321,8 +321,6 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
                     user.userType !== USER_TYPES.MUNICIPAL_SEG_ADMIN &&
                     user.userType !== USER_TYPES.SEG_ADMIN
                 );
-                console.log(filteredUsers);
-                console.log(user);
                 setFilteredUsers(filteredUsers);
             }
         };

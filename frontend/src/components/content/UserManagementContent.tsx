@@ -20,6 +20,7 @@ import { ISegment, ISuperSegment } from 'src/lib/types/data/segment.type';
 import { EditUserInfoModal } from '../modal/EditUserInfoModal';
 import UserChangePasswordModal from '../modal/UserChangePasswordModal';
 import { postUserSegmentInfo } from 'src/lib/api/userSegmentRoutes';
+import { unendorseIdeaByUser } from 'src/lib/api/ideaRoutes';
 
 interface UserManagementContentProps {
     users: IUser[] | undefined;
@@ -167,24 +168,38 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
         }
     };
 
+    const getOrganizationNameAdmin = ( 
+        selectedUserType: string, 
+        formData: FormData
+    ): string | undefined => {
+        switch(selectedUserType) {
+            case USER_TYPES.BUSINESS || USER_TYPES.COMMUNITY: {
+                return formData.get('inputOrg') as string
+            }
+            case USER_TYPES.MUNICIPAL: {
+                return formData.get('inputCom') as string
+            }
+        }
+        return undefined
+    }
+
     const getOrganizationName = (
         user: IUser | null, 
+        userVerbose: IUser | null | undefined,
         selectedUserType: string, 
-        userVerbose: IUser | null | undefined
+        formData: FormData
     ): string | undefined => {
-        // Check if the user is a SUPER_ADMIN, ADMIN, or MUNICIPAL_SEG_ADMIN
-        if (user?.userType === USER_TYPES.SUPER_ADMIN || 
-            user?.userType === USER_TYPES.ADMIN || 
-            user?.userType === USER_TYPES.MUNICIPAL_SEG_ADMIN) {
-      
-            // If selected user type is MUNICIPAL or parent is MUNICIPAL_SEG_ADMIN
-            if (selectedUserType === USER_TYPES.MUNICIPAL || 
-              user?.userType === USER_TYPES.MUNICIPAL_SEG_ADMIN) {
-                // Return organization name of the parent user, or fallback to home segment name
+        // Check the type of user creating the account, since the wizards display different fields
+        switch(user?.userType){
+            case USER_TYPES.ADMIN || USER_TYPES.SUPER_ADMIN: {
+                return getOrganizationNameAdmin(selectedUserType, formData)
+            }
+
+            // Return the municipal seg admin's organization name or fallback to their homeSegmentName if an org name is not set.
+            case USER_TYPES.MUNICIPAL_SEG_ADMIN: {
                 return userVerbose?.organizationName || userVerbose?.userSegments?.homeSegmentName;
             }
         }
-      
         return undefined; 
     };
       
@@ -192,11 +207,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
         event.preventDefault();
         const form = event.target as HTMLFormElement;
         const formData = new FormData(form);
-        
-        const orgName = getOrganizationName(user, selectedUserType, userVerbose) ??
-        ((selectedUserType === USER_TYPES.BUSINESS || selectedUserType === USER_TYPES.COMMUNITY)
-            ? (formData.get('inputOrg') as string)
-            : undefined);
+        const orgName = getOrganizationName(user, userVerbose, selectedUserType,  formData)
             
         const registerData: IRegisterInput = {
             userRoleId: undefined,

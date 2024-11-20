@@ -12,9 +12,9 @@ import {
 } from '@mui/material';
 
 interface RatingInputProps {
-  userHasRated: boolean;
-  userSubmittedRating: number | null;
-  ideaId: string;
+    userHasRated: boolean;
+    userSubmittedRating: number | null;
+    ideaId: string;
 }
 
 const RatingInput = ({
@@ -27,11 +27,11 @@ const RatingInput = ({
         userSubmittedRating ?? 0
     );
 
-  
+
 
     // =================== SUBMITTING RATING MUTATION ==========================
     const { submitRatingMutation, isLoading, isError, error, isSuccess } =
-    useCreateRatingMutation(parseInt(ideaId), token, user);
+        useCreateRatingMutation(parseInt(ideaId), token, user);
 
     const [showRatingSubmitError, setShowRatingSubmitError] = useState(false);
 
@@ -58,7 +58,7 @@ const RatingInput = ({
     };
 
     const shouldButtonBeDisabled = (): boolean => {
-    // Unauthenticated
+        // Unauthenticated
         let flag = true;
         if (tokenExists()) flag = false;
         if (isLoading) flag = true;
@@ -67,7 +67,7 @@ const RatingInput = ({
     };
 
     const buttonTextOutput = (): string => {
-    // Unauthenticated
+        // Unauthenticated
         let buttonText = 'Please login to comment';
         if (tokenExists()) buttonText = 'Submit';
         if (isLoading) buttonText = 'Saving Comment';
@@ -78,7 +78,7 @@ const RatingInput = ({
 
     return (
         <div>
-            {userHasRated ? (<h2 className='text-center' >You have already rated this idea</h2>): (
+            {userHasRated ? (<h2 className='text-center' >You have already rated this idea</h2>) : (
                 <Container className=''>
                     <style>
                         {`
@@ -91,16 +91,19 @@ const RatingInput = ({
                     <Row>
                         <Col>
                             <div>
-                                <FormControl
-                                    style={{ width: '100%', padding: '0rem 8rem 0rem 8rem' }}
-                                >
+                                <FormControl style={{ width: '100%' }}>
                                     <RadioGroup
-                                        row
                                         aria-labelledby='demo-form-control-label-placement'
                                         name='position'
                                         defaultValue='top'
-                                        style={{ justifyContent: 'space-between' }}
                                         onChange={(e) => setRatingValue(parseInt(e.target.value))}
+                                        style={{
+                                            display: 'flex',
+                                            flexDirection: 'row',
+                                            flexWrap: 'wrap',
+                                            justifyContent: 'center',
+                                            gap: '1rem',
+                                        }}
                                     >
                                         <FormControlLabel
                                             value='-2'
@@ -108,6 +111,7 @@ const RatingInput = ({
                                             label='Strongly Oppose'
                                             labelPlacement='bottom'
                                             disabled={shouldButtonBeDisabled()}
+                                            style={{ width: '150px', textAlign: 'center' }}
                                         />
                                         <FormControlLabel
                                             value='-1'
@@ -115,6 +119,7 @@ const RatingInput = ({
                                             label='Slightly Oppose'
                                             labelPlacement='bottom'
                                             disabled={shouldButtonBeDisabled()}
+                                            style={{ width: '150px', textAlign: 'center' }}
                                         />
                                         <FormControlLabel
                                             value='0'
@@ -122,6 +127,7 @@ const RatingInput = ({
                                             label='Neutral'
                                             labelPlacement='bottom'
                                             disabled={shouldButtonBeDisabled()}
+                                            style={{ width: '150px', textAlign: 'center' }}
                                         />
                                         <FormControlLabel
                                             value='1'
@@ -129,6 +135,7 @@ const RatingInput = ({
                                             label='Slightly Support'
                                             labelPlacement='bottom'
                                             disabled={shouldButtonBeDisabled()}
+                                            style={{ width: '150px', textAlign: 'center' }}
                                         />
                                         <FormControlLabel
                                             value='2'
@@ -136,6 +143,7 @@ const RatingInput = ({
                                             label='Strongly Support'
                                             labelPlacement='bottom'
                                             disabled={shouldButtonBeDisabled()}
+                                            style={{ width: '150px', textAlign: 'center' }}
                                         />
                                     </RadioGroup>
                                 </FormControl>
@@ -151,7 +159,7 @@ const RatingInput = ({
                                     variant='danger'
                                 >
                                     {error?.message ??
-                'An Error occured while trying to submit your rating.'}
+                                        'An Error occured while trying to submit your rating.'}
                                 </Alert>
                             )}
                             {!userHasRated && (

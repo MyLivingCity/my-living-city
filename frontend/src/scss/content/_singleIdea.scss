@@ -1,3 +1,130 @@
 // .single-idea-content {
 //   margin-top: 2rem;
 // }
+
+.info-container {
+    display: flex;
+    margin: 8px 0;
+    align-items: center;
+}
+
+.title {
+    font-weight: bold;
+    text-align: left;
+    margin: 0;
+    /* Ensure there's no default margin that could affect alignment */
+}
+
+.value {
+    text-align: left;
+    /* Ensure both elements have the same text alignment */
+    margin: 0;
+    /* Ensure there's no default margin that could affect alignment */
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .info-container {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    .value {
+        text-align: right;
+    }
+}
+
+.info-table {
+    width: 100%;
+    border-collapse: collapse;
+
+    td {
+        padding: 8px 16px;
+        vertical-align: top;
+        /* Ensure the text is aligned at the top */
+    }
+
+    .h5 {
+        font-weight: bold;
+    }
+
+    .lead {
+        font-size: 1.1rem;
+    }
+
+    // Default layout for desktop (two columns)
+    tr {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    td {
+        display: inline-block;
+        width: 48%; // Each column will take up roughly half the space
+    }
+
+    // Responsive design for smaller screens (Mobile view)
+    @media screen and (max-width: 768px) {
+        .info-table {
+            display: block;
+        }
+
+        tr {
+            display: block; // Make each row block-level
+            margin-bottom: 16px; // Space between rows
+        }
+
+        td {
+            display: block;
+            width: 100%; // Full width for each cell
+            padding: 6px 0; // Adjust padding for mobile
+        }
+
+        td:first-child {
+            font-weight: bold; // Keep the titles bold
+        }
+
+        td:not(:first-child) {
+            padding-left: 0; // Remove unnecessary padding from the value cells
+        }
+    }
+}
+
+.footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+
+    .footer-posted,
+    .footer-icons,
+    .footer-handle {
+        margin-bottom: 8px;
+    }
+
+    .footer-icons {
+        display: flex;
+        gap: 8px;
+    }
+
+    // Mobile styling
+    @media (max-width: 768px) {
+        flex-direction: column;
+
+        .footer-posted {
+            order: 1;
+            margin-bottom: 8px;
+        }
+
+        .footer-icons {
+            order: 2;
+            justify-content: center;
+            margin-bottom: 8px;
+        }
+
+        .footer-handle {
+            order: 3;
+        }
+    }
+}

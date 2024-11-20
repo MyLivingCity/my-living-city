@@ -167,21 +167,43 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
         }
     };
 
+    const getOrganizationName = (
+        user: IUser | null, 
+        selectedUserType: string, 
+        userVerbose: IUser | null | undefined
+      ): string | undefined => {
+        // Check if the user is a SUPER_ADMIN, ADMIN, or MUNICIPAL_SEG_ADMIN
+        if (user?.userType === USER_TYPES.SUPER_ADMIN || 
+            user?.userType === USER_TYPES.ADMIN || 
+            user?.userType === USER_TYPES.MUNICIPAL_SEG_ADMIN) {
+      
+          // If selected user type is MUNICIPAL or parent is MUNICIPAL_SEG_ADMIN
+          if (selectedUserType === USER_TYPES.MUNICIPAL || 
+              user?.userType === USER_TYPES.MUNICIPAL_SEG_ADMIN) {
+      
+            // Return organization name of the parent user, or fallback to home segment name
+            return userVerbose?.organizationName || userVerbose?.userSegments?.homeSegmentName;
+          }
+        }
+      
+        return undefined; 
+      };
+      
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const form = event.target as HTMLFormElement;
         const formData = new FormData(form);
-
+        
+        const orgName = getOrganizationName(user, selectedUserType, userVerbose) ?? 
+                        (selectedUserType === USER_TYPES.BUSINESS || selectedUserType === USER_TYPES.COMMUNITY) ? 
+                        formData.get('inputOrg') as string : undefined;
+    
         const registerData: IRegisterInput = {
             userRoleId: undefined,
             email: formData.get('inputEmail') as string,
             password: formData.get('inputPassword') as string,
             confirmPassword: formData.get('inputPassword') as string,
-            organizationName: (user?.userType === USER_TYPES.SUPER_ADMIN || user?.userType === USER_TYPES.ADMIN)
-                && (
-                    selectedUserType === USER_TYPES.BUSINESS ||
-                    selectedUserType === USER_TYPES.COMMUNITY
-                ) ? formData.get('inputOrg') as string : undefined,
+            organizationName: orgName,
             fname: formData.get('inputFirst') as string,
             lname: formData.get('inputLast') as string,
             displayFName: formData.get('inputFirst') as string,
@@ -212,7 +234,6 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
                 faculty: '',
                 programCompletionDate: new Date(),
             },
-
             homeSegmentId: userVerbose?.userType === USER_TYPES.SUPER_ADMIN || userVerbose?.userType === USER_TYPES.ADMIN ? newHomeID : userVerbose?.userSegments?.homeSegmentId,
             workSegmentId: userVerbose?.userType === USER_TYPES.SUPER_ADMIN || userVerbose?.userType === USER_TYPES.ADMIN ? newWorkID : undefined,
             schoolSegmentId: userVerbose?.userType === USER_TYPES.SUPER_ADMIN || userVerbose?.userType === USER_TYPES.ADMIN ? newSchoolID : undefined,
@@ -223,7 +244,6 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
             reachSegmentIds: [],
             verified: true,
         };
-
 
         try {
             if (await getUserWithEmail(registerData.email) === 200) {

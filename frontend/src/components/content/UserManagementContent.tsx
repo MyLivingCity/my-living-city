@@ -171,23 +171,23 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
         user: IUser | null, 
         selectedUserType: string, 
         userVerbose: IUser | null | undefined
-      ): string | undefined => {
+    ): string | undefined => {
         // Check if the user is a SUPER_ADMIN, ADMIN, or MUNICIPAL_SEG_ADMIN
         if (user?.userType === USER_TYPES.SUPER_ADMIN || 
             user?.userType === USER_TYPES.ADMIN || 
             user?.userType === USER_TYPES.MUNICIPAL_SEG_ADMIN) {
       
-          // If selected user type is MUNICIPAL or parent is MUNICIPAL_SEG_ADMIN
-          if (selectedUserType === USER_TYPES.MUNICIPAL || 
+            // If selected user type is MUNICIPAL or parent is MUNICIPAL_SEG_ADMIN
+            if (selectedUserType === USER_TYPES.MUNICIPAL || 
               user?.userType === USER_TYPES.MUNICIPAL_SEG_ADMIN) {
       
-            // Return organization name of the parent user, or fallback to home segment name
-            return userVerbose?.organizationName || userVerbose?.userSegments?.homeSegmentName;
-          }
+                // Return organization name of the parent user, or fallback to home segment name
+                return userVerbose?.organizationName || userVerbose?.userSegments?.homeSegmentName;
+            }
         }
       
         return undefined; 
-      };
+    };
       
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();

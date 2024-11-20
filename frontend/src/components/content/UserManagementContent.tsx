@@ -176,12 +176,10 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
         if (user?.userType === USER_TYPES.SUPER_ADMIN || 
             user?.userType === USER_TYPES.ADMIN || 
             user?.userType === USER_TYPES.MUNICIPAL_SEG_ADMIN) {
-            console.log(user?.userType)
       
             // If selected user type is MUNICIPAL or parent is MUNICIPAL_SEG_ADMIN
             if (selectedUserType === USER_TYPES.MUNICIPAL || 
               user?.userType === USER_TYPES.MUNICIPAL_SEG_ADMIN) {
-                console.log("userType:", user?.userType)
                 // Return organization name of the parent user, or fallback to home segment name
                 return userVerbose?.organizationName || userVerbose?.userSegments?.homeSegmentName;
             }
@@ -199,9 +197,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
         ((selectedUserType === USER_TYPES.BUSINESS || selectedUserType === USER_TYPES.COMMUNITY)
             ? (formData.get('inputOrg') as string)
             : undefined);
-        
-        console.log(orgName)
-    
+            
         const registerData: IRegisterInput = {
             userRoleId: undefined,
             email: formData.get('inputEmail') as string,

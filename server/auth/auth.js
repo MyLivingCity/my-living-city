@@ -367,15 +367,10 @@
         data: { verifiedToken: token },
       });
   
-      console.log('Verification token:', token);
-  
       const appUrl = process.env.APP_URL || 'http://localhost:3000';
-      let url = 'http://localhost:3001';
-
-      // Uncomment the following line for production
-      // url = process.env.APP_URL || 'http://localhost:3001';
+      var url = process.env.APP_URL || 'http://localhost:3001';
       url += `/emailVerification/checkVerificationCode/${user.id}/${token}`;
-  
+
       // Use App Password transport (or OAuth)
       const transport = createAppPasswordTransport();
 

@@ -4,9 +4,8 @@
   const prisma = require('../lib/prismaClient');
   const { argon2Hash, argon2ConfirmHash } = require('../lib/utilityFunctions');
   const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-  const nodemailer = require('nodemailer');
   const { getSegmentInfo } = require('../helpers/userSegmentHelpers');
-  const { google } = require('googleapis');
+  const createAppPasswordTransport = require('./appPasswordTransport');
 
   passport.use(
     "signup",
@@ -29,10 +28,13 @@
             return done({ message: "You must supply a password." });
           }
 
-          const parsedMainData = {
+          const parsedMainData1 = {
             ...req.body,
             email: email.toLowerCase(),
           };
+
+          console.log('Parsed id: ' + parsedMainData1.id)
+          const { id, ...parsedMainData } = parsedMainData1;
           
           // hash password
           const hashedPassword = await argon2Hash(password);
@@ -356,45 +358,26 @@
   )
 
   const sendEmailVerification = async (user) => {
-    const oAuth2Client = new google.auth.OAuth2(
-      process.env.GOOGLE_CLIENT_ID,
-      process.env.GOOGLE_CLIENT_SECRET,
-      process.env.REDIRECT_URI,
-    );
-
-    oAuth2Client.setCredentials({refresh_token: process.env.GOOGLE_REFRESH_TOKEN});
-
     try {
-      const accessToken = await oAuth2Client.getAccessToken();
-
-      const transport = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-              type: 'OAuth2',
-              user: process.env.EMAIL,
-              clientId: process.env.GOOGLE_CLIENT_ID,
-              clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-              refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
-              accessToken: accessToken.token,
-            },
-      });
 
       // Generate a unique verification token for the user
-      let token = Math.random().toString(36).substring(2, 8).toUpperCase();
+      const token = Math.random().toString(36).substring(2, 8).toUpperCase();
       await prisma.user.update({
         where: { id: user.id },
         data: { verifiedToken: token },
       });
-
-      console.log(token);
-
+  
+      console.log('Verification token:', token);
+  
       const appUrl = process.env.APP_URL || 'http://localhost:3000';
+      let url = 'http://localhost:3001';
 
-      //required for testing:
-      // var url = 'http://localhost:3001';
-
-      var url = process.env.APP_URL || 'http://localhost:3001';
+      // Uncomment the following line for production
+      // url = process.env.APP_URL || 'http://localhost:3001';
       url += `/emailVerification/checkVerificationCode/${user.id}/${token}`;
+  
+      // Use App Password transport (or OAuth)
+      const transport = createAppPasswordTransport();
 
       const mailOptions = {
         from: 'MyLivingCity Email Verification<' + process.env.EMAIL + '>', // sender address

@@ -174,14 +174,14 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
     ): string | undefined => {
         switch(selectedUserType) {
             case USER_TYPES.BUSINESS || USER_TYPES.COMMUNITY: {
-                return formData.get('inputOrg') as string
+                return formData.get('inputOrg') as string;
             }
             case USER_TYPES.MUNICIPAL: {
-                return formData.get('inputCom') as string
+                return formData.get('inputCom') as string;
             }
         }
-        return undefined
-    }
+        return undefined;
+    };
 
     const getOrganizationName = (
         user: IUser | null, 
@@ -192,7 +192,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
         // Check the type of user creating the account, since the wizards display different fields
         switch(user?.userType){
             case USER_TYPES.ADMIN || USER_TYPES.SUPER_ADMIN: {
-                return getOrganizationNameAdmin(selectedUserType, formData)
+                return getOrganizationNameAdmin(selectedUserType, formData);
             }
 
             // Return the municipal seg admin's organization name or fallback to their homeSegmentName if an org name is not set.
@@ -207,7 +207,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
         event.preventDefault();
         const form = event.target as HTMLFormElement;
         const formData = new FormData(form);
-        const orgName = getOrganizationName(user, userVerbose, selectedUserType,  formData)
+        const orgName = getOrganizationName(user, userVerbose, selectedUserType,  formData);
             
         const registerData: IRegisterInput = {
             userRoleId: undefined,

@@ -373,7 +373,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     const commentAggregateUnderIdea = useCommentAggregateUnderIdea(ideaId);
     const allCommentsUnderIdea = useAllCommentsUnderIdea(ideaId, token);
 
- 
+
     const [showEndorseButton, setShowEndorseButton] = useState(false);
     const [userCanEndorseByOrg, setUserCanEndorseByOrg] = useState(true);
 
@@ -387,13 +387,32 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     const handleEndorseUnendorse = async () => {
         if (user && token) {
             if (endorsingPost) {
-                await unendorseIdeaByUser(token, user.id, ideaId);
-                const newEndorsedUsers = endorsedUsers.filter(u => u.id !== user.id);
+                // Check if user is the one who endorsed
+                const userEndorsement = endorsedUsers.find(u => u.id === user.id);
+                
+                // Check if user is an admin trying to unendorse someone from their organization, not currently working properly
+                const isAdminOfOrg = user.userType === USER_TYPES.MUNICIPAL_SEG_ADMIN;
+                const targetEndorsement = endorsedUsers.find(u => u.organizationName === user.organizationName);
+                const canAdminUnendorse = isAdminOfOrg && targetEndorsement;
+                // console.log(isAdminOfOrg)
+    
+                if (!userEndorsement && !canAdminUnendorse) {
+                    alert("You don't have permission to unendorse this post");
+                    return;
+                }
+    
+                // If admin is unendorsing someone else's endorsement
+                const endorsementToRemove = userEndorsement ? user.id : targetEndorsement.id;
+    
+                await unendorseIdeaByUser(token, endorsementToRemove, ideaId);
+                const newEndorsedUsers = endorsedUsers.filter(u => u.id !== endorsementToRemove);
                 setEndorsedUsers(newEndorsedUsers);
+                setUserCanEndorseByOrg(true);
             } else {
                 await endorseIdeaByUser(token, user.id, ideaId);
                 const newEndorsedUsers = [...endorsedUsers, user];
                 setEndorsedUsers(newEndorsedUsers);
+                setUserCanEndorseByOrg(false);
             }
             setEndorsingPost(!endorsingPost);
         }
@@ -405,11 +424,11 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
             // Check if current user's organizationName is in endorsements
             if (user && user.organizationName) {
                 const endorsedOrgNames = endorsedUsersData
+                    .filter((u: IUser) => u.id !== user.id) // Exclude current user
                     .map((u: IUser) => u.organizationName)
                     .filter(Boolean); // Remove undefined or null values
                 if (endorsedOrgNames.includes(user.organizationName)) {
                     setUserCanEndorseByOrg(false);
-                    console.log(endorsedOrgNames)
                 } else {
                     setUserCanEndorseByOrg(true);
                 }
@@ -621,8 +640,8 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                             {user && token && showEndorseButton && canEndorseByUserType ? (
                                                 <Button
                                                     onClick={async () => await handleEndorseUnendorse()}
-                                                    disabled={!canEndorse}
-                                                    title={!canEndorse ? 'Your organization has already endorsed this proposal' : ''}
+                                                    disabled={!canEndorse && !endorsingPost} // Allow unendorsing even if organization already endorsed
+                                                    title={!canEndorse && !endorsingPost ? 'Your organization has already endorsed this proposal' : ''}
                                                 >
                                                     {endorsingPost ? 'Unendorse' : 'Endorse'}
                                                 </Button>

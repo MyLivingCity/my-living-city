@@ -113,10 +113,10 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
         projectInfo,
     } = ideaData;
 
-    console.log('segment', segment);
-    console.log('sub segment', subSegment);
-    console.log('super segment', superSegment);
-    console.log('ideaData', ideaData);
+    // console.log('segment', segment);
+    // console.log('sub segment', subSegment);
+    // console.log('super segment', superSegment);
+    // console.log('ideaData', ideaData);
 
     const {
         id: proposalId,
@@ -373,9 +373,9 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     const commentAggregateUnderIdea = useCommentAggregateUnderIdea(ideaId);
     const allCommentsUnderIdea = useAllCommentsUnderIdea(ideaId, token);
 
-    const canEndorse = user?.userType === USER_TYPES.BUSINESS || user?.userType === USER_TYPES.COMMUNITY
-        || user?.userType === USER_TYPES.MUNICIPAL || user?.userType === USER_TYPES.MUNICIPAL_SEG_ADMIN;
+ 
     const [showEndorseButton, setShowEndorseButton] = useState(false);
+    const [userCanEndorseByOrg, setUserCanEndorseByOrg] = useState(true);
 
     useEffect(() => {
         if (!isEndorsingPostLoading) {
@@ -402,8 +402,26 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     useEffect(() => {
         if (!isEndorsedUsersDataLoading) {
             setEndorsedUsers(endorsedUsersData);
+            // Check if current user's organizationName is in endorsements
+            if (user && user.organizationName) {
+                const endorsedOrgNames = endorsedUsersData
+                    .map((u: IUser) => u.organizationName)
+                    .filter(Boolean); // Remove undefined or null values
+                if (endorsedOrgNames.includes(user.organizationName)) {
+                    setUserCanEndorseByOrg(false);
+                    console.log(endorsedOrgNames)
+                } else {
+                    setUserCanEndorseByOrg(true);
+                }
+            }
         }
-    }, [isEndorsedUsersDataLoading, endorsedUsersData]);
+    }, [isEndorsedUsersDataLoading, endorsedUsersData, user]);
+
+    const canEndorseByUserType = user?.userType === USER_TYPES.BUSINESS || user?.userType === USER_TYPES.COMMUNITY
+        || user?.userType === USER_TYPES.MUNICIPAL || user?.userType === USER_TYPES.MUNICIPAL_SEG_ADMIN;
+
+    const canEndorse = canEndorseByUserType && userCanEndorseByOrg;
+
 
     const [showFollowButton, setShowFollowButton] = useState(false);
     useEffect(() => {
@@ -424,9 +442,9 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
     useEffect(() => {
         if (!isFlaggedLoading) {
-            console.log('isFlagged', isFlagged?.valueOf());
+            // console.log('isFlagged', isFlagged?.valueOf());
             if (isFlagged) {
-                console.log('isFlaggedRAWR', isFlagged?.valueOf());
+                // console.log('isFlaggedRAWR', isFlagged?.valueOf());
                 handleHideFlagButton();
             }
         }
@@ -525,7 +543,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
         const { subSegmentId, segmentId, superSegmentId, author } = ideaData;
 
         if (!author) return;
-        
+
         if (subSegmentId) {
             return getHandleBySegmentId(subSegmentId, author);
         } else if (segmentId) {
@@ -600,11 +618,15 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                             </Button> : null}
                                         </ButtonGroup>
                                         <ButtonGroup className='mr-2'>
-                                            {user && token && showEndorseButton && canEndorse ? <Button
-                                                onClick={async () => await handleEndorseUnendorse()}
-                                            >
-                                                {endorsingPost ? 'Unendorse' : 'Endorse'}
-                                            </Button> : null}
+                                            {user && token && showEndorseButton && canEndorseByUserType ? (
+                                                <Button
+                                                    onClick={async () => await handleEndorseUnendorse()}
+                                                    disabled={!canEndorse}
+                                                    title={!canEndorse ? 'Your organization has already endorsed this proposal' : ''}
+                                                >
+                                                    {endorsingPost ? 'Unendorse' : 'Endorse'}
+                                                </Button>
+                                            ) : null}
                                         </ButtonGroup>
                                     </div>
                                 </div>
@@ -1319,7 +1341,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                 </h4>
                             </div>
                         </Card.Header>
-                        <Card.Body style={{padding: 0}}>
+                        <Card.Body style={{ padding: 0 }}>
                             {suggestedIdeas.length > 0 ? (
                                 <SuggestedIdeasTable suggestedIdeas={suggestedIdeas} />
                             ) : (

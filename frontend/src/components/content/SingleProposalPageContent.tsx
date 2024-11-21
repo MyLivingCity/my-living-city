@@ -377,12 +377,37 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     const [showEndorseButton, setShowEndorseButton] = useState(false);
     const [userCanEndorseByOrg, setUserCanEndorseByOrg] = useState(true);
 
+    const canEndorseByUserType = user?.userType === USER_TYPES.BUSINESS || user?.userType === USER_TYPES.COMMUNITY
+        || user?.userType === USER_TYPES.MUNICIPAL || user?.userType === USER_TYPES.MUNICIPAL_SEG_ADMIN;
+
+    const canEndorse = canEndorseByUserType && userCanEndorseByOrg;
+
+
     useEffect(() => {
         if (!isEndorsingPostLoading) {
             setEndorsingPost(isEndorsingPost.isEndorsed);
             setShowEndorseButton(true);
         }
     }, [isEndorsingPostLoading, isEndorsingPost]);
+
+
+    useEffect(() => {
+        if (!isEndorsedUsersDataLoading) {
+            setEndorsedUsers(endorsedUsersData);
+            // Check if current user's organizationName is in endorsements
+            if (user && user.organizationName) {
+                const endorsedOrgNames = endorsedUsersData
+                    .filter((u: IUser) => u.id !== user.id) // Exclude current user
+                    .map((u: IUser) => u.organizationName)
+                    .filter(Boolean); // Remove undefined or null values
+                if (endorsedOrgNames.includes(user.organizationName)) {
+                    setUserCanEndorseByOrg(false);
+                } else {
+                    setUserCanEndorseByOrg(true);
+                }
+            }
+        }
+    }, [isEndorsedUsersDataLoading, endorsedUsersData, user]);
 
     const handleEndorseUnendorse = async () => {
         if (user && token) {
@@ -417,29 +442,6 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
             setEndorsingPost(!endorsingPost);
         }
     };
-
-    useEffect(() => {
-        if (!isEndorsedUsersDataLoading) {
-            setEndorsedUsers(endorsedUsersData);
-            // Check if current user's organizationName is in endorsements
-            if (user && user.organizationName) {
-                const endorsedOrgNames = endorsedUsersData
-                    .filter((u: IUser) => u.id !== user.id) // Exclude current user
-                    .map((u: IUser) => u.organizationName)
-                    .filter(Boolean); // Remove undefined or null values
-                if (endorsedOrgNames.includes(user.organizationName)) {
-                    setUserCanEndorseByOrg(false);
-                } else {
-                    setUserCanEndorseByOrg(true);
-                }
-            }
-        }
-    }, [isEndorsedUsersDataLoading, endorsedUsersData, user]);
-
-    const canEndorseByUserType = user?.userType === USER_TYPES.BUSINESS || user?.userType === USER_TYPES.COMMUNITY
-        || user?.userType === USER_TYPES.MUNICIPAL || user?.userType === USER_TYPES.MUNICIPAL_SEG_ADMIN;
-
-    const canEndorse = canEndorseByUserType && userCanEndorseByOrg;
 
 
     const [showFollowButton, setShowFollowButton] = useState(false);

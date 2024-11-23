@@ -53,7 +53,7 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
     const [showUserBanModal, setShowUserBanModal] = useState<boolean>(false);
     const [showUserUnbanModal, setShowUserUnbanModal] = useState<boolean>(false);
     const [showUserBanHistoryModal, setShowUserBanHistoryModal] =
-    useState<boolean>(false);
+        useState<boolean>(false);
     const [modalUser, setModalUser] = useState<IUser>();
     const [showCreateAccountForm, setShowCreateAccountForm] = useState(false);
     const [buttonText, setButtonText] = useState('Admin Creation Wizard');
@@ -81,6 +81,7 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
     };
 
     const capitalizeString = (s: string) => {
+        if(!s) return '';
         return s.charAt(0).toUpperCase() + s.slice(1);
     };
     const handleDeleteUser = async (userId: string) => {
@@ -97,22 +98,31 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
     };
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        console.log('Made it Submit');
+        // console.log('Submitting form');
 
         const form = event.target as HTMLFormElement;
         const formData = new FormData(form);
-        const selectedCommunity = formData.get('inputCommunity') as string;
-        console.log(selectedCommunity);
-        const homeSegmentId = subSeg.find(
-            (seg) => selectedCommunity === seg.name
-        )?.segId;
-        console.log(homeSegmentId);
+
+        const selectedCommunityId = formData.get('inputCommunity') as string;
+        const selectedUserType = formData.get('inputType') as string;
+
+        const selectedCommunitySeg = subSeg.find(
+            (seg) => seg.segId === parseInt(selectedCommunityId)
+        );
+
+        const communityName = selectedCommunitySeg?.name
+            ? capitalizeString(selectedCommunitySeg.name)
+            : undefined;
+
         const registerData: IRegisterInput = {
             userRoleId: undefined,
             email: formData.get('inputEmail') as string,
             password: formData.get('inputPassword') as string,
             confirmPassword: formData.get('inputPassword') as string,
-            organizationName: undefined,
+            organizationName:
+                selectedUserType === USER_TYPES.MUNICIPAL_SEG_ADMIN
+                    ? communityName
+                    : undefined,
             fname: formData.get('inputFirst') as string,
             lname: formData.get('inputLast') as string,
             displayFName: formData.get('inputFirst') as string,
@@ -143,14 +153,13 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
                 faculty: '',
                 programCompletionDate: new Date(),
             },
-
-            homeSegmentId: parseInt(formData.get('inputCommunity') as string),
+            homeSegmentId: parseInt(selectedCommunityId),
             workSegmentId: undefined,
             schoolSegmentId: undefined,
             homeSubSegmentId: undefined,
             workSubSegmentId: undefined,
             schoolSubSegmentId: undefined,
-            userType: formData.get('inputType') as string,
+            userType: selectedUserType,
             reachSegmentIds: [],
             verified: true,
         };
@@ -280,9 +289,7 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
                             <Form.Control
                                 as='select'
                                 name='inputCommunity'
-                                onChange={(event) => {
-                                    newHomeID = parseInt(event.target.value);
-                                }}
+                                required
                             >
                                 <option value=''>Select Community</option>
                                 {subSeg
@@ -344,18 +351,18 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
                 <tbody>
                     {users?.map((req: IUser, index: number) =>
                         req.userType === 'SUPER_ADMIN' ||
-                        req.userType === 'ADMIN' ||
-                        req.userType === 'MUNICIPAL_SEG_ADMIN' ||
-                        req.userType === 'MOD' ||
-                        req.userType === 'SEG_MOD' ||
-                        req.userType === 'SEG_ADMIN' ? (
+                            req.userType === 'ADMIN' ||
+                            req.userType === 'MUNICIPAL_SEG_ADMIN' ||
+                            req.userType === 'MOD' ||
+                            req.userType === 'SEG_MOD' ||
+                            req.userType === 'SEG_ADMIN' ? (
                                 <tr key={req.id}>
                                     {req.id !== hideControls ? (
                                         <>
-                                            <td className='text-left align-middle' style={{wordBreak: 'break-word'}}>{req.email}</td>
+                                            <td className='text-left align-middle' style={{ wordBreak: 'break-word' }}>{req.email}</td>
                                             <td className='text-left align-middle '>{req.fname}</td>
                                             <td className='text-left align-middle'>{req.lname}</td>
-                                            <td className='text-left align-middle' style={{wordBreak: 'break-word'}}> {req.adminmodEmail}</td>
+                                            <td className='text-left align-middle' style={{ wordBreak: 'break-word' }}> {req.adminmodEmail}</td>
                                             <td className='text-center align-middle'>{req.userType}</td>
                                             <td className='text-center align-middle'>
                                                 {req.userType === 'SUPER_ADMIN' ? (
@@ -458,7 +465,7 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
                                                 >
                                                     View Segments
                                                 </Dropdown.Item>
-                                                {req.userType !== 'SUPER_ADMIN' && user?.userType != req.userType? (
+                                                {req.userType !== 'SUPER_ADMIN' && user?.userType != req.userType ? (
                                                     <>
                                                         <Dropdown.Item
                                                             onClick={() => {

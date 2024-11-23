@@ -20,6 +20,7 @@ import { ISegment, ISuperSegment } from 'src/lib/types/data/segment.type';
 import { EditUserInfoModal } from '../modal/EditUserInfoModal';
 import UserChangePasswordModal from '../modal/UserChangePasswordModal';
 import { postUserSegmentInfo } from 'src/lib/api/userSegmentRoutes';
+import { unendorseIdeaByUser } from 'src/lib/api/ideaRoutes';
 
 interface UserManagementContentProps {
     users: IUser[] | undefined;
@@ -167,21 +168,53 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
         }
     };
 
+    const getOrganizationNameAdmin = ( 
+        selectedUserType: string, 
+        formData: FormData
+    ): string | undefined => {
+        switch(selectedUserType) {
+            case USER_TYPES.BUSINESS || USER_TYPES.COMMUNITY: {
+                return formData.get('inputOrg') as string;
+            }
+            case USER_TYPES.MUNICIPAL: {
+                return formData.get('inputCom') as string;
+            }
+        }
+        return undefined;
+    };
+
+    const getOrganizationName = (
+        user: IUser | null, 
+        userVerbose: IUser | null | undefined,
+        selectedUserType: string, 
+        formData: FormData
+    ): string | undefined => {
+        // Check the type of user creating the account, since the wizards display different fields
+        switch(user?.userType){
+            case USER_TYPES.ADMIN || USER_TYPES.SUPER_ADMIN: {
+                return getOrganizationNameAdmin(selectedUserType, formData);
+            }
+
+            // Return the municipal seg admin's organization name or fallback to their homeSegmentName if an org name is not set.
+            case USER_TYPES.MUNICIPAL_SEG_ADMIN: {
+                return userVerbose?.organizationName || userVerbose?.userSegments?.homeSegmentName;
+            }
+        }
+        return undefined; 
+    };
+      
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const form = event.target as HTMLFormElement;
         const formData = new FormData(form);
-
+        const orgName = getOrganizationName(user, userVerbose, selectedUserType,  formData);
+            
         const registerData: IRegisterInput = {
             userRoleId: undefined,
             email: formData.get('inputEmail') as string,
             password: formData.get('inputPassword') as string,
             confirmPassword: formData.get('inputPassword') as string,
-            organizationName: (user?.userType === USER_TYPES.SUPER_ADMIN || user?.userType === USER_TYPES.ADMIN)
-                && (
-                    selectedUserType === USER_TYPES.BUSINESS ||
-                    selectedUserType === USER_TYPES.COMMUNITY
-                ) ? formData.get('inputOrg') as string : undefined,
+            organizationName: orgName,
             fname: formData.get('inputFirst') as string,
             lname: formData.get('inputLast') as string,
             displayFName: formData.get('inputFirst') as string,
@@ -212,7 +245,6 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
                 faculty: '',
                 programCompletionDate: new Date(),
             },
-
             homeSegmentId: userVerbose?.userType === USER_TYPES.SUPER_ADMIN || userVerbose?.userType === USER_TYPES.ADMIN ? newHomeID : userVerbose?.userSegments?.homeSegmentId,
             workSegmentId: userVerbose?.userType === USER_TYPES.SUPER_ADMIN || userVerbose?.userType === USER_TYPES.ADMIN ? newWorkID : undefined,
             schoolSegmentId: userVerbose?.userType === USER_TYPES.SUPER_ADMIN || userVerbose?.userType === USER_TYPES.ADMIN ? newSchoolID : undefined,
@@ -223,7 +255,6 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
             reachSegmentIds: [],
             verified: true,
         };
-
 
         try {
             if (await getUserWithEmail(registerData.email) === 200) {
@@ -301,8 +332,6 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
                     user.userType !== USER_TYPES.MUNICIPAL_SEG_ADMIN &&
                     user.userType !== USER_TYPES.SEG_ADMIN
                 );
-                console.log(filteredUsers);
-                console.log(user);
                 setFilteredUsers(filteredUsers);
             }
         };

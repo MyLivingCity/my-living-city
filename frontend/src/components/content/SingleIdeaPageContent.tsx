@@ -45,6 +45,7 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
 import Form from 'react-bootstrap/Form';
 import { useCheckFlagBan } from 'src/hooks/flagHooks';
 import EndorsedUsersSection from '../partials/SingleIdeaContent/EndorsedUsersSection';
+import { IUser } from 'src/lib/types/data/user.type';
 
 interface SingleIdeaPageContentProps {
     ideaData: IIdeaWithRelationship;
@@ -152,35 +153,75 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
     const handleCloseOther = () => setShowOther(false);
     const handleShowOther = () => setShowOther(true);
 
-    const canEndorse = user?.userType === USER_TYPES.BUSINESS || user?.userType === USER_TYPES.COMMUNITY
+    const [showEndorseButton, setShowEndorseButton] = useState(false);
+    const [userCanEndorseByOrg, setUserCanEndorseByOrg] = useState(true);
+
+    const canEndorseByUserType = user?.userType === USER_TYPES.BUSINESS || user?.userType === USER_TYPES.COMMUNITY
         || user?.userType === USER_TYPES.MUNICIPAL || user?.userType === USER_TYPES.MUNICIPAL_SEG_ADMIN;
+
+    const canEndorse = canEndorseByUserType && userCanEndorseByOrg;
+
 
     useEffect(() => {
         if (!isEndorsingPostLoading) {
             setEndorsingPost(isEndorsingPost.isEndorsed);
+            setShowEndorseButton(true);
         }
     }, [isEndorsingPostLoading, isEndorsingPost]);
+
+
+    useEffect(() => {
+        if (!isEndorsedUsersDataLoading) {
+            setEndorsedUsers(endorsedUsersData);
+            // Check if current user's organizationName is in endorsements
+            if (user && user.organizationName) {
+                const endorsedOrgNames = endorsedUsersData
+                    .filter((u: IUser) => u.id !== user.id) // Exclude current user
+                    .map((u: IUser) => u.organizationName)
+                    .filter(Boolean); // Remove undefined or null values
+                if (endorsedOrgNames.includes(user.organizationName)) {
+                    setUserCanEndorseByOrg(false);
+                } else {
+                    setUserCanEndorseByOrg(true);
+                }
+            }
+        }
+    }, [isEndorsedUsersDataLoading, endorsedUsersData, user]);
 
     const handleEndorseUnendorse = async () => {
         if (user && token) {
             if (endorsingPost) {
-                await unendorseIdeaByUser(token, user.id, ideaId);
-                const newEndorsedUsers = endorsedUsers.filter(u => u.id !== user.id);
+                // Check if user is the one who endorsed
+                const userEndorsement = endorsedUsers.find(u => u.id === user.id);
+
+                // Check if user is an admin trying to unendorse someone from their organization, not currently working properly
+                const isAdminOfOrg = user.userType === USER_TYPES.MUNICIPAL_SEG_ADMIN;
+                const targetEndorsement = endorsedUsers.find(u => u.organizationName === user.organizationName);
+                const canAdminUnendorse = isAdminOfOrg && targetEndorsement;
+                // console.log(isAdminOfOrg)
+
+                if (!userEndorsement && !canAdminUnendorse) {
+                    alert("You don't have permission to unendorse this post");
+                    return;
+                }
+
+                // If admin is unendorsing someone else's endorsement
+                const endorsementToRemove = userEndorsement ? user.id : targetEndorsement.id;
+
+                await unendorseIdeaByUser(token, endorsementToRemove, ideaId);
+                const newEndorsedUsers = endorsedUsers.filter(u => u.id !== endorsementToRemove);
                 setEndorsedUsers(newEndorsedUsers);
+                setUserCanEndorseByOrg(true);
             } else {
                 await endorseIdeaByUser(token, user.id, ideaId);
                 const newEndorsedUsers = [...endorsedUsers, user];
                 setEndorsedUsers(newEndorsedUsers);
+                setUserCanEndorseByOrg(false);
             }
             setEndorsingPost(!endorsingPost);
         }
     };
 
-    useEffect(() => {
-        if (!isEndorsedUsersDataLoading) {
-            setEndorsedUsers(endorsedUsersData);
-        }
-    }, [isEndorsedUsersDataLoading, endorsedUsersData]);
 
     useEffect(() => {
         if (!isFollowingPostLoading) {
@@ -364,9 +405,11 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                             <LoadingSpinnerInline />
                                         ) : (
                                             <ButtonGroup className='mr-2'>
-                                                {user && canEndorse ? (
+                                                {user && token && showEndorseButton && canEndorseByUserType ? (
                                                     <Button
                                                         onClick={async () => await handleEndorseUnendorse()}
+                                                        disabled={!canEndorse && !endorsingPost} // Allow unendorsing even if organization already endorsed
+                                                        title={!canEndorse && !endorsingPost ? 'Your organization has already endorsed this proposal' : ''}
                                                     >
                                                         {endorsingPost ? 'Unendorse' : 'Endorse'}
                                                     </Button>

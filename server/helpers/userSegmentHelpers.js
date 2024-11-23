@@ -5,9 +5,10 @@
      * @param {string} address - The full address string to clean.
      * @returns {string} - The cleaned address.
      */
-        function cleanAddress(address) {
-            return address?.replace(/^\d+\s*/, '') || '';
-        }
+    function cleanAddress(address) {
+        const cleaned = address?.replace(/^\s*\d+\s*/, '') || '';
+        return cleaned;
+    }
 
     /**
      * This function takes in the segment and subsegment ids from the request body and

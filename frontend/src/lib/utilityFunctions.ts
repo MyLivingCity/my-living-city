@@ -3,6 +3,8 @@ import { IRating, IRatingAggregateSummary, IRatingValueBreakdown } from './types
 import { IFeedbackRating, IFeedbackRatingScaleAggregateSummary, IFeedbackRatingYesNoAggregateSummary } from './types/data/feedbackRating.type';
 import { IUser } from './types/data/user.type';
 import { IFetchError } from './types/types';
+import { IIdeaWithRelationship } from './types/data/idea.type';
+import { IParsedCommentAuthor } from './types/data/comment.type';
 
 /**
  * Stringifies given Object and stores it in local storage using the 
@@ -333,4 +335,68 @@ export const getFeedbackRatingScaleAggregateSummary = (feedbackRatings: IFeedbac
     return {
         ratingAvg: ratingCount ? ratingAvg / ratingCount : 0,
     };
+};
+
+const getHandleBySegmentId = (segmentId: number, homeId: number | undefined | null, schoolId: number | undefined | null, workId: number | undefined | null, userData: IUser) => {
+    const organizationName = userData.organizationName;
+    const address = userData.address;
+
+    const homeSegHandle = userData.userSegments?.homeSegHandle;
+    const workSegHandle = userData.userSegments?.workSegHandle;
+    const schoolSegHandle = userData.userSegments?.schoolSegHandle;
+
+    const userType = userData.userType;
+
+    let userName = 'Unknown';
+    if (userType === 'SUPER_ADMIN') {
+        userName = homeSegHandle + ' as Super Admin';
+    }
+    else if (userType === 'ADMIN') {
+        userName = homeSegHandle + ' as Admin';
+    } else if (userType === 'MOD') {
+        userName = homeSegHandle + ' as Mod';
+    } else if (userType === 'MUNICIPAL_SEG_ADMIN') {
+        userName = 'Municipal Admin';
+    } else if (userType === 'MUNICIPAL') {
+        userName = 'Municipal Account';
+    } else if (userType === 'BUSINESS') {
+        userName = organizationName + '@' + address?.streetAddress + ' as Business Member';
+    } else if (userType === 'COMMUNITY') {
+        userName = organizationName + '@' + address?.streetAddress + ' as Community Member';
+    } else {
+        switch (segmentId) {
+            case homeId:
+                userName = homeSegHandle + ' as Resident';
+                break;
+            case workId:
+                userName = workSegHandle + ' as Worker';
+                break;
+            case schoolId:
+                userName = schoolSegHandle + ' as Student';
+                break;
+        }
+    }
+
+    return userName;
+};
+
+export const getUserHandle = (subSegmentId: number | undefined, segmentId: number | undefined, superSegmentId: number | undefined, author: IUser | undefined) => {
+    if (!author) return;
+
+    if (subSegmentId) {
+        const homeSegId = author.userSegments?.homeSubSegmentId;
+        const workSegId = author.userSegments?.workSubSegmentId;
+        const schoolSegId = author.userSegments?.schoolSubSegmentId;
+        return getHandleBySegmentId(subSegmentId, homeSegId, schoolSegId, workSegId, author);
+    } else if (segmentId) {
+        const homeSegId = author.userSegments?.homeSegmentId;
+        const workSegId = author.userSegments?.workSegmentId;
+        const schoolSegId = author.userSegments?.schoolSegmentId;
+        return getHandleBySegmentId(segmentId, homeSegId, schoolSegId, workSegId, author);
+    } else if (superSegmentId) {
+        const homeSegId = author.userSegments?.homeSuperSegId;
+        const workSegId = author.userSegments?.workSuperSegId;
+        const schoolSegId = author.userSegments?.schoolSuperSegId;
+        return getHandleBySegmentId(superSegmentId, homeSegId, schoolSegId, workSegId, author);
+    }
 };

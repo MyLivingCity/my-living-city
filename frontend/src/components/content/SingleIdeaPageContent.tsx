@@ -6,6 +6,7 @@ import { useSingleIdea } from 'src/hooks/ideaHooks';
 import {
     capitalizeFirstLetterEachWord,
     capitalizeString,
+    getUserHandle
 } from '../../lib/utilityFunctions';
 import CommentsSection from '../partials/SingleIdeaContent/CommentsSection';
 import RatingsSection from '../partials/SingleIdeaContent/RatingsSection';
@@ -291,8 +292,6 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
         await flagFunc(ideaId, token, userId, ideaActive, otherFlagReason, quarantined_at);
 
     };
-
-
 
     return (
         <div className='single-idea-content pt-5'>
@@ -707,13 +706,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                 </RedditShareButton>
                             </div>
                             <div className='footer-handle'>
-                                {author?.userType === 'RESIDENTIAL' ?
-                                    author?.displayFName ?
-                                        <div>{author?.displayFName}@{author?.displayLName} as {userType}</div> :
-                                        <div>{author?.fname}@{author?.address?.streetAddress} as {userType}</div>
-                                    :
-                                    <div>{author?.organizationName}@{author?.address?.streetAddress}</div>
-                                }
+                                {getUserHandle(ideaData.subSegmentId, ideaData.segmentId, ideaData.superSegmentId, author)}
                             </div>
                         </Card.Footer>
                     </Col>

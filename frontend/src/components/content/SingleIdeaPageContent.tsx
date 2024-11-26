@@ -68,6 +68,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
         manufacturingImpact,
         createdAt,
         category,
+        segmentId,
         segment,
         subSegment,
         superSegment,
@@ -706,13 +707,29 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                     <RedditIcon size={32} round />
                                 </RedditShareButton>
                             </div>
+
                             <div className='footer-handle'>
-                                {author?.userType === 'RESIDENTIAL' ?
-                                    author?.displayFName ?
-                                        <div>{author?.displayFName}@{author?.displayLName} as {userType}</div> :
-                                        <div>{author?.fname}@{author?.address?.streetAddress} as {userType}</div>
-                                    :
-                                    <div>{author?.organizationName}@{author?.address?.streetAddress}</div>
+                                {
+                                    author?.userSegments?.homeSegmentId == segmentId &&
+                                    (
+                                        <div>
+                                            {author?.fname}@{author?.address?.streetAddress} as {userType}
+                                        </div>
+                                    ) ||
+
+                                    author?.userSegments?.schoolSegmentId == segmentId &&
+                                    (
+                                        <div>
+                                            {author?.userSegments?.schoolSegHandle} as Student
+                                        </div>
+                                    ) ||
+
+                                    author?.userSegments?.workSegmentId == segmentId &&
+                                    (
+                                        <div>
+                                            {author?.userSegments?.workSegHandle} as {userType}
+                                        </div>
+                                    )
                                 }
                             </div>
                         </Card.Footer>

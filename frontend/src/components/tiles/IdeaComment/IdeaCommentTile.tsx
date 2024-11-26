@@ -107,7 +107,9 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
         }
 
         const author: IUser = {
-            organizationName: '',
+            fname: fname,
+            lname: lname,
+            organizationName: organizationName,
             address: address as IAddress,
             userType: USER_TYPES[userType as keyof typeof USER_TYPES],
             userSegments: userSegments as any,

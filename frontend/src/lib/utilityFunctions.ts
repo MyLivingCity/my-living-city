@@ -356,9 +356,9 @@ const getHandleBySegmentId = (segmentId: number, homeId: number | undefined | nu
     } else if (userType === 'MOD') {
         userName = homeSegHandle + ' as Mod';
     } else if (userType === 'MUNICIPAL_SEG_ADMIN') {
-        userName = 'Municipal Admin';
+        userName = userData.fname + '@' + organizationName;
     } else if (userType === 'MUNICIPAL') {
-        userName = 'Municipal Account';
+        userName = userData.fname + '@' + organizationName;
     } else if (userType === 'BUSINESS') {
         userName = organizationName + '@' + address?.streetAddress + ' as Business Member';
     } else if (userType === 'COMMUNITY') {

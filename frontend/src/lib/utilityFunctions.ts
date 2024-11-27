@@ -347,37 +347,34 @@ const getHandleBySegmentId = (segmentId: number, homeId: number | undefined | nu
 
     const userType = userData.userType;
 
-    let userName = 'Unknown';
-    if (userType === 'SUPER_ADMIN') {
-        userName = homeSegHandle + ' as Super Admin';
-    }
-    else if (userType === 'ADMIN') {
-        userName = homeSegHandle + ' as Admin';
-    } else if (userType === 'MOD') {
-        userName = homeSegHandle + ' as Mod';
-    } else if (userType === 'MUNICIPAL_SEG_ADMIN') {
-        userName = userData.fname + '@' + organizationName;
-    } else if (userType === 'MUNICIPAL') {
-        userName = userData.fname + '@' + organizationName;
-    } else if (userType === 'BUSINESS') {
-        userName = organizationName + '@' + address?.streetAddress + ' as Business Member';
-    } else if (userType === 'COMMUNITY') {
-        userName = organizationName + '@' + address?.streetAddress + ' as Community Member';
-    } else {
-        switch (segmentId) {
-            case homeId:
-                userName = homeSegHandle + ' as Resident';
-                break;
-            case workId:
-                userName = workSegHandle + ' as Worker';
-                break;
-            case schoolId:
-                userName = schoolSegHandle + ' as Student';
-                break;
-        }
+    let handle = 'Unknown';
+    switch (segmentId) {
+        case homeId:
+            handle = `${homeSegHandle}`;
+            break;
+        case workId:
+            handle = `${workSegHandle}`;
+            break;
+        case schoolId:
+            handle = `${schoolSegHandle}`;
+            break;
     }
 
-    return userName;
+    if (userType === 'SUPER_ADMIN') {
+        handle += ' as Super Admin';
+    } else if (userType === 'ADMIN') {
+        handle += ' as Admin';
+    } else if (userType === 'MOD') {
+        handle += ' as Mod';
+    } else if (userType === 'MUNICIPAL_SEG_ADMIN' || userType === 'MUNICIPAL') {
+        handle = userData.fname + '@' + (!!organizationName ? organizationName : 'Unknown Municipality');
+    } else if (userType === 'BUSINESS') {
+        handle = organizationName + '@' + address?.streetAddress + ' as Business Member';
+    } else if (userType === 'COMMUNITY') {
+        handle = organizationName + '@' + address?.streetAddress + ' as Community Member';
+    }
+
+    return handle;
 };
 
 export const getUserHandle = (subSegmentId: number | undefined, segmentId: number | undefined, superSegmentId: number | undefined, author: IUser | undefined) => {

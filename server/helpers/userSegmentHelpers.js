@@ -1,6 +1,16 @@
     const prisma = require('../lib/prismaClient');
 
     /**
+     * Cleans an address by removing leading numbers and spaces.
+     * @param {string} address - The full address string to clean.
+     * @returns {string} - The cleaned address.
+     */
+    function cleanAddress(address) {
+        const cleaned = address?.replace(/^\s*\d+\s*/, '') || '';
+        return cleaned;
+    }
+
+    /**
      * This function takes in the segment and subsegment ids from the request body and
      * returns the segment and subsegment data from the database.
      */
@@ -20,7 +30,7 @@
         workSuperSegName: '',
         schoolSuperSegName: '',
         homeSegmentName: '',
-        workSegmentName: '',
+        workSegmentName: '',        
         schoolSegmentName: '',
         homeSubSegmentName: '',
         workSubSegmentName: '',
@@ -102,20 +112,20 @@
         segmentData.homeSuperSegId = homeSegmentData.superSegId;
         segmentData.homeSuperSegName = homeSegmentData.superSegName;
     }
-    segmentData.homeSegHandle = `${firstName}@${homeSegHandle || ''}`; // default was address.streetAddress
+    segmentData.homeSegHandle = `${firstName}@${homeSegHandle || ''}`;
 
     if (workSegmentData) {
         segmentData.workSegmentName = workSegmentData.name;
         segmentData.workSuperSegId = workSegmentData.superSegId;
         segmentData.workSuperSegName = workSegmentData.superSegName;
-        segmentData.workSegHandle = `${firstName}@${workSegHandle || 'Work'}`; // default was Work_Details.company
+        segmentData.workSegHandle = `${firstName}@${workSegHandle || 'Work'}`;
     }
 
     if (schoolSegmentData) {
         segmentData.schoolSegmentName = schoolSegmentData.name;
         segmentData.schoolSuperSegId = schoolSegmentData.superSegId;
         segmentData.schoolSuperSegName = schoolSegmentData.superSegName;
-        segmentData.schoolSegHandle = `${firstName}@${schoolSegHandle || 'School'}`; // default was School_Details.faculty
+        segmentData.schoolSegHandle = `${firstName}@${schoolSegHandle || 'School'}`;
         }
 
     if (homeSubSegmentData) { segmentData.homeSubSegmentName = homeSubSegmentData.name; 
@@ -129,5 +139,6 @@
     }
 
     module.exports = {
-    getSegmentInfo
+    getSegmentInfo,
+    cleanAddress
     }

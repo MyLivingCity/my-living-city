@@ -6,6 +6,7 @@ import { useSingleIdea } from 'src/hooks/ideaHooks';
 import {
     capitalizeFirstLetterEachWord,
     capitalizeString,
+    getUserHandle
 } from '../../lib/utilityFunctions';
 import CommentsSection from '../partials/SingleIdeaContent/CommentsSection';
 import RatingsSection from '../partials/SingleIdeaContent/RatingsSection';
@@ -292,8 +293,6 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
         await flagFunc(ideaId, token, userId, ideaActive, otherFlagReason, quarantined_at);
 
     };
-
-
 
     return (
         <div className='single-idea-content pt-5'>

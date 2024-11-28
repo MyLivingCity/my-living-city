@@ -4,7 +4,7 @@
   const prisma = require('../lib/prismaClient');
   const { argon2Hash, argon2ConfirmHash } = require('../lib/utilityFunctions');
   const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-  const { getSegmentInfo } = require('../helpers/userSegmentHelpers');
+  const { getSegmentInfo, cleanAddress } = require('../helpers/userSegmentHelpers');
   const createAppPasswordTransport = require('./appPasswordTransport');
 
   passport.use(
@@ -106,8 +106,17 @@
           // Validate geo data
           const geoData = { ...req.body.geo };
           
+          //remove the user address to isolate the street name for the user handle
+          const cleanStreetAddress = cleanAddress(req.body?.address?.streetAddress);
+
           // Need to get the rest of segment data to fill in the userSegments table
-          const userSegmentData = await getSegmentInfo(req.body?.userSegment, req.body?.fname,  req.body?.address?.streetAddress, req.body?.Work_Details?.company, req.body?.School_Details?.faculty);
+          const userSegmentData = await getSegmentInfo(
+              req.body?.userSegment,
+              req.body?.fname,
+              cleanStreetAddress, // Use cleaned address
+              req.body?.workDetails?.company,
+              req.body?.schoolDetails?.faculty
+          );
 
           // Validate segment request data
           const segmentRequest = (req.body?.segmentRequest || []).filter(newSegment => newSegment);
@@ -366,7 +375,7 @@
         where: { id: user.id },
         data: { verifiedToken: token },
       });
-  
+
       const appUrl = process.env.APP_URL || 'http://localhost:3000';
       var url = process.env.APP_URL || 'http://localhost:3001';
       url += `/emailVerification/checkVerificationCode/${user.id}/${token}`;

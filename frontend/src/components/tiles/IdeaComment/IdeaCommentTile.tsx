@@ -11,9 +11,13 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import React, { useEffect, useState } from 'react';
 import { useCheckFlagBan } from 'src/hooks/flagHooks';
-import { capitalizeFirstLetterEachWord, capitalizeString } from '../../../lib/utilityFunctions';
+import { capitalizeFirstLetterEachWord, capitalizeString, getUserHandle } from '../../../lib/utilityFunctions';
 // Added May 31
 import { FaRegThumbsUp } from 'react-icons/fa';
+import { IUser } from 'src/lib/types/data/user.type';
+import { USER_TYPES } from 'src/lib/constants';
+import { IAddress } from 'src/lib/types/data/address.type';
+import { IUserSegment } from 'src/lib/types/data/segment.type';
 
 interface IdeaCommentTileProps {
     commentData: IComment;
@@ -60,7 +64,7 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
     } = commentData;
 
     const { email, fname, lname, organizationName, address, userSegments, userType } = commentData?.author;
-    const { segmentId, subSegmentId, superSegmentId } = commentData?.idea;
+    const { segmentId, subSegmentId, superSegmentId } = commentData as any;
     const { homeSegmentId, workSegmentId, schoolSegmentId,
         homeSubSegmentId, workSubSegmentId, schoolSubSegmentId,
         homeSuperSegmentId, workSuperSegmentId, schoolSuperSegmentId,
@@ -68,56 +72,50 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
     } = userSegments;
 
     const colouredUserNameHandle = (segmentId: number, homeId?: number, workId?: number, schoolId?: number) => {
-        // let ideaId, homeId, workId, schoolId;
-        // if(superSegmentId){
-        //   ideaId = superSegmentId;
-        // }else{
-
-        // }
-
-        let userName = 'Unknown';
+        console.log(commentData);
 
         let colour = '';
         if (userType === 'SUPER_ADMIN') {
-            userName = homeSegHandle + ' as Super Admin';
             colour = 'text-danger';
             //colour = 'text-danger';
         }
         else if (userType === 'ADMIN') {
-            userName = homeSegHandle + ' as Admin';
             colour = 'text-danger';
         } else if (userType === 'MOD') {
-            userName = homeSegHandle + ' as Mod';
             colour = 'text-warning';
         } else if (userType === 'MUNICIPAL_SEG_ADMIN') {
-            userName = 'Municipal Admin';
             colour = 'text-danger';
         } else if (userType === 'MUNICIPAL') {
-            userName = 'Municipal Account';
             //colour = 'text-warning';
             colour = 'admin';
         } else if (userType === 'BUSINESS') {
-            userName = organizationName + '@' + address?.streetAddress + ' as Business Member';
             colour = 'text-primary';
         } else if (userType === 'Community') {
-            userName = organizationName + '@' + address?.streetAddress + ' as Community Member';
             colour = 'text-primary';
         } else {
             switch (segmentId) {
                 case homeId:
-                    userName = homeSegHandle + ' as Resident';
                     colour = 'text-primary';
                     break;
                 case workId:
-                    userName = workSegHandle + ' as Worker';
                     colour = 'text-next';
                     break;
                 case schoolId:
-                    userName = schoolSegHandle + ' as Student';
                     colour = 'text-next';
                     break;
             }
         }
+
+        const author: IUser = {
+            fname: fname,
+            lname: lname,
+            organizationName: organizationName,
+            address: address as IAddress,
+            userType: USER_TYPES[userType as keyof typeof USER_TYPES],
+            userSegments: userSegments as any,
+        } as any;
+        const userName = getUserHandle(subSegmentId, segmentId, superSegmentId, author);
+
         return (<span className={`name d-block ${colour} !important`} style={{ fontSize: '70%' }}>{userName}</span>);
     };
 

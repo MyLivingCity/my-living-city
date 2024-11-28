@@ -15,6 +15,7 @@ import { IIdea, IIdeaWithRelationship } from '../../lib/types/data/idea.type';
 import {
     capitalizeFirstLetterEachWord,
     capitalizeString,
+    getUserHandle
 } from '../../lib/utilityFunctions';
 import LoadingSpinnerInline from '../ui/LoadingSpinnerInline';
 import CommentsSection from '../partials/SingleIdeaContent/CommentsSection';
@@ -113,10 +114,10 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
         projectInfo,
     } = ideaData;
 
-    console.log('segment', segment);
-    console.log('sub segment', subSegment);
-    console.log('super segment', superSegment);
-    console.log('ideaData', ideaData);
+    // console.log('segment', segment);
+    // console.log('sub segment', subSegment);
+    // console.log('super segment', superSegment);
+    // console.log('ideaData', ideaData);
 
     const {
         id: proposalId,
@@ -373,9 +374,15 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     const commentAggregateUnderIdea = useCommentAggregateUnderIdea(ideaId);
     const allCommentsUnderIdea = useAllCommentsUnderIdea(ideaId, token);
 
-    const canEndorse = user?.userType === USER_TYPES.BUSINESS || user?.userType === USER_TYPES.COMMUNITY
-        || user?.userType === USER_TYPES.MUNICIPAL || user?.userType === USER_TYPES.MUNICIPAL_SEG_ADMIN;
+
     const [showEndorseButton, setShowEndorseButton] = useState(false);
+    const [userCanEndorseByOrg, setUserCanEndorseByOrg] = useState(true);
+
+    const canEndorseByUserType = user?.userType === USER_TYPES.BUSINESS || user?.userType === USER_TYPES.COMMUNITY
+        || user?.userType === USER_TYPES.MUNICIPAL || user?.userType === USER_TYPES.MUNICIPAL_SEG_ADMIN;
+
+    const canEndorse = canEndorseByUserType && userCanEndorseByOrg;
+
 
     useEffect(() => {
         if (!isEndorsingPostLoading) {
@@ -384,26 +391,59 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
         }
     }, [isEndorsingPostLoading, isEndorsingPost]);
 
+
+    useEffect(() => {
+        if (!isEndorsedUsersDataLoading) {
+            setEndorsedUsers(endorsedUsersData);
+            // Check if current user's organizationName is in endorsements
+            if (user && user.organizationName) {
+                const endorsedOrgNames = endorsedUsersData
+                    .filter((u: IUser) => u.id !== user.id) // Exclude current user
+                    .map((u: IUser) => u.organizationName)
+                    .filter(Boolean); // Remove undefined or null values
+                if (endorsedOrgNames.includes(user.organizationName)) {
+                    setUserCanEndorseByOrg(false);
+                } else {
+                    setUserCanEndorseByOrg(true);
+                }
+            }
+        }
+    }, [isEndorsedUsersDataLoading, endorsedUsersData, user]);
+
     const handleEndorseUnendorse = async () => {
         if (user && token) {
             if (endorsingPost) {
-                await unendorseIdeaByUser(token, user.id, ideaId);
-                const newEndorsedUsers = endorsedUsers.filter(u => u.id !== user.id);
+                // Check if user is the one who endorsed
+                const userEndorsement = endorsedUsers.find(u => u.id === user.id);
+
+                // Check if user is an admin trying to unendorse someone from their organization, not currently working properly
+                const isAdminOfOrg = user.userType === USER_TYPES.MUNICIPAL_SEG_ADMIN;
+                const targetEndorsement = endorsedUsers.find(u => u.organizationName === user.organizationName);
+                const canAdminUnendorse = isAdminOfOrg && targetEndorsement;
+                // console.log(isAdminOfOrg)
+
+                if (!userEndorsement && !canAdminUnendorse) {
+                    alert("You don't have permission to unendorse this post");
+                    return;
+                }
+
+                // If admin is unendorsing someone else's endorsement
+                const endorsementToRemove = userEndorsement ? user.id : targetEndorsement.id;
+
+                await unendorseIdeaByUser(token, endorsementToRemove, ideaId);
+                const newEndorsedUsers = endorsedUsers.filter(u => u.id !== endorsementToRemove);
                 setEndorsedUsers(newEndorsedUsers);
+                setUserCanEndorseByOrg(true);
             } else {
                 await endorseIdeaByUser(token, user.id, ideaId);
                 const newEndorsedUsers = [...endorsedUsers, user];
                 setEndorsedUsers(newEndorsedUsers);
+                setUserCanEndorseByOrg(false);
             }
             setEndorsingPost(!endorsingPost);
         }
     };
 
-    useEffect(() => {
-        if (!isEndorsedUsersDataLoading) {
-            setEndorsedUsers(endorsedUsersData);
-        }
-    }, [isEndorsedUsersDataLoading, endorsedUsersData]);
 
     const [showFollowButton, setShowFollowButton] = useState(false);
     useEffect(() => {
@@ -424,9 +464,9 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
     useEffect(() => {
         if (!isFlaggedLoading) {
-            console.log('isFlagged', isFlagged?.valueOf());
+            // console.log('isFlagged', isFlagged?.valueOf());
             if (isFlagged) {
-                console.log('isFlaggedRAWR', isFlagged?.valueOf());
+                // console.log('isFlaggedRAWR', isFlagged?.valueOf());
                 handleHideFlagButton();
             }
         }
@@ -481,58 +521,6 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
         handleHideFlagButton();
         await flagFunc(ideaId, token, userId, ideaActive, otherFlagReason, quarantined_at);
 
-    };
-
-    const getHandleBySegmentId = (segmentId: number, userData: IUser) => {
-        const address = userData.address;
-        const organizationName = userData.organizationName;
-
-        const homeId = userData.userSegments?.homeSegmentId;
-        const workId = userData.userSegments?.workSegmentId;
-        const schoolId = userData.userSegments?.schoolSegmentId;
-
-        const homeSegHandle = userData.userSegments?.homeSegHandle;
-        const workSegHandle = userData.userSegments?.workSegHandle;
-        const schoolSegHandle = userData.userSegments?.schoolSegHandle;
-
-        let userName = 'Unknown';
-        if (userType === 'MUNICIPAL_SEG_ADMIN') {
-            userName = 'Municipal Admin';
-        } else if (userType === 'MUNICIPAL') {
-            userName = 'Municipal Account';
-        } else if (userType === 'BUSINESS' || userType === 'Community') {
-            userName = organizationName + '@' + address?.streetAddress;
-        } else {
-            switch (segmentId) {
-                case homeId:
-                    userName = homeSegHandle ?? 'Unknown';
-                    break;
-                case workId:
-                    userName = workSegHandle ?? 'Unknown';
-                    break;
-                case schoolId:
-                    userName = schoolSegHandle ?? 'Unknown';
-                    break;
-            }
-
-            userName = `${userName} as ${author?.userType}`;
-        }
-
-        return userName;
-    };
-
-    const getUserHandle = (ideaData: IIdeaWithRelationship) => {
-        const { subSegmentId, segmentId, superSegmentId, author } = ideaData;
-
-        if (!author) return;
-        
-        if (subSegmentId) {
-            return getHandleBySegmentId(subSegmentId, author);
-        } else if (segmentId) {
-            return getHandleBySegmentId(segmentId, author);
-        } else if (superSegmentId) {
-            return getHandleBySegmentId(superSegmentId, author);
-        }
     };
 
     if (!active) {
@@ -600,11 +588,15 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                             </Button> : null}
                                         </ButtonGroup>
                                         <ButtonGroup className='mr-2'>
-                                            {user && token && showEndorseButton && canEndorse ? <Button
-                                                onClick={async () => await handleEndorseUnendorse()}
-                                            >
-                                                {endorsingPost ? 'Unendorse' : 'Endorse'}
-                                            </Button> : null}
+                                            {user && token && showEndorseButton && canEndorseByUserType ? (
+                                                <Button
+                                                    onClick={async () => await handleEndorseUnendorse()}
+                                                    disabled={!canEndorse && !endorsingPost} // Allow unendorsing even if organization already endorsed
+                                                    title={!canEndorse && !endorsingPost ? 'Your organization has already endorsed this proposal' : ''}
+                                                >
+                                                    {endorsingPost ? 'Unendorse' : 'Endorse'}
+                                                </Button>
+                                            ) : null}
                                         </ButtonGroup>
                                     </div>
                                 </div>
@@ -841,7 +833,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                     <RedditIcon size={32} round />
                                 </RedditShareButton>
                             </div>
-                            <div className='footer-handle'>{getUserHandle(ideaData)}</div>
+                            <div className='footer-handle'>{getUserHandle(ideaData.subSegmentId, ideaData.segmentId, ideaData.superSegmentId, author)}</div>
                         </Card.Footer>
 
                     </Col>
@@ -1319,7 +1311,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                 </h4>
                             </div>
                         </Card.Header>
-                        <Card.Body style={{padding: 0}}>
+                        <Card.Body style={{ padding: 0 }}>
                             {suggestedIdeas.length > 0 ? (
                                 <SuggestedIdeasTable suggestedIdeas={suggestedIdeas} />
                             ) : (

@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
 import {
     Card,
-    Table, 
+    Table,
 } from 'react-bootstrap';
+import { USER_TYPES } from 'src/lib/constants';
 
 interface EndorsedUsersSectionProps {
-  endorsedUsers: any[];
+    endorsedUsers: any[];
 }
 
 const EndorsedUsersSection: React.FC<EndorsedUsersSectionProps> = ({ endorsedUsers }) => {
@@ -21,20 +22,22 @@ const EndorsedUsersSection: React.FC<EndorsedUsersSectionProps> = ({ endorsedUse
                     </div>
                 </Card.Header>
                 <Card.Body>
-                    <Table style={{margin: '0rem'}}>
+                    <Table style={{ margin: '0rem' }}>
                         <tbody>
                             {endorsedUsers.map((user) => (
                                 <tr key={user.id}>
                                     <td>
-                                        {user.organizationName || `${user.userType} Endorser - No Affiliated Organization.` } 
+                                        {[USER_TYPES.MUNICIPAL, USER_TYPES.MUNICIPAL_SEG_ADMIN].includes(user.userType)
+                                            ? `Municipality of ${user.organizationName}`
+                                            : user.organizationName || `${user.userType} Endorser - No Affiliated Organization.`}
                                     </td>
                                 </tr>
-                            ))
-                            }
+                            ))}
                         </tbody>
+
                     </Table>
                 </Card.Body>
-            </Card>   
+            </Card>
         </div>
     );
 };

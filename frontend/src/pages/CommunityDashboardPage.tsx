@@ -2,8 +2,9 @@ import { RouteComponentProps } from 'react-router-dom';
 import CommunityDashboardContent from './../components/content/CommunityDashboardContent';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import { useSegmentInfoAggregate, useSingleSegmentBySegmentId } from './../hooks/segmentHooks';
-import { useIdeasHomepage } from 'src/hooks/ideaHooks';
-import { useContext } from 'react';
+// import { useIdeasHomepage } from 'src/hooks/ideaHooks';
+import {useIdeasBySegmentId} from 'src/hooks/ideaHooks'; //new one
+import { useContext, useState } from 'react';
 import { UserProfileContext } from 'src/contexts/UserProfile.Context';
 import { useAllUserSegments } from 'src/hooks/userSegmentHooks';
 
@@ -19,14 +20,23 @@ const CommunityDashboardPage: React.FC<CommunityDashboardPageProps> = (props) =>
     } = props;
 
     const { user, token } = useContext(UserProfileContext);
+    // const [currentSegmentId, setCurrentSegmentId] = useState(parseInt(segId));
     const allUserSegmentsQueryResult = useAllUserSegments(token, user?.id || null);
     const segmentInfoAggregateQueryResult = useSegmentInfoAggregate(parseInt(segId));
     const singleSegmentBySegmentIdQueryResult = useSingleSegmentBySegmentId(parseInt(segId));
-    const ideasHomepageQueryResult = useIdeasHomepage();
-    // if segId == 0 then use segmentIds to set segId to the home segment
-    if (parseInt(segId) === 0 && allUserSegmentsQueryResult.data?.homeSegmentId) {
-        props.history.push(`/community-dashboard/${allUserSegmentsQueryResult.data.homeSegmentId}`);
-        window.location.reload();
+    // const ideasHomepageQueryResult = useIdeasHomepage();
+    const ideasCommunityDashboardQueryResult = useIdeasBySegmentId(parseInt(segId));
+
+    // if segId == 0 then try and set to one of the user home, work, or school segments
+    if (parseInt(segId) === 0) {
+        const { homeSegmentId, workSegmentId, schoolSegmentId } = allUserSegmentsQueryResult.data || {};
+        const fallbackSegmentId = homeSegmentId || workSegmentId || schoolSegmentId;
+        if (fallbackSegmentId) {
+            props.history.push(`/community-dashboard/${fallbackSegmentId}`);
+            window.location.reload();
+        } else {
+            return <p>No community data available. Please check your profile.</p>;
+        }
     }
 
     if (segId === '0') {
@@ -45,7 +55,9 @@ const CommunityDashboardPage: React.FC<CommunityDashboardPageProps> = (props) =>
                 singleSegmentBySegmentIdQueryResult={
                     singleSegmentBySegmentIdQueryResult
                 }
-                ideasHomepageQueryResult={ideasHomepageQueryResult}
+                // ideasHomepageQueryResult={ideasHomepageQueryResult}
+                ideasCommunityDashboardQueryResult={ideasCommunityDashboardQueryResult} //NEW HOOK
+                // onSegmentChange={(newSegmentId) => setCurrentSegmentId(newSegmentId)}   //CALLBACK 
             />
         </div>
     );

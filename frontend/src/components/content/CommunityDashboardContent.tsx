@@ -27,7 +27,9 @@ interface CommunityDashboardContentProps {
   allUserSegmentsQueryResult: UseQueryResult<any, IFetchError>;
   segmentInfoAggregateQueryResult: UseQueryResult<ISegmentAggregateInfo, IFetchError>;
   singleSegmentBySegmentIdQueryResult: UseQueryResult<ISegment, IFetchError>;
-  ideasHomepageQueryResult: UseQueryResult<IIdeaWithAggregations[], IFetchError>;
+//   ideasHomepageQueryResult: UseQueryResult<IIdeaWithAggregations[], IFetchError>;
+    ideasCommunityDashboardQueryResult: UseQueryResult<IIdeaWithAggregations[], IFetchError>; // New
+    // onSegmentChange: (segmentId: number) => void; // Callback for segment changes
 }
 
 interface RouteParams {
@@ -38,7 +40,9 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
     allUserSegmentsQueryResult,
     segmentInfoAggregateQueryResult,
     singleSegmentBySegmentIdQueryResult,
-    ideasHomepageQueryResult
+    // ideasHomepageQueryResult
+    ideasCommunityDashboardQueryResult,
+    // onSegmentChange,
 }: CommunityDashboardContentProps) => {
     const {segId} = useParams<RouteParams>();
     const currentSegmentId = parseInt(segId);
@@ -62,7 +66,8 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
         data: iData,
         isLoading: iIsLoading,
         isError: iIsError,
-    } = ideasHomepageQueryResult;
+    // } = ideasHomepageQueryResult;
+    } = ideasCommunityDashboardQueryResult;
 
     // Get segments as array of objects with id and name, but not super- or sub-segments.
     const segmentsArray = [];
@@ -101,7 +106,12 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
         }
     }
 
-  
+    // Update the frontend\src\pages\CommunityDashboardPage.tsx of a change in the set segment
+    // So the cache can be updated 
+    const handleDropdownChange = (segmentId: number) => {
+        // onSegmentChange(segmentId);
+    };
+
     const [currCommunityName, setCurrCommunityName] = useState<string>('');
     const [currCommunityPosts, setCurrCommunityPosts] = useState<IIdeaWithAggregations[]>([]);
 
@@ -114,6 +124,7 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
         segmentData
         ) {
             const segmentId = segmentData.segId;
+            console.log('Ideas before filtering:', iData);
             const filteredIdeas: IIdeaWithAggregations[] = iData.filter((idea) => {
           
                 if (idea.segId === segmentId && idea.subSegId === null ) {
@@ -123,6 +134,8 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
                     return false;
                 }
             });
+            console.log('Filtered ideas:', filteredIdeas);
+
             setCurrCommunityPosts(filteredIdeas);
         }
     }, [iData, isSegmentDataLoading, segmentData]);
@@ -205,6 +218,7 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
                         {segmentsArray.map((segment: any) => (
                             <Dropdown.Item
                                 key={segment.id}
+                                onClick={() => handleDropdownChange(segment.id)}
                                 className='text-center'
                                 href={`/community-dashboard/${segment.id}`}
                                 disabled={segment.id === currentSegmentId}

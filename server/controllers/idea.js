@@ -456,6 +456,132 @@ ideaRouter.post(
     }
   });
 
+ideaRouter.post(
+  '/getall/by-segment',
+  async (req, res) => {
+    let { segmentId, take } = req.body;
+
+    if (!segmentId) {
+      return res.status(400).json({ message: 'segmentId is required.' });
+    }
+
+    take = Number.isInteger(take) ? Number(take) : undefined;
+    const takeClause = take ? `limit ${take}` : '';
+
+    try {
+      const rawData = await prisma.$queryRawUnsafe(`
+        select
+          i.id,
+          i.author_id as "authorId",
+          i.category_id as "categoryId",
+          i.title,
+          i.description,
+          i.proposal_role,
+          i.requirements,
+          i.proposal_benefits,
+          i.notification_dismissed,
+          i.quarantined_at,
+          i.segment_id as "segId",
+          i.sub_segment_id as "subSegId",
+          i.super_segment_id as "superSegId",
+          i.community_impact as "communityImpact",
+          i.nature_impact as "natureImpact",
+          i.energy_impact as "energyImpact",
+          i.manufacturing_impact as "manufacturingImpact",
+          i.arts_impact as "artsImpact",
+          coalesce(ic.total_comments + ir.total_ratings, 0) as engagements,
+          coalesce(ir.avg_rating, 0) as "ratingAvg",
+          coalesce(ic.total_comments, 0) as "commentCount",
+          coalesce(ir.total_ratings, 0) as "ratingCount",
+          coalesce(pr.pos_rating, 0) as "posRatings",
+          coalesce(nr.neg_rating, 0) as "negRatings",
+          coalesce(sn.segment_name, '') as "segmentName",
+          coalesce(sbn.sub_segment_name, '') as "subSegmentName",
+          coalesce(userfname.f_name, '') as "firstName",
+          coalesce(userStreetAddress.street_address, '') as "streetAddress",
+          i.state,
+          i.active,
+          i.banned,
+          i.reviewed,
+          i.updated_at as "updatedAt",
+          i.created_at as "createdAt"
+        from idea i
+        left join (
+            select idea_id, count(id) as total_comments
+            from idea_comment
+            group by idea_comment.idea_id
+        ) ic on i.id = ic.idea_id
+        left join (
+            select idea_id, count(id) as total_ratings, avg(rating) as avg_rating
+            from idea_rating
+            group by idea_rating.idea_id
+        ) ir on i.id = ir.idea_id
+        left join (
+            select idea_id, count(id) as neg_rating
+            from idea_rating
+            where rating < 0
+            group by idea_id
+        ) nr on i.id = nr.idea_id
+        left join (
+            select idea_id, count(id) as pos_rating
+            from idea_rating
+            where rating > 0
+            group by idea_id
+        ) pr on i.id = pr.idea_id
+        left join (
+            select seg_id, segment_name
+            from segment
+        ) sn on i.segment_id = sn.seg_id
+        left join (
+            select id, sub_segment_name
+            from sub_segment
+        ) sbn on i.sub_segment_id = sbn.id
+        left join (
+            select id, f_name
+            from "user"
+        ) userfname on i.author_id = userfname.id
+        left join (
+            select user_id, street_address
+            from user_address
+        ) userStreetAddress on i.author_id = userStreetAddress.user_id
+        where i.segment_id = ${segmentId}
+        order by
+          "ratingCount" desc,
+          "ratingAvg" desc,
+          i.updated_at desc,
+          engagements desc
+        ${takeClause}
+      `);
+
+      const data = rawData.map((row) => {
+        const newRow = {};
+        for (const key in row) {
+          if (typeof row[key] === 'bigint') {
+            newRow[key] = String(row[key]); // Convert BigInt to String
+          } else {
+            newRow[key] = row[key];
+          }
+        }
+        return newRow;
+      });
+
+      return res.status(200).json(data);
+    } catch (error) {
+      console.error('Error fetching ideas by segmentId:', error);
+      return res.status(500).json({
+        message: 'Error fetching ideas by segmentId.',
+        details: {
+          errorMessage: error.message,
+          errorStack: error.stack,
+        },
+      });
+    } finally {
+      await prisma.$disconnect();
+    }
+  }
+);
+  
+
 // Get all ideas from a specific author
 ideaRouter.get(
   '/getall/:userId',

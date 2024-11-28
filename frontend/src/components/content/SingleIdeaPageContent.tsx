@@ -69,6 +69,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
         manufacturingImpact,
         createdAt,
         category,
+        segmentId,
         segment,
         subSegment,
         superSegment,
@@ -705,8 +706,30 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                     <RedditIcon size={32} round />
                                 </RedditShareButton>
                             </div>
+
                             <div className='footer-handle'>
-                                {getUserHandle(ideaData.subSegmentId, ideaData.segmentId, ideaData.superSegmentId, author)}
+                                {
+                                    author?.userSegments?.homeSegmentId == segmentId &&
+                                    (
+                                        <div>
+                                            {author?.fname}@{author?.address?.streetAddress} as Resident
+                                        </div>
+                                    ) ||
+
+                                    author?.userSegments?.schoolSegmentId == segmentId &&
+                                    (
+                                        <div>
+                                            {author?.userSegments?.schoolSegHandle} as Student
+                                        </div>
+                                    ) ||
+
+                                    author?.userSegments?.workSegmentId == segmentId &&
+                                    (
+                                        <div>
+                                            {author?.userSegments?.workSegHandle} as Worker
+                                        </div>
+                                    )
+                                }
                             </div>
                         </Card.Footer>
                     </Col>

@@ -155,7 +155,9 @@ function Header() {
                         alt='App Name'
                     />
                 </Navbar.Brand>
-                {(user) ? (
+                {/* Uncomment this below if you want the user profile to show in header */}
+                {
+                /* {(user) ? (
                     <>
                         {(user.userType === 'BUSINESS' || user.userType === 'MUNICIPAL' || user.userType === 'COMMUNITY') && (
                             <Nav.Link href='/profile' className='d-inline-block alight-top'>
@@ -170,7 +172,7 @@ function Header() {
                     </>
                 ) : (
                     <></>
-                )}
+                )} */}
                 <Navbar.Toggle aria-controls='basic-navbar-nav' style={{ background: 'white' }} />
                 <Navbar.Collapse id='basic-navbar-nav'>
                     <Nav className='ml-auto'>

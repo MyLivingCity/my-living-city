@@ -41,8 +41,8 @@ const SpecifiedMunicipalSectionTableView: React.FC<SpecifiedMunicipalSectionTabl
         status: [],
     });
 
-   
-   
+
+
 
 
 
@@ -113,15 +113,15 @@ const SpecifiedMunicipalSectionTableView: React.FC<SpecifiedMunicipalSectionTabl
     }, []);
 
 
-    const {user, token} = useContext(UserProfileContext);
+    const { user, token } = useContext(UserProfileContext);
 
     const { data: allComments, isLoading, error } = useAllCommentsUnderMultipleIdeas(topIdeas.map(idea => ({ ideaId: idea.id })));
 
 
     const { data: allEndorsedPosts, isLoading: allEndorsedPostsLoading } = useGetEndorsedMunicpalUsersByIdea(token, topIdeas.map(idea => ({ ideaId: idea.id })));
 
-    
-   
+
+
 
 
     let checkmarks: boolean[] = [];
@@ -140,14 +140,14 @@ const SpecifiedMunicipalSectionTableView: React.FC<SpecifiedMunicipalSectionTabl
     if (allEndorsedPosts && topIdeas) {
         topIdeas.forEach((idea, index) => {
             const municipalEndorsementExists = allEndorsedPosts[index].some(
-                (endorsed: any) =>  endorsed.userType === 'MUNICIPAL'
+                (endorsed: any) => endorsed.userType === 'MUNICIPAL'
             );
             checkmarksEndorsed[index] = municipalEndorsementExists;
         });
     }
 
     return (
-        <Container className='system' id='hanging-icons'>
+        <Container className='system' id='hanging-icons' style={{paddingRight: '0rem', paddingLeft:'0rem'}}>
             <div className='pb-1 border-bottom display-6 text-left'>
                 <h2 style={titleStyle}>{sectionTitle ? capitalizeFirstLetterEachWord(sectionTitle) : ''} Posts</h2>
                 {showCustomFilter === false ? null : <BsFilter onMouseOver={mouseHoverPointer} style={filterButtonStyle} onClick={() => { setShowModal(!showModal); }} size={30} />}
@@ -156,74 +156,69 @@ const SpecifiedMunicipalSectionTableView: React.FC<SpecifiedMunicipalSectionTabl
             <div className='p-2 m-2'> {/*padding on the x-axis (left and right) */}
                 <div className='dropdown-divider'></div>
             </div>
-            <Table striped bordered hover>
-                <thead>
-                    <tr>
-                        <th className='text-center align-middle'>#</th>
-                        <th className='text-left align-middle'>Title</th>
-                        <th className='text-center align-middle'>Location</th>
-                        <th className='text-center align-middle'>State</th>
-                        <th className='text-left align-middle'>Description</th>
-                        <th className='text-center align-middle'><AiOutlineStar /></th>
-                        <th className='text-center align-middle' >  <BsHeartHalf /></th>
-                        <th className='text-center align-middle'>  <BsPeople /></th>
-                        <th className='col-2 text-center align-middle'>Municipal 💬</th>
-                        <th className='text-center align-middle'>Endorsed</th>
-                        <th className='text-center align-middle'>Details</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {topIdeas && allProposals
-                        ? topIdeas.map((idea, index) => {
-                            const superSegmentName = superSegments.find(superSegment => superSegment.superSegId === idea.superSegId)?.name || '';
+            <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                <Table striped bordered hover>
+                    <thead>
+                        <tr>
+                            <th className='text-center align-middle'>#</th>
+                            <th className='text-left align-middle'>Title</th>
+                            <th className='text-center align-middle'>Location</th>
+                            <th className='text-center align-middle'>State</th>
+                            <th className='text-left align-middle'>Description</th>
+                            <th className='text-center align-middle'><AiOutlineStar /></th>
+                            <th className='text-center align-middle' >  <BsHeartHalf /></th>
+                            <th className='text-center align-middle'>  <BsPeople /></th>
+                            <th className='col-2 text-center align-middle'>Municipal 💬</th>
+                            <th className='text-center align-middle'>Endorsed</th>
+                            <th className='text-center align-middle'>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {topIdeas && allProposals
+                            ? topIdeas.map((idea, index) => {
+                                const superSegmentName = superSegments.find(superSegment => superSegment.superSegId === idea.superSegId)?.name || '';
 
-                            return doesIdeaPassFilter(idea) ?
-                                <tr key={idea.id}>
+                                return doesIdeaPassFilter(idea) ?
+                                    <tr key={idea.id}>
 
-                                    <td className='text-center align-middle'>{index + 1}</td>
-                                    <td className='align-middle'>{idea.title}</td>
-                                    <td className='text-left align-middle'>
-                                        {idea.subSegmentName
-                                            ? idea.subSegmentName.charAt(0).toUpperCase() + idea.subSegmentName.slice(1)
-                                            : idea.segmentName
-                                                ? idea.segmentName.charAt(0).toUpperCase() + idea.segmentName.slice(1)
-                                                : superSegmentName}
-                                    </td>
+                                        <td className='text-center align-middle'>{index + 1}</td>
+                                        <td className='align-middle'>{idea.title}</td>
+                                        <td className='text-left align-middle'>
+                                            {idea.subSegmentName
+                                                ? idea.subSegmentName.charAt(0).toUpperCase() + idea.subSegmentName.slice(1)
+                                                : idea.segmentName
+                                                    ? idea.segmentName.charAt(0).toUpperCase() + idea.segmentName.slice(1)
+                                                    : superSegmentName}
+                                        </td>
 
-                                    <td className='text-center align-middle'>{idea.state}</td>
-                                    <td className='text-lef align-middle'>{idea.description.length > 75 ? `${idea.description.substring(0, 30)}...` : idea.description}</td>
-                                    <td className='text-center align-middle'>{parseFloat((idea.ratingAvg).toString()).toFixed(2)}</td>
-                                    <td className='text-center align-middle'>{idea.posRatings}/{idea.negRatings}</td>
-                                    <td className='text-center align-middle'>
-                                        {Number(idea.commentCount) + Number(idea.ratingCount)}
-                                    </td>
-                                    <td className='text-center align-middle'>
-                                        {checkmarks[index]
-                                            ? <span className='text-success'>✔️</span>
-                                            : <span className='text-danger'>{String.fromCharCode(10060)}</span>}
-                                    </td>
-                                    <td className='text-center align-middle'>
-                                        {checkmarksEndorsed[index]
-                                            ? <span className='text-success'>✔️</span>
-                                            : <span className='text-danger'>{String.fromCharCode(10060)}</span>}
-                                    </td>
-                                    <td className='text-center align-middle'>  <Card.Link href={`/ideas/${idea.id}`}>
-                                        <Button variant='primary'>Info</Button>
-                                    </Card.Link></td>
-                                </tr>
-                                : null;
-                        })
-                        : <tr><td>Loading...</td></tr>
-                    }
-                </tbody>
-            </Table>
-
-
-
-
-
-
-
+                                        <td className='text-center align-middle'>{idea.state}</td>
+                                        <td className='text-lef align-middle'>{idea.description.length > 75 ? `${idea.description.substring(0, 30)}...` : idea.description}</td>
+                                        <td className='text-center align-middle'>{parseFloat((idea.ratingAvg).toString()).toFixed(2)}</td>
+                                        <td className='text-center align-middle'>{idea.posRatings}/{idea.negRatings}</td>
+                                        <td className='text-center align-middle'>
+                                            {Number(idea.commentCount) + Number(idea.ratingCount)}
+                                        </td>
+                                        <td className='text-center align-middle'>
+                                            {checkmarks[index]
+                                                ? <span className='text-success'>✔️</span>
+                                                : <span className='text-danger'>{String.fromCharCode(10060)}</span>}
+                                        </td>
+                                        <td className='text-center align-middle'>
+                                            {checkmarksEndorsed[index]
+                                                ? <span className='text-success'>✔️</span>
+                                                : <span className='text-danger'>{String.fromCharCode(10060)}</span>}
+                                        </td>
+                                        <td className='text-center align-middle'>  <Card.Link href={`/ideas/${idea.id}`}>
+                                            <Button variant='primary'>Info</Button>
+                                        </Card.Link></td>
+                                    </tr>
+                                    : null;
+                            })
+                            : <tr><td>Loading...</td></tr>
+                        }
+                    </tbody>
+                </Table>
+            </div>
 
         </Container>
     );

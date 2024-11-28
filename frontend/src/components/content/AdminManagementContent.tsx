@@ -312,235 +312,237 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
                 </Form>
             )}
 
-            <Table bordered hover size='sm'>
-                <thead className='table-active'>
-                    <tr>
-                        <th
-                            data-sortable
-                            scope='col'
-                            className='col-3 text-center align-middle'
-                        >
-                            Account
-                        </th>
-                        <th scope='col' className='col-2 text-center align-middle'>
-                            First
-                        </th>
-                        <th scope='col' className='col-2 text-center align-middle'>
-                            Last
-                        </th>
-                        <th scope='col' className='col-2 text-center align-middle'>
-                            Contact Email
-                        </th>
-                        <th scope='col' className='col-2 text-center align-middle '>
-                            User Type
-                        </th>
-                        <th scope='col' className='col-3 text-center align-middle'>
-                            Area of Access
-                        </th>
-                        <th scope='col' className='col-3 text-center align-middle'>
-                            Date Created
-                        </th>
-                        <th scope='col' className='col-3 text-center align-middle'>
-                            Status
-                        </th>
-                        <th scope='col' className='col-1 text-center align-middle'>
-                            Controls
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {users?.map((req: IUser, index: number) =>
-                        req.userType === 'SUPER_ADMIN' ||
-                            req.userType === 'ADMIN' ||
-                            req.userType === 'MUNICIPAL_SEG_ADMIN' ||
-                            req.userType === 'MOD' ||
-                            req.userType === 'SEG_MOD' ||
-                            req.userType === 'SEG_ADMIN' ? (
-                                <tr key={req.id}>
-                                    {req.id !== hideControls ? (
-                                        <>
-                                            <td className='text-left align-middle' style={{ wordBreak: 'break-word' }}>{req.email}</td>
-                                            <td className='text-left align-middle '>{req.fname}</td>
-                                            <td className='text-left align-middle'>{req.lname}</td>
-                                            <td className='text-left align-middle' style={{ wordBreak: 'break-word' }}> {req.adminmodEmail}</td>
-                                            <td className='text-center align-middle'>{req.userType}</td>
-                                            <td className='text-center align-middle'>
-                                                {req.userType === 'SUPER_ADMIN' ? (
-                                                    'Full access'
-                                                ) : (
-                                                    <UserSegPlainText
-                                                        email={req.email}
-                                                        id={req.id}
-                                                        token={token}
-                                                    />
-                                                )}
-                                            </td>
-                                            <td className='text-center align-middle'>
-                                                {new Date(req.createdAt).toISOString().split('T')[0]}
-                                            </td>
-                                            <td className='text-left align-middle'>
-                                                {req.status ? 'Active' : 'Inactive'}
-                                            </td>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <td className='text-left align-middle'>
-                                                <Form.Control
-                                                    type='text'
-                                                    defaultValue={req.email}
-                                                    onChange={(e) => (req.email = e.target.value)}
-                                                />
-                                            </td>
-                                            <td className='text-left align-middle'>
-                                                <Form.Control
-                                                    type='text'
-                                                    defaultValue={req.fname}
-                                                    onChange={(e) => (req.fname = e.target.value)}
-                                                />
-                                            </td>
-                                            <td className='text-left align-middle'>
-                                                <Form.Control
-                                                    type='text'
-                                                    defaultValue={req.lname}
-                                                    onChange={(e) => (req.lname = e.target.value)}
-                                                />
-                                            </td>
-                                            <td className='text-left align-middle'>
-                                                <Form.Control
-                                                    as='select'
-                                                    onChange={(e) => {
-                                                        (req.userType as String) = e.target.value;
-                                                    }}
-                                                >
-                                                    <option className='text-center align-middle'>
-                                                        {req.userType}
-                                                    </option>
-                                                    {userTypes
-                                                        .filter((type) => type !== req.userType)
-                                                        .filter((type) => type !== 'DEVELOPER')
-                                                        .filter((type) => type !== 'IN_PROGRESS')
-                                                        .filter((type) => type !== 'ASSOCIATE')
-                                                        .filter((type) => type !== 'RESIDENTIAL')
-                                                        .filter((type) => type !== 'COMMUNITY')
-                                                        .filter((type) => type !== 'BUSINESS')
-                                                        .map((item) => (
-                                                            <option key={item}>{item}</option>
-                                                        ))}
-                                                </Form.Control>
-                                            </td>
-
-                                            <td className='text-center align-middle'>
-                                                {req.userType === 'SUPER_ADMIN' ? (
-                                                    'Full access'
-                                                ) : (
-                                                    <UserSegPlainText
-                                                        email={req.email}
-                                                        id={req.id}
-                                                        token={token}
-                                                    />
-                                                )}
-                                            </td>
-                                            <td className='text-center align-middle'>
-                                                {new Date(req.createdAt).toISOString().split('T')[0]}
-                                            </td>
-                                            <td className='text-center align-middle'>
-                                                <Form.Check
-                                                    type='switch'
-                                                    checked={status}
-                                                    onChange={(e) => {
-                                                        setStatus(e.target.checked);
-                                                        req.status = e.target.checked;
-                                                    }}
-                                                    id='status-switch'
-                                                />
-                                            </td>
-                                        </>
-                                    )}
-
-                                    <td>
+            <Form style={{overflow: 'auto'}}>
+                <Table bordered hover size='sm'>
+                    <thead className='table-active'>
+                        <tr>
+                            <th
+                                data-sortable
+                                scope='col'
+                                className='col-3 text-center align-middle'
+                            >
+                                Account
+                            </th>
+                            <th scope='col' className='col-2 text-center align-middle'>
+                                First
+                            </th>
+                            <th scope='col' className='col-2 text-center align-middle'>
+                                Last
+                            </th>
+                            <th scope='col' className='col-2 text-center align-middle'>
+                                Contact Email
+                            </th>
+                            <th scope='col' className='col-2 text-center align-middle '>
+                                User Type
+                            </th>
+                            <th scope='col' className='col-3 text-center align-middle'>
+                                Area of Access
+                            </th>
+                            <th scope='col' className='col-3 text-center align-middle'>
+                                Date Created
+                            </th>
+                            <th scope='col' className='col-3 text-center align-middle'>
+                                Status
+                            </th>
+                            <th scope='col' className='col-1 text-center align-middle'>
+                                Controls
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {users?.map((req: IUser, index: number) =>
+                            req.userType === 'SUPER_ADMIN' ||
+                                req.userType === 'ADMIN' ||
+                                req.userType === 'MUNICIPAL_SEG_ADMIN' ||
+                                req.userType === 'MOD' ||
+                                req.userType === 'SEG_MOD' ||
+                                req.userType === 'SEG_ADMIN' ? (
+                                    <tr key={req.id}>
                                         {req.id !== hideControls ? (
-                                            <NavDropdown title='Controls' id='nav-dropdown'>
-                                                <Dropdown.Item
-                                                    onClick={() => UserSegmentHandler(req.email, req.id)}
-                                                >
-                                                    View Segments
-                                                </Dropdown.Item>
-                                                {req.userType !== 'SUPER_ADMIN' && user?.userType != req.userType ? (
-                                                    <>
-                                                        <Dropdown.Item
-                                                            onClick={() => {
-                                                                setHideControls(req.id);
-                                                                setReviewed(req.reviewed);
-                                                                setModalUser(req);
-                                                            }}
-                                                        >
-                                                            Edit
-                                                        </Dropdown.Item>
-                                                        {req.banned ? (
-                                                            <Dropdown.Item
-                                                                onClick={() => {
-                                                                    setModalUser(req);
-                                                                    setShowUserUnbanModal(true);
-                                                                }}
-                                                            >
-                                                                Modify Ban
-                                                            </Dropdown.Item>
-                                                        ) : (
-                                                            <Dropdown.Item
-                                                                onClick={() => {
-                                                                    setModalUser(req);
-                                                                    setShowUserBanModal(true);
-                                                                }}
-                                                            >
-                                                                Ban User
-                                                            </Dropdown.Item>
-                                                        )}
-                                                        <Dropdown.Item
-                                                            onClick={() => {
-                                                                const confirmed = window.confirm(
-                                                                    'Are you sure you want to delete this user?'
-                                                                );
-                                                                if (confirmed) {
-                                                                    handleDeleteUser(req.id);
-                                                                }
-                                                            }}
-                                                            className='text-danger'
-                                                        >
-                                                            Delete
-                                                        </Dropdown.Item>
-                                                    </>
-                                                ) : null}
-                                            </NavDropdown>
+                                            <>
+                                                <td className='text-left align-middle' style={{ wordBreak: 'break-word' }}>{req.email}</td>
+                                                <td className='text-left align-middle '>{req.fname}</td>
+                                                <td className='text-left align-middle'>{req.lname}</td>
+                                                <td className='text-left align-middle' style={{ wordBreak: 'break-word' }}> {req.adminmodEmail}</td>
+                                                <td className='text-center align-middle'>{req.userType}</td>
+                                                <td className='text-center align-middle'>
+                                                    {req.userType === 'SUPER_ADMIN' ? (
+                                                        'Full access'
+                                                    ) : (
+                                                        <UserSegPlainText
+                                                            email={req.email}
+                                                            id={req.id}
+                                                            token={token}
+                                                        />
+                                                    )}
+                                                </td>
+                                                <td className='text-center align-middle'>
+                                                    {new Date(req.createdAt).toISOString().split('T')[0]}
+                                                </td>
+                                                <td className='text-left align-middle'>
+                                                    {req.status ? 'Active' : 'Inactive'}
+                                                </td>
+                                            </>
                                         ) : (
                                             <>
-                                                <div className='d-flex justify-content-between'>
-                                                    <Button
-                                                        size='sm'
-                                                        variant='outline-danger'
-                                                        className='mr-2 mb-2 '
-                                                        onClick={() => setHideControls('')}
-                                                    >
-                                                        Cancel
-                                                    </Button>
-                                                    <Button
-                                                        size='sm'
-                                                        className='mr-2 mb-2'
-                                                        onClick={() => {
-                                                            setHideControls('');
-                                                            updateUser(req, token, user);
+                                                <td className='text-left align-middle'>
+                                                    <Form.Control
+                                                        type='text'
+                                                        defaultValue={req.email}
+                                                        onChange={(e) => (req.email = e.target.value)}
+                                                    />
+                                                </td>
+                                                <td className='text-left align-middle'>
+                                                    <Form.Control
+                                                        type='text'
+                                                        defaultValue={req.fname}
+                                                        onChange={(e) => (req.fname = e.target.value)}
+                                                    />
+                                                </td>
+                                                <td className='text-left align-middle'>
+                                                    <Form.Control
+                                                        type='text'
+                                                        defaultValue={req.lname}
+                                                        onChange={(e) => (req.lname = e.target.value)}
+                                                    />
+                                                </td>
+                                                <td className='text-left align-middle'>
+                                                    <Form.Control
+                                                        as='select'
+                                                        onChange={(e) => {
+                                                            (req.userType as String) = e.target.value;
                                                         }}
                                                     >
-                                                        Save
-                                                    </Button>
-                                                </div>
+                                                        <option className='text-center align-middle'>
+                                                            {req.userType}
+                                                        </option>
+                                                        {userTypes
+                                                            .filter((type) => type !== req.userType)
+                                                            .filter((type) => type !== 'DEVELOPER')
+                                                            .filter((type) => type !== 'IN_PROGRESS')
+                                                            .filter((type) => type !== 'ASSOCIATE')
+                                                            .filter((type) => type !== 'RESIDENTIAL')
+                                                            .filter((type) => type !== 'COMMUNITY')
+                                                            .filter((type) => type !== 'BUSINESS')
+                                                            .map((item) => (
+                                                                <option key={item}>{item}</option>
+                                                            ))}
+                                                    </Form.Control>
+                                                </td>
+
+                                                <td className='text-center align-middle'>
+                                                    {req.userType === 'SUPER_ADMIN' ? (
+                                                        'Full access'
+                                                    ) : (
+                                                        <UserSegPlainText
+                                                            email={req.email}
+                                                            id={req.id}
+                                                            token={token}
+                                                        />
+                                                    )}
+                                                </td>
+                                                <td className='text-center align-middle'>
+                                                    {new Date(req.createdAt).toISOString().split('T')[0]}
+                                                </td>
+                                                <td className='text-center align-middle'>
+                                                    <Form.Check
+                                                        type='switch'
+                                                        checked={status}
+                                                        onChange={(e) => {
+                                                            setStatus(e.target.checked);
+                                                            req.status = e.target.checked;
+                                                        }}
+                                                        id='status-switch'
+                                                    />
+                                                </td>
                                             </>
                                         )}
-                                    </td>
-                                </tr>
-                            ) : null
-                    )}
-                </tbody>
-            </Table>
+
+                                        <td>
+                                            {req.id !== hideControls ? (
+                                                <NavDropdown title='Controls' id='nav-dropdown'>
+                                                    <Dropdown.Item
+                                                        onClick={() => UserSegmentHandler(req.email, req.id)}
+                                                    >
+                                                        View Segments
+                                                    </Dropdown.Item>
+                                                    {req.userType !== 'SUPER_ADMIN' && user?.userType != req.userType ? (
+                                                        <>
+                                                            <Dropdown.Item
+                                                                onClick={() => {
+                                                                    setHideControls(req.id);
+                                                                    setReviewed(req.reviewed);
+                                                                    setModalUser(req);
+                                                                }}
+                                                            >
+                                                                Edit
+                                                            </Dropdown.Item>
+                                                            {req.banned ? (
+                                                                <Dropdown.Item
+                                                                    onClick={() => {
+                                                                        setModalUser(req);
+                                                                        setShowUserUnbanModal(true);
+                                                                    }}
+                                                                >
+                                                                    Modify Ban
+                                                                </Dropdown.Item>
+                                                            ) : (
+                                                                <Dropdown.Item
+                                                                    onClick={() => {
+                                                                        setModalUser(req);
+                                                                        setShowUserBanModal(true);
+                                                                    }}
+                                                                >
+                                                                    Ban User
+                                                                </Dropdown.Item>
+                                                            )}
+                                                            <Dropdown.Item
+                                                                onClick={() => {
+                                                                    const confirmed = window.confirm(
+                                                                        'Are you sure you want to delete this user?'
+                                                                    );
+                                                                    if (confirmed) {
+                                                                        handleDeleteUser(req.id);
+                                                                    }
+                                                                }}
+                                                                className='text-danger'
+                                                            >
+                                                                Delete
+                                                            </Dropdown.Item>
+                                                        </>
+                                                    ) : null}
+                                                </NavDropdown>
+                                            ) : (
+                                                <>
+                                                    <div className='d-flex justify-content-between'>
+                                                        <Button
+                                                            size='sm'
+                                                            variant='outline-danger'
+                                                            className='mr-2 mb-2 '
+                                                            onClick={() => setHideControls('')}
+                                                        >
+                                                            Cancel
+                                                        </Button>
+                                                        <Button
+                                                            size='sm'
+                                                            className='mr-2 mb-2'
+                                                            onClick={() => {
+                                                                setHideControls('');
+                                                                updateUser(req, token, user);
+                                                            }}
+                                                        >
+                                                            Save
+                                                        </Button>
+                                                    </div>
+                                                </>
+                                            )}
+                                        </td>
+                                    </tr>
+                                ) : null
+                        )}
+                    </tbody>
+                </Table>
+            </Form>
 
             <br></br>
             {/* <UserSegmentHandler/> */}

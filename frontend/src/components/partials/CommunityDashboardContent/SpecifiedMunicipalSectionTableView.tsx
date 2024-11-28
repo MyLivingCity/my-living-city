@@ -147,7 +147,7 @@ const SpecifiedMunicipalSectionTableView: React.FC<SpecifiedMunicipalSectionTabl
     }
 
     return (
-        <Container className='system' id='hanging-icons'>
+        <Container className='system' id='hanging-icons' style={{paddingRight: '0rem', paddingLeft:'0rem'}}>
             <div className='pb-1 border-bottom display-6 text-left'>
                 <h2 style={titleStyle}>{sectionTitle ? capitalizeFirstLetterEachWord(sectionTitle) : ''} Posts</h2>
                 {showCustomFilter === false ? null : <BsFilter onMouseOver={mouseHoverPointer} style={filterButtonStyle} onClick={() => { setShowModal(!showModal); }} size={30} />}

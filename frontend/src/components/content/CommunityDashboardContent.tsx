@@ -218,7 +218,7 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
             <Row>
                 <Col>
                     <h2>User Statistics</h2>
-                    <Card style={{ width: '25rem' }}>
+                    <Card className='responsive-card'>
                         {isSegmentInfoAggregateLoading && <LoadingSpinnerInline />}
                         {!isSegmentInfoAggregateLoading && isSegmentInfoAggregateError && (
                             <ErrorMessage message='Unable to load user statistics.' />
@@ -260,7 +260,7 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
                 </Col>
                 <Col>
                     <h2>Post Statistics</h2>
-                    <Card style={{ width: '25rem' }}>
+                    <Card className='responsive-card'>
                         {isSegmentInfoAggregateLoading && <LoadingSpinnerInline />}
                         {!isSegmentInfoAggregateLoading && isSegmentInfoAggregateError && (
                             <ErrorMessage message='Unable to load post statistics.' />
@@ -306,9 +306,9 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
                 </Col>
             </Row>
 
-            <Row style={{ marginTop: '3rem' }}>
+            <Row style={{ marginTop: '3rem',  flexDirection:'column'}}>
                 <Col>
-                    <Card style={{ width: '18rem' }}>
+                    <Card style={{ width: '100%' }}>
                         <Card.Header>
                             <h4>Region</h4>
                         </Card.Header>
@@ -338,7 +338,7 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
                     </Card>
                 </Col>
                 <Col>
-                    <Card style={{ width: '18rem' }}>
+                    <Card style={{ width: '100%' }}>
                         <Card.Header>
                             <h4>Municipality</h4>
                         </Card.Header>
@@ -370,7 +370,7 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
                     </Card>
                 </Col>
                 <Col>
-                    <Card style={{ width: '18rem' }}>
+                    <Card style={{ width: '100%' }}>
                         <Card.Header>
                             <h4>Neighbourhood</h4>
                         </Card.Header>

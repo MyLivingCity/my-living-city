@@ -251,3 +251,14 @@ select {
 .logo-text-white {
     filter: brightness(0) invert(1);
 }
+/* Default card width */
+.responsive-card {
+    width: 25rem;
+}
+
+/* Mobile-specific styling */
+@media (max-width: 768px) {
+    .responsive-card {
+        width: 20rem;
+    }
+}

@@ -215,7 +215,7 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
                     </DropdownButton>
                 )}
             </Row>
-            <Row>
+            <Row style={{padding: '1rem'}}>
                 <Col>
                     <h2>User Statistics</h2>
                     <Card className='responsive-card'>
@@ -306,7 +306,7 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
                 </Col>
             </Row>
 
-            <Row style={{ marginTop: '3rem',  flexDirection:'column'}}>
+            <Row className='mobile-card'>
                 <Col>
                     <Card style={{ width: '100%' }}>
                         <Card.Header>

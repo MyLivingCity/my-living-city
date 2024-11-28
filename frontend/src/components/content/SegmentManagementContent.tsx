@@ -518,7 +518,7 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
                     </Form.Group>
                 </Col>
             </Row>
-            <Row>
+            <Row style={{overflow:'auto'}}>
                 <Col>
                     <Card>
                         <Card.Header className='text-capitalize'>
@@ -684,7 +684,7 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
                 </Col>
             </Row>
             <br />
-            <Row>
+            <Row style={{overflow:'auto'}}>
                 <Col>
                     <Card>
                         <Card.Header className='text-capitalize'>

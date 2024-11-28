@@ -659,7 +659,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
                         </Form>
                     )
                 }
-                <Form>
+                <Form style={{overflow: 'auto'}}>
                     <Table bordered hover size='sm' style={{ fontSize: '0.8rem' }}>
                         <thead className='table-active'>
                             <tr>

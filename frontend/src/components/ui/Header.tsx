@@ -79,7 +79,7 @@ function Header() {
         backgroundColor: '#f7e4ab',
         justifyContent: 'center',
         padding: '0.2rem',
-        whiteSpace: 'pre',
+        textAlign: 'center',
     };
 
     useEffect(() => {
@@ -135,7 +135,7 @@ function Header() {
         <div className='outer-header'>
             {stripeStatus !== '' && stripeStatus !== 'active' &&
                 (<Nav style={paymentNotificationStyling}>
-                    You have not paid your account payment. To upgrade your account, please go to the <a href='/profile'>profile</a> section.
+                    <p>You have not paid your account payment. To upgrade your account, please go to the <a href='/profile'>profile</a> section.</p>
                 </Nav>)
             }
 

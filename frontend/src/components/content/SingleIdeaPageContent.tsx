@@ -713,7 +713,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                     author?.userSegments?.homeSegmentId == segmentId &&
                                     (
                                         <div>
-                                            {author?.fname}@{author?.address?.streetAddress} as {userType}
+                                            {author?.fname}@{author?.address?.streetAddress} as Resident
                                         </div>
                                     ) ||
 
@@ -727,7 +727,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                     author?.userSegments?.workSegmentId == segmentId &&
                                     (
                                         <div>
-                                            {author?.userSegments?.workSegHandle} as {userType}
+                                            {author?.userSegments?.workSegHandle} as Worker
                                         </div>
                                     )
                                 }

@@ -17,16 +17,23 @@ const CommunityDashboardPage: React.FC<CommunityDashboardPageProps> = (props) =>
             params: { segId },
         },
     } = props;
+    console.log('segId:', segId);
 
     const { user, token } = useContext(UserProfileContext);
     const allUserSegmentsQueryResult = useAllUserSegments(token, user?.id || null);
     const segmentInfoAggregateQueryResult = useSegmentInfoAggregate(parseInt(segId));
     const singleSegmentBySegmentIdQueryResult = useSingleSegmentBySegmentId(parseInt(segId));
     const ideasHomepageQueryResult = useIdeasHomepage();
-    // if segId == 0 then use segmentIds to set segId to the home segment
-    if (parseInt(segId) === 0 && allUserSegmentsQueryResult.data?.homeSegmentId) {
-        props.history.push(`/community-dashboard/${allUserSegmentsQueryResult.data.homeSegmentId}`);
-        window.location.reload();
+    // if segId == 0 then try and set to one of the user home, work, or school segments
+    if (parseInt(segId) === 0) {
+        const { homeSegmentId, workSegmentId, schoolSegmentId } = allUserSegmentsQueryResult.data || {};
+        const fallbackSegmentId = homeSegmentId || workSegmentId || schoolSegmentId;
+        if (fallbackSegmentId) {
+            props.history.push(`/community-dashboard/${fallbackSegmentId}`);
+            window.location.reload();
+        } else {
+            return <p>No community data available. Please check your profile.</p>;
+        }
     }
 
     if (segId === '0') {

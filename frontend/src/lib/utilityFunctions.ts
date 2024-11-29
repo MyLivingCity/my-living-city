@@ -3,6 +3,8 @@ import { IRating, IRatingAggregateSummary, IRatingValueBreakdown } from './types
 import { IFeedbackRating, IFeedbackRatingScaleAggregateSummary, IFeedbackRatingYesNoAggregateSummary } from './types/data/feedbackRating.type';
 import { IUser } from './types/data/user.type';
 import { IFetchError } from './types/types';
+import { IIdeaWithRelationship } from './types/data/idea.type';
+import { IParsedCommentAuthor } from './types/data/comment.type';
 
 /**
  * Stringifies given Object and stores it in local storage using the 
@@ -333,4 +335,65 @@ export const getFeedbackRatingScaleAggregateSummary = (feedbackRatings: IFeedbac
     return {
         ratingAvg: ratingCount ? ratingAvg / ratingCount : 0,
     };
+};
+
+const getHandleBySegmentId = (segmentId: number, homeId: number | undefined | null, schoolId: number | undefined | null, workId: number | undefined | null, userData: IUser) => {
+    const organizationName = userData.organizationName;
+    const address = userData.address;
+
+    const homeSegHandle = userData.userSegments?.homeSegHandle;
+    const workSegHandle = userData.userSegments?.workSegHandle;
+    const schoolSegHandle = userData.userSegments?.schoolSegHandle;
+
+    const userType = userData.userType;
+
+    let handle = 'Unknown';
+    switch (segmentId) {
+        case homeId:
+            handle = `${homeSegHandle}`;
+            break;
+        case workId:
+            handle = `${workSegHandle}`;
+            break;
+        case schoolId:
+            handle = `${schoolSegHandle}`;
+            break;
+    }
+
+    if (userType === 'SUPER_ADMIN') {
+        handle += ' as Super Admin';
+    } else if (userType === 'ADMIN') {
+        handle += ' as Admin';
+    } else if (userType === 'MOD') {
+        handle += ' as Mod';
+    } else if (userType === 'MUNICIPAL_SEG_ADMIN' || userType === 'MUNICIPAL') {
+        handle = userData.fname + '@' + (!!organizationName ? organizationName : 'Unknown Municipality');
+    } else if (userType === 'BUSINESS') {
+        handle = organizationName + '@' + address?.streetAddress + ' as Business Member';
+    } else if (userType === 'COMMUNITY') {
+        handle = organizationName + '@' + address?.streetAddress + ' as Community Member';
+    }
+
+    return handle;
+};
+
+export const getUserHandle = (subSegmentId: number | undefined, segmentId: number | undefined, superSegmentId: number | undefined, author: IUser | undefined) => {
+    if (!author) return;
+
+    if (subSegmentId) {
+        const homeSegId = author.userSegments?.homeSubSegmentId;
+        const workSegId = author.userSegments?.workSubSegmentId;
+        const schoolSegId = author.userSegments?.schoolSubSegmentId;
+        return getHandleBySegmentId(subSegmentId, homeSegId, schoolSegId, workSegId, author);
+    } else if (segmentId) {
+        const homeSegId = author.userSegments?.homeSegmentId;
+        const workSegId = author.userSegments?.workSegmentId;
+        const schoolSegId = author.userSegments?.schoolSegmentId;
+        return getHandleBySegmentId(segmentId, homeSegId, schoolSegId, workSegId, author);
+    } else if (superSegmentId) {
+        const homeSegId = author.userSegments?.homeSuperSegId;
+        const workSegId = author.userSegments?.workSuperSegId;
+        const schoolSegId = author.userSegments?.schoolSuperSegId;
+        return getHandleBySegmentId(superSegmentId, homeSegId, schoolSegId, workSegId, author);
+    }
 };

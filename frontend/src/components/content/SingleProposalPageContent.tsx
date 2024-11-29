@@ -15,6 +15,7 @@ import { IIdea, IIdeaWithRelationship } from '../../lib/types/data/idea.type';
 import {
     capitalizeFirstLetterEachWord,
     capitalizeString,
+    getUserHandle
 } from '../../lib/utilityFunctions';
 import LoadingSpinnerInline from '../ui/LoadingSpinnerInline';
 import CommentsSection from '../partials/SingleIdeaContent/CommentsSection';
@@ -414,21 +415,21 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
             if (endorsingPost) {
                 // Check if user is the one who endorsed
                 const userEndorsement = endorsedUsers.find(u => u.id === user.id);
-                
+
                 // Check if user is an admin trying to unendorse someone from their organization, not currently working properly
                 const isAdminOfOrg = user.userType === USER_TYPES.MUNICIPAL_SEG_ADMIN;
                 const targetEndorsement = endorsedUsers.find(u => u.organizationName === user.organizationName);
                 const canAdminUnendorse = isAdminOfOrg && targetEndorsement;
                 // console.log(isAdminOfOrg)
-    
+
                 if (!userEndorsement && !canAdminUnendorse) {
                     alert("You don't have permission to unendorse this post");
                     return;
                 }
-    
+
                 // If admin is unendorsing someone else's endorsement
                 const endorsementToRemove = userEndorsement ? user.id : targetEndorsement.id;
-    
+
                 await unendorseIdeaByUser(token, endorsementToRemove, ideaId);
                 const newEndorsedUsers = endorsedUsers.filter(u => u.id !== endorsementToRemove);
                 setEndorsedUsers(newEndorsedUsers);
@@ -520,58 +521,6 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
         handleHideFlagButton();
         await flagFunc(ideaId, token, userId, ideaActive, otherFlagReason, quarantined_at);
 
-    };
-
-    const getHandleBySegmentId = (segmentId: number, userData: IUser) => {
-        const address = userData.address;
-        const organizationName = userData.organizationName;
-
-        const homeId = userData.userSegments?.homeSegmentId;
-        const workId = userData.userSegments?.workSegmentId;
-        const schoolId = userData.userSegments?.schoolSegmentId;
-
-        const homeSegHandle = userData.userSegments?.homeSegHandle;
-        const workSegHandle = userData.userSegments?.workSegHandle;
-        const schoolSegHandle = userData.userSegments?.schoolSegHandle;
-
-        let userName = 'Unknown';
-        if (userType === 'MUNICIPAL_SEG_ADMIN') {
-            userName = 'Municipal Admin';
-        } else if (userType === 'MUNICIPAL') {
-            userName = 'Municipal Account';
-        } else if (userType === 'BUSINESS' || userType === 'Community') {
-            userName = organizationName + '@' + address?.streetAddress;
-        } else {
-            switch (segmentId) {
-                case homeId:
-                    userName = homeSegHandle ?? 'Unknown';
-                    break;
-                case workId:
-                    userName = workSegHandle ?? 'Unknown';
-                    break;
-                case schoolId:
-                    userName = schoolSegHandle ?? 'Unknown';
-                    break;
-            }
-
-            userName = `${userName} as ${author?.userType}`;
-        }
-
-        return userName;
-    };
-
-    const getUserHandle = (ideaData: IIdeaWithRelationship) => {
-        const { subSegmentId, segmentId, superSegmentId, author } = ideaData;
-
-        if (!author) return;
-
-        if (subSegmentId) {
-            return getHandleBySegmentId(subSegmentId, author);
-        } else if (segmentId) {
-            return getHandleBySegmentId(segmentId, author);
-        } else if (superSegmentId) {
-            return getHandleBySegmentId(superSegmentId, author);
-        }
     };
 
     if (!active) {
@@ -884,7 +833,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                     <RedditIcon size={32} round />
                                 </RedditShareButton>
                             </div>
-                            <div className='footer-handle'>{getUserHandle(ideaData)}</div>
+                            <div className='footer-handle'>{getUserHandle(ideaData.subSegmentId, ideaData.segmentId, ideaData.superSegmentId, author)}</div>
                         </Card.Footer>
 
                     </Col>

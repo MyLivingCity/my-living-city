@@ -79,7 +79,7 @@ function Header() {
         backgroundColor: '#f7e4ab',
         justifyContent: 'center',
         padding: '0.2rem',
-        whiteSpace: 'pre',
+        textAlign: 'center',
     };
 
     useEffect(() => {
@@ -135,7 +135,7 @@ function Header() {
         <div className='outer-header'>
             {stripeStatus !== '' && stripeStatus !== 'active' &&
                 (<Nav style={paymentNotificationStyling}>
-                    You have not paid your account payment. To upgrade your account, please go to the <a href='/profile'>profile</a> section.
+                    <p>You have not paid your account payment. To upgrade your account, please go to the <a href='/profile'>profile</a> section.</p>
                 </Nav>)
             }
 
@@ -155,7 +155,9 @@ function Header() {
                         alt='App Name'
                     />
                 </Navbar.Brand>
-                {(user) ? (
+                {/* Uncomment this below if you want the user profile to show in header */}
+                {
+                /* {(user) ? (
                     <>
                         {(user.userType === 'BUSINESS' || user.userType === 'MUNICIPAL' || user.userType === 'COMMUNITY') && (
                             <Nav.Link href='/profile' className='d-inline-block alight-top'>
@@ -170,7 +172,7 @@ function Header() {
                     </>
                 ) : (
                     <></>
-                )}
+                )} */}
                 <Navbar.Toggle aria-controls='basic-navbar-nav' style={{ background: 'white' }} />
                 <Navbar.Collapse id='basic-navbar-nav'>
                     <Nav className='ml-auto'>

@@ -27,9 +27,7 @@ interface CommunityDashboardContentProps {
   allUserSegmentsQueryResult: UseQueryResult<any, IFetchError>;
   segmentInfoAggregateQueryResult: UseQueryResult<ISegmentAggregateInfo, IFetchError>;
   singleSegmentBySegmentIdQueryResult: UseQueryResult<ISegment, IFetchError>;
-//   ideasHomepageQueryResult: UseQueryResult<IIdeaWithAggregations[], IFetchError>;
-    ideasCommunityDashboardQueryResult: UseQueryResult<IIdeaWithAggregations[], IFetchError>; // New
-    // onSegmentChange: (segmentId: number) => void; // Callback for segment changes
+    ideasCommunityDashboardQueryResult: UseQueryResult<IIdeaWithAggregations[], IFetchError>;
 }
 
 interface RouteParams {
@@ -40,9 +38,7 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
     allUserSegmentsQueryResult,
     segmentInfoAggregateQueryResult,
     singleSegmentBySegmentIdQueryResult,
-    // ideasHomepageQueryResult
     ideasCommunityDashboardQueryResult,
-    // onSegmentChange,
 }: CommunityDashboardContentProps) => {
     const {segId} = useParams<RouteParams>();
     const currentSegmentId = parseInt(segId);
@@ -66,7 +62,6 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
         data: iData,
         isLoading: iIsLoading,
         isError: iIsError,
-    // } = ideasHomepageQueryResult;
     } = ideasCommunityDashboardQueryResult;
 
     // Get segments as array of objects with id and name, but not super- or sub-segments.
@@ -105,12 +100,6 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
             });
         }
     }
-
-    // Update the frontend\src\pages\CommunityDashboardPage.tsx of a change in the set segment
-    // So the cache can be updated 
-    const handleDropdownChange = (segmentId: number) => {
-        // onSegmentChange(segmentId);
-    };
 
     const [currCommunityName, setCurrCommunityName] = useState<string>('');
     const [currCommunityPosts, setCurrCommunityPosts] = useState<IIdeaWithAggregations[]>([]);
@@ -218,7 +207,6 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
                         {segmentsArray.map((segment: any) => (
                             <Dropdown.Item
                                 key={segment.id}
-                                onClick={() => handleDropdownChange(segment.id)}
                                 className='text-center'
                                 href={`/community-dashboard/${segment.id}`}
                                 disabled={segment.id === currentSegmentId}

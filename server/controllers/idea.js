@@ -557,7 +557,7 @@ ideaRouter.post(
         const newRow = {};
         for (const key in row) {
           if (typeof row[key] === 'bigint') {
-            newRow[key] = String(row[key]); // Convert BigInt to String
+            newRow[key] = String(row[key]);
           } else {
             newRow[key] = row[key];
           }

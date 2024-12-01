@@ -52,7 +52,6 @@ export const useIdeasHomepage = () => {
 
 export const useIdeasBySegmentId = (segmentId: number) => {
     return useQuery<IIdeaWithAggregations[], IFetchError>(
-        // ['ideas-by-segment', segmentId],
         ['ideas-homepage', segmentId],
         () => postIdeasWithSegmentId(segmentId, 50),
         { enabled: !!segmentId }

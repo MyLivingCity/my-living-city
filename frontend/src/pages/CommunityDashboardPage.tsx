@@ -17,6 +17,7 @@ const CommunityDashboardPage: React.FC<CommunityDashboardPageProps> = (props) =>
             params: { segId },
         },
     } = props;
+    console.log('segId:', segId);
 
     const { user, token } = useContext(UserProfileContext);
     const allUserSegmentsQueryResult = useAllUserSegments(token, user?.id || null);

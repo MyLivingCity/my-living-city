@@ -27,7 +27,7 @@ interface CommunityDashboardContentProps {
   allUserSegmentsQueryResult: UseQueryResult<any, IFetchError>;
   segmentInfoAggregateQueryResult: UseQueryResult<ISegmentAggregateInfo, IFetchError>;
   singleSegmentBySegmentIdQueryResult: UseQueryResult<ISegment, IFetchError>;
-  ideasHomepageQueryResult: UseQueryResult<IIdeaWithAggregations[], IFetchError>;
+    ideasCommunityDashboardQueryResult: UseQueryResult<IIdeaWithAggregations[], IFetchError>;
 }
 
 interface RouteParams {
@@ -38,7 +38,7 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
     allUserSegmentsQueryResult,
     segmentInfoAggregateQueryResult,
     singleSegmentBySegmentIdQueryResult,
-    ideasHomepageQueryResult
+    ideasCommunityDashboardQueryResult,
 }: CommunityDashboardContentProps) => {
     const {segId} = useParams<RouteParams>();
     const currentSegmentId = parseInt(segId);
@@ -62,7 +62,7 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
         data: iData,
         isLoading: iIsLoading,
         isError: iIsError,
-    } = ideasHomepageQueryResult;
+    } = ideasCommunityDashboardQueryResult;
 
     // Get segments as array of objects with id and name, but not super- or sub-segments.
     const segmentsArray = [];
@@ -101,7 +101,6 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
         }
     }
 
-  
     const [currCommunityName, setCurrCommunityName] = useState<string>('');
     const [currCommunityPosts, setCurrCommunityPosts] = useState<IIdeaWithAggregations[]>([]);
 
@@ -114,6 +113,7 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
         segmentData
         ) {
             const segmentId = segmentData.segId;
+            console.log('Ideas before filtering:', iData);
             const filteredIdeas: IIdeaWithAggregations[] = iData.filter((idea) => {
           
                 if (idea.segId === segmentId && idea.subSegId === null ) {
@@ -123,6 +123,8 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
                     return false;
                 }
             });
+            console.log('Filtered ideas:', filteredIdeas);
+
             setCurrCommunityPosts(filteredIdeas);
         }
     }, [iData, isSegmentDataLoading, segmentData]);

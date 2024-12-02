@@ -2,8 +2,8 @@ import { RouteComponentProps } from 'react-router-dom';
 import CommunityDashboardContent from './../components/content/CommunityDashboardContent';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import { useSegmentInfoAggregate, useSingleSegmentBySegmentId } from './../hooks/segmentHooks';
-import { useIdeasHomepage } from 'src/hooks/ideaHooks';
-import { useContext } from 'react';
+import {useIdeasBySegmentId} from 'src/hooks/ideaHooks';
+import { useContext, useState } from 'react';
 import { UserProfileContext } from 'src/contexts/UserProfile.Context';
 import { useAllUserSegments } from 'src/hooks/userSegmentHooks';
 
@@ -23,7 +23,8 @@ const CommunityDashboardPage: React.FC<CommunityDashboardPageProps> = (props) =>
     const allUserSegmentsQueryResult = useAllUserSegments(token, user?.id || null);
     const segmentInfoAggregateQueryResult = useSegmentInfoAggregate(parseInt(segId));
     const singleSegmentBySegmentIdQueryResult = useSingleSegmentBySegmentId(parseInt(segId));
-    const ideasHomepageQueryResult = useIdeasHomepage();
+    const ideasCommunityDashboardQueryResult = useIdeasBySegmentId(parseInt(segId));
+
     // if segId == 0 then try and set to one of the user home, work, or school segments
     if (parseInt(segId) === 0) {
         const { homeSegmentId, workSegmentId, schoolSegmentId } = allUserSegmentsQueryResult.data || {};
@@ -52,7 +53,7 @@ const CommunityDashboardPage: React.FC<CommunityDashboardPageProps> = (props) =>
                 singleSegmentBySegmentIdQueryResult={
                     singleSegmentBySegmentIdQueryResult
                 }
-                ideasHomepageQueryResult={ideasHomepageQueryResult}
+                ideasCommunityDashboardQueryResult={ideasCommunityDashboardQueryResult}
             />
         </div>
     );

@@ -47,9 +47,19 @@ export const postAllIdeasWithBreakdown = async (take?: number) => {
         `${API_BASE_URL}/idea/getall/aggregations`,
         reqBody
     );
+    return res.data;
+};
 
+export const postIdeasWithSegmentId = async (segmentId: number, take?: number) => {
+    const reqBody = {
+        segmentId,
+        ...(take && { take }),
+    };
 
-
+    const res = await axios.post<IIdeaWithAggregations[]>(
+        `${API_BASE_URL}/idea/getall/by-segment`,
+        reqBody
+    );
     return res.data;
 };
 

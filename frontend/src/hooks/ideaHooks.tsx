@@ -7,6 +7,7 @@ import { IFetchError } from '../lib/types/types';
 import {
     getSingleIdea,
     postAllIdeasWithBreakdown,
+    postIdeasWithSegmentId,
     getUserIdeas,
     getIdeasFollowedByUser,
     isIdeaFollowedByUser,
@@ -46,6 +47,14 @@ export const useIdeasWithBreakdown = (take?: number) => {
 export const useIdeasHomepage = () => {
     return useQuery<IIdeaWithAggregations[], IFetchError>('ideas-homepage', () =>
         postAllIdeasWithBreakdown(12)
+    );
+};
+
+export const useIdeasBySegmentId = (segmentId: number) => {
+    return useQuery<IIdeaWithAggregations[], IFetchError>(
+        ['ideas-homepage', segmentId],
+        () => postIdeasWithSegmentId(segmentId, 50),
+        { enabled: !!segmentId }
     );
 };
 

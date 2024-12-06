@@ -253,7 +253,6 @@ export const ShowSubSegments: React.FC<ShowSubSegmentsProps> = ({
                                         onClick={() => {
                                             handleSubSegSubmit();
                                             sleep(6000);
-                                            window.location.reload();
                                         }}
                                     >
                                         Add Sub-Segment
@@ -322,19 +321,19 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
         name: '',
         country: '',
         province: '',
-        superSegName: '', 
+        superSegName: '',
         segId: 0,
         superSegId: 0,
         createdAt: new Date(),
         updatedAt: new Date(),
     });
-    
+
     useEffect(() => {
         const fetchSuperSegments = async () => {
             try {
                 const superSegmentsData = await getAllSuperSegmentsByCountryProvince(countryName.toLowerCase(), provName.toLowerCase());
                 if (superSegmentsData.length > 0) {
-                    setCreateData(prevData => ({ 
+                    setCreateData(prevData => ({
                         ...prevData,
                         superSegId: superSegmentsData[0].superSegId,
                         superSegName: superSegmentsData[0].name.toLowerCase(),
@@ -345,7 +344,7 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
                 console.error('Error fetching super segments:', error);
             }
         };
-    
+
         fetchSuperSegments();
     }, [countryName, provName]);
 
@@ -437,7 +436,7 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
         const confirmed = window.confirm('Are you sure you want to delete this segment?');
         if (confirmed) {
             try {
-                await deleteSegmentBySegmentId(segId, token); 
+                await deleteSegmentBySegmentId(segId, token);
                 const updatedSegments = segments!.filter(segment => segment.segId !== segId);
                 setSegments(updatedSegments);
             } catch (error) {
@@ -450,7 +449,7 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
         // Check if it has any Segments
         const hasSegments = segments!.find(segment => segment.superSegId === superSegId);
         if (hasSegments) {
-            setError({message: 'Cannot delete a Super Segment with associated Segments'});
+            setError({ message: 'Cannot delete a Super Segment with associated Segments' });
             return;
         }
         const confirmed = window.confirm('Are you sure you want to delete this super segment?');
@@ -518,7 +517,7 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
                     </Form.Group>
                 </Col>
             </Row>
-            <Row style={{overflow:'auto'}}>
+            <Row style={{ overflow: 'auto' }}>
                 <Col>
                     <Card>
                         <Card.Header className='text-capitalize'>
@@ -609,7 +608,7 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
                                                             ))}
                                                         </Form.Control>
                                                     </td>
-                                                    <td>           
+                                                    <td>
                                                         <Form.Control
                                                             as='select'
                                                             defaultValue={segment.country.toLowerCase()}
@@ -636,7 +635,7 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
                                                             onClick={async () => {
                                                                 setHideControls('');
                                                                 await handleSuperSegSubmit(segment);
-                                                                
+
                                                             }}
                                                         >
                                                             Save
@@ -684,7 +683,7 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
                 </Col>
             </Row>
             <br />
-            <Row style={{overflow:'auto'}}>
+            <Row style={{ overflow: 'auto' }}>
                 <Col>
                     <Card>
                         <Card.Header className='text-capitalize'>
@@ -773,7 +772,7 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
                                                                 onClick={() => handleDeleteSegment(segment.segId)}
                                                                 className='text-danger'
                                                             >
-                                Delete
+                                                                Delete
                                                             </Dropdown.Item>
                                                         </NavDropdown>
                                                     </td>
@@ -817,7 +816,7 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
                                                             ))}
                                                         </Form.Control>
                                                     </td>
-                                                    <td>           
+                                                    <td>
                                                         <Form.Control
                                                             as='select'
                                                             defaultValue={segment.country.toLowerCase()}

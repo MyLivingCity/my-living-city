@@ -51,6 +51,7 @@ export const ShowSubSegments: React.FC<ShowSubSegmentsProps> = ({
     token,
 }) => {
     // const {data} = useAllSubSegmentsWithId(String(segId!));
+    const [subSegments, setSubSegments] = useState<ISubSegment[]>();
     const [hideControls, setHideControls] = useState('');
     const [showNewSubSeg, setShowNewSubSeg] = useState(false);
     const [error, setError] = useState<IFetchError | null>(null);
@@ -94,7 +95,10 @@ export const ShowSubSegments: React.FC<ShowSubSegmentsProps> = ({
 
                 createData.segId = segId;
                 await createSubSegment(createData, token);
-                if (data) data.push(createData);
+
+                if (subSegments) {
+                    setSubSegments([...subSegments, createData]);
+                }
             }
             setShowNewSubSeg(false);
             setError(null);
@@ -106,6 +110,13 @@ export const ShowSubSegments: React.FC<ShowSubSegmentsProps> = ({
     const sleep = (ms: number) => {
         return new Promise((resolve) => setTimeout(resolve, ms));
     };
+
+    useEffect(() => {
+        if (data) {
+            setSubSegments(data);
+        }
+    }, [data]);
+
     return (
         <Card>
             {/* <img alt=""src={"http://localhost:3001/static/uploads/1621449457193-SampleAds1.png"} /> */}
@@ -133,7 +144,7 @@ export const ShowSubSegments: React.FC<ShowSubSegmentsProps> = ({
                         </tr>
                     </thead>
                     <tbody>
-                        {data?.map((segment: ISubSegment) => (
+                        {subSegments?.map((segment: ISubSegment) => (
                             <tr key={segment.id}>
                                 {String(segment.id) !== hideControls ? (
                                     <>

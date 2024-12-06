@@ -224,25 +224,25 @@ export const ShowSubSegments: React.FC<ShowSubSegmentsProps> = ({
                                 </td>
                                 <td>
                                     <Form.Control
-                                        type='text'
+                                        type='number'
                                         onChange={(e) =>
-                                            (createData.lat = parseFloat(e.target.value))
+                                            (createData.lat = parseFloat(e.target.value) ?? 0)
                                         }
                                     ></Form.Control>
                                 </td>
                                 <td>
                                     <Form.Control
-                                        type='text'
+                                        type='number'
                                         onChange={(e) =>
-                                            (createData.lon = parseFloat(e.target.value))
+                                            (createData.lon = parseFloat(e.target.value) ?? 0)
                                         }
                                     ></Form.Control>
                                 </td>
                                 <td>
                                     <Form.Control
-                                        type='text'
+                                        type='number'
                                         onChange={(e) =>
-                                            (createData.radius = parseFloat(e.target.value))
+                                            (createData.radius = parseFloat(e.target.value) ?? 0)
                                         }
                                     ></Form.Control>
                                 </td>

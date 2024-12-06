@@ -51,11 +51,11 @@ export const ShowSubSegments: React.FC<ShowSubSegmentsProps> = ({
     token,
 }) => {
     // const {data} = useAllSubSegmentsWithId(String(segId!));
-    const [subSegments, setSubSegments] = useState<ISubSegment[]>();
+    const [subSegments, setSubSegments] = useState<ISubSegment[]>([]);
     const [hideControls, setHideControls] = useState('');
     const [showNewSubSeg, setShowNewSubSeg] = useState(false);
     const [error, setError] = useState<IFetchError | null>(null);
-    let createData = {} as ISubSegment;
+    const [createData] = useState<ISubSegment>({} as ISubSegment);
     const handleSubSegSubmit = async (updateData?: any) => {
         try {
             if (updateData) {
@@ -97,7 +97,7 @@ export const ShowSubSegments: React.FC<ShowSubSegmentsProps> = ({
                 await createSubSegment(createData, token);
 
                 if (subSegments) {
-                    setSubSegments([...subSegments, createData]);
+                    setSubSegments(prevValue => [...prevValue, createData]);
                 }
             }
             setShowNewSubSeg(false);
@@ -114,6 +114,8 @@ export const ShowSubSegments: React.FC<ShowSubSegmentsProps> = ({
     useEffect(() => {
         if (data) {
             setSubSegments(data);
+        } else {
+            setSubSegments([]);
         }
     }, [data]);
 
@@ -230,31 +232,33 @@ export const ShowSubSegments: React.FC<ShowSubSegmentsProps> = ({
                                 <td>
                                     <Form.Control
                                         type='text'
-                                        onChange={(e) => (createData.name = e.target.value)}
+                                        onChange={(e) => {
+                                            createData.name = e.target.value;
+                                        }}
                                     ></Form.Control>
                                 </td>
                                 <td>
                                     <Form.Control
                                         type='number'
-                                        onChange={(e) =>
-                                            (createData.lat = parseFloat(e.target.value) ?? 0)
-                                        }
+                                        onChange={(e) => {
+                                            createData.lat = parseFloat(e.target.value) ?? 0;
+                                        }}
                                     ></Form.Control>
                                 </td>
                                 <td>
                                     <Form.Control
                                         type='number'
-                                        onChange={(e) =>
-                                            (createData.lon = parseFloat(e.target.value) ?? 0)
-                                        }
+                                        onChange={(e) => {
+                                            createData.lon = parseFloat(e.target.value) ?? 0;
+                                        }}
                                     ></Form.Control>
                                 </td>
                                 <td>
                                     <Form.Control
                                         type='number'
-                                        onChange={(e) =>
-                                            (createData.radius = parseFloat(e.target.value) ?? 0)
-                                        }
+                                        onChange={(e) => {
+                                            createData.radius = parseFloat(e.target.value) ?? 0;
+                                        }}
                                     ></Form.Control>
                                 </td>
                                 <td>

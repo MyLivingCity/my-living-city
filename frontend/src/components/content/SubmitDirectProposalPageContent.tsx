@@ -274,7 +274,7 @@ const SubmitDirectProposalPageContent: React.FC<
     const formik = useFormik<ICreateIdeaInput>({
         initialValues: {
             // TODO: CatId when chosen is a string
-            categoryId: categories ? categories[0].id : DEFAULT_CAT_ID,
+            categoryId: categories ? categories[0]?.id : DEFAULT_CAT_ID,
             title: '',
             userType: segData && segData.length > 0 ? segData[0].userType : 'Resident',
             description: '',

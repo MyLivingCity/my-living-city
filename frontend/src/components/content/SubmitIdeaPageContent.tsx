@@ -234,7 +234,7 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
     const formik = useFormik<ICreateIdeaInput>({
         initialValues: {
             // TODO: CatId when chosen is a string value
-            categoryId: categories ? categories[0].id : DEFAULT_CAT_ID,
+            categoryId: categories ? categories[0]?.id : DEFAULT_CAT_ID,
             title: '',
             userType: updatedSegData ? updatedSegData[0].userType : 'Resident',
             description: '',

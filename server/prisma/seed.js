@@ -1,4 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient, SegmentType } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 async function main() {
@@ -14,258 +14,154 @@ async function main() {
 		{ title: 'other', description: '' },
 	];
 
-	/* const defaultUserRoles = [
-		'resident', //Basic user account
-		'guest', //Here for later implementation
-		'associate', //Here for later implementation
-		'worker', //Work location
-		'business', //For business accounts
-		'municipal' //For city/municipal accounts
-	]; */
-
-
 	const defaultSuperSegment = [{
-		superSegId:1,
-		name:"CRD",
+		segId: 1,
+		name: "CRD",
 		country: "Canada",
-		province: "BC"
+		province: "British Columbia",
+		SegmentType: "superSegment"
 	}];
 
 	const defaultSegments = [
-		{segId:1,superSegId:1,country: 'canada', province: 'british columbia', name: 'victoria', superSegName: 'crd'},
-		{segId:2,superSegId:1,country: 'canada', province: 'british columbia', name: 'saanich', superSegName: 'crd'},
-		{segId:3,superSegId:1,country: 'canada', province: 'british columbia', name: 'esquimalt', superSegName: 'crd'},
+		{ segId: 2, parentSegmentId: 1, country: 'Canada', province: 'British Columbia', name: 'Saanich', SegmentType: "segment" },
+		{ segId: 3, parentSegmentId: 1, country: 'Canada', province: 'British Columbia', name: 'Oak bay', SegmentType: "segment" },
+		{ segId: 4, parentSegmentId: 1, country: 'Canada', province: 'British Columbia', name: 'Langford', SegmentType: "segment" },
+		{ segId: 5, parentSegmentId: 1, country: 'Canada', province: 'British Columbia', name: 'Mordor', SegmentType: "segment" },
+		{ segId: 6, parentSegmentId: 1, country: 'Canada', province: 'British Columbia', name: 'Gondor', SegmentType: "segment" },
+		{ segId: 7, parentSegmentId: 1, country: 'Canada', province: 'British Columbia', name: 'Minas tirith', SegmentType: "segment" },
+		{ segId: 8, parentSegmentId: 1, country: 'Canada', province: 'British Columbia', name: 'Victoria', SegmentType: "segment" },
+		{ segId: 9, parentSegmentId: 1, country: 'Canada', province: 'British Columbia', name: 'Esquimalt', SegmentType: "segment" }
 	];
 
 	const defaultSubSegments = [
-		//victoria
-		{id:1,segId:1,name:'fairfield', lat: 0, lon: 0},
-		//saanich
-		{id:2,segId:2,name:'rutledge park', lat: 0, lon: 0},
-		//esquimalt
-		{id:3,segId:3,name:'saxe point', lat: 0, lon: 0},
-
+		// Saanich
+		{ segId: 10, parentSegmentId: 2, name: 'Camosun Interurban', lat: 0, lon: 0, SegmentType: "subSegment" },
+		{ segId: 11, parentSegmentId: 2, name: 'UVIC', lat: 0, lon: 0, SegmentType: "subSegment" },
+		{ segId: 12, parentSegmentId: 2, name: 'Uptown', lat: 0, lon: 0, SegmentType: "subSegment" },
+		// Oak Bay
+		{ segId: 13, parentSegmentId: 3, name: 'Cadboro Bay', lat: 0, lon: 0, SegmentType: "subSegment" },
+		// Langford
+		{ segId: 14, parentSegmentId: 4, name: 'Goldstream Station', lat: 0, lon: 0, SegmentType: "subSegment" },
+		// Mordor
+		{ segId: 15, parentSegmentId: 5, name: 'Orcburg', lat: 0, lon: 0, SegmentType: "subSegment" },
+		{ segId: 16, parentSegmentId: 5, name: 'Doomview', lat: 0, lon: 0, SegmentType: "subSegment" },
+		// Gondor
+		{ segId: 17, parentSegmentId: 6, name: 'Whitewall', lat: 0, lon: 0, SegmentType: "subSegment" },
+		// Minas Tirith
+		{ segId: 18, parentSegmentId: 7, name: 'Riverside', lat: 0, lon: 0, SegmentType: "subSegment" },
+		// Victoria
+		{ segId: 19, parentSegmentId: 8, name: 'Downtown', lat: 0, lon: 0, SegmentType: "subSegment" },
+		{ segId: 20, parentSegmentId: 8, name: 'Fairfield', lat: 0, lon: 0, SegmentType: "subSegment" },
+		// Esquimalt
+		{ segId: 21, parentSegmentId: 9, name: 'Westbay Village', lat: 0, lon: 0, SegmentType: "subSegment" },
+		{ segId: 22, parentSegmentId: 9, name: 'Esquimalt Village', lat: 0, lon: 0, SegmentType: "subSegment" }
 	];
 
+	// Create categories
 	const resolvedCategories = await Promise.all(
 		defaultIdeaCategories.map(({ title, description }) => (
 			prisma.category.upsert({
-				where: {
-					title
-				},
+				where: { title },
+				update: { title, description },
+				create: { title, description }
+			})
+		))
+	);
+
+	// Create super segment
+	const resolvedSuperSegment = await Promise.all(
+		defaultSuperSegment.map((superSeg) => (
+			prisma.segments.upsert({
+				where: { segId: superSeg.segId },
 				update: {
-					title,
-					description,
+					name: superSeg.name,
+					country: superSeg.country,
+					province: superSeg.province
 				},
 				create: {
-					title,
-					description,
+					segId: superSeg.segId,
+					name: superSeg.name,
+					country: superSeg.country,
+					province: superSeg.province,
+					segmentType: superSeg.SegmentType,
+					parentId: null,
 				}
 			})
 		))
 	);
 
-	/* const resolvedUserRoles = await Promise.all(
-		defaultUserRoles.map((role) => (
-			prisma.userRole.upsert({
-				where: {
-					name: role
-				},
+	// Create segments
+	const resolvedSegments = await Promise.all(
+		defaultSegments.map((segment) => (
+			prisma.segments.upsert({
+				where: { segId: segment.segId },
 				update: {
-					name: role
+					segId: segment.segId,
+					country: segment.country,
+					province: segment.province,
+					name: segment.name
 				},
 				create: {
-					name: role
+					segId: segment.segId,
+					country: segment.country,
+					province: segment.province,
+					name: segment.name,
+					segmentType: segment.SegmentType,
+					parentId: segment.parentSegmentId,
 				}
 			})
-    ))
-	); */
+		))
+	);
 
-	const createSuperSegment = await prisma.superSegment.upsert({
-			where:{
-				superSegId:defaultSuperSegment[0].superSegId
-			},
-			update:{
-				superSegId:defaultSuperSegment[0].superSegId,
-				name:defaultSuperSegment[0].name,
-				country:defaultSuperSegment[0].country,
-				province:defaultSuperSegment[0].province
-			},
-			create:{
-				name:defaultSuperSegment[0].name,
-				country:defaultSuperSegment[0].country,
-				province:defaultSuperSegment[0].province
-			}
-	});
+	// Create subsegments
+	const resolvedSubSegments = await Promise.all(
+		defaultSubSegments.map((subSegment) => (
+			prisma.segments.upsert({
+				where: { segId: subSegment.segId },
+				update: {
+					segId: subSegment.segId,
+					name: subSegment.name,
+					lat: subSegment.lat,
+					lon: subSegment.lon
+				},
+				create: {
+					segId: subSegment.segId,
+					name: subSegment.name,
+					lat: subSegment.lat,
+					lon: subSegment.lon,
+					segmentType: subSegment.SegmentType,
+					parentId: subSegment.parentSegmentId,
+				}
+			})
+		))
+	);
 
-	const victoriaSegment = await prisma.segments.upsert({
-		where:{segId:defaultSegments[0].segId},
-		update:{
-			superSegId:defaultSegments[0].superSegId,
-			country:defaultSegments[0].country,
-			province:defaultSegments[0].province,
-			name:defaultSegments[0].name,
-			superSegName:defaultSegments[0].superSegName
-		},
-		create:{
-			superSegId:defaultSegments[0].superSegId,
-			country:defaultSegments[0].country,
-			province:defaultSegments[0].province,
-			name:defaultSegments[0].name,
-			superSegName:defaultSegments[0].superSegName
-		}
-	});
+	// Create thresholds
+	const thresholds = [
+		{ id: 1, number: 3 },
+		{ id: 2, number: 3 },
+		{ id: 3, number: 3 },
+		{ id: 4, number: 3 }
+	];
 
-	const sannichSegment = await prisma.segments.upsert({
-		where:{segId:defaultSegments[1].segId},
-		update:{
-			superSegId:defaultSegments[1].superSegId,
-			country:defaultSegments[1].country,
-			province:defaultSegments[1].province,
-			name:defaultSegments[1].name,
-			superSegName:defaultSegments[1].superSegName
-		},
-		create:{
-			superSegId:defaultSegments[1].superSegId,
-			country:defaultSegments[1].country,
-			province:defaultSegments[1].province,
-			name:defaultSegments[1].name,
-			superSegName:defaultSegments[1].superSegName
-		}
-	});
+	const resolvedThresholds = await Promise.all(
+		thresholds.map((threshold) => (
+			prisma.threshhold.upsert({
+				where: { id: threshold.id },
+				update: { number: threshold.number },
+				create: { id: threshold.id, number: threshold.number }
+			})
+		))
+	);
 
-	const esquimaltSegment = await prisma.segments.upsert({
-		where:{segId:defaultSegments[2].segId},
-		update:{
-			superSegId:defaultSegments[2].superSegId,
-			country:defaultSegments[2].country,
-			province:defaultSegments[2].province,
-			name:defaultSegments[2].name,
-			superSegName:defaultSegments[2].superSegName
-		},
-		create:{
-			superSegId:defaultSegments[2].superSegId,
-			country:defaultSegments[2].country,
-			province:defaultSegments[2].province,
-			name:defaultSegments[2].name,
-			superSegName:defaultSegments[2].superSegName
-		}
-	});
-
-	const fairfieldSubSegment = await prisma.subSegments.upsert({
-		where:{id:defaultSubSegments[0].id},
-		update:{
-			segId:victoriaSegment.segId,
-			name:defaultSubSegments[0].name,
-			lat:defaultSubSegments[0].lat,
-			lon:defaultSubSegments[0].lon
-		},
-		create:{
-			segId:victoriaSegment.segId,
-			name:defaultSubSegments[0].name,
-			lat:defaultSubSegments[0].lat,
-			lon:defaultSubSegments[0].lon
-		}
-	});
-
-	const rutledge_parkSubSegment = await prisma.subSegments.upsert({
-		where:{id:defaultSubSegments[1].id},
-		update:{
-			segId:sannichSegment.segId,
-			name:defaultSubSegments[1].name,
-			lat:defaultSubSegments[1].lat,
-			lon:defaultSubSegments[1].lon
-		},
-		create:{
-			segId:sannichSegment.segId,
-			name:defaultSubSegments[1].name,
-			lat:defaultSubSegments[1].lat,
-			lon:defaultSubSegments[1].lon
-		}
-	});
-
-	const saxe_pointSubSegment = await prisma.subSegments.upsert({
-		where:{id:defaultSubSegments[2].id},
-		update:{
-			segId:esquimaltSegment.segId,
-			name:defaultSubSegments[2].name,
-			lat:defaultSubSegments[2].lat,
-			lon:defaultSubSegments[2].lon
-		},
-		create:{
-			segId:esquimaltSegment.segId,
-			name:defaultSubSegments[2].name,
-			lat:defaultSubSegments[2].lat,
-			lon:defaultSubSegments[2].lon
-		}
-	});
-
-	const defaultThreshold = await prisma.threshhold.upsert({
-		where: {id: 1},
-		update: {
-			id: 1,
-			number: 3
-		},
-		create: {
-			id: 1,
-			number: 3
-		}
-	});
-
-	const falseFlaggingThreshold = await prisma.threshhold.upsert({
-		where: {id: 2},
-		update: {
-			id: 2,
-			number: 3
-		},
-		create: {
-			id: 2,
-			number: 3
-		}
-	});
-
-	const badPostingThreshold = await prisma.threshhold.upsert({
-		where: {id: 3},
-		update: {
-			id: 3,
-			number: 3
-		},
-		create: {
-			id: 3,
-			number: 3
-		}
-	});
-
-	const postFlaggingThreshold = await prisma.threshhold.upsert({
-		where: {id: 4},
-		update: {
-			id: 4,
-			number: 3
-		},
-		create: {
-			id: 4,
-			number: 3
-		}
-	});
-
-
-	console.log('Resolved populated Categories', resolvedCategories);
-	//console.log('Resolved populated UserRoles', resolvedUserRoles);
-	console.log('Resolved populated Super Segment', createSuperSegment);
-	console.log('Resolved populated segments', victoriaSegment);
-	console.log('Resolved populated segments', sannichSegment);
-	console.log('Resolved populated segments', esquimaltSegment);
-	console.log('Resolved populated sub segments', fairfieldSubSegment);
-	console.log('Resolved populated sub segments', rutledge_parkSubSegment);
-	console.log('Resolved populated sub segments', saxe_pointSubSegment);
-	console.log('Resolved populating threshold', defaultThreshold);
-	console.log('Resolved populating false flagging threshold', falseFlaggingThreshold);
-	console.log('Resolved populating bad posting threshold', badPostingThreshold);
-	console.log('Resolved populating post flagging threshold', postFlaggingThreshold);
+	console.log('Resolved populated Categories:', resolvedCategories);
+	console.log('Resolved populated Super Segment:', resolvedSuperSegment);
+	console.log('Resolved populated Segments:', resolvedSegments);
+	console.log('Resolved populated Sub Segments:', resolvedSubSegments);
+	console.log('Resolved populated Thresholds:', resolvedThresholds);
 }
 
 main()
-	.then(() => console.log('Hello from seed.js'))
 	.catch((e) => {
 		console.error(e);
 		process.exit(1);

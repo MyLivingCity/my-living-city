@@ -53,7 +53,7 @@ export const SuggestedIdeasTable: React.FC<any> = (props) => {
                                             ? `${suggestion?.author?.userSegments?.homeSegHandle} As Resident`
                                             : Number(suggestion?.subSegment?.id) === suggestion?.author?.userSegments?.workSubSegmentId
                                                 ? suggestion?.author?.userSegments?.workSegHandle || `${suggestion?.author?.userSegments?.homeSegHandle} As Worker`
-                                                : Number(suggestion?.subSegment?.id) === suggestion?.author?.userSegments?.schoolSubSegmentID
+                                                : Number(suggestion?.subSegment?.id) === suggestion?.author?.userSegments?.schoolSubSegmentId
                                                     ? `${suggestion?.author?.userSegments?.schoolSegHandle} As Student`
                                                     : `${suggestion?.author?.userSegments?.homeSegHandle} As Resident`
                                     ) : Number(suggestion?.segment?.segId) ? (

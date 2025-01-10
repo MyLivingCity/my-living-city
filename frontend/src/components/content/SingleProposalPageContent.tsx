@@ -172,11 +172,11 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     const [showProposalSegmentError, setShowProposalSegmentError] = useState(false);
 
     function redirectToIdeaSubmit() {
-        if (userType === 'RESIDENT') {
+        if (userType === 'Resident') {
             let name = subSegment?.name;
 
             if (name && subSegment) {
-                if (subSegment.segId === userSegmentData.homeSubSegmentId || subSegment.segId === userSegmentData.workSubSegmentId || subSegment.segId === userSegmentData.schoolSubSegmentId) {
+                if (subSegment.id === userSegmentData.homeSubSegmentId || subSegment.id === userSegmentData.workSubSegmentId || subSegment.id === userSegmentData.schoolSubSegmentId) {
                     const communityOfInterest = getSegmentName(name);
                     window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}`;
                 } else {

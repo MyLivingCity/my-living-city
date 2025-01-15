@@ -277,11 +277,14 @@ export const removePostCommentQuarantine = async (userId: string | undefined) =>
 };
 
 export const deleteSchoolSegmentDetails = async (userId: string | undefined) => {
-    const res = await axios.delete(
-        `${API_BASE_URL}/schoolDetails/delete/${userId}`,
-    );
-    console.log('deleteSchoolSegmentDetails', res.data);
-    return res.data;
+    try{
+        const res = await axios.delete(
+            `${API_BASE_URL}/schoolDetails/delete/${userId}`,
+        );
+        return res.data;
+    } catch (error){
+        console.error('Failed to delete school details:', error);
+    }
 };
 
 export const deleteWorkSegmentDetails = async (userId: string | undefined) => {

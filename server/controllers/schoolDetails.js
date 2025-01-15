@@ -35,6 +35,7 @@ schoolDetailsRouter.post(
     }
 )
 
+// Deletes school details as well as the school userSegment
 schoolDetailsRouter.delete(
     '/delete/:id',
     async (req, res) => {    
@@ -47,36 +48,23 @@ schoolDetailsRouter.delete(
                 res.status(400).json({ error: 'School details not found' });
                 return;
             } else {
-                const schoolDetailsRemove = await prisma.school_Details.update({
-                    where: {
-                        id: schoolDetails.id,
-                    },
-                    data: {
-                        displayFName: '',
-                        displayLName: '',
-                        streetAddress: '',
-                        postalCode: '',
-                        faculty: '',
-                    },
+
+                await prisma.school_Details.delete({
+                    where : {id: schoolDetails.id},
                 });
 
-                const userSegmentsSchoolDetails = await prisma.userSegments.update({
+                await prisma.userSegments.deleteMany({
                     where: {
                         userId: req.params.id,
-                    },
-                    data: {
-                        schoolSegmentId: null,
-                        schoolSubSegmentId: null,
-                        schoolSegmentName: '',
-                        schoolSubSegmentName: '',
-                        schoolSegHandle: '',
+                        userSegmentRelationship: 'SCHOOL',
                     },
                 });
-                res.status(200).json({schoolDetailsRemove, userSegmentsSchoolDetails});
+                
+                res.status(204).send();
                 return;
             }
         } catch (error) {
-            res.status(400).json({ error: error.message });
+            res.status(500).json({ error: 'An internal server error occurred' });
         } finally { 
             await prisma.$disconnect();
         }

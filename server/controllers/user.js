@@ -231,7 +231,7 @@ userRouter.get(
 				include: {
 					address: true,
 					geo: true,
-					userSegments: true
+					userSegment: true
 				}
 			});
 
@@ -352,6 +352,7 @@ userRouter.delete(
 
 userRouter.post("/signup",
 	async (req, res, next) => {
+
 		// console.log(req.user);
 		// console.log(req.body);
 		// Types that don't need admin permissions to create
@@ -428,8 +429,10 @@ userRouter.post("/signup",
 				});
 			})(req, res, next);
 		}
+
 	}
 );
+
 
 /**
  * @swagger

@@ -198,7 +198,8 @@ const SpecifiedCommunitySectionTableView: React.FC<SpecifiedCommunityTableViewPr
                                         </td>
                                         <td className='text-center align-middle'>  <Card.Link href={`/ideas/${idea.id}`}>
                                             <Button variant='primary'>Info</Button>
-                                        </Card.Link></td>
+                                        </Card.Link>
+                                        </td>
                                     </tr>
                                     : null;
                             })

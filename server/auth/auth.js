@@ -8,7 +8,7 @@ const { getSegmentInfo, cleanAddress } = require('../helpers/userSegmentHelpers'
 const createAppPasswordTransport = require('./appPasswordTransport');
 const { verify } = require('jsonwebtoken');
 const { validateUserData, verifyUserExists } = require('./authHelpers/authValidations');
-const { processAdminAccount, processBusinessAccount, processResidentialAccount } = require('./authHelpers/processAccountTypes');
+const { processAdminAccount, processBusinessAccount, processResidentialAccount, processUserSegments } = require('./authHelpers/processAccountTypes');
 const createUser = require('./authHelpers/dao/user');
 const ValidationError = require('../types/ValidationError');
 const UserExistsError = require('../types/UserExistsError');
@@ -43,6 +43,7 @@ passport.use(
         userData = await processAdminAccount(userData);
         userData = await processBusinessAccount(userData);
         userData = processResidentialAccount(userData);
+        userData = processUserSegments(userData);
 
         // Create user in database
         const createdUser = await createUser(userData);

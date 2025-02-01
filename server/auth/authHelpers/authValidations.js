@@ -39,12 +39,13 @@ const verifyUserExists = async (email) => {
     if (userExists) {
       if (userExists.verified) {
         throw new UserExistsError("User already exists.");
-      } else {
-        await sendEmailVerification(userExists);
-        throw new UserExistsError(
-          "User already exists. Please check your email for verification link."
-        );
-      }
+      } 
+      // else {
+      //   await sendEmailVerification(userExists);
+      //   throw new UserExistsError(
+      //     "User already exists. Please check your email for verification link."
+      //   );
+      // }
     }
 
     return false;

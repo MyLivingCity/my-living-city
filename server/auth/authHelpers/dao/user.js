@@ -6,7 +6,7 @@ const createUser = async (userData) => {
     const {
       geo,
       address,
-      userSegment,
+      userSegment, // This will now need to include segmentHandle and userSegmentRelationship
       segmentRequest,
       userReachRequest,
       schoolDetails,
@@ -30,9 +30,17 @@ const createUser = async (userData) => {
         address: {
           create: address
         },
-        // User segment data
+        // User segment data - modified according to new schema
         userSegment: {
-          create: userSegment
+          create: userSegment.map(segment => ({
+            segmentHandle: segment.segmentHandle || "",
+            userSegmentRelationship: segment.userSegmentRelationship,
+            segment: {
+              connect: {
+                segId: segment.segmentId
+              }
+            }
+          }))
         },
         // Segment request data
         segmentRequest: {
@@ -64,7 +72,11 @@ const createUser = async (userData) => {
       include: {
         geo: true,
         address: true,
-        userSegment: true,
+        userSegment: {
+          include: {
+            segment: true
+          }
+        },
         stripe: true,
         segmentRequest: true,
         userReach: true,

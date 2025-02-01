@@ -17,7 +17,7 @@ let errorStack = '';
 // post request to create an idea
 ideaRouter.post(
   '/create',
-  [passport.authenticate('jwt', { session: false }), upload],
+  // [passport.authenticate('jwt', { session: false }), upload],
   async (req, res) => {
     let imagePath;
     try {
@@ -580,7 +580,7 @@ ideaRouter.post(
     }
   }
 );
-  
+
 
 // Get all ideas from a specific author
 ideaRouter.get(

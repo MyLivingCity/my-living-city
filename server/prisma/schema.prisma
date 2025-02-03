@@ -83,7 +83,7 @@ model User {
 
 model UserSegments {
   id                   String        @id @default(cuid())
-  userId               String        @unique @map("user_id")
+  userId               String        @map("user_id")
 
   segmentHandle String
 

@@ -1,7 +1,7 @@
 const passport = require('passport');
 const express = require('express');
 const subSegmentRouter = express.Router();
-const prisma = require('../lib/prismaClient');
+const prisma = require('../../lib/prismaClient');
 
 const { isEmpty, isNumber, isString, isInteger } = require('lodash');
 const { UserType } = require('@prisma/client');

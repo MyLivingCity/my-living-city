@@ -1,7 +1,7 @@
 const passport = require('passport');
 const express = require('express');
 const segmentRouter = express.Router();
-const prisma = require('../lib/prismaClient');
+const prisma = require('../../lib/prismaClient');
 
 const { isEmpty, isInteger, isString } = require('lodash');
 const { UserType } = require('@prisma/client');
@@ -118,7 +118,6 @@ segmentRouter.get(
     async (req, res) => {
         try {
             const result = await prisma.segments.findMany();
-            console.log(result);
             res.status(200).send(result);
         } catch (error) {
             console.log(error);
@@ -134,6 +133,43 @@ segmentRouter.get(
         }
     }
 );
+
+segmentRouter.get(
+    '/getByType/:type',
+    async (req, res) => {
+        try {
+            const { type } = req.params;
+
+            const validTypes = ['segment', 'superSegment', 'subSegment'];
+            if (!validTypes.includes(type)) {
+                return res.status(400).json({
+                    message: "Invalid segment type",
+                    validTypes
+                });
+            }
+
+            const result = await prisma.segments.findMany({
+                where: {
+                    segmentType: type
+                }
+            });
+
+            res.status(200).send(result);
+        } catch (error) {
+            console.log(error);
+            res.status(400).json({
+                message: "An error occurred while trying to retrieve segments.",
+                details: {
+                    errorMessage: error.message,
+                    errorStack: error.stack,
+                }
+            });
+        } finally {
+            await prisma.$disconnect();
+        }
+    }
+);
+
 // segmentRouter.get(
 //     '/getByProv',
 //     async(req,res) => {

@@ -46,7 +46,8 @@ model User {
   userReach           UserReach[]
   userIdeaFollow      UserIdeaFollow[]
   userIdeaEndorse     UserIdeaEndorse[]
-  userSegment UserSegments[]
+  userSegment         UserSegment[]
+  userHandle          UserHandle[]
 
   //userRole        UserRole?    @relation(fields: [userRoleId], references: [id])
   ideas               Idea[]                @relation("ideaAuthor")
@@ -81,14 +82,23 @@ model User {
   @@map(name: "user")
 }
 
-model UserSegments {
+model UserHandle {
+  id                  String        @id @default(cuid())
+  userId              String        @map("user_id")
+  handle              String
+  userSegmentRelationship           UserSegmentRelationShipType @map("user_segment_relationship_type")
+
+  // Relationships
+  user                 User         @relation(fields: [userId], references: [id])
+
+  @@unique([userId, userSegmentRelationship])
+  @@map(name: "user_handle")
+}
+
+model UserSegment {
   id                   String        @id @default(cuid())
   userId               String        @unique @map("user_id")
-
-  segmentHandle String
-
   userSegmentRelationship UserSegmentRelationShipType @map("user_segment_relationship_type")
-
   IdeaComment          IdeaComment[]
 
   // relationships 
@@ -130,7 +140,7 @@ model Segments {
   @@map(name: "segment")
 
   // relations 
-  userSegment UserSegments[]
+  userSegment UserSegment[]
   segmentType SegmentType
   ideas Idea[]
 
@@ -613,7 +623,7 @@ model IdeaComment {
   // relations
   author            User                  @relation(fields: [authorId], references: [id])
   idea              Idea                  @relation(fields: [ideaId], references: [id])
-  userSeg           UserSegments          @relation(fields: [userSegId], references: [id])
+  userSeg           UserSegment          @relation(fields: [userSegId], references: [id])
   likes             UserCommentLikes[]
   commentFlags      CommentFlag[]
   commentBans       CommentBan[]

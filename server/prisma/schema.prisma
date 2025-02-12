@@ -46,8 +46,8 @@ model User {
   userReach           UserReach[]
   userIdeaFollow      UserIdeaFollow[]
   userIdeaEndorse     UserIdeaEndorse[]
-  userSegment         UserSegment[]
-  userHandle          UserHandle[]
+  userSegments         UserSegment[]
+  userHandles          UserHandle[]
 
   //userRole        UserRole?    @relation(fields: [userRoleId], references: [id])
   ideas               Idea[]                @relation("ideaAuthor")
@@ -140,7 +140,7 @@ model Segments {
   @@map(name: "segment")
 
   // relations 
-  userSegment UserSegment[]
+  userSegments UserSegment[]
   segmentType SegmentType
   ideas Idea[]
 

@@ -1,5 +1,6 @@
-import React from "react";
-import { Row, Col, Form, Card } from "react-bootstrap";
+import React from 'react';
+import { Row, Col, Form, Card } from 'react-bootstrap';
+import { COUNTRIES, PROVINCES } from 'src/lib/constants';
 
 interface LocationSelectorProps {
     countryName: string;
@@ -8,10 +9,7 @@ interface LocationSelectorProps {
     setProvName: React.Dispatch<React.SetStateAction<string>>;
     setShowSub: React.Dispatch<React.SetStateAction<boolean>>;
     setShowNewSeg: React.Dispatch<React.SetStateAction<boolean>>;
-    COUNTRIES: string[];
-    PROVINCES: string[];
 }
-
 
 const LocationSelector: React.FC<LocationSelectorProps> = ({
     countryName,
@@ -20,8 +18,6 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
     setProvName,
     setShowSub,
     setShowNewSeg,
-    COUNTRIES,
-    PROVINCES,
 }) => {
     return (
         <Row>
@@ -34,9 +30,9 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
                                 <Col>
                                     <Form.Label>Country</Form.Label>
                                     <Form.Control
-                                        size="sm"
-                                        as="select"
-                                        name="country"
+                                        size='sm'
+                                        as='select'
+                                        name='country'
                                         value={countryName}
                                         onChange={(e) => {
                                             setCountryName(e.target.value.toLowerCase());
@@ -45,7 +41,7 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
                                         }}
                                     >
                                         {COUNTRIES.map((country) => (
-                                            <option key={country} value={country}>
+                                            <option key={country} value={country.toLowerCase()}>
                                                 {country}
                                             </option>
                                         ))}
@@ -54,9 +50,9 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
                                 <Col>
                                     <Form.Label>Province</Form.Label>
                                     <Form.Control
-                                        size="sm"
-                                        as="select"
-                                        name="prov"
+                                        size='sm'
+                                        as='select'
+                                        name='prov'
                                         value={provName}
                                         onChange={(e) => {
                                             setProvName(e.target.value.toLowerCase());
@@ -65,7 +61,7 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
                                         }}
                                     >
                                         {PROVINCES.map((prov) => (
-                                            <option key={prov} value={prov}>
+                                            <option key={prov} value={prov.toLocaleLowerCase()}>
                                                 {prov}
                                             </option>
                                         ))}

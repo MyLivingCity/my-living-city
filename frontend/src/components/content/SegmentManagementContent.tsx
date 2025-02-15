@@ -19,9 +19,8 @@ const SegmentManagementContent: React.FC<SegmentPageContentProps> = ({
 }) => {
     const [segments, setSegments] = useState<ISegment[]>(segs || []);
     const [superSegments, setSuperSegments] = useState<ISuperSegment[]>([]);
-    const [countryName, setCountryName] = useState<string>('canada');
-    const [provName, setProvName] = useState<string>('british columbia');
-
+    const [countryName, setCountryName] = useState<string>('');
+    const [provName, setProvName] = useState<string>('');
     useEffect(() => {
         if (segments.length > 0) {
             setCountryName(segments[0].country);
@@ -40,8 +39,6 @@ const SegmentManagementContent: React.FC<SegmentPageContentProps> = ({
                 setProvName={setProvName}
                 setShowSub={() => { }}
                 setShowNewSeg={() => { }}
-                COUNTRIES={Array.from(new Set(segments.map(s => s.country)))}
-                PROVINCES={Array.from(new Set(segments.map(s => s.province)))}
             />
 
             <br />

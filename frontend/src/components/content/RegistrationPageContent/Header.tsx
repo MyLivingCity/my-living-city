@@ -11,20 +11,22 @@ function Header(props:HeaderProps) {
     const getStepHeader = (step: number) => {
         switch (step) {
             case 1:
-                return 'Create Account';
+                return 'Select Account Type';
             case 2:
-                return 'Community Location';
+                return 'Create Account';
             case 3:
+                return 'Community Location';
+            case 4:
                 return props.userType === USER_TYPES.RESIDENTIAL
                     ? 'User Agreement and Community Guidelines'
                     : 'Reach';
-            case 4:
-                return props.userType === USER_TYPES.RESIDENTIAL ? 'Submit' : 'User Agreement and Community Guidelines'; 
             case 5:
+                return props.userType === USER_TYPES.RESIDENTIAL ? 'Submit' : 'User Agreement and Community Guidelines'; 
+            case 6:
                 return props.userType === USER_TYPES.RESIDENTIAL
                     ? ''
                     : 'Submit';
-            case 6:
+            case 7:
                 return props.userType === USER_TYPES.RESIDENTIAL ? '' : 'Create Ad';
             default:
                 return '';

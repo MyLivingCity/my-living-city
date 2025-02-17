@@ -115,7 +115,6 @@ function CommunityLocation({
                     </p>
                 </BForm.Group>
 
-                {/* Conditionally render Work Details */}
                 {communityType === 'work' && (
                     <FormikStep
                         validationSchema={Yup.object().shape({

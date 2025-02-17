@@ -42,6 +42,7 @@ function Header(props:HeaderProps) {
                         { title: `${getStepHeader(2)}` },
                         { title: `${getStepHeader(3)}` },
                         { title: `${getStepHeader(4)}` },
+                        { title: `${getStepHeader(5)}`}
                     ]}
                     activeStep={Number(props.step) - 1}
                     circleTop={0}

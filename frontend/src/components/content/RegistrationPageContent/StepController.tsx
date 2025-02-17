@@ -29,7 +29,7 @@ import {
 } from 'src/lib/utilityFunctions';
 import { ISegment, ISubSegment } from 'src/lib/types/data/segment.type';
 import { IFetchError } from 'src/lib/types/types';
-import { CheckBoxItem } from '../RegisterPageContentReach';
+import { CheckBoxItem, RegisterPageContentReach } from '../RegisterPageContentReach';
 import {
   findSubsegmentsBySegmentId,
   getAllSegments,
@@ -246,6 +246,9 @@ function StepController() {
         schoolTransfer={schoolTransfer}
         avatar={avatar}
         userType={userType}
+        setselectedSegId={setselectedSegId}
+        selectedSegId={selectedSegId}
+        reachData={reachData}
         setUserType={setUserType}
         reachSegmentIds={selectedSegId}
         segments={segments}
@@ -388,6 +391,9 @@ export interface FormikStepperProps extends FormikConfig<IRegisterInput> {
   step: any;
   setStep: any;
   setAvatar: any;
+  reachData: any;
+  selectedSegId: any;
+  setselectedSegId:any;
   setCommunityType: React.Dispatch<React.SetStateAction<string | null>>;
   setSegData: (index: number) => Promise<void>;
   setSubsegData: (segmentId: number) => Promise<void>;
@@ -420,6 +426,9 @@ export function FormikStepper({
   segmentRequests,
   setStep,
   setSegmentRequests,
+  reachData,
+  selectedSegId,
+  setselectedSegId,
   setCommunityType,
   setSegData,
   setSubsegData,
@@ -472,13 +481,11 @@ export function FormikStepper({
                   />
                 </BForm.Group>
               </FormikStep>
-              <NextAndBackButton userType={userType} setStep={setStep} step={step} />
             </>
           )}
           {step == 2 && (
             <>
               <EmailPasswordForm userType={userType} setAvatar={setAvatar} />
-              <NextAndBackButton userType={userType} setStep={setStep} step={step} />
             </>
           )}
           {step == 3 && (
@@ -500,16 +507,39 @@ export function FormikStepper({
                 segmentRequests={segmentRequests}
                 setSegmentRequests={setSegmentRequests}
               />
-              <NextAndBackButton userType={userType} setStep={setStep} step={step} />
             </>
           )}
-
-          {step == 4 && (
-            <>
-                <UserAgreement submitError = {submitError}/>
-                <NextAndBackButton  userType={userType} setStep={setStep} step={step} />
-            </>
-          )}
+            {(
+            (step === 4 && userType !== USER_TYPES.BUSINESS && userType !== USER_TYPES.COMMUNITY) ||
+            (step === 5 && (userType === USER_TYPES.BUSINESS || userType === USER_TYPES.COMMUNITY))
+            ) && (
+                <>
+                    <UserAgreement submitError={submitError} />
+                </>
+            )}
+            {( step === 4 && (userType === USER_TYPES.BUSINESS || userType === USER_TYPES.COMMUNITY)) && (
+                <>
+                    <RegisterPageContentReach
+                    data={reachData}
+                    selected={selectedSegId}
+                    setSelected={setselectedSegId}
+                    />
+                </>
+            )}
+            
+            {((step == 6 && (userType === USER_TYPES.BUSINESS || userType === USER_TYPES.COMMUNITY)) || 
+            (step == 5 && userType !== USER_TYPES.BUSINESS && userType !== USER_TYPES.COMMUNITY)) && (
+                <>
+                    <SubmitForm submitError={submitError}/>
+                </>
+            )}
+            {(step == 7 && (userType === USER_TYPES.BUSINESS ||
+            userType === USER_TYPES.COMMUNITY)) && (
+                <SettupAnAd/>
+            )}
+            <Form>
+                <NextAndBackButton userType={userType} setStep={setStep} step={step} />
+            </Form>
         </>
       </Formik>
     </>
@@ -639,47 +669,67 @@ export function EmailPasswordForm({
   );
 }
 
+
+interface NextAndBackButtonProps {
+    userType: string;
+    setStep: (step: number) => void;
+    step: number;
+    isLoading?: boolean;
+  }
+  
 export function NextAndBackButton({
-  userType,
-  setStep,
-  step,
-}: {
-  userType: any;
-  setStep: (step: number) => void;
-  step: number;
-}) {
-  const { validateForm, setTouched } = useFormikContext<any>();
-  const lastStep = userType === USER_TYPES.RESIDENTIAL ? 4 : 6;
-  const handleNext = async () => {
-    const errors = await validateForm();
-    if (Object.keys(errors).length === 0) {
-      setStep(step + 1);
-    } else {
-      const touchedFields = Object.keys(errors).reduce(
-        (acc, key) => ({ ...acc, [key]: true }),
-        {}
-      );
-      setTouched(touchedFields, true);
-    }
-  };
-  return (
-    <BForm.Group className="d-flex justify-content-between">
-      {step > 1 && (
-        <Button type="button" variant="secondary" onClick={() => setStep(step - 1)}>
-          Back
-        </Button>
-      )}
-      {step < lastStep ? (
-        <Button type="button" variant="primary" onClick={handleNext}>
-          Next
-        </Button>
-      ) : (
-        <Button type="submit" variant="success">
-          Submit
-        </Button>
-      )}
-    </BForm.Group>
-  );
+    userType,
+    setStep,
+    step,
+    isLoading = false,
+}: NextAndBackButtonProps) {
+    const { validateForm, setTouched } = useFormikContext<any>();
+    const lastStep = userType === USER_TYPES.RESIDENTIAL ? 5 : 6;
+    const isLastStep = step >= lastStep;
+
+    const nextLabel = isLoading ? 'Loading...' : 'Next';
+    const submitLabel = isLoading ? 'Submitting...' : 'Submit';
+
+    const handleNext = async () => {
+        const errors = await validateForm();
+        if (Object.keys(errors).length === 0) {
+        setStep(step + 1);
+        } else {
+        const touchedFields = Object.keys(errors).reduce(
+            (acc, key) => ({ ...acc, [key]: true }),
+            {}
+        );
+        setTouched(touchedFields, true);
+        }
+    };
+
+    return (
+        <BForm.Group className="d-flex justify-content-between">
+        {step > 1 && (
+            <Button
+            type="button"
+            variant="outline-primary"
+            onClick={() => setStep(step - 1)}
+            >
+            Back
+            </Button>
+        )}
+        {!isLastStep ? (
+            <Button
+            type="button"
+            variant="primary"
+            disabled={isLoading}
+            onClick={handleNext}
+            >
+            {nextLabel}
+            </Button>
+        ) : (
+            <Button type="submit" variant="success" disabled={isLoading}>
+            {submitLabel}
+            </Button>
+        )}
+        </BForm.Group>
+    );
 }
 
 
@@ -748,18 +798,50 @@ export function UserAgreement({submitError}: {submitError:any}){
                 </p>
                 </>
             </FormikStep>
+        </>
+    );
+}
 
-            <FormikStep>
+export function SettupAnAd(){
+    return(
+        <FormikStep>
+            <BForm.Group>
+                <h4>Would you like to setup Complementary Ad now?</h4>
+                <p>You would be able to create ad later at the ad manager</p>
+                <BForm.Check
+                    inline
+                    name='createAdRadio'
+                    label='Yes'
+                    type='radio'
+                    id='inline-checkbox'
+                    onClick={() => {
+                        window.location.href = ROUTES.SUBMIT_ADVERTISEMENT;
+                    }}
+                />
+                <BForm.Check
+                    inline
+                    name='createAdRadio'
+                    label='No'
+                    type='radio'
+                    id='inline-checkbox'
+                    onClick={() => {
+                        window.location.href = ROUTES.LOGIN;
+                    }}
+                />
+            </BForm.Group>
+        </FormikStep>
+    )
+}
+
+
+export function SubmitForm({submitError}: {submitError:any;}){
+    return(
+        <FormikStep>
                 {submitError && <Alert variant='danger'>{submitError}</Alert>}
                 <h3>
             To complete registration press submit! Make sure to check your email
             for a verification code!{' '}
                 </h3>
-                {/* Stripe Payment Implementation Goes Here */}
-                {/* <BForm.Group> */}
-                {/* </BForm.Group> */}
-            </FormikStep>
-        </>
-    );
+        </FormikStep>
+    )
 }
-

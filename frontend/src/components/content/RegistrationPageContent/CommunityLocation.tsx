@@ -126,7 +126,9 @@ const CommunityLocation = ({
   
     return (
       <FormikStep>
-        <BForm.Control
+        <BForm.Group>
+            <BForm.Label>Select your Municipality</BForm.Label>
+            <BForm.Control
           name='homeSegmentId'
           as='select'
           className='mb-3'
@@ -137,14 +139,17 @@ const CommunityLocation = ({
           {segmentOptions}
         </BForm.Control>
   
+        </BForm.Group>
+        
         <BForm.Group>
+        <BForm.Label>Select your Neighbourhood (Optional)</BForm.Label>
           <BForm.Control
             name='homeSubName'
             as='select'
             onChange={handleSubSegmentChange}
             disabled={!segIds[0] || !subSegments.length}
           >
-            <option hidden>Select your Neighbourhood (optional)</option>
+            <option hidden>Select a neighbourhood</option>
             {subSegmentOptions}
           </BForm.Control>
           <p>

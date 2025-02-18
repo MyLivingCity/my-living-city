@@ -352,7 +352,6 @@ export interface FormikStepperProps extends FormikConfig<IRegisterInput> {
   initialValues: IRegisterInput;
   markers: any;
   setSegment: any;
-  setSegments: any;
   setSegment2: any;
   setSubSegments: any;
   setSubSegments2: any;
@@ -378,6 +377,7 @@ export interface FormikStepperProps extends FormikConfig<IRegisterInput> {
   setStep: any;
   setAvatar: any;
   reachData: any;
+  setSegments: any;
   subSegments:any;
     subSegments2:any;
   selectedSegId: any;
@@ -403,6 +403,7 @@ export function FormikStepper({
   setUserType,
   reachSegmentIds,
   setAvatar,
+  setSegments,
   step,
   subSegments,
     subSegments2,
@@ -486,16 +487,15 @@ export function FormikStepper({
                 refactorStateArray={refactorStateArray}
                 segIds={segIds}
                 setSegIds={setSegIds}
-                setSubsegData={setSubsegData}
                 communityType={communityType}
                 setCommunityType={setCommunityType}
                 subIds={subIds}
                 setSubIds={setSubIds}
                 setShowModal={setShowModal}
                 showModal={showModal}
+                setSegments={setSegments}
                 segmentRequests={segmentRequests}
-                setSegmentRequests={setSegmentRequests}
-              />
+                setSegmentRequests={setSegmentRequests}/>
             </>
           )}
             {(

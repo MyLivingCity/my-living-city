@@ -37,6 +37,8 @@ import {
 } from 'src/lib/api/segmentRoutes';
 import { IRegisterInput } from 'src/lib/types/input/register.input';
 import CommunityLocation from './CommunityLocation';
+import CSS from 'csstype';
+import '../../../../src/scss/ui/_other.scss';
 
 interface RegisterPageContentProps {}
 type Props = FieldHookConfig<string> & {
@@ -72,6 +74,19 @@ function StepController() {
       setIsLoading(false);
     }
   }
+
+  const userTypeInfoContainerStyles: CSS.Properties = {
+    marginTop: '40px',
+  };
+
+  const inline: CSS.Properties = {
+      display: 'inline',
+      marginLeft: '10px',
+  };
+  
+  const marginBot: CSS.Properties = {
+      marginBottom: '20px',
+  };
 
   const [subSegments, setSubSegments] = useState<ISubSegment[]>();
   const [subSegments2, setSubSegments2] = useState<ISubSegment[]>();

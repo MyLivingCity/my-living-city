@@ -36,7 +36,7 @@ import {
   getAllSegmentsWithSuperSegId,
 } from 'src/lib/api/segmentRoutes';
 import { IRegisterInput } from 'src/lib/types/input/register.input';
-import CommunityLocation from './ComunityLocation';
+import CommunityLocation from './CommunityLocation';
 
 interface RegisterPageContentProps {}
 type Props = FieldHookConfig<string> & {
@@ -73,6 +73,8 @@ function StepController() {
     }
   }
 
+  const [subSegments, setSubSegments] = useState<ISubSegment[]>();
+  const [subSegments2, setSubSegments2] = useState<ISubSegment[]>();
   async function setSegData(index: number) {
     try {
       setError(null);
@@ -134,8 +136,7 @@ function StepController() {
   const [segment, setSegment] = useState<ISegment>();
   const [segments, setSegments] = useState<ISegment[]>([]);
   const [segment2, setSegment2] = useState<ISegment>();
-  const [subSegments, setSubSegments] = useState<ISubSegment[]>();
-  const [subSegments2, setSubSegments2] = useState<ISubSegment[]>();
+
   const [subIds, setSubIds] = useState<any[]>([]);
   const [segIds, setSegIds] = useState<any[]>([]);
   const [segmentRequests, setSegmentRequests] = useState<any[]>([]);
@@ -145,22 +146,7 @@ function StepController() {
 
   const [workTransfer, transferHomeToWork] = useState(false);
   const [schoolTransfer, transferWorkToSchool] = useState(false);
-  const displaySubSegList = (id: number) => {
-    if (subSegments && subSegments[0].segId === id) {
-      return subSegments?.map((subSeg) => (
-        <option key={subSeg.id} value={subSeg.id}>
-          {capitalizeFirstLetterEachWord(subSeg.name)}
-        </option>
-      ));
-    }
-    if (subSegments2 && subSegments2[0].segId === id) {
-      return subSegments2?.map((subSeg) => (
-        <option key={subSeg.id} value={subSeg.id}>
-          {capitalizeFirstLetterEachWord(subSeg.name)}
-        </option>
-      ));
-    }
-  };
+  
 
   const [selectedSegId, setselectedSegId] = useState<any>([]);
   const [reachData, setReachData] = useState<CheckBoxItem[]>([]);
@@ -249,12 +235,13 @@ function StepController() {
         setselectedSegId={setselectedSegId}
         selectedSegId={selectedSegId}
         reachData={reachData}
+        subSegments = {subSegments}
+        subSegments2 = {subSegments2}
         setUserType={setUserType}
         reachSegmentIds={selectedSegId}
         segments={segments}
         refactorStateArray={refactorStateArray}
         setSubsegData={setSubsegData}
-        displaySubSegList={displaySubSegList}
         communityType={communityType}
         setCommunityType={setCommunityType}
         setShowModal={setShowModal}
@@ -376,7 +363,6 @@ export interface FormikStepperProps extends FormikConfig<IRegisterInput> {
   subIds: any;
   segments: any;
   refactorStateArray: any;
-  displaySubSegList: any;
   setShowModal: any;
   showModal: any;
   segmentRequests: any;
@@ -392,6 +378,8 @@ export interface FormikStepperProps extends FormikConfig<IRegisterInput> {
   setStep: any;
   setAvatar: any;
   reachData: any;
+  subSegments:any;
+    subSegments2:any;
   selectedSegId: any;
   setselectedSegId:any;
   setCommunityType: React.Dispatch<React.SetStateAction<string | null>>;
@@ -416,10 +404,11 @@ export function FormikStepper({
   reachSegmentIds,
   setAvatar,
   step,
+  subSegments,
+    subSegments2,
   segments,
   setSegment,
   refactorStateArray,
-  displaySubSegList,
   communityType,
   setShowModal,
   showModal,
@@ -489,6 +478,7 @@ export function FormikStepper({
             </>
           )}
           {step == 3 && (
+            
             <>
               <CommunityLocation
                 segments={segments}
@@ -497,7 +487,6 @@ export function FormikStepper({
                 segIds={segIds}
                 setSegIds={setSegIds}
                 setSubsegData={setSubsegData}
-                displaySubSegList={displaySubSegList}
                 communityType={communityType}
                 setCommunityType={setCommunityType}
                 subIds={subIds}

@@ -201,7 +201,6 @@ model Idea {
   champion                 User?                      @relation("ideaChampion", fields: [championId], references: [id])
   category                 Category                   @relation(fields: [categoryId], references: [id])
   segments Segments[]
-  segmentIdeaId Int
   Quarantine_Notifications Quarantine_Notifications[]
 
   @@unique([id, title])

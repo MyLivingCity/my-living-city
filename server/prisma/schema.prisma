@@ -120,7 +120,7 @@ model Segments {
   segId        Int          @id @default(autoincrement()) @map("seg_id")
   
   parentSegment Segments? @relation("SegmentToSegment", fields: [parentId], references: [segId]) 
-  parentId Int?
+  parentId     Int?
 
   children Segments[] @relation("SegmentToSegment")
 
@@ -128,9 +128,9 @@ model Segments {
 
   country      String?
   province     String?
-  lat       Decimal?
-  lon       Decimal?
-  radius    Decimal?
+  lat          Decimal?
+  lon          Decimal?
+  radius       Decimal?
 
   createdAt    DateTime     @default(now()) @map("created_at")
   updatedAt    DateTime?    @default(now()) @updatedAt @map("update_at")
@@ -140,9 +140,9 @@ model Segments {
   @@map(name: "segment")
 
   // relations 
-  userSegments UserSegment[]
-  segmentType SegmentType
-  ideas Idea[]
+  userSegments   UserSegment[]
+  segmentType    SegmentType
+  ideas          IdeaSegment[]
 
 }
 
@@ -200,11 +200,24 @@ model Idea {
   supportedProposal        Proposal?                  @relation("supportedProposal", fields: [supportingProposalId], references: [id])
   champion                 User?                      @relation("ideaChampion", fields: [championId], references: [id])
   category                 Category                   @relation(fields: [categoryId], references: [id])
-  segments Segments[]
+  segments                 IdeaSegment[]
   Quarantine_Notifications Quarantine_Notifications[]
 
   @@unique([id, title])
   @@map(name: "idea")
+}
+
+model IdeaSegment {
+  id                   String        @id @default(cuid())
+  ideaId               Int           @map("idea_id")
+  segmentId            Int 
+
+  // relationships 
+  idea                  Idea @relation(fields: [ideaId], references: [id])
+  segment               Segments @relation(fields: [segmentId] , references: [segId])
+
+  @@unique([ideaId, segmentId])
+  @@map(name: "idea_segment")
 }
 
 // Report Entity

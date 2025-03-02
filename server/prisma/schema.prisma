@@ -83,7 +83,7 @@ model User {
 }
 
 model UserHandle {
-  id                  String        @id @default(cuid())
+  id                  Int        @id @default(autoincrement())
   userId              String        @map("user_id")
   handle              String
   userSegmentRelationship           UserSegmentRelationShipType @map("user_segment_relationship_type")
@@ -96,7 +96,7 @@ model UserHandle {
 }
 
 model UserSegment {
-  id                   String        @id @default(cuid())
+  id                   Int        @id @default(autoincrement())
   userId               String        @map("user_id")
   userSegmentRelationship UserSegmentRelationShipType @map("user_segment_relationship_type")
   IdeaComment          IdeaComment[]
@@ -106,6 +106,7 @@ model UserSegment {
   segmentId Int 
 
   user User @relation(fields: [userId], references: [id])
+  @@map(name: "user_segment")
 }
 
 enum UserSegmentRelationShipType {
@@ -208,7 +209,7 @@ model Idea {
 }
 
 model IdeaSegment {
-  id                   String        @id @default(cuid())
+  id                   Int     @id @default(autoincrement())
   ideaId               Int           @map("idea_id")
   segmentId            Int 
 
@@ -216,7 +217,7 @@ model IdeaSegment {
   idea                  Idea @relation(fields: [ideaId], references: [id])
   segment               Segments @relation(fields: [segmentId] , references: [segId])
 
-  @@unique([ideaId, segmentId])
+
   @@map(name: "idea_segment")
 }
 
@@ -612,10 +613,7 @@ model IdeaComment {
   ideaId                 Int      @map("idea_id")
   // Fields
   authorId               String   @map("author_id")
-  userSegId              String   @map("user_segment_id")
-  superSegmentId         Int?     @map("super_segment_id")
-  segmentId              Int?     @map("segment_id")
-  subSegmentId           Int?     @map("sub_segment_id")
+  userSegId              Int      @map("user_segment_id")
   content                String
   active                 Boolean  @default(true)
   reviewed               Boolean  @default(false)

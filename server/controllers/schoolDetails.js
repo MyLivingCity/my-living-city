@@ -124,12 +124,15 @@ schoolDetailsRouter.patch(
                     updatedAt: new Date(),
                 },
             });
-            const userDetails = await prisma.userSegments.update({ where: {
-                userId: req.params.id,
-            },
-            data: {
-              schoolSegHandle: req.body.displayFName + "@" + req.body.displayLName,
-            },})
+            await prisma.userHandle.updateMany({
+                where: {
+                    userId: req.params.id,
+                    userSegmentRelationship: 'SCHOOL',
+                },
+                data: {
+                    handle: req.body.displayFName + "@" + req.body.displayLName,
+                },
+            });
             res.status(200).json(schoolDetails);
             }
         } catch (error) {

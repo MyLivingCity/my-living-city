@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import { SetStateAction, useState } from 'react';
+import { SetStateAction, useEffect, useRef, useState } from 'react';
 import { ROUTES, TEXT_INPUT_LIMIT, USER_TYPES } from 'src/lib/constants';
 import PricingPlanSelector from '../../partials/PricingPlanSelector';
 import {
@@ -47,26 +47,15 @@ type Props = FieldHookConfig<string> & {
 
 function StepController() {
   const [error, setError] = useState<IFetchError | null>(null);
+
   async function setSubsegData(segmentId: number) {
     try {
       setError(null);
       setIsLoading(true);
-
       const subsegments = await findSubsegmentsBySegmentId(segmentId);
-      console.log(
-        'Fetched Subsegments for Segment ID',
-        segmentId,
-        ':',
-        subsegments
-      );
+      console.log('Fetched Subsegments for Segment ID', segmentId, ':', subsegments);
       setSubSegments(subsegments);
-
-      refactorStateArray(
-        subIds,
-        0,
-        subsegments[0]?.subSegId || null,
-        setSubIds
-      );
+      refactorStateArray(subIds, 0, subsegments[0]?.subSegId || null, setSubIds);
     } catch (err) {
       console.error('Error fetching subsegments:', err);
       setError(new Error('An error occurred while fetching the subsegments'));
@@ -80,16 +69,17 @@ function StepController() {
   };
 
   const inline: CSS.Properties = {
-      display: 'inline',
-      marginLeft: '10px',
+    display: 'inline',
+    marginLeft: '10px',
   };
-  
+
   const marginBot: CSS.Properties = {
-      marginBottom: '20px',
+    marginBottom: '20px',
   };
 
   const [subSegments, setSubSegments] = useState<ISubSegment[]>();
   const [subSegments2, setSubSegments2] = useState<ISubSegment[]>();
+
   async function setSegData(index: number) {
     try {
       setError(null);
@@ -99,19 +89,7 @@ function StepController() {
 
       switch (index) {
         case 0:
-          fetchedSegments = await getAllSegments();
-          setSegments(fetchedSegments);
-          if (fetchedSegments.length > 0) {
-            selectedSegment = fetchedSegments[0];
-          }
-          break;
         case 1:
-          fetchedSegments = await getAllSegments();
-          setSegments(fetchedSegments);
-          if (fetchedSegments.length > 0) {
-            selectedSegment = fetchedSegments[0];
-          }
-          break;
         case 2:
           fetchedSegments = await getAllSegments();
           setSegments(fetchedSegments);
@@ -137,6 +115,7 @@ function StepController() {
       setIsLoading(false);
     }
   }
+
   const [markers, sendData]: any = useState({
     home: { lat: null, lon: null },
     work: { lat: null, lon: null },
@@ -156,13 +135,9 @@ function StepController() {
   const [segIds, setSegIds] = useState<any[]>([]);
   const [segmentRequests, setSegmentRequests] = useState<any[]>([]);
   const [communityType, setCommunityType] = useState<string | null>(null);
-
   const [avatar, setAvatar] = useState(undefined);
-
   const [workTransfer, transferHomeToWork] = useState(false);
   const [schoolTransfer, transferWorkToSchool] = useState(false);
-  
-
   const [selectedSegId, setselectedSegId] = useState<any>([]);
   const [reachData, setReachData] = useState<CheckBoxItem[]>([]);
 
@@ -175,17 +150,30 @@ function StepController() {
     };
 
     const res = await getAllSegmentsWithSuperSegId(segment?.superSegId);
-
     res.forEach((segment) => {
       region.children?.push({
         label: segment?.name,
         value: segment?.segId,
       });
     });
-
     data.push(region);
     setReachData(data);
   };
+
+  const hasFetchedReachData = useRef(false);
+  useEffect(() => {
+    if (
+      step === 4 &&
+      (userType === USER_TYPES.BUSINESS || userType === USER_TYPES.COMMUNITY) &&
+      !hasFetchedReachData.current
+    ) {
+      (async () => {
+        await getReachData();
+        hasFetchedReachData.current = true;
+      })();
+    }
+  }, [step, userType]);
+  
 
   return (
     <>
@@ -231,7 +219,8 @@ function StepController() {
           schoolSubSegmentId: undefined,
           userType: USER_TYPES.RESIDENTIAL,
           reachSegmentIds: [],
-        }}
+          communityType: '', // extra property added via type assertion
+        } as IRegisterInput & { communityType: string }}
         markers={markers}
         setSegment={setSegment}
         setSegment2={setSegment2}
@@ -250,8 +239,8 @@ function StepController() {
         setselectedSegId={setselectedSegId}
         selectedSegId={selectedSegId}
         reachData={reachData}
-        subSegments = {subSegments}
-        subSegments2 = {subSegments2}
+        subSegments={subSegments}
+        subSegments2={subSegments2}
         setUserType={setUserType}
         reachSegmentIds={selectedSegId}
         segments={segments}
@@ -285,7 +274,113 @@ function StepController() {
             setIsLoading(false);
           }
         }}
+        validationSchema={
+          step === 2
+            ? Yup.object().shape({
+                email: Yup.string()
+                  .email('Invalid email')
+                  .required('Email is required')
+                  .test(
+                    'Unique Email',
+                    'Email already in use',
+                    function (value) {
+                      return new Promise((resolve) => {
+                        getUserWithEmail(value).then((res) => {
+                          res === 200 ? resolve(false) : resolve(true);
+                        });
+                      });
+                    }
+                  ),
+                password: Yup.string()
+                  .min(8, 'Password is too short, 8 characters minimum')
+                  .required('Password is required'),
+                confirmPassword: Yup.string()
+                  .oneOf([Yup.ref('password'), null], 'Passwords must match')
+                  .required('Confirm Password is required'),
+              })
+            : step === 3
+            ? Yup.object().shape({
+                homeSegmentId: Yup.number()
+                  .typeError('Please select a municipality')
+                  .required('Please select a municipality'),
+                communityType: Yup.string().required(
+                  'Please select a community relationship'
+                ),
+              })
+            : undefined
+        }
       >
+        <>
+          <Header step={step} userType={userType} />
+          {step === 1 && (
+            <FormikStep>
+              <h3>Please select your account type:</h3>
+              <BForm.Group className="m-4">
+                <PricingPlanSelector
+                  onClickParam={(type: any) => {
+                    setUserType(type);
+                  }}
+                />
+              </BForm.Group>
+            </FormikStep>
+          )}
+          {step === 2 && (
+            <EmailPasswordForm userType={userType} setAvatar={setAvatar} />
+          )}
+          {step === 3 && (
+            <CommunityLocation
+              segments={segments}
+              setSegment={setSegment}
+              refactorStateArray={refactorStateArray}
+              segIds={segIds}
+              setSegIds={setSegIds}
+              communityType={communityType}
+              setCommunityType={setCommunityType}
+              subIds={subIds}
+              setSubIds={setSubIds}
+              setShowModal={setShowModal}
+              showModal={showModal}
+              setSegments={setSegments}
+              segmentRequests={segmentRequests}
+              setSegmentRequests={setSegmentRequests}
+            />
+          )}
+          {((step === 4 &&
+            userType !== USER_TYPES.BUSINESS &&
+            userType !== USER_TYPES.COMMUNITY) ||
+            (step === 5 &&
+              (userType === USER_TYPES.BUSINESS ||
+                userType === USER_TYPES.COMMUNITY))) && (
+            <UserAgreement submitError={submitError} />
+          )}
+          {step === 4 &&
+            (userType === USER_TYPES.BUSINESS ||
+              userType === USER_TYPES.COMMUNITY) && (
+            <RegisterPageContentReach
+              data={reachData}
+              selected={selectedSegId}
+              setSelected={setselectedSegId}
+            />
+          )}
+          {((step === 6 &&
+            (userType === USER_TYPES.BUSINESS ||
+              userType === USER_TYPES.COMMUNITY)) ||
+            (step === 5 &&
+              userType !== USER_TYPES.BUSINESS &&
+              userType !== USER_TYPES.COMMUNITY)) && (
+            <SubmitForm submitError={submitError} />
+          )}
+          {step === 7 &&
+            (userType === USER_TYPES.BUSINESS ||
+              userType === USER_TYPES.COMMUNITY) && <SettupAnAd />}
+          <Form>
+            <NextAndBackButton
+              userType={userType}
+              setStep={setStep}
+              step={step}
+            />
+          </Form>
+        </>
       </FormikStepper>
     </>
   );
@@ -393,10 +488,10 @@ export interface FormikStepperProps extends FormikConfig<IRegisterInput> {
   setAvatar: any;
   reachData: any;
   setSegments: any;
-  subSegments:any;
-    subSegments2:any;
+  subSegments: any;
+  subSegments2: any;
   selectedSegId: any;
-  setselectedSegId:any;
+  setselectedSegId: any;
   setCommunityType: React.Dispatch<React.SetStateAction<string | null>>;
   setSegData: (index: number) => Promise<void>;
   setSubsegData: (segmentId: number) => Promise<void>;
@@ -421,7 +516,7 @@ export function FormikStepper({
   setSegments,
   step,
   subSegments,
-    subSegments2,
+  subSegments2,
   segments,
   setSegment,
   refactorStateArray,
@@ -444,19 +539,13 @@ export function FormikStepper({
     <>
       <Formik
         {...props}
+        // Global per-step validation based on the current step.
         validationSchema={
           step === 2
             ? Yup.object().shape({
-                password: Yup.string().min(
-                  8,
-                  'Password is too short, 8 characters minimum'
-                ),
-                confirmPassword: Yup.string().oneOf(
-                  [Yup.ref('password'), null],
-                  'Passwords must match'
-                ),
                 email: Yup.string()
                   .email('Invalid email')
+                  .required('Email is required')
                   .test(
                     'Unique Email',
                     'Email already in use',
@@ -468,82 +557,98 @@ export function FormikStepper({
                       });
                     }
                   ),
+                password: Yup.string()
+                  .min(8, 'Password is too short, 8 characters minimum')
+                  .required('Password is required'),
+                confirmPassword: Yup.string()
+                  .oneOf(
+                    [Yup.ref('password'), null],
+                    'Passwords must match'
+                  )
+                  .required('Confirm Password is required'),
+              })
+            : step === 3
+            ? Yup.object().shape({
+                homeSegmentId: Yup.number()
+                  .typeError('Please select a municipality')
+                  .required('Please select a municipality'),
+                communityType: Yup.string().required(
+                  'Please select a community relationship'
+                ),
               })
             : undefined
         }
       >
         <>
           <Header step={step} userType={userType} />
-          {step == 1 && (
-            <>
-              <FormikStep>
-                <h3>Please select your account type:</h3>
-                <BForm.Group className="m-4">
-                  <PricingPlanSelector
-                    onClickParam={(type: any) => {
-                      setUserType(type);
-                    }}
-                  />
-                </BForm.Group>
-              </FormikStep>
-            </>
+          {step === 1 && (
+            <FormikStep>
+              <h3>Please select your account type:</h3>
+              <BForm.Group className="m-4">
+                <PricingPlanSelector
+                  onClickParam={(type: any) => {
+                    setUserType(type);
+                  }}
+                />
+              </BForm.Group>
+            </FormikStep>
           )}
-          {step == 2 && (
-            <>
-              <EmailPasswordForm userType={userType} setAvatar={setAvatar} />
-            </>
+          {step === 2 && (
+            <EmailPasswordForm userType={userType} setAvatar={setAvatar} />
           )}
-          {step == 3 && (
-            
-            <>
-              <CommunityLocation
-                segments={segments}
-                setSegment={setSegment}
-                refactorStateArray={refactorStateArray}
-                segIds={segIds}
-                setSegIds={setSegIds}
-                communityType={communityType}
-                setCommunityType={setCommunityType}
-                subIds={subIds}
-                setSubIds={setSubIds}
-                setShowModal={setShowModal}
-                showModal={showModal}
-                setSegments={setSegments}
-                segmentRequests={segmentRequests}
-                setSegmentRequests={setSegmentRequests}/>
-            </>
+          {step === 3 && (
+            <CommunityLocation
+              segments={segments}
+              setSegment={setSegment}
+              refactorStateArray={refactorStateArray}
+              segIds={segIds}
+              setSegIds={setSegIds}
+              communityType={communityType}
+              setCommunityType={setCommunityType}
+              subIds={subIds}
+              setSubIds={setSubIds}
+              setShowModal={setShowModal}
+              showModal={showModal}
+              setSegments={setSegments}
+              segmentRequests={segmentRequests}
+              setSegmentRequests={setSegmentRequests}
+            />
           )}
-            {(
-            (step === 4 && userType !== USER_TYPES.BUSINESS && userType !== USER_TYPES.COMMUNITY) ||
-            (step === 5 && (userType === USER_TYPES.BUSINESS || userType === USER_TYPES.COMMUNITY))
-            ) && (
-                <>
-                    <UserAgreement submitError={submitError} />
-                </>
-            )}
-            {( step === 4 && (userType === USER_TYPES.BUSINESS || userType === USER_TYPES.COMMUNITY)) && (
-                <>
-                    <RegisterPageContentReach
-                    data={reachData}
-                    selected={selectedSegId}
-                    setSelected={setselectedSegId}
-                    />
-                </>
-            )}
-            
-            {((step == 6 && (userType === USER_TYPES.BUSINESS || userType === USER_TYPES.COMMUNITY)) || 
-            (step == 5 && userType !== USER_TYPES.BUSINESS && userType !== USER_TYPES.COMMUNITY)) && (
-                <>
-                    <SubmitForm submitError={submitError}/>
-                </>
-            )}
-            {(step == 7 && (userType === USER_TYPES.BUSINESS ||
-            userType === USER_TYPES.COMMUNITY)) && (
-                <SettupAnAd/>
-            )}
-            <Form>
-                <NextAndBackButton userType={userType} setStep={setStep} step={step} />
-            </Form>
+          {((step === 4 &&
+            userType !== USER_TYPES.BUSINESS &&
+            userType !== USER_TYPES.COMMUNITY) ||
+            (step === 5 &&
+              (userType === USER_TYPES.BUSINESS ||
+                userType === USER_TYPES.COMMUNITY))) && (
+            <UserAgreement submitError={submitError} />
+          )}
+          {step === 4 &&
+            (userType === USER_TYPES.BUSINESS ||
+              userType === USER_TYPES.COMMUNITY) && (
+            <RegisterPageContentReach
+              data={reachData}
+              selected={selectedSegId}
+              setSelected={setselectedSegId}
+            />
+          )}
+          {((step === 6 &&
+            (userType === USER_TYPES.BUSINESS ||
+              userType === USER_TYPES.COMMUNITY)) ||
+            (step === 5 &&
+              userType !== USER_TYPES.BUSINESS &&
+              userType !== USER_TYPES.COMMUNITY)) && (
+            <SubmitForm submitError={submitError} />
+          )}
+          {step === 7 &&
+            (userType === USER_TYPES.BUSINESS ||
+              userType === USER_TYPES.COMMUNITY) && <SettupAnAd />}
+          <Form>
+            <NextAndBackButton
+              userType={userType}
+              setStep={setStep}
+              step={step}
+            />
+          </Form>
         </>
       </Formik>
     </>
@@ -561,16 +666,9 @@ export function EmailPasswordForm({
     <>
       <FormikStep
         validationSchema={Yup.object().shape({
-          password: Yup.string().min(
-            8,
-            'Password is too short, 8 characters minimum'
-          ),
-          confirmPassword: Yup.string().oneOf(
-            [Yup.ref('password'), null],
-            'Passwords must match'
-          ),
           email: Yup.string()
             .email('Invalid email')
+            .required('Email is required')
             .test(
               'Unique Email',
               'Email already in use',
@@ -582,6 +680,12 @@ export function EmailPasswordForm({
                 });
               }
             ),
+          password: Yup.string()
+            .min(8, 'Password is too short, 8 characters minimum')
+            .required('Password is required'),
+          confirmPassword: Yup.string()
+            .oneOf([Yup.ref('password'), null], 'Passwords must match')
+            .required('Confirm Password is required'),
         })}
       >
         <BForm.Group>
@@ -631,8 +735,8 @@ export function EmailPasswordForm({
           </ErrorMessage>
         </BForm.Group>
 
-        {userType == USER_TYPES.BUSINESS ||
-        userType == USER_TYPES.COMMUNITY
+        {userType === USER_TYPES.BUSINESS ||
+        userType === USER_TYPES.COMMUNITY
           ? buisnessCommunityRegistration()
           : notBuisnessNorCommunity()}
 
@@ -673,179 +777,165 @@ export function EmailPasswordForm({
   );
 }
 
-
 interface NextAndBackButtonProps {
-    userType: string;
-    setStep: (step: number) => void;
-    step: number;
-    isLoading?: boolean;
-  }
-  
-export function NextAndBackButton({
-    userType,
-    setStep,
-    step,
-    isLoading = false,
-}: NextAndBackButtonProps) {
-    const { validateForm, setTouched } = useFormikContext<any>();
-    const lastStep = userType === USER_TYPES.RESIDENTIAL ? 5 : 6;
-    const isLastStep = step >= lastStep;
-
-    const nextLabel = isLoading ? 'Loading...' : 'Next';
-    const submitLabel = isLoading ? 'Submitting...' : 'Submit';
-
-    const handleNext = async () => {
-        const errors = await validateForm();
-        if (Object.keys(errors).length === 0) {
-        setStep(step + 1);
-        } else {
-        const touchedFields = Object.keys(errors).reduce(
-            (acc, key) => ({ ...acc, [key]: true }),
-            {}
-        );
-        setTouched(touchedFields, true);
-        }
-    };
-
-    return (
-        <BForm.Group className="d-flex justify-content-between">
-        {step > 1 && (
-            <Button
-            type="button"
-            variant="outline-primary"
-            onClick={() => setStep(step - 1)}
-            >
-            Back
-            </Button>
-        )}
-        {!isLastStep ? (
-            <Button
-            type="button"
-            variant="primary"
-            disabled={isLoading}
-            onClick={handleNext}
-            >
-            {nextLabel}
-            </Button>
-        ) : (
-            <Button type="submit" variant="success" disabled={isLoading}>
-            {submitLabel}
-            </Button>
-        )}
-        </BForm.Group>
-    );
+  userType: string;
+  setStep: (step: number) => void;
+  step: number;
+  isLoading?: boolean;
 }
 
+export function NextAndBackButton({
+  userType,
+  setStep,
+  step,
+  isLoading = false,
+}: NextAndBackButtonProps) {
+  const { validateForm, setTouched } = useFormikContext<any>();
+  const lastStep = userType === USER_TYPES.RESIDENTIAL ? 5 : 6;
+  const isLastStep = step >= lastStep;
 
-export function UserAgreement({submitError}: {submitError:any}){
-    return(
+  const nextLabel = isLoading ? 'Loading...' : 'Next';
+  const submitLabel = isLoading ? 'Submitting...' : 'Submit';
+
+  const handleNext = async () => {
+    const errors = await validateForm();
+    if (Object.keys(errors).length === 0) {
+      setStep(step + 1);
+    } else {
+      const touchedFields = Object.keys(errors).reduce(
+        (acc, key) => ({ ...acc, [key]: true }),
+        {}
+      );
+      setTouched(touchedFields, true);
+    }
+  };
+
+  return (
+    <BForm.Group className="d-flex justify-content-between">
+      {step > 1 && (
+        <Button
+          type="button"
+          variant="outline-primary"
+          onClick={() => setStep(step - 1)}
+        >
+          Back
+        </Button>
+      )}
+      {!isLastStep ? (
+        <Button
+          type="button"
+          variant="primary"
+          disabled={isLoading}
+          onClick={handleNext}
+        >
+          {nextLabel}
+        </Button>
+      ) : (
+        <Button type="submit" variant="success" disabled={isLoading}>
+          {submitLabel}
+        </Button>
+      )}
+    </BForm.Group>
+  );
+}
+
+export function UserAgreement({ submitError }: { submitError: any }) {
+  return (
+    <>
+      <FormikStep>
         <>
-            <FormikStep>
-                <>
-                <p>
+          <p>
             It takes a lot to bring an idea to form, and as a user on the MLC
             Community Discussion Platform the following agreements will enable
             the interactions that turn ideas into reality:
-                </p>
-                <p>
-                    <strong>
-                        {' '}
-            1. Ideas, comments and people are treated with respect;
-                    </strong>
-                </p>
-                <p>
-                    <strong>
-                        {' '}
-            2. Commenting on an idea is designed to flesh it out in more
-            detail to get as much constructive feedback and viewpoints from
-            the community.
-                    </strong>
-                </p>
-                <p> The following works when commenting:</p>
-                <p className='ml-4'>
-                    {' '}
+          </p>
+          <p>
+            <strong>
+              1. Ideas, comments and people are treated with respect;
+            </strong>
+          </p>
+          <p>
+            <strong>
+              2. Commenting on an idea is designed to flesh it out in more detail
+              to get as much constructive feedback and viewpoints from the community.
+            </strong>
+          </p>
+          <p> The following works when commenting:</p>
+          <p className="ml-4">
             a. Emphasize what you see that works about the idea and what is the
             value that it brings;
-                </p>
-                <p className='ml-4'>
-                    {' '}
+          </p>
+          <p className="ml-4">
             b. Identify areas that don’t work and suggest how they can be
             improved;
-                </p>
-                <p className='ml-4'>
-                    {' '}
+          </p>
+          <p className="ml-4">
             c. Opinions and judgments don’t add value to the conversation; and
-                </p>
-                <p className='ml-4'>
-                    {' '}
+          </p>
+          <p className="ml-4">
             d. Share about where else this idea can go or what new angle can be
             added to make it even better for the whole community.
-                </p>
-                <p>
-                    <strong>
-                        {' '}
-            3. Your ideas and experience is valuable and we want to hear from
-            everyone how to make this an actual project that works in the
-            community.
-                    </strong>
-                </p>
-                <p>
-            By clicking next you confirm:</p>
-                <p className='ml-4'>
-                    {' '}
-            a. Your acceptance to follow these community guidelines; and
-                </p>
-                <p className='ml-4'>
-                    {' '}
-            b. That MyLivingCity has the right to store and process 
-            your personal information shared with the platform.
-                </p>
-                </>
-            </FormikStep>
+          </p>
+          <p>
+            <strong>
+              3. Your ideas and experience is valuable and we want to hear from
+              everyone how to make this an actual project that works in the
+              community.
+            </strong>
+          </p>
+          <p>By clicking next you confirm:</p>
+          <p className="ml-4">
+            a. Your acceptance to follow these community guidelines;
+          </p>
+          <p className="ml-4">
+            b. That MyLivingCity has the right to store and process your personal
+            information shared with the platform.
+          </p>
         </>
-    );
+      </FormikStep>
+    </>
+  );
 }
 
-export function SettupAnAd(){
-    return(
-        <FormikStep>
-            <BForm.Group>
-                <h4>Would you like to setup Complementary Ad now?</h4>
-                <p>You would be able to create ad later at the ad manager</p>
-                <BForm.Check
-                    inline
-                    name='createAdRadio'
-                    label='Yes'
-                    type='radio'
-                    id='inline-checkbox'
-                    onClick={() => {
-                        window.location.href = ROUTES.SUBMIT_ADVERTISEMENT;
-                    }}
-                />
-                <BForm.Check
-                    inline
-                    name='createAdRadio'
-                    label='No'
-                    type='radio'
-                    id='inline-checkbox'
-                    onClick={() => {
-                        window.location.href = ROUTES.LOGIN;
-                    }}
-                />
-            </BForm.Group>
-        </FormikStep>
-    )
+export function SettupAnAd() {
+  return (
+    <FormikStep>
+      <BForm.Group>
+        <h4>Would you like to setup Complementary Ad now?</h4>
+        <p>You would be able to create ad later at the ad manager</p>
+        <BForm.Check
+          inline
+          name="createAdRadio"
+          label="Yes"
+          type="radio"
+          id="inline-checkbox"
+          onClick={() => {
+            window.location.href = ROUTES.SUBMIT_ADVERTISEMENT;
+          }}
+        />
+        <BForm.Check
+          inline
+          name="createAdRadio"
+          label="No"
+          type="radio"
+          id="inline-checkbox"
+          onClick={() => {
+            window.location.href = ROUTES.LOGIN;
+          }}
+        />
+      </BForm.Group>
+    </FormikStep>
+  );
 }
 
-
-export function SubmitForm({submitError}: {submitError:any;}){
-    return(
-        <FormikStep>
-                {submitError && <Alert variant='danger'>{submitError}</Alert>}
-                <h3>
-            To complete registration press submit! Make sure to check your email
-            for a verification code!{' '}
-                </h3>
-        </FormikStep>
-    )
+export function SubmitForm({ submitError }: { submitError: any }) {
+  return (
+    <FormikStep>
+      {submitError && <Alert variant="danger">{submitError}</Alert>}
+      <h3>
+        To complete registration press submit! Make sure to check your email
+        for a verification code!{' '}
+      </h3>
+    </FormikStep>
+  );
 }

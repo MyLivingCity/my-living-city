@@ -46,7 +46,8 @@ model User {
   userReach           UserReach[]
   userIdeaFollow      UserIdeaFollow[]
   userIdeaEndorse     UserIdeaEndorse[]
-  userSegment UserSegments[]
+  userSegments         UserSegment[]
+  userHandles          UserHandle[]
 
   //userRole        UserRole?    @relation(fields: [userRoleId], references: [id])
   ideas               Idea[]                @relation("ideaAuthor")
@@ -81,14 +82,23 @@ model User {
   @@map(name: "user")
 }
 
-model UserSegments {
-  id                   String        @id @default(cuid())
-  userId               String        @unique @map("user_id")
+model UserHandle {
+  id                  Int        @id @default(autoincrement())
+  userId              String        @map("user_id")
+  handle              String
+  userSegmentRelationship           UserSegmentRelationShipType @map("user_segment_relationship_type")
 
-  segmentHandle String
+  // Relationships
+  user                 User         @relation(fields: [userId], references: [id])
 
+  @@unique([userId, userSegmentRelationship])
+  @@map(name: "user_handle")
+}
+
+model UserSegment {
+  id                   Int        @id @default(autoincrement())
+  userId               String        @map("user_id")
   userSegmentRelationship UserSegmentRelationShipType @map("user_segment_relationship_type")
-
   IdeaComment          IdeaComment[]
 
   // relationships 
@@ -96,6 +106,7 @@ model UserSegments {
   segmentId Int 
 
   user User @relation(fields: [userId], references: [id])
+  @@map(name: "user_segment")
 }
 
 enum UserSegmentRelationShipType {
@@ -110,7 +121,7 @@ model Segments {
   segId        Int          @id @default(autoincrement()) @map("seg_id")
   
   parentSegment Segments? @relation("SegmentToSegment", fields: [parentId], references: [segId]) 
-  parentId Int?
+  parentId     Int?
 
   children Segments[] @relation("SegmentToSegment")
 
@@ -118,9 +129,9 @@ model Segments {
 
   country      String?
   province     String?
-  lat       Decimal?
-  lon       Decimal?
-  radius    Decimal?
+  lat          Decimal?
+  lon          Decimal?
+  radius       Decimal?
 
   createdAt    DateTime     @default(now()) @map("created_at")
   updatedAt    DateTime?    @default(now()) @updatedAt @map("update_at")
@@ -130,9 +141,9 @@ model Segments {
   @@map(name: "segment")
 
   // relations 
-  userSegment UserSegments[]
-  segmentType SegmentType
-  ideas Idea[]
+  userSegments   UserSegment[]
+  segmentType    SegmentType
+  ideas          IdeaSegment[]
 
 }
 
@@ -190,12 +201,24 @@ model Idea {
   supportedProposal        Proposal?                  @relation("supportedProposal", fields: [supportingProposalId], references: [id])
   champion                 User?                      @relation("ideaChampion", fields: [championId], references: [id])
   category                 Category                   @relation(fields: [categoryId], references: [id])
-  segments Segments[]
-  segmentIdeaId Int
+  segments                 IdeaSegment[]
   Quarantine_Notifications Quarantine_Notifications[]
 
   @@unique([id, title])
   @@map(name: "idea")
+}
+
+model IdeaSegment {
+  id                   Int     @id @default(autoincrement())
+  ideaId               Int           @map("idea_id")
+  segmentId            Int 
+
+  // relationships 
+  idea                  Idea @relation(fields: [ideaId], references: [id])
+  segment               Segments @relation(fields: [segmentId] , references: [segId])
+
+
+  @@map(name: "idea_segment")
 }
 
 // Report Entity
@@ -590,10 +613,7 @@ model IdeaComment {
   ideaId                 Int      @map("idea_id")
   // Fields
   authorId               String   @map("author_id")
-  userSegId              String   @map("user_segment_id")
-  superSegmentId         Int?     @map("super_segment_id")
-  segmentId              Int?     @map("segment_id")
-  subSegmentId           Int?     @map("sub_segment_id")
+  userSegId              Int      @map("user_segment_id")
   content                String
   active                 Boolean  @default(true)
   reviewed               Boolean  @default(false)
@@ -613,7 +633,7 @@ model IdeaComment {
   // relations
   author            User                  @relation(fields: [authorId], references: [id])
   idea              Idea                  @relation(fields: [ideaId], references: [id])
-  userSeg           UserSegments          @relation(fields: [userSegId], references: [id])
+  userSeg           UserSegment          @relation(fields: [userSegId], references: [id])
   likes             UserCommentLikes[]
   commentFlags      CommentFlag[]
   commentBans       CommentBan[]

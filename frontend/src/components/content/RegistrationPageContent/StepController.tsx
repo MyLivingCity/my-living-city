@@ -47,6 +47,31 @@ type Props = FieldHookConfig<string> & {
 
 function StepController() {
   const [error, setError] = useState<IFetchError | null>(null);
+  const [subSegments, setSubSegments] = useState<ISubSegment[]>();
+  const [subSegments2, setSubSegments2] = useState<ISubSegment[]>();
+  const [markers, sendData]: any = useState({
+    home: { lat: null, lon: null },
+    work: { lat: null, lon: null },
+    school: { lat: null, lon: null },
+  });
+  const [userType, setUserType] = useState<string>(USER_TYPES.RESIDENTIAL);
+  const [step, setStep] = useState<number>(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+  const [map, showMap] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [segment, setSegment] = useState<ISegment>();
+  const [segments, setSegments] = useState<ISegment[]>([]);
+  const [segment2, setSegment2] = useState<ISegment>();
+  const [subIds, setSubIds] = useState<any[]>([]);
+  const [segIds, setSegIds] = useState<any[]>([]);
+  const [segmentRequests, setSegmentRequests] = useState<any[]>([]);
+  const [communityType, setCommunityType] = useState<string | null>(null);
+  const [avatar, setAvatar] = useState(undefined);
+  const [workTransfer, transferHomeToWork] = useState(false);
+  const [schoolTransfer, transferWorkToSchool] = useState(false);
+  const [selectedSegId, setselectedSegId] = useState<any>([]);
+  const [reachData, setReachData] = useState<CheckBoxItem[]>([]);
 
   async function setSubsegData(segmentId: number) {
     try {
@@ -64,29 +89,12 @@ function StepController() {
     }
   }
 
-  const userTypeInfoContainerStyles: CSS.Properties = {
-    marginTop: '40px',
-  };
-
-  const inline: CSS.Properties = {
-    display: 'inline',
-    marginLeft: '10px',
-  };
-
-  const marginBot: CSS.Properties = {
-    marginBottom: '20px',
-  };
-
-  const [subSegments, setSubSegments] = useState<ISubSegment[]>();
-  const [subSegments2, setSubSegments2] = useState<ISubSegment[]>();
-
   async function setSegData(index: number) {
     try {
       setError(null);
       setIsLoading(true);
       let fetchedSegments: ISegment[] = [];
       let selectedSegment: ISegment | null = null;
-
       switch (index) {
         case 0:
         case 1:
@@ -100,7 +108,6 @@ function StepController() {
         default:
           console.error('Unknown index in setSegData');
       }
-
       if (selectedSegment) {
         setSubsegData(selectedSegment.segId);
         console.log('Selected Segment for index', index, ':', selectedSegment);
@@ -116,31 +123,6 @@ function StepController() {
     }
   }
 
-  const [markers, sendData]: any = useState({
-    home: { lat: null, lon: null },
-    work: { lat: null, lon: null },
-    school: { lat: null, lon: null },
-  });
-  const [userType, setUserType] = useState<string>(USER_TYPES.RESIDENTIAL);
-  const [step, setStep] = useState<number>(1);
-  const [isLoading, setIsLoading] = useState(false);
-  const [submitError, setSubmitError] = useState('');
-  const [map, showMap] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const [segment, setSegment] = useState<ISegment>();
-  const [segments, setSegments] = useState<ISegment[]>([]);
-  const [segment2, setSegment2] = useState<ISegment>();
-
-  const [subIds, setSubIds] = useState<any[]>([]);
-  const [segIds, setSegIds] = useState<any[]>([]);
-  const [segmentRequests, setSegmentRequests] = useState<any[]>([]);
-  const [communityType, setCommunityType] = useState<string | null>(null);
-  const [avatar, setAvatar] = useState(undefined);
-  const [workTransfer, transferHomeToWork] = useState(false);
-  const [schoolTransfer, transferWorkToSchool] = useState(false);
-  const [selectedSegId, setselectedSegId] = useState<any>([]);
-  const [reachData, setReachData] = useState<CheckBoxItem[]>([]);
-
   const getReachData = async () => {
     let data: CheckBoxItem[] = [];
     let region: CheckBoxItem = {
@@ -148,7 +130,6 @@ function StepController() {
       value: 'SuperSeg',
       children: [],
     };
-
     const res = await getAllSegmentsWithSuperSegId(segment?.superSegId);
     res.forEach((segment) => {
       region.children?.push({
@@ -173,218 +154,225 @@ function StepController() {
       })();
     }
   }, [step, userType]);
-  
 
   return (
-    <>
-      <FormikStepper
-        initialValues={{
-          email: '',
-          password: '',
-          confirmPassword: '',
-          organizationName: '',
-          fname: '',
-          lname: '',
-          address: {
-            streetAddress: '',
-            streetAddress2: '',
-            city: '',
-            postalCode: '',
-            country: '',
-          },
-          geo: {
-            lon: undefined,
-            lat: undefined,
-            work_lat: undefined,
-            work_lon: undefined,
-            school_lat: undefined,
-            school_lon: undefined,
-          },
-          workDetails: {
-            streetAddress: '',
-            postalCode: '',
-            company: '',
-          },
-          schoolDetails: {
-            streetAddress: '',
-            postalCode: '',
-            faculty: '',
-            programCompletionDate: undefined,
-          },
-          homeSegmentId: undefined,
-          workSegmentId: undefined,
-          schoolSegmentId: undefined,
-          homeSubSegmentId: undefined,
-          workSubSegmentId: undefined,
-          schoolSubSegmentId: undefined,
-          userType: USER_TYPES.RESIDENTIAL,
-          reachSegmentIds: [],
-          communityType: '', // extra property added via type assertion
-        } as IRegisterInput & { communityType: string }}
-        markers={markers}
-        setSegment={setSegment}
-        setSegment2={setSegment2}
-        setSubSegments={setSubSegments}
-        setSubSegments2={setSubSegments2}
-        setSubIds={setSubIds}
-        setSegIds={setSegIds}
-        segIds={segIds}
-        showMap={showMap}
-        subIds={subIds}
-        setAvatar={setAvatar}
-        workTransfer={workTransfer}
-        schoolTransfer={schoolTransfer}
-        avatar={avatar}
-        userType={userType}
-        setselectedSegId={setselectedSegId}
-        selectedSegId={selectedSegId}
-        reachData={reachData}
-        subSegments={subSegments}
-        subSegments2={subSegments2}
-        setUserType={setUserType}
-        reachSegmentIds={selectedSegId}
-        segments={segments}
-        refactorStateArray={refactorStateArray}
-        setSubsegData={setSubsegData}
-        communityType={communityType}
-        setCommunityType={setCommunityType}
-        setShowModal={setShowModal}
-        showModal={showModal}
-        segmentRequests={segmentRequests}
-        setSegmentRequests={setSegmentRequests}
-        setSegments={setSegments}
-        setSegData={setSegData}
-        step={step}
-        setStep={setStep}
-        submitError={submitError}
-        onSubmit={async (values, helpers) => {
-          try {
-            setIsLoading(true);
-            setSubmitError('');
-            await postRegisterUser(values, segmentRequests, true, avatar);
-            if (userType === USER_TYPES.RESIDENTIAL) {
-              wipeLocalStorage();
-              window.location.href = ROUTES.CHECKEMAIL;
-            }
-          } catch (error: any) {
-            setSubmitError('An error occurred while creating your account.');
-            console.error(error);
-            wipeLocalStorage();
-          } finally {
-            setIsLoading(false);
-          }
-        }}
-        validationSchema={
-          step === 2
-            ? Yup.object().shape({
-                email: Yup.string()
-                  .email('Invalid email')
-                  .required('Email is required')
-                  .test(
-                    'Unique Email',
-                    'Email already in use',
-                    function (value) {
-                      return new Promise((resolve) => {
-                        getUserWithEmail(value).then((res) => {
-                          res === 200 ? resolve(false) : resolve(true);
-                        });
-                      });
-                    }
-                  ),
-                password: Yup.string()
-                  .min(8, 'Password is too short, 8 characters minimum')
-                  .required('Password is required'),
-                confirmPassword: Yup.string()
-                  .oneOf([Yup.ref('password'), null], 'Passwords must match')
-                  .required('Confirm Password is required'),
-              })
-            : step === 3
-            ? Yup.object().shape({
-                homeSegmentId: Yup.number()
-                  .typeError('Please select a municipality')
-                  .required('Please select a municipality'),
-                communityType: Yup.string().required(
-                  'Please select a community relationship'
-                ),
-              })
-            : undefined
-        }
-      >
-        <>
+    <div className="register-page-content">
+      <Card>
+        <Card.Header>
+          {/* The header now sits in the Card header */}
           <Header step={step} userType={userType} />
-          {step === 1 && (
-            <FormikStep>
-              <h3>Please select your account type:</h3>
-              <BForm.Group className="m-4">
-                <PricingPlanSelector
-                  onClickParam={(type: any) => {
-                    setUserType(type);
-                  }}
+        </Card.Header>
+        <Card.Body>
+          <FormikStepper
+            initialValues={{
+              email: '',
+              password: '',
+              confirmPassword: '',
+              organizationName: '',
+              fname: '',
+              lname: '',
+              address: {
+                streetAddress: '',
+                streetAddress2: '',
+                city: '',
+                postalCode: '',
+                country: '',
+              },
+              geo: {
+                lon: undefined,
+                lat: undefined,
+                work_lat: undefined,
+                work_lon: undefined,
+                school_lat: undefined,
+                school_lon: undefined,
+              },
+              workDetails: {
+                streetAddress: '',
+                postalCode: '',
+                company: '',
+              },
+              schoolDetails: {
+                streetAddress: '',
+                postalCode: '',
+                faculty: '',
+                programCompletionDate: undefined,
+              },
+              homeSegmentId: undefined,
+              workSegmentId: undefined,
+              schoolSegmentId: undefined,
+              homeSubSegmentId: undefined,
+              workSubSegmentId: undefined,
+              schoolSubSegmentId: undefined,
+              userType: USER_TYPES.RESIDENTIAL,
+              reachSegmentIds: [],
+              communityType: '',
+            } as IRegisterInput & { communityType: string }}
+            markers={markers}
+            setSegment={setSegment}
+            setSegment2={setSegment2}
+            setSubSegments={setSubSegments}
+            setSubSegments2={setSubSegments2}
+            setSubIds={setSubIds}
+            setSegIds={setSegIds}
+            segIds={segIds}
+            showMap={showMap}
+            subIds={subIds}
+            setAvatar={setAvatar}
+            workTransfer={workTransfer}
+            schoolTransfer={schoolTransfer}
+            avatar={avatar}
+            userType={userType}
+            setselectedSegId={setselectedSegId}
+            selectedSegId={selectedSegId}
+            reachData={reachData}
+            subSegments={subSegments}
+            subSegments2={subSegments2}
+            setUserType={setUserType}
+            reachSegmentIds={selectedSegId}
+            segments={segments}
+            refactorStateArray={refactorStateArray}
+            setSubsegData={setSubsegData}
+            communityType={communityType}
+            setCommunityType={setCommunityType}
+            setShowModal={setShowModal}
+            showModal={showModal}
+            segmentRequests={segmentRequests}
+            setSegmentRequests={setSegmentRequests}
+            setSegments={setSegments}
+            setSegData={setSegData}
+            step={step}
+            setStep={setStep}
+            submitError={submitError}
+            onSubmit={async (values, helpers) => {
+              try {
+                setIsLoading(true);
+                setSubmitError('');
+                await postRegisterUser(values, segmentRequests, true, avatar);
+                if (userType === USER_TYPES.RESIDENTIAL) {
+                  wipeLocalStorage();
+                  window.location.href = ROUTES.CHECKEMAIL;
+                }
+              } catch (error: any) {
+                setSubmitError('An error occurred while creating your account.');
+                console.error(error);
+                wipeLocalStorage();
+              } finally {
+                setIsLoading(false);
+              }
+            }}
+            validationSchema={
+              step === 2
+                ? Yup.object().shape({
+                    email: Yup.string()
+                      .email('Invalid email')
+                      .required('Email is required')
+                      .test(
+                        'Unique Email',
+                        'Email already in use',
+                        function (value) {
+                          return new Promise((resolve) => {
+                            getUserWithEmail(value).then((res) => {
+                              res === 200 ? resolve(false) : resolve(true);
+                            });
+                          });
+                        }
+                      ),
+                    password: Yup.string()
+                      .min(8, 'Password is too short, 8 characters minimum')
+                      .required('Password is required'),
+                    confirmPassword: Yup.string()
+                      .oneOf([Yup.ref('password'), null], 'Passwords must match')
+                      .required('Confirm Password is required'),
+                  })
+                : step === 3
+                ? Yup.object().shape({
+                    homeSegmentId: Yup.number()
+                      .typeError('Please select a municipality')
+                      .required('Please select a municipality'),
+                    communityType: Yup.string().required(
+                      'Please select a community relationship'
+                    ),
+                  })
+                : undefined
+            }
+          >
+            <>
+              {step === 1 && (
+                <FormikStep>
+                  <h3>Please select your account type:</h3>
+                  <BForm.Group className="m-4">
+                    <PricingPlanSelector
+                      onClickParam={(type: any) => {
+                        setUserType(type);
+                      }}
+                    />
+                  </BForm.Group>
+                </FormikStep>
+              )}
+              {step === 2 && (
+                <EmailPasswordForm userType={userType} setAvatar={setAvatar} />
+              )}
+              {step === 3 && (
+                <CommunityLocation
+                  segments={segments}
+                  setSegment={setSegment}
+                  refactorStateArray={refactorStateArray}
+                  segIds={segIds}
+                  setSegIds={setSegIds}
+                  communityType={communityType}
+                  setCommunityType={setCommunityType}
+                  subIds={subIds}
+                  setSubIds={setSubIds}
+                  setShowModal={setShowModal}
+                  showModal={showModal}
+                  setSegments={setSegments}
+                  segmentRequests={segmentRequests}
+                  setSegmentRequests={setSegmentRequests}
                 />
-              </BForm.Group>
-            </FormikStep>
-          )}
-          {step === 2 && (
-            <EmailPasswordForm userType={userType} setAvatar={setAvatar} />
-          )}
-          {step === 3 && (
-            <CommunityLocation
-              segments={segments}
-              setSegment={setSegment}
-              refactorStateArray={refactorStateArray}
-              segIds={segIds}
-              setSegIds={setSegIds}
-              communityType={communityType}
-              setCommunityType={setCommunityType}
-              subIds={subIds}
-              setSubIds={setSubIds}
-              setShowModal={setShowModal}
-              showModal={showModal}
-              setSegments={setSegments}
-              segmentRequests={segmentRequests}
-              setSegmentRequests={setSegmentRequests}
-            />
-          )}
-          {((step === 4 &&
-            userType !== USER_TYPES.BUSINESS &&
-            userType !== USER_TYPES.COMMUNITY) ||
-            (step === 5 &&
-              (userType === USER_TYPES.BUSINESS ||
-                userType === USER_TYPES.COMMUNITY))) && (
-            <UserAgreement submitError={submitError} />
-          )}
-          {step === 4 &&
-            (userType === USER_TYPES.BUSINESS ||
-              userType === USER_TYPES.COMMUNITY) && (
-            <RegisterPageContentReach
-              data={reachData}
-              selected={selectedSegId}
-              setSelected={setselectedSegId}
-            />
-          )}
-          {((step === 6 &&
-            (userType === USER_TYPES.BUSINESS ||
-              userType === USER_TYPES.COMMUNITY)) ||
-            (step === 5 &&
-              userType !== USER_TYPES.BUSINESS &&
-              userType !== USER_TYPES.COMMUNITY)) && (
-            <SubmitForm submitError={submitError} />
-          )}
-          {step === 7 &&
-            (userType === USER_TYPES.BUSINESS ||
-              userType === USER_TYPES.COMMUNITY) && <SettupAnAd />}
-          <Form>
-            <NextAndBackButton
-              userType={userType}
-              setStep={setStep}
-              step={step}
-            />
-          </Form>
-        </>
-      </FormikStepper>
-    </>
+              )}
+              {((step === 4 &&
+                userType !== USER_TYPES.BUSINESS &&
+                userType !== USER_TYPES.COMMUNITY) ||
+                (step === 5 &&
+                  (userType === USER_TYPES.BUSINESS ||
+                    userType === USER_TYPES.COMMUNITY))) && (
+                <UserAgreement submitError={submitError} />
+              )}
+              {step === 4 &&
+                (userType === USER_TYPES.BUSINESS ||
+                  userType === USER_TYPES.COMMUNITY) && (
+                <RegisterPageContentReach
+                  data={reachData}
+                  selected={selectedSegId}
+                  setSelected={setselectedSegId}
+                />
+              )}
+              {((step === 6 &&
+                (userType === USER_TYPES.BUSINESS ||
+                  userType === USER_TYPES.COMMUNITY)) ||
+                (step === 5 &&
+                  userType !== USER_TYPES.BUSINESS &&
+                  userType !== USER_TYPES.COMMUNITY)) && (
+                <SubmitForm submitError={submitError} />
+              )}
+              {step === 7 &&
+                (userType === USER_TYPES.BUSINESS ||
+                  userType === USER_TYPES.COMMUNITY) && <SettupAnAd />}
+              <Form>
+                <NextAndBackButton
+                  userType={userType}
+                  setStep={setStep}
+                  step={step}
+                />
+              </Form>
+            </>
+          </FormikStepper>
+        </Card.Body>
+      </Card>
+    </div>
   );
 }
+
 export default StepController;
 
 function buisnessCommunityRegistration(): JSX.Element {
@@ -500,155 +488,13 @@ export interface FormikStepperProps extends FormikConfig<IRegisterInput> {
 
 export function FormikStepper({
   children,
-  markers,
-  showMap,
-  subIds,
-  segIds,
-  schoolTransfer,
-  workTransfer,
-  setSubIds,
-  setSegIds,
-  avatar,
-  userType,
-  setUserType,
-  reachSegmentIds,
-  setAvatar,
-  setSegments,
-  step,
-  subSegments,
-  subSegments2,
-  segments,
-  setSegment,
-  refactorStateArray,
-  communityType,
-  setShowModal,
-  showModal,
-  segmentRequests,
-  setStep,
-  setSegmentRequests,
-  reachData,
-  selectedSegId,
-  setselectedSegId,
-  setCommunityType,
-  setSegData,
-  setSubsegData,
-  submitError,
   ...props
 }: FormikStepperProps) {
   return (
     <>
-      <Formik
-        {...props}
-        // Global per-step validation based on the current step.
-        validationSchema={
-          step === 2
-            ? Yup.object().shape({
-                email: Yup.string()
-                  .email('Invalid email')
-                  .required('Email is required')
-                  .test(
-                    'Unique Email',
-                    'Email already in use',
-                    function (value) {
-                      return new Promise((resolve) => {
-                        getUserWithEmail(value).then((res) => {
-                          res === 200 ? resolve(false) : resolve(true);
-                        });
-                      });
-                    }
-                  ),
-                password: Yup.string()
-                  .min(8, 'Password is too short, 8 characters minimum')
-                  .required('Password is required'),
-                confirmPassword: Yup.string()
-                  .oneOf(
-                    [Yup.ref('password'), null],
-                    'Passwords must match'
-                  )
-                  .required('Confirm Password is required'),
-              })
-            : step === 3
-            ? Yup.object().shape({
-                homeSegmentId: Yup.number()
-                  .typeError('Please select a municipality')
-                  .required('Please select a municipality'),
-                communityType: Yup.string().required(
-                  'Please select a community relationship'
-                ),
-              })
-            : undefined
-        }
-      >
+      <Formik {...props}>
         <>
-          <Header step={step} userType={userType} />
-          {step === 1 && (
-            <FormikStep>
-              <h3>Please select your account type:</h3>
-              <BForm.Group className="m-4">
-                <PricingPlanSelector
-                  onClickParam={(type: any) => {
-                    setUserType(type);
-                  }}
-                />
-              </BForm.Group>
-            </FormikStep>
-          )}
-          {step === 2 && (
-            <EmailPasswordForm userType={userType} setAvatar={setAvatar} />
-          )}
-          {step === 3 && (
-            <CommunityLocation
-              segments={segments}
-              setSegment={setSegment}
-              refactorStateArray={refactorStateArray}
-              segIds={segIds}
-              setSegIds={setSegIds}
-              communityType={communityType}
-              setCommunityType={setCommunityType}
-              subIds={subIds}
-              setSubIds={setSubIds}
-              setShowModal={setShowModal}
-              showModal={showModal}
-              setSegments={setSegments}
-              segmentRequests={segmentRequests}
-              setSegmentRequests={setSegmentRequests}
-            />
-          )}
-          {((step === 4 &&
-            userType !== USER_TYPES.BUSINESS &&
-            userType !== USER_TYPES.COMMUNITY) ||
-            (step === 5 &&
-              (userType === USER_TYPES.BUSINESS ||
-                userType === USER_TYPES.COMMUNITY))) && (
-            <UserAgreement submitError={submitError} />
-          )}
-          {step === 4 &&
-            (userType === USER_TYPES.BUSINESS ||
-              userType === USER_TYPES.COMMUNITY) && (
-            <RegisterPageContentReach
-              data={reachData}
-              selected={selectedSegId}
-              setSelected={setselectedSegId}
-            />
-          )}
-          {((step === 6 &&
-            (userType === USER_TYPES.BUSINESS ||
-              userType === USER_TYPES.COMMUNITY)) ||
-            (step === 5 &&
-              userType !== USER_TYPES.BUSINESS &&
-              userType !== USER_TYPES.COMMUNITY)) && (
-            <SubmitForm submitError={submitError} />
-          )}
-          {step === 7 &&
-            (userType === USER_TYPES.BUSINESS ||
-              userType === USER_TYPES.COMMUNITY) && <SettupAnAd />}
-          <Form>
-            <NextAndBackButton
-              userType={userType}
-              setStep={setStep}
-              step={step}
-            />
-          </Form>
+          {children}
         </>
       </Formik>
     </>
@@ -793,7 +639,6 @@ export function NextAndBackButton({
   const { validateForm, setTouched } = useFormikContext<any>();
   const lastStep = userType === USER_TYPES.RESIDENTIAL ? 5 : 6;
   const isLastStep = step >= lastStep;
-
   const nextLabel = isLoading ? 'Loading...' : 'Next';
   const submitLabel = isLoading ? 'Submitting...' : 'Submit';
 
@@ -811,7 +656,7 @@ export function NextAndBackButton({
   };
 
   return (
-    <BForm.Group className="d-flex justify-content-between">
+    <BForm.Group className="d-flex justify-content-between mt-3">
       {step > 1 && (
         <Button
           type="button"
@@ -866,8 +711,7 @@ export function UserAgreement({ submitError }: { submitError: any }) {
             value that it brings;
           </p>
           <p className="ml-4">
-            b. Identify areas that don’t work and suggest how they can be
-            improved;
+            b. Identify areas that don’t work and suggest how they can be improved;
           </p>
           <p className="ml-4">
             c. Opinions and judgments don’t add value to the conversation; and
@@ -934,7 +778,7 @@ export function SubmitForm({ submitError }: { submitError: any }) {
       {submitError && <Alert variant="danger">{submitError}</Alert>}
       <h3>
         To complete registration press submit! Make sure to check your email
-        for a verification code!{' '}
+        for a verification code!
       </h3>
     </FormikStep>
   );

@@ -35,7 +35,7 @@ schoolDetailsRouter.post(
     }
 )
 
-// Deletes school details as well as the school userSegment
+// Deletes school details as well as the school userSegments
 schoolDetailsRouter.delete(
     '/delete/:id',
     async (req, res) => {    
@@ -141,65 +141,101 @@ schoolDetailsRouter.patch(
     }
 )
 
+// Updates the usersegment to match the new data
 schoolDetailsRouter.patch(
     '/updateCityNeighbourhood/:id',
     async (req, res) => {
         try {
-            if (req.body.neighbourhood === '') {
-                const result = await prisma.userSegments.update({
+
+            const { city, neighbourhood } = req.body;
+            const userId = req.params.id;
+
+            // If neighbourhood is removed, delete only the subSegment entry in UserSegment
+            if (!neighbourhood) {
+                const userSubSegment = await prisma.userSegment.findFirst({
                     where: {
-                        userId: req.params.id,
+                        userId,
+                        userSegmentRelationship: 'SCHOOL',
+                        segment: {
+                            segmentType: 'subSegment',
+                        },
                     },
-                    data: {
-                        schoolSubSegmentId: null,
-                        schoolSubSegmentName: '',
-                    },
+                    select: { id: true },
                 });
+
+                if (userSubSegment) {
+                    await prisma.userSegment.delete({
+                        where: { id: userSubSegment.id },
+                    });
+                }
 
                 res.status(200).json({
-                    message: 'City and neighbourhood updated successfully',
-                    result,
+                    message: 'Neighbourhood removed, userSegment deleted successfully',
                 });
 
                 return;
             }
 
-            const city = await prisma.segments.findFirst({
-                where: { name: { equals: req.body.city, mode: 'insensitive' } },
+            // Find the city and neighbourhood in the Segments table
+            const citySegment = await prisma.segments.findFirst({
+                where: { name: { equals: city, mode: 'insensitive' } },
             });
 
-            const neighbourhood = await prisma.subSegments.findFirst({
-                where: { name: { equals: req.body.neighbourhood, mode: 'insensitive' } },
+            const neighbourhoodSegment = await prisma.segments.findFirst({
+                where: { name: { equals: neighbourhood, mode: 'insensitive' } },
             });
 
-            const data = {};
+            const segmentId = citySegment ? citySegment.segId : null;
+            const subSegmentId = neighbourhoodSegment ? neighbourhoodSegment.segId : null
 
-            if (city) {
-                data.schoolSegmentId = city.segId;
-                data.schoolSegmentName = city.name || "";
+            if (segmentId) {
+                await prisma.userSegment.upsert({
+                    where: {
+                        id: (
+                            await prisma.userSegment.findFirst({
+                                where: {
+                                    userId,
+                                    userSegmentRelationship: 'SCHOOL',
+                                    segment: { segmentType: 'segment' },
+                                },
+                                select: { id: true },
+                            })
+                        )?.id ?? -1, // -1 triggers an insert
+                    },
+                    update: { segmentId },
+                    create: {
+                        userId,
+                        userSegmentRelationship: 'SCHOOL',
+                        segmentId,
+                    },
+                });
             }
 
-            if (neighbourhood) {
-                data.schoolSubSegmentId = neighbourhood.id;
-                data.schoolSubSegmentName = neighbourhood.name || "";
+            // If there is a neighborhood/subseg, then update that neighborhood
+            if (subSegmentId) {
+                await prisma.userSegment.upsert({
+                    where: {
+                        id: (
+                            await prisma.userSegment.findFirst({
+                                where: {
+                                    userId,
+                                    userSegmentRelationship: 'SCHOOL',
+                                    segment: { segmentType: 'subSegment' },
+                                },
+                                select: { id: true },
+                            })
+                        )?.id ?? -1, // -1 triggers an insert
+                    },
+                    update: { segmentId: subSegmentId },
+                    create: {
+                        userId,
+                        userSegmentRelationship: 'SCHOOL',
+                        segmentId: subSegmentId,
+                    },
+                });
             }
-
-            if (Object.keys(data).length === 0) {
-                console.log('City and neighbourhood not found');
-                res.status(400).json({ error: 'City and neighbourhood not found' });
-                return;
-            }
-
-            const result = await prisma.userSegments.update({
-                where: {
-                    userId: req.params.id,
-                },
-                data,
-            });
-
             res.status(200).json({
                 message: 'City and neighbourhood updated successfully',
-                result,
             });
         } catch (error) {
             console.log(error);
@@ -207,6 +243,7 @@ schoolDetailsRouter.patch(
         } finally {
             await prisma.$disconnect();
         }
+        
     }
 );
 

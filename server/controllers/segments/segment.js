@@ -170,6 +170,53 @@ segmentRouter.get(
     }
 );
 
+segmentRouter.get(
+    '/getChildren/:parentId',
+    async (req, res) => {
+        try {
+            const parentId = parseInt(req.params.parentId);
+
+            if (isNaN(parentId)) {
+                return res.status(400).json({
+                    message: "Invalid parent ID format. Must be a number."
+                });
+            }
+
+            const result = await prisma.segments.findMany({
+                where: {
+                    parentId: parentId
+                },
+                include: {
+                    children: true, // Include nested children if needed
+                    // You can include other relations if needed
+                    // userReach: true,
+                    // userSegment: true,
+                    // ideas: true
+                }
+            });
+
+            if (!result || result.length === 0) {
+                return res.status(404).json({
+                    message: `No children segments found for parent ID: ${parentId}`
+                });
+            }
+
+            res.status(200).send(result);
+        } catch (error) {
+            console.log(error);
+            res.status(400).json({
+                message: "An error occurred while trying to retrieve child segments.",
+                details: {
+                    errorMessage: error.message,
+                    errorStack: error.stack,
+                }
+            });
+        } finally {
+            await prisma.$disconnect();
+        }
+    }
+);
+
 // segmentRouter.get(
 //     '/getByProv',
 //     async(req,res) => {

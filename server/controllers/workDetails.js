@@ -51,16 +51,16 @@ workDetailsRouter.delete(
                     },
                 });
 
-                const userSegmentsWorkDetails = await prisma.userSegments.update({
+                await prisma.userSegment.updateMany({
                     where: {
                         userId: req.params.id,
+                        userSegmentRelationship: 'WORK',
+                        segment: {
+                            segmentType: 'subSegment',
+                        },
                     },
                     data: {
-                        workSegmentId: null,
-                        workSubSegmentId: null,
-                        workSegmentName: '',
-                        workSubSegmentName: '',
-                        workSegHandle: '',
+                        segmentId: null,
                     },
                 });
                 res.status(200).json({workDetailsRemove, userSegmentsWorkDetails});
@@ -127,12 +127,17 @@ workDetailsRouter.patch(
                         updatedAt: new Date(),
                     },
                 });
-                const userDetails = await prisma.userSegments.update({ where: {
-                    userId: req.params.id,
-                },
-                data: {
-                  workSegHandle: req.body.displayFName + "@" + req.body.displayLName,
-                },})
+
+                await prisma.userHandle.updateMany({
+                    where: {
+                        userId: req.params.id,
+                        userSegmentRelationship: 'WORK',
+                    },
+                    data: {
+                        handle: req.body.displayFName + "@" + req.body.displayLName,
+                    },
+                });
+                
 
             res.status(200).json(workDetails);
             }
@@ -148,61 +153,91 @@ workDetailsRouter.patch(
     '/updateCityNeighbourhood/:id',
     async (req, res) => {
         try {
-            if (req.body.neighbourhood === '') {
-                const result = await prisma.userSegments.update({
+            const { city, neighbourhood } = req.body;
+            const userId = req.params.id;
+
+            // If neighbourhood is removed, delete only the subSegment entry in UserSegment
+            if (!neighbourhood) {
+                await prisma.userSegment.updateMany({
                     where: {
-                        userId: req.params.id,
+                        userId,
+                        userSegmentRelationship: 'WORK',
+                        segment: {
+                            segmentType: 'subSegment', // Only affects subSegments
+                        },
                     },
                     data: {
-                        workSubSegmentId: null,
-                        workSubSegmentName: '',
+                        segmentId: null, // Setting segment reference to null instead of deleting
                     },
                 });
 
                 res.status(200).json({
-                    message: 'City and neighbourhood updated successfully',
-                    result,
+                    message: 'Neighbourhood removed, userSegment set to NULL successfully',
                 });
 
                 return;
             }
 
-            const city = await prisma.segments.findFirst({
-                where: { name: { equals: req.body.city, mode: 'insensitive' } },
+            // Find the city and neighbourhood in the Segments table
+            const citySegment = await prisma.segments.findFirst({
+                where: { name: { equals: city, mode: 'insensitive' } },
             });
 
-            const neighbourhood = await prisma.subSegments.findFirst({
-                where: { name: { equals: req.body.neighbourhood, mode: 'insensitive' } },
+            const neighbourhoodSegment = await prisma.segments.findFirst({
+                where: { name: { equals: neighbourhood, mode: 'insensitive' } },
             });
 
-            const data = {};
+            const segmentId = citySegment ? citySegment.segId : null;
+            const subSegmentId = neighbourhoodSegment ? neighbourhoodSegment.segId : null
 
-            if (city) {
-                data.workSegmentId = city.segId;
-                data.workSegmentName = city.name || "";
+            if (segmentId) {
+                await prisma.userSegment.upsert({
+                    where: {
+                        id: (
+                            await prisma.userSegment.findFirst({
+                                where: {
+                                    userId,
+                                    userSegmentRelationship: 'WORK',
+                                    segment: { segmentType: 'segment' },
+                                },
+                                select: { id: true },
+                            })
+                        )?.id ?? -1, // -1 triggers an insert
+                    },
+                    update: { segmentId },
+                    create: {
+                        userId,
+                        userSegmentRelationship: 'WORK',
+                        segmentId,
+                    },
+                });
             }
 
-            if (neighbourhood) {
-                data.workSubSegmentId = neighbourhood.id;
-                data.workSubSegmentName = neighbourhood.name || "";
+            // If there is a neighborhood/subseg, then update that neighborhood
+            if (subSegmentId) {
+                await prisma.userSegment.upsert({
+                    where: {
+                        id: (
+                            await prisma.userSegment.findFirst({
+                                where: {
+                                    userId,
+                                    userSegmentRelationship: 'WORK',
+                                    segment: { segmentType: 'subSegment' },
+                                },
+                                select: { id: true },
+                            })
+                        )?.id ?? -1, // -1 triggers an insert
+                    },
+                    update: { segmentId: subSegmentId },
+                    create: {
+                        userId,
+                        userSegmentRelationship: 'WORK',
+                        segmentId: subSegmentId,
+                    },
+                });
             }
-
-            if (Object.keys(data).length === 0) {
-                console.log('City and neighbourhood not found');
-                res.status(400).json({ error: 'City and neighbourhood not found' });
-                return;
-            }
-
-            const result = await prisma.userSegments.update({
-                where: {
-                    userId: req.params.id,
-                },
-                data,
-            });
-
             res.status(200).json({
                 message: 'City and neighbourhood updated successfully',
-                result,
             });
         } catch (error) {
             console.log(error);
@@ -210,6 +245,7 @@ workDetailsRouter.patch(
         } finally {
             await prisma.$disconnect();
         }
+        
     }
 );
 

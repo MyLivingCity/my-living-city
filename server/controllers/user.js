@@ -231,7 +231,11 @@ userRouter.get(
 				include: {
 					address: true,
 					geo: true,
-					userSegments: true
+					userSegment: {
+                        include: {
+                            segment: true
+                        }
+                    },
 				}
 			});
 
@@ -265,6 +269,7 @@ userRouter.get(
 		}
 	}
 )
+
 userRouter.delete(
 	'/:userId',
 	async (req, res, next) => {
@@ -596,7 +601,11 @@ userRouter.get(
 			if (theUser.userType === 'SUPER_ADMIN' || theUser.userType === 'ADMIN' || theUser.userType === 'MOD' || theUser.userType === 'MUNICIPAL_SEG_ADMIN' || theUser.userType === 'SEG_ADMIN') {
 				const allUsers = await prisma.user.findMany({
 					include: {
-						userSegments: true,
+						userSegment: {
+							include: {
+								segment: true
+							}
+						},
 						userReach: true,
 					}
 				}
@@ -647,7 +656,11 @@ userRouter.get(
 						}
 					},
 					include: {
-						userSegments: true,
+						userSegment: {
+							include: {
+								segment: true
+							}
+						},
 					}
 				}
 				);
@@ -1399,12 +1412,13 @@ userRouter.patch(
 					}
 				});
 			}
-			const userDetails = await prisma.userSegments.update({
+			const userDetails = await prisma.userHandle.update({
 				where: {
 					userId: user.id,
+					userSegmentRelationship: "HOME"
 				},
 				data: {
-					homeSegHandle: req.body.displayFName + "@" + req.body.displayLName,
+					handle: req.body.displayFName + "@" + req.body.displayLName,
 				},
 			})
 
@@ -1468,45 +1482,60 @@ userRouter.patch(
 	'/updateCityNeighbourhood/:id',
 	async (req, res, next) => {
 		try {
+
+			const userId = req.params.id;
 			const user = await prisma.user.findUnique({
-				where: { id: req.params.id },
+				where: { id: userId },
 			});
 
-			// get the id of the city from the segment table
-			// ignore case
-			console.log("user", req.params.id)
 			const city = await prisma.segments.findFirst({
 				where: { name: { equals: req.body.city, mode: "insensitive" } },
 			});
 
-			console.log("city", city)
-			// get the id of the neighbourhood from the subsegment table
-			// ignore case
-			const neighbourhood = await prisma.subSegments.findFirst({
-				where: { name: { equals: req.body.neighbourhood, mode: "insensitive" } },
-			});
+			const neighbourhood = await prisma.segments.findFirst({
+				where: { name: { equals: req.body.neighborhood, mode: "insensitive"} }
+			})
 
-			console.log("neighbourhood", neighbourhood)
+			if (!neighbourhood) {
+                return res.status(400).json({
+                    message: "Error: A neighbourhood is required.",
+                });
+            }
 
-			// if all three are found, update the user's city and neighbourhood
-			// in the UserSegment table
-			if (user && city && neighbourhood) {
-				const res = await prisma.userSegments.update({
-					where: { userId: req.params.id },
-					data: {
-						homeSegmentId: city.segId,
-						homeSubSegmentId: neighbourhood.id,
-						homeSegmentName: req.body.city,
-						homeSubSegmentName: req.body.neighbourhood,
-					}
-				});
-			} else {
-				console.log("Error: user, city, or neighbourhood not found")
-				res.status(400).json({
-					message: `Error: user, city, or neighbourhood not found`,
-				});
-				return;
-			}
+			const segmentId = city ? city.segId : null;
+            const subSegmentId = neighbourhood.segId;
+
+            await prisma.userSegment.upsert({
+                where: {
+                    userId_userSegmentRelationship_segmentId: {
+                        userId,
+                        userSegmentRelationship: "HOME",
+                        segmentId: segmentId || 0,
+                    },
+                },
+                update: { segmentId },
+                create: {
+                    userId,
+                    userSegmentRelationship: "HOME",
+                    segmentId,
+                },
+            });
+
+            await prisma.userSegment.upsert({
+                where: {
+                    userId_userSegmentRelationship_segmentId: {
+                        userId,
+                        userSegmentRelationship: "HOME",
+                        segmentId: subSegmentId,
+                    },
+                },
+                update: { segmentId: subSegmentId },
+                create: {
+                    userId,
+                    userSegmentRelationship: "HOME",
+                    segmentId: subSegmentId,
+                },
+            });
 
 			res.status(200).json({
 				message: "City and neighbourhood successfully updated"

@@ -125,7 +125,7 @@ const IdeaTile: React.FC<ideaTileProps> = ({
                             {/* Could possible have thumbs up and thumbs down but found heart to be clearer */}
                             {/* <div className="">
                 <FaRegThumbsUp />
-                /
+                
                 <FaRegThumbsDown />
               </div> */}
                             <BsHeartHalf />

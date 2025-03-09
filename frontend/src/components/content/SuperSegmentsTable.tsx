@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { Table, Form, Button, Card, Alert, NavDropdown, Dropdown, Row, Col } from "react-bootstrap";
-import { capitalizeFirstLetterEachWord, capitalizeString } from "src/lib/utilityFunctions";
+import React, { useEffect, useState } from 'react';
+import { Table, Form, Button, Card, Alert, NavDropdown, Dropdown, Row, Col } from 'react-bootstrap';
+import { capitalizeFirstLetterEachWord, capitalizeString } from 'src/lib/utilityFunctions';
 import {
     createSuperSegment,
     updateSuperSegment,
     deleteSuperSegmentBySuperSegmentId,
     getAllSuperSegmentsByCountryProvince,
-} from "../../lib/api/segmentRoutes";
-import { ISegment, ISuperSegment } from "../../lib/types/data/segment.type";
-import { IFetchError } from "../../lib/types/types";
-import { COUNTRIES, PROVINCES } from "src/lib/constants";
+} from '../../lib/api/segmentRoutes';
+import { ISegment, ISuperSegment } from '../../lib/types/data/segment.type';
+import { IFetchError } from '../../lib/types/types';
+import { COUNTRIES, PROVINCES } from 'src/lib/constants';
 
 interface SuperSegmentTableProps {
     provName: string;
@@ -30,9 +30,9 @@ const SuperSegmentTable: React.FC<SuperSegmentTableProps> = ({
     setSuperSegments,
     token,
 }) => {
-    const [hideControls, setHideControls] = useState("");
+    const [hideControls, setHideControls] = useState('');
     const [showNewSeg, setShowNewSeg] = useState(false);
-    const [hideSuperControls, setHideSuperControls] = useState("");
+    const [hideSuperControls, setHideSuperControls] = useState('');
     const [showNewSuperSeg, setShowNewSuperSeg] = useState(false);
     const [error, setError] = useState<IFetchError | null>(null);
     
@@ -83,51 +83,51 @@ const SuperSegmentTable: React.FC<SuperSegmentTableProps> = ({
     }, [superSegments]);
 
     const handleSuperSegSubmit = async (updateData?: any) => {
-            try {
-                if (updateData) {
-                    if (!updateData.name) {
-                        setError(Error('Please enter a segment name when updating'));
-                        throw error;
-                    }
-                    await updateSuperSegment(updateData, token);
-                    setSegments((prevSegments) => {
-                        const updatedSegments = prevSegments.map((segment) => {
-                            if (segment.superSegId === updateData.superSegId) {
-                                return {
-                                    ...segment,
-                                    superSegName: updateData.name,
-                                    country: updateData.country,
-                                    province: updateData.province,
-                                };
-                            }
-                            return segment;
-                        });
-                        return updatedSegments;
-                    });
-                } else {
-                    if (!newSuperSegment.name) {
-                        setError(Error('Please enter a name when creating a segment'));
-                        throw error;
-                    }
-                    const found = superSegments!.find(
-                        (element) => element.name === newSuperSegment.name
-                    );
-                    if (found) {
-                        setError(Error('A Super Segment with this name already exists'));
-                        throw error;
-                    }
-                    newSuperSegment.country = countryName;
-                    newSuperSegment.province = provName;
-                    const newSuperSegmentReturn = await createSuperSegment(newSuperSegment, token);
-                    if (newSuperSegmentReturn) superSegments.push(newSuperSegmentReturn);
+        try {
+            if (updateData) {
+                if (!updateData.name) {
+                    setError(Error('Please enter a segment name when updating'));
+                    throw error;
                 }
-                setShowNewSeg(false);
-                setError(null);
-                window.location.reload();
-            } catch (error) {
-                console.log(error);
+                await updateSuperSegment(updateData, token);
+                setSegments((prevSegments) => {
+                    const updatedSegments = prevSegments.map((segment) => {
+                        if (segment.superSegId === updateData.superSegId) {
+                            return {
+                                ...segment,
+                                superSegName: updateData.name,
+                                country: updateData.country,
+                                province: updateData.province,
+                            };
+                        }
+                        return segment;
+                    });
+                    return updatedSegments;
+                });
+            } else {
+                if (!newSuperSegment.name) {
+                    setError(Error('Please enter a name when creating a segment'));
+                    throw error;
+                }
+                const found = superSegments!.find(
+                    (element) => element.name === newSuperSegment.name
+                );
+                if (found) {
+                    setError(Error('A Super Segment with this name already exists'));
+                    throw error;
+                }
+                newSuperSegment.country = countryName;
+                newSuperSegment.province = provName;
+                const newSuperSegmentReturn = await createSuperSegment(newSuperSegment, token);
+                if (newSuperSegmentReturn) superSegments.push(newSuperSegmentReturn);
             }
-        };
+            setShowNewSeg(false);
+            setError(null);
+            window.location.reload();
+        } catch (error) {
+            console.log(error);
+        }
+    };
     
   
     const handleDeleteSuperSegment = async (superSegId: number) => {

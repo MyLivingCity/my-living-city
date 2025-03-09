@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { Table, Form, Button, Card, Alert, NavDropdown, Dropdown } from "react-bootstrap";
-import { capitalizeString } from "src/lib/utilityFunctions";
+import React, { useEffect, useState } from 'react';
+import { Table, Form, Button, Card, Alert, NavDropdown, Dropdown } from 'react-bootstrap';
+import { capitalizeString } from 'src/lib/utilityFunctions';
 import {
     createSubSegment,
     updateSubSegment,
-} from "src/lib/api/segmentRoutes";
-import { ISubSegment } from "src/lib/types/data/segment.type";
-import { IFetchError } from "src/lib/types/types";
+} from 'src/lib/api/segmentRoutes';
+import { ISubSegment } from 'src/lib/types/data/segment.type';
+import { IFetchError } from 'src/lib/types/types';
 
 export interface ShowSubSegmentsProps {
     segId: number;

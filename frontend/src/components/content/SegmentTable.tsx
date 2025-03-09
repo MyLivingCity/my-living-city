@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from "react";
-import { Table, Form, Button, Card, Alert, NavDropdown, Dropdown, Row, Col } from "react-bootstrap";
-import { capitalizeFirstLetterEachWord, capitalizeString } from "src/lib/utilityFunctions";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { Table, Form, Button, Card, Alert, NavDropdown, Dropdown, Row, Col } from 'react-bootstrap';
+import { capitalizeFirstLetterEachWord, capitalizeString } from 'src/lib/utilityFunctions';
+import { Link } from 'react-router-dom';
 import {
     createSegment,
     updateSegment,
     deleteSegmentBySegmentId,
     getAllSuperSegmentsByCountryProvince,
-} from "../../lib/api/segmentRoutes";
-import { ISegment, ISuperSegment, ISegmentRequest } from "../../lib/types/data/segment.type";
-import { IFetchError } from "../../lib/types/types";
-import { UserSegmentRequestCard } from "../partials/UserSegmentRequestCard";
-import { ShowSubSegmentsPage } from "src/pages/ShowSubSegmentsPage";
-import { COUNTRIES, PROVINCES } from "src/lib/constants";
+} from '../../lib/api/segmentRoutes';
+import { ISegment, ISuperSegment, ISegmentRequest } from '../../lib/types/data/segment.type';
+import { IFetchError } from '../../lib/types/types';
+import { UserSegmentRequestCard } from '../partials/UserSegmentRequestCard';
+import { ShowSubSegmentsPage } from 'src/pages/ShowSubSegmentsPage';
+import { COUNTRIES, PROVINCES } from 'src/lib/constants';
 
 interface SegmentTableProps {
     provName: string;
@@ -31,7 +31,7 @@ const SegmentTable: React.FC<SegmentTableProps> = ({
     token,
     segReq,
 }) => {
-    const [hideControls, setHideControls] = useState("");
+    const [hideControls, setHideControls] = useState('');
     const [showNewSeg, setShowNewSeg] = useState(false);
     const [segId, setSegId] = useState<number | null>(null);
     const [segName, setSegName] = useState<string | null>(null);
@@ -69,7 +69,7 @@ const SegmentTable: React.FC<SegmentTableProps> = ({
                 }
                 setSuperSegments(superSegmentsData);
             } catch (error) {
-                console.error("Error fetching super segments:", error);
+                console.error('Error fetching super segments:', error);
             }
         };
 
@@ -125,241 +125,241 @@ const SegmentTable: React.FC<SegmentTableProps> = ({
 
     return (
         <Row style={{ overflow: 'auto' }}>
-        <Col>
-            <Card>
-                <Card.Header className='text-capitalize'>
-                    {capitalizeString(provName!)} segments{' '}
-                    <Button
-                        className='float-right'
-                        size='sm'
-                        onClick={(e) => {
-                            setShowNewSeg(true);
-                        }}
-                    >
-                        Create New Segment
-                    </Button>
-                </Card.Header>
-                <Card.Body>
-                    <Table bordered hover size='sm'>
-                        <thead>
-                            <tr>
-                                {/* <th>Seg ID</th> */}
-                                <th>Segment Name</th>
-                                <th>Super Seg-Name</th>
-                                <th>Province</th>
-                                <th>Country</th>
-                                <th>Controls</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {filteredSegments?.map((segment) => (
-                                <tr key={segment.segId}>
-                                    {String(segment.segId) !== hideControls ? (
-                                        <>
-                                            <td>
-                                                {segment.name
-                                                    ? capitalizeFirstLetterEachWord(segment.name)
-                                                    : ''}
-                                            </td>
-                                            <td>
-                                                {segment.superSegName
-                                                    ? capitalizeFirstLetterEachWord(
-                                                        segment.superSegName.toLowerCase()
-                                                    )
-                                                    : ''}
-                                            </td>
-                                            <td>
-                                                {segment.province
-                                                    ? capitalizeFirstLetterEachWord(
-                                                        segment.province
-                                                    )
-                                                    : ''}
-                                            </td>
-                                            <td>
-                                                {segment.country
-                                                    ? capitalizeFirstLetterEachWord(
-                                                        segment.country
-                                                    )
-                                                    : ''}
-                                            </td>
-                                            <td>
-                                                <NavDropdown title='Controls' id='nav-dropdown'>
-                                                    <Dropdown.Item>
-                                                        <Link
-                                                            to={`/segment/management/${segment.segId}`}
-                                                            className='dropdown-item p-0 m-0'
+            <Col>
+                <Card>
+                    <Card.Header className='text-capitalize'>
+                        {capitalizeString(provName!)} segments{' '}
+                        <Button
+                            className='float-right'
+                            size='sm'
+                            onClick={(e) => {
+                                setShowNewSeg(true);
+                            }}
+                        >
+                            Create New Segment
+                        </Button>
+                    </Card.Header>
+                    <Card.Body>
+                        <Table bordered hover size='sm'>
+                            <thead>
+                                <tr>
+                                    {/* <th>Seg ID</th> */}
+                                    <th>Segment Name</th>
+                                    <th>Super Seg-Name</th>
+                                    <th>Province</th>
+                                    <th>Country</th>
+                                    <th>Controls</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filteredSegments?.map((segment) => (
+                                    <tr key={segment.segId}>
+                                        {String(segment.segId) !== hideControls ? (
+                                            <>
+                                                <td>
+                                                    {segment.name
+                                                        ? capitalizeFirstLetterEachWord(segment.name)
+                                                        : ''}
+                                                </td>
+                                                <td>
+                                                    {segment.superSegName
+                                                        ? capitalizeFirstLetterEachWord(
+                                                            segment.superSegName.toLowerCase()
+                                                        )
+                                                        : ''}
+                                                </td>
+                                                <td>
+                                                    {segment.province
+                                                        ? capitalizeFirstLetterEachWord(
+                                                            segment.province
+                                                        )
+                                                        : ''}
+                                                </td>
+                                                <td>
+                                                    {segment.country
+                                                        ? capitalizeFirstLetterEachWord(
+                                                            segment.country
+                                                        )
+                                                        : ''}
+                                                </td>
+                                                <td>
+                                                    <NavDropdown title='Controls' id='nav-dropdown'>
+                                                        <Dropdown.Item>
+                                                            <Link
+                                                                to={`/segment/management/${segment.segId}`}
+                                                                className='dropdown-item p-0 m-0'
+                                                            >
+                                                                View
+                                                            </Link>
+                                                        </Dropdown.Item>
+                                                        <Dropdown.Item
+                                                            onClick={() =>
+                                                                setHideControls(String(segment.segId))
+                                                            }
                                                         >
-                                                            View
-                                                        </Link>
-                                                    </Dropdown.Item>
-                                                    <Dropdown.Item
-                                                        onClick={() =>
-                                                            setHideControls(String(segment.segId))
-                                                        }
-                                                    >
-                                                        Edit
-                                                    </Dropdown.Item>
-                                                    <Dropdown.Item
-                                                        onClick={() => {
-                                                            setSegId(segment.segId);
-                                                            setSegName(segment.name);
-                                                            setShowNewSeg(false);
-                                                            setShowSub(true);
+                                                            Edit
+                                                        </Dropdown.Item>
+                                                        <Dropdown.Item
+                                                            onClick={() => {
+                                                                setSegId(segment.segId);
+                                                                setSegName(segment.name);
+                                                                setShowNewSeg(false);
+                                                                setShowSub(true);
+                                                            }}
+                                                        >
+                                                            Show Sub Segments
+                                                        </Dropdown.Item>
+                                                        <Dropdown.Item
+                                                            onClick={() => handleDeleteSegment(segment.segId)}
+                                                            className='text-danger'
+                                                        >
+                                                            Delete
+                                                        </Dropdown.Item>
+                                                    </NavDropdown>
+                                                </td>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <td>
+                                                    <Form.Control
+                                                        type='text'
+                                                        defaultValue={capitalizeString(segment.name)}
+                                                        onChange={(e) => {
+                                                            segment.name = e.target.value;
+                                                        }}
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <Form.Control
+                                                        as='select'
+                                                        defaultValue={segment.superSegName}
+                                                        onChange={(e) => {
+                                                            segment.superSegName = e.target.value.toLowerCase();
                                                         }}
                                                     >
-                                                        Show Sub Segments
-                                                    </Dropdown.Item>
-                                                    <Dropdown.Item
-                                                        onClick={() => handleDeleteSegment(segment.segId)}
-                                                        className='text-danger'
+                                                        {(superSegments).map((superSegment) => (
+                                                            <option key={superSegment.superSegId} value={superSegment.name}>
+                                                                {superSegment.name.toUpperCase()}
+                                                            </option>
+                                                        ))}
+                                                    </Form.Control>
+                                                </td>
+                                                <td>
+                                                    <Form.Control
+                                                        as='select'
+                                                        defaultValue={segment.province.toLowerCase()}
+                                                        onChange={(e) => {
+                                                            segment.province = e.target.value.toLowerCase();
+                                                        }}
                                                     >
-                                                        Delete
-                                                    </Dropdown.Item>
-                                                </NavDropdown>
-                                            </td>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <td>
-                                                <Form.Control
-                                                    type='text'
-                                                    defaultValue={capitalizeString(segment.name)}
-                                                    onChange={(e) => {
-                                                        segment.name = e.target.value;
-                                                    }}
-                                                />
-                                            </td>
-                                            <td>
-                                                <Form.Control
-                                                    as='select'
-                                                    defaultValue={segment.superSegName}
-                                                    onChange={(e) => {
-                                                        segment.superSegName = e.target.value.toLowerCase();
-                                                    }}
-                                                >
-                                                    {(superSegments).map((superSegment) => (
-                                                        <option key={superSegment.superSegId} value={superSegment.name}>
-                                                            {superSegment.name.toUpperCase()}
-                                                        </option>
-                                                    ))}
-                                                </Form.Control>
-                                            </td>
-                                            <td>
-                                                <Form.Control
-                                                    as='select'
-                                                    defaultValue={segment.province.toLowerCase()}
-                                                    onChange={(e) => {
-                                                        segment.province = e.target.value.toLowerCase();
-                                                    }}
-                                                >
-                                                    {PROVINCES.map((prov) => (
-                                                        <option key={prov} value={prov.toLowerCase()}>{prov}</option>
-                                                    ))}
-                                                </Form.Control>
-                                            </td>
-                                            <td>
-                                                <Form.Control
-                                                    as='select'
-                                                    defaultValue={segment.country.toLowerCase()}
-                                                    onChange={(e) => {
-                                                        segment.country = e.target.value.toLowerCase();
-                                                    }}
-                                                >
-                                                    {COUNTRIES.map((prov) => (
-                                                        <option key={prov} value={prov.toLowerCase()}>{prov}</option>
-                                                    ))}
-                                                </Form.Control>
-                                            </td>
-                                            <td>
-                                                <Button
-                                                    size='sm'
-                                                    className='mr-2'
-                                                    variant='outline-danger'
-                                                    onClick={() => setHideControls('')}
-                                                >
-                                                    Cancel
-                                                </Button>
-                                                <Button
-                                                    size='sm'
-                                                    onClick={() => {
-                                                        handleSegSubmit(segment);
-                                                        setHideControls('');
-                                                    }}
-                                                >
-                                                    Save
-                                                </Button>
-                                            </td>
-                                        </>
-                                    )}
-                                </tr>
-                            ))}
-                            {showNewSeg && (
-                                <tr>
-                                    <td>
-                                        <Form.Control
-                                            type='text'
-                                            onChange={(e) =>
-                                                (createData.name = e.target.value.toLowerCase())
-                                            }
-                                        ></Form.Control>
-                                    </td>
-                                    <td>
-                                        <Form.Control
-                                            as='select'
-                                            onChange={(e) => {
-                                                const selectedSuperSegId = parseInt(e.target.value, 10);
-                                                const selectedSuperSegment = superSegments.find(
-                                                    (superSeg) => superSeg.superSegId === selectedSuperSegId);
-                                                setCreateData((prevData) => ({
-                                                    ...prevData,
-                                                    superSegId: selectedSuperSegId,
-                                                    superSegName: selectedSuperSegment ? selectedSuperSegment.name.toLowerCase() : '',
-                                                }));
-                                            }}
-                                        >
-                                            {superSegments.map((superSegment) => (
-                                                <option key={superSegment.superSegId} value={superSegment.superSegId}>
-                                                    {superSegment.name.toUpperCase()}
-                                                </option>
-                                            ))}
-                                        </Form.Control>
-                                    </td>
-                                    <td>
-                                        <Button
-                                            type='button'
-                                            size='sm'
-                                            onClick={() => {
-                                                handleSegSubmit();
-                                                // sleep(6000);
-                                                // window.location.reload();
-                                            }}
-                                        >
-                                            Add Segment
-                                        </Button>{' '}
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </Table>
-                    {error && (
-                        <Alert variant='danger' className='error-alert'>
-                            {error.message}
-                        </Alert>
-                    )}
-                </Card.Body>
-            </Card>
-            <br />
-            {showSub && segId && (
-                <ShowSubSegmentsPage
-                    segId={segId}
-                    segName={segName}
-                    token={token}
-                />
-            )}{' '}
-            <br />
-            <UserSegmentRequestCard segReq={segReq} token={token} />
-        </Col>
-    </Row>
+                                                        {PROVINCES.map((prov) => (
+                                                            <option key={prov} value={prov.toLowerCase()}>{prov}</option>
+                                                        ))}
+                                                    </Form.Control>
+                                                </td>
+                                                <td>
+                                                    <Form.Control
+                                                        as='select'
+                                                        defaultValue={segment.country.toLowerCase()}
+                                                        onChange={(e) => {
+                                                            segment.country = e.target.value.toLowerCase();
+                                                        }}
+                                                    >
+                                                        {COUNTRIES.map((prov) => (
+                                                            <option key={prov} value={prov.toLowerCase()}>{prov}</option>
+                                                        ))}
+                                                    </Form.Control>
+                                                </td>
+                                                <td>
+                                                    <Button
+                                                        size='sm'
+                                                        className='mr-2'
+                                                        variant='outline-danger'
+                                                        onClick={() => setHideControls('')}
+                                                    >
+                                                        Cancel
+                                                    </Button>
+                                                    <Button
+                                                        size='sm'
+                                                        onClick={() => {
+                                                            handleSegSubmit(segment);
+                                                            setHideControls('');
+                                                        }}
+                                                    >
+                                                        Save
+                                                    </Button>
+                                                </td>
+                                            </>
+                                        )}
+                                    </tr>
+                                ))}
+                                {showNewSeg && (
+                                    <tr>
+                                        <td>
+                                            <Form.Control
+                                                type='text'
+                                                onChange={(e) =>
+                                                    (createData.name = e.target.value.toLowerCase())
+                                                }
+                                            ></Form.Control>
+                                        </td>
+                                        <td>
+                                            <Form.Control
+                                                as='select'
+                                                onChange={(e) => {
+                                                    const selectedSuperSegId = parseInt(e.target.value, 10);
+                                                    const selectedSuperSegment = superSegments.find(
+                                                        (superSeg) => superSeg.superSegId === selectedSuperSegId);
+                                                    setCreateData((prevData) => ({
+                                                        ...prevData,
+                                                        superSegId: selectedSuperSegId,
+                                                        superSegName: selectedSuperSegment ? selectedSuperSegment.name.toLowerCase() : '',
+                                                    }));
+                                                }}
+                                            >
+                                                {superSegments.map((superSegment) => (
+                                                    <option key={superSegment.superSegId} value={superSegment.superSegId}>
+                                                        {superSegment.name.toUpperCase()}
+                                                    </option>
+                                                ))}
+                                            </Form.Control>
+                                        </td>
+                                        <td>
+                                            <Button
+                                                type='button'
+                                                size='sm'
+                                                onClick={() => {
+                                                    handleSegSubmit();
+                                                    // sleep(6000);
+                                                    // window.location.reload();
+                                                }}
+                                            >
+                                                Add Segment
+                                            </Button>{' '}
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </Table>
+                        {error && (
+                            <Alert variant='danger' className='error-alert'>
+                                {error.message}
+                            </Alert>
+                        )}
+                    </Card.Body>
+                </Card>
+                <br />
+                {showSub && segId && (
+                    <ShowSubSegmentsPage
+                        segId={segId}
+                        segName={segName}
+                        token={token}
+                    />
+                )}{' '}
+                <br />
+                <UserSegmentRequestCard segReq={segReq} token={token} />
+            </Col>
+        </Row>
     );
 };
 

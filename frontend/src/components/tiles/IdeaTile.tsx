@@ -105,6 +105,7 @@ const IdeaTile: React.FC<ideaTileProps> = ({
             <Card.Body>
                 <div className='mb-1' style={{ textAlign: 'left', color: 'gray' }}>{postType}</div>
                 <Card.Title>{truncateString(title, 50)}</Card.Title>
+                <small className='text-muted'>By: {firstName || 'Unknown'}</small>
                 <Card.Text>{truncateString(description, 100)}</Card.Text>
                 <div className='button-breakdown mt-3 d-flex justify-content-between align-items-center'>
                     <Card.Link href={`/ideas/${id}`}>

@@ -148,24 +148,6 @@ workDetailsRouter.patch(
     '/updateCityNeighbourhood/:id',
     async (req, res) => {
         try {
-            if (req.body.neighbourhood === '') {
-                const result = await prisma.userSegments.update({
-                    where: {
-                        userId: req.params.id,
-                    },
-                    data: {
-                        workSubSegmentId: null,
-                        workSubSegmentName: '',
-                    },
-                });
-
-                res.status(200).json({
-                    message: 'City and neighbourhood updated successfully',
-                    result,
-                });
-
-                return;
-            }
 
             const city = await prisma.segments.findFirst({
                 where: { name: { equals: req.body.city, mode: 'insensitive' } },

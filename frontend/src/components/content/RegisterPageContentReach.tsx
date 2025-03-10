@@ -131,6 +131,7 @@ export const CheckboxTree: React.FC<CheckBoxTreeProps> = ({data, parent, ...prop
         marginLeft: '20px',
     };
 
+    console.log(data);
     return (
         <div style={treeDiv}>
             {data && data.map((item, i) => {

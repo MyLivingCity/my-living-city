@@ -116,7 +116,7 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
         } as any;
         const userName = getUserHandle(subSegmentId, segmentId, superSegmentId, author);
 
-        return (<span className={`name d-block ${colour} !important`} style={{ fontSize: '70%' }}>{userName}</span>);
+        return (<span className={`name d-block ${colour} !important`} style={{ fontSize: '70%' }}>{userName} - {capitalizeFirstLetter(author.userType)}</span>);
     };
 
     // const flagFunc = async(ideaId: number, token: string, userId: string, ideaActive: boolean, reason: string, quarantined_at: Date) => {
@@ -153,6 +153,10 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
         handleHideFlagButton();
         await createCommentFlagAndCheckThreshold(id, token!, user!.id, otherFlagReason, new Date());
 
+    };
+
+    const capitalizeFirstLetter = (str: string) => {
+        return str.charAt(0) + str.slice(1).toLowerCase();
     };
 
     useEffect(() => {

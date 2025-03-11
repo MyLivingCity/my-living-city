@@ -13,11 +13,9 @@ import React, { useEffect, useState } from 'react';
 import { useCheckFlagBan } from 'src/hooks/flagHooks';
 import { capitalizeFirstLetterEachWord, capitalizeString, getUserHandle } from '../../../lib/utilityFunctions';
 // Added May 31
-import { FaRegThumbsUp } from 'react-icons/fa';
 import { IUser } from 'src/lib/types/data/user.type';
 import { USER_TYPES } from 'src/lib/constants';
 import { IAddress } from 'src/lib/types/data/address.type';
-import { IUserSegment } from 'src/lib/types/data/segment.type';
 
 interface IdeaCommentTileProps {
     commentData: IComment;
@@ -116,6 +114,7 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
         } as any;
         const userName = getUserHandle(subSegmentId, segmentId, superSegmentId, author);
 
+        // Display the comment author as well as their user type
         return (<span className={`name d-block ${colour} !important`} style={{ fontSize: '70%' }}>{userName} - {parseUserType(author.userType)}</span>);
     };
 
@@ -155,20 +154,7 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
 
     };
 
-    //   SUPER_ADMIN = 'SUPER_ADMIN',
-    //   ADMIN = 'ADMIN',
-    //   MOD = 'MOD',
-    //   SEG_ADMIN = 'SEG_ADMIN',
-    //   SEG_MOD = 'SEG_MOD',
-    //   MUNICIPAL_SEG_ADMIN = 'MUNICIPAL_SEG_ADMIN',
-    //   BUSINESS = 'BUSINESS',
-    //   MUNICIPAL = 'MUNICIPAL',
-    //   ASSOCIATE = 'ASSOCIATE',
-    //   DEVELOPER = 'DEVELOPER',
-    //   RESIDENTIAL = 'RESIDENTIAL',
-    //   COMMUNITY = 'COMMUNITY',
-    //   IN_PROGRESS = 'IN_PROGRESS',
-
+    // Change default user types into user title descriptors
     const parseUserType = (str: string) => {
         let result: string;
     
@@ -217,11 +203,7 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
                 break;
         }
     
-        return capitalizeFirstLetterOfEachWord(result);
-    };
-
-    const capitalizeFirstLetterOfEachWord = (str: string) => {
-        return str.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
+        return capitalizeFirstLetterEachWord(result);
     };
 
     useEffect(() => {

@@ -116,7 +116,7 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
         } as any;
         const userName = getUserHandle(subSegmentId, segmentId, superSegmentId, author);
 
-        return (<span className={`name d-block ${colour} !important`} style={{ fontSize: '70%' }}>{userName} - {capitalizeFirstLetter(author.userType)}</span>);
+        return (<span className={`name d-block ${colour} !important`} style={{ fontSize: '70%' }}>{userName} - {parseUserType(author.userType)}</span>);
     };
 
     // const flagFunc = async(ideaId: number, token: string, userId: string, ideaActive: boolean, reason: string, quarantined_at: Date) => {
@@ -155,8 +155,73 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
 
     };
 
-    const capitalizeFirstLetter = (str: string) => {
-        return str.charAt(0) + str.slice(1).toLowerCase();
+    //   SUPER_ADMIN = 'SUPER_ADMIN',
+    //   ADMIN = 'ADMIN',
+    //   MOD = 'MOD',
+    //   SEG_ADMIN = 'SEG_ADMIN',
+    //   SEG_MOD = 'SEG_MOD',
+    //   MUNICIPAL_SEG_ADMIN = 'MUNICIPAL_SEG_ADMIN',
+    //   BUSINESS = 'BUSINESS',
+    //   MUNICIPAL = 'MUNICIPAL',
+    //   ASSOCIATE = 'ASSOCIATE',
+    //   DEVELOPER = 'DEVELOPER',
+    //   RESIDENTIAL = 'RESIDENTIAL',
+    //   COMMUNITY = 'COMMUNITY',
+    //   IN_PROGRESS = 'IN_PROGRESS',
+
+    const parseUserType = (str: string) => {
+        let result: string;
+    
+        switch (str) {
+            case 'SUPER_ADMIN':
+                result = 'super admin';
+                break;
+            case 'ADMIN':
+                result = 'admin';
+                break;
+            case 'MOD':
+                result = 'moderator';
+                break;
+            case 'SEG_ADMIN':
+                result = 'segment admin';
+                break;
+            case 'SEG_MOD':
+                result = 'segment moderator';
+                break;
+            case 'MUNICIPAL_SEG_ADMIN':
+                result = 'municipal segment admin';
+                break;
+            case 'BUSINESS':
+                result = 'business member';
+                break;
+            case 'MUNICIPAL':
+                result = 'municipal';
+                break;
+            case 'ASSOCIATE':
+                result = 'associate';
+                break;
+            case 'DEVELOPER':
+                result = 'developer';
+                break;
+            case 'RESIDENTIAL':
+                result = 'resident';
+                break;
+            case 'COMMUNITY':
+                result = 'community member';
+                break;
+            case 'IN_PROGRESS':
+                result = 'in progress';
+                break;
+            default:
+                result = 'unknown';
+                break;
+        }
+    
+        return capitalizeFirstLetterOfEachWord(result);
+    };
+
+    const capitalizeFirstLetterOfEachWord = (str: string) => {
+        return str.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
     };
 
     useEffect(() => {

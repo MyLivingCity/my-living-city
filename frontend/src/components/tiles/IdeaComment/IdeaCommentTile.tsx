@@ -115,7 +115,12 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
         const userName = getUserHandle(subSegmentId, segmentId, superSegmentId, author);
 
         // Display the comment author as well as their user type
-        return (<span className={`name d-block ${colour} !important`} style={{ fontSize: '70%' }}>{userName} - {parseUserType(author.userType)}</span>);
+        return (
+            <span className={`name d-block ${colour} !important`} style={{ fontSize: '70%' }}>
+                {userName} - {parseUserType(userSegments)}
+            </span>
+        );
+        
     };
 
     // const flagFunc = async(ideaId: number, token: string, userId: string, ideaActive: boolean, reason: string, quarantined_at: Date) => {
@@ -155,56 +160,13 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
     };
 
     // Change default user types into user title descriptors
-    const parseUserType = (str: string) => {
-        let result: string;
-    
-        switch (str) {
-            case 'SUPER_ADMIN':
-                result = 'super admin';
-                break;
-            case 'ADMIN':
-                result = 'admin';
-                break;
-            case 'MOD':
-                result = 'moderator';
-                break;
-            case 'SEG_ADMIN':
-                result = 'segment admin';
-                break;
-            case 'SEG_MOD':
-                result = 'segment moderator';
-                break;
-            case 'MUNICIPAL_SEG_ADMIN':
-                result = 'municipal segment admin';
-                break;
-            case 'BUSINESS':
-                result = 'business member';
-                break;
-            case 'MUNICIPAL':
-                result = 'municipal';
-                break;
-            case 'ASSOCIATE':
-                result = 'associate';
-                break;
-            case 'DEVELOPER':
-                result = 'developer';
-                break;
-            case 'RESIDENTIAL':
-                result = 'resident';
-                break;
-            case 'COMMUNITY':
-                result = 'community member';
-                break;
-            case 'IN_PROGRESS':
-                result = 'in progress';
-                break;
-            default:
-                result = 'unknown';
-                break;
-        }
-    
-        return capitalizeFirstLetterEachWord(result);
+    const parseUserType = (userSegments: any) => {
+        if (userSegments?.homeSegmentId) return 'Resident';
+        if (userSegments?.schoolSegmentId) return 'Student';
+        if (userSegments?.workSegmentId) return 'Worker';
+        return 'Unknown';
     };
+    
 
     useEffect(() => {
         if (!flagBanDataLoading) {

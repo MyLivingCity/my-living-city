@@ -93,6 +93,7 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
     const urlParams = new URLSearchParams(queryString);
     const supportedProposal = urlParams.get('supportedProposal');
     const communityOfInterest = urlParams.get('communityOfInterest');
+    const categoryIdFromURL = urlParams.get('category');
     const parsedProposalId = parseInt(supportedProposal!);
     let updatedSegData: ISegmentData[] = [];
     const destructuredSegData = Object.entries(segData);
@@ -233,8 +234,7 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
 
     const formik = useFormik<ICreateIdeaInput>({
         initialValues: {
-            // TODO: CatId when chosen is a string value
-            categoryId: categories ? categories[0]?.id : DEFAULT_CAT_ID,
+            categoryId: categoryIdFromURL ? parseInt(categoryIdFromURL) : (categories ? categories[0]?.id : DEFAULT_CAT_ID),
             title: '',
             userType: updatedSegData ? updatedSegData[0].userType : 'Resident',
             description: '',
@@ -260,7 +260,6 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
             segmentId: 2,
             subSegmentId: 5,
             superSegmentId: undefined,
-            //supportingProposalId that is not null
             supportingProposalId: parsedProposalId,
         },
         onSubmit: submitHandler,
@@ -299,6 +298,7 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
                                 name='categoryId'
                                 onChange={formik.handleChange}
                                 value={formik.values.categoryId}
+                                disabled={!!categoryIdFromURL}  // Disable if categoryId is in URL
                             >
                                 {categories &&
                                     categories.map((cat) => (

@@ -57,10 +57,7 @@ interface ProfileContentProps {
     user: IUser;
     token: string;
 }
-/**
- * Time wasted trying to fix this dogshit
- * 4 hours
- */
+
 const UNKNOWN = '';
 const NOT_SELECTED = 'Not Selected';
 

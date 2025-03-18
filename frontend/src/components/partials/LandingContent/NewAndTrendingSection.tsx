@@ -263,16 +263,16 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
             return dateB - dateA;
         }
     });
-
-    const [activeIndex, setActiveIndex] = useState(0);
     const itemsPerPage = 6;
-
-    const totalPages = topIdeas && topIdeas.length > 0
-        ? Math.ceil(topIdeas.length / itemsPerPage)
-        : 0;
+    const filteredIdeas = sortedIdeas.filter(doesIdeaPassFilter);
+    const totalFilteredPages = Math.ceil(filteredIdeas.length / itemsPerPage);
+    const [activeIndex, setActiveIndex] = useState(0);
+    
 
     const handleSelect = (selectedIndex: number) => {
-        setActiveIndex(selectedIndex);
+        if (selectedIndex >= 0 && selectedIndex < totalFilteredPages) {
+            setActiveIndex(selectedIndex);
+        }
     };
 
 
@@ -359,12 +359,12 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
                         slide={true}
                         fade={false}
                         nextIcon={
-                            activeIndex >= (totalPages - 1) || totalPages <= 1 ? null : (
+                            activeIndex >= (totalFilteredPages  - 1) || totalFilteredPages  <= 1 ? null : (
                                 <span aria-hidden='true' className='carousel-control-next-icon' />
                             )
                         }
                         prevIcon={
-                            activeIndex === 0 || totalPages <= 1 ? null : (
+                            activeIndex === 0 || totalFilteredPages  <= 1 ? null : (
                                 <span aria-hidden='true' className='carousel-control-prev-icon' />
                             )
                         }

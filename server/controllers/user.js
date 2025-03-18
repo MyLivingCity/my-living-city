@@ -1468,6 +1468,30 @@ userRouter.patch(
     '/updateCityNeighbourhood/:id',
     async (req, res, next) => {
         try {
+            if (req.body.neighbourhood === '' || req.body.neighbourhood === null || req.body.neighbourhood === undefined) {
+                const city = await prisma.segments.findFirst({
+                    where: { name: { equals: req.body.city, mode: 'insensitive' } },
+                });
+
+                const result = await prisma.userSegments.update({
+                    where: {
+                        userId: req.params.id,
+                    },
+                    data: {
+                        homeSubSegmentId: null,
+                        homeSubSegmentName: "",
+                        homeSegmentId: city.segId || null,
+                        homeSegmentName: req.body.city || "",
+                    },
+                });
+
+                res.status(200).json({
+                    message: 'City and neighbourhood updated successfully',
+                    result,
+                });
+
+                return;
+            }
             const user = await prisma.user.findUnique({
                 where: { id: req.params.id },
             });

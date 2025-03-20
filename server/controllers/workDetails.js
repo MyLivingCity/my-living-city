@@ -149,7 +149,7 @@ workDetailsRouter.patch(
     async (req, res) => {
         try {
             if (req.body.neighbourhood === '' || req.body.neighbourhood === null || req.body.neighbourhood === undefined) {
-                console.log("\n\n\n\n\n\n\n\n Hi \n\n\n\n\n\n\n\n\n");
+
                 const city = await prisma.segments.findFirst({
                     where: { name: { equals: req.body.city, mode: 'insensitive' } },
                 });

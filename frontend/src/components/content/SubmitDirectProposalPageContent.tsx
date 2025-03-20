@@ -517,17 +517,19 @@ const SubmitDirectProposalPageContent: React.FC<
                                 value={formik.values.categoryId}
                             >
                                 {categories &&
-                  categories.map((cat) => (
-                      <option
-                          key={String(cat.id)}
-                          value={Number(cat.id)}
-                          style={{
-                              textTransform: 'capitalize',
-                          }}
-                      >
-                          {capitalizeString(cat.title)}
-                      </option>
-                  ))}
+                            categories
+                                .filter(cat => cat.title !== 'MyLivingCity App Feature Suggestion')
+                                .map((cat) => (
+                                    <option
+                                        key={String(cat.id)}
+                                        value={Number(cat.id)}
+                                        style={{
+                                            textTransform: 'capitalize',
+                                        }}
+                                    >
+                                        {capitalizeString(cat.title)}
+                                    </option>
+                                ))}
                             </Form.Control>
                         </Form.Group>
                         <Form.Group>

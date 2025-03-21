@@ -24,6 +24,7 @@ type CommunityLocationProps = {
   showModal: any;
   segmentRequests: any;
   setSegmentRequests: any;
+  showNext: boolean;
 };
 
 const CommunityLocation = ({
@@ -41,6 +42,7 @@ const CommunityLocation = ({
   segmentRequests,
   setSegmentRequests,
   setCommunityType,
+  showNext,
 }: CommunityLocationProps) => {
   const { setFieldValue, values } = useFormikContext<any>();
 
@@ -125,13 +127,17 @@ const CommunityLocation = ({
 
   return (
     <FormikStep
-      validationSchema={Yup.object({
-        homeSegmentId: Yup.number()
-          .typeError('Municipality is required')
-          .required('Municipality is required'),
-        communityType: Yup.string().required('Community relationship is required'),
-      })}
-    >
+        validationSchema={Yup.object({
+          homeSegmentId: Yup.number()
+            .typeError('Municipality is required')
+            .required('Municipality is required'),
+          communityType: Yup.string().when('$showNext', {
+            is: true,
+            then: (schema) => schema.required('Community relationship is required'),
+            otherwise: (schema) => schema.notRequired(),
+          }),
+        })}
+      >
       <BForm.Group>
         <BForm.Label>Select your Municipality</BForm.Label>
         <BForm.Control
@@ -170,29 +176,32 @@ const CommunityLocation = ({
           </Button>
         </p>
       </BForm.Group>
+      {showNext && (
+        <>
+          <BForm.Group>
+            <BForm.Label>Select your community relationship</BForm.Label>
+            <Field name="communityType" as="select" className="form-control">
+              <option value="" disabled>
+                Select a type
+              </option>
+              <option value="home">Home</option>
+              <option value="work">Work</option>
+              <option value="school">School</option>
+            </Field>
+          </BForm.Group>
 
-      <BForm.Group>
-        <BForm.Label>Select your community relationship</BForm.Label>
-        <Field name="communityType" as="select" className="form-control">
-          <option value="" disabled>
-            Select a type
-          </option>
-          <option value="home">Home</option>
-          <option value="work">Work</option>
-          <option value="school">School</option>
-        </Field>
-      </BForm.Group>
+          {values.communityType === 'work' && <WorkDetailsForm />}
+          {values.communityType === 'school' && <SchoolDetailsForm />}
 
-      {values.communityType === 'work' && <WorkDetailsForm />}
-      {values.communityType === 'school' && <SchoolDetailsForm />}
-
-      <RequestSegmentModal
-        showModal={showModal}
-        setShowModal={setShowModal}
-        index={0}
-        setSegmentRequests={setSegmentRequests}
-        segmentRequests={segmentRequests}
-      />
+          <RequestSegmentModal
+            showModal={showModal}
+            setShowModal={setShowModal}
+            index={0}
+            setSegmentRequests={setSegmentRequests}
+            segmentRequests={segmentRequests}
+          />
+        </>
+      )}
     </FormikStep>
   );
 };

@@ -314,6 +314,7 @@ function StepController() {
                   setSegments={setSegments}
                   segmentRequests={segmentRequests}
                   setSegmentRequests={setSegmentRequests}
+                  showNext={userType != USER_TYPES.BUSINESS && userType != USER_TYPES.COMMUNITY}
                 />
               )}
               {((step === 4 &&

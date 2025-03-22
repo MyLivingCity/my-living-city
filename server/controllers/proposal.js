@@ -367,6 +367,7 @@ proposalRouter.get(
                                     id: true,
                                     fname: true,
                                     lname: true,
+                                    address: true,
                                 }
                             }
                         },

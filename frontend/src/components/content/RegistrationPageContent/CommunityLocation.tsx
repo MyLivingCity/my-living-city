@@ -8,6 +8,7 @@ import { RequestSegmentModal } from 'src/components/partials/RequestSegmentModal
 import { capitalizeFirstLetterEachWord, refactorStateArray } from 'src/lib/utilityFunctions';
 import { ISegment, ISubSegment } from 'src/lib/types/data/segment.type';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { USER_TYPES } from 'src/lib/constants';
 
 type CommunityLocationProps = {
   segments: any;
@@ -25,6 +26,8 @@ type CommunityLocationProps = {
   segmentRequests: any;
   setSegmentRequests: any;
   showNext: boolean;
+  userType: string;
+  businessWorkDetails: any;
 };
 
 const CommunityLocation = ({
@@ -43,6 +46,8 @@ const CommunityLocation = ({
   setSegmentRequests,
   setCommunityType,
   showNext,
+  userType,
+  businessWorkDetails,
 }: CommunityLocationProps) => {
   const { setFieldValue, values } = useFormikContext<any>();
 
@@ -63,6 +68,18 @@ const CommunityLocation = ({
     }
   };
 
+
+  useEffect(() => {
+    if (userType === USER_TYPES.COMMUNITY) {
+      setFieldValue('communityType', 'home');
+    } else if (userType === USER_TYPES.BUSINESS) {
+      setFieldValue('communityType', 'work');
+      setFieldValue('workDetails.streetAddress', businessWorkDetails.streetAddress);
+      setFieldValue('workDetails.postalCode',businessWorkDetails.postalCode);
+      setFieldValue('workDetails.company', businessWorkDetails.organizationName);
+    }
+  }, [userType, businessWorkDetails]);
+
   // Fetch initial segments only once on mount
   useEffect(() => {
     const fetchInitialSegments = async () => {
@@ -74,7 +91,7 @@ const CommunityLocation = ({
         if (fetchedSegments.length > 0) {
           const initialSegment = fetchedSegments[0];
           setSegment(initialSegment);
-          // Call refactorStateArray only once (using an empty array to avoid dependency changes)
+          // Update segment state and form field
           refactorStateArray([], 0, initialSegment.segId, setSegIds);
           setFieldValue('homeSegmentId', initialSegment.segId);
           await fetchSubsegData(initialSegment.segId);
@@ -125,19 +142,23 @@ const CommunityLocation = ({
       ));
   }, [subSegments, segIds]);
 
+  // Build the validation schema based on the showNext prop
+  const validationSchema = showNext
+    ? Yup.object({
+        homeSegmentId: Yup.number()
+          .typeError('Municipality is required')
+          .required('Municipality is required'),
+        communityType: Yup.string().required('Community relationship is required'),
+      })
+    : Yup.object({
+        homeSegmentId: Yup.number()
+          .typeError('Municipality is required')
+          .required('Municipality is required'),
+        communityType: Yup.string().notRequired(),
+      });
+
   return (
-    <FormikStep
-        validationSchema={Yup.object({
-          homeSegmentId: Yup.number()
-            .typeError('Municipality is required')
-            .required('Municipality is required'),
-          communityType: Yup.string().when('$showNext', {
-            is: true,
-            then: (schema) => schema.required('Community relationship is required'),
-            otherwise: (schema) => schema.notRequired(),
-          }),
-        })}
-      >
+    <FormikStep validationSchema={validationSchema}>
       <BForm.Group>
         <BForm.Label>Select your Municipality</BForm.Label>
         <BForm.Control
@@ -164,7 +185,7 @@ const CommunityLocation = ({
           disabled={!segIds[0] || !subSegments.length}
           value={values.homeSubName || ''}
         >
-          <option value="" disabled>
+          <option value="">
             Select a neighbourhood
           </option>
           {subSegmentOptions}
@@ -182,7 +203,7 @@ const CommunityLocation = ({
             <BForm.Label>Select your community relationship</BForm.Label>
             <Field name="communityType" as="select" className="form-control">
               <option value="" disabled>
-                Select a type
+                Select a type 
               </option>
               <option value="home">Home</option>
               <option value="work">Work</option>

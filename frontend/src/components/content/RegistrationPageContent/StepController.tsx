@@ -129,6 +129,7 @@ function StepController() {
 
   const hasFetchedReachData = useRef(false);
   useEffect(() => {
+    console.log("Hello \n\n\\n\n\n", userType);
     if (
       step === 4 &&
       (userType === USER_TYPES.BUSINESS || userType === USER_TYPES.COMMUNITY) &&
@@ -140,6 +141,12 @@ function StepController() {
       })();
     }
   }, [step, userType]);
+
+  const [businessWorkDetails, setBusinessWorkDetails] = useState({
+    streetAddress: '',
+    postalCode: '',
+    organizationName: '',
+  });
 
   return (
     <div className="register-page-content">
@@ -296,7 +303,10 @@ function StepController() {
                 </FormikStep>
               )}
               {step === 2 && (
-                <EmailPasswordForm userType={userType} setAvatar={setAvatar} />
+                <EmailPasswordForm  userType={userType}
+                setAvatar={setAvatar}
+                setBusinessWorkDetails={setBusinessWorkDetails} 
+                businessWorkDetails={businessWorkDetails}/>
               )}
               {step === 3 && (
                 <CommunityLocation
@@ -314,7 +324,9 @@ function StepController() {
                   setSegments={setSegments}
                   segmentRequests={segmentRequests}
                   setSegmentRequests={setSegmentRequests}
-                  showNext={userType != USER_TYPES.BUSINESS && userType != USER_TYPES.COMMUNITY}
+                  showNext={userType !== USER_TYPES.BUSINESS && userType !== USER_TYPES.COMMUNITY}
+                  userType={userType}
+                  businessWorkDetails = {businessWorkDetails}
                 />
               )}
               {((step === 4 &&
@@ -345,13 +357,13 @@ function StepController() {
               {step === 7 &&
                 (userType === USER_TYPES.BUSINESS ||
                   userType === USER_TYPES.COMMUNITY) && <SetUpAd />}
-              <Form>
-                <NextAndBackButton
-                  userType={userType}
-                  setStep={setStep}
-                  step={step}
-                />
-              </Form>
+             <Form>
+              <NextAndBackButton
+                userType={userType}
+                setStep={setStep}
+                step={step}
+              />
+            </Form>
             </>
           </FormikStepper>
         </Card.Body>

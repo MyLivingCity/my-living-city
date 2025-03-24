@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import { Field, FieldHookConfig, FieldInputProps } from 'formik';
+import { Field, FieldHookConfig, FieldInputProps, Formik, useFormikContext } from 'formik';
 import { Form as BForm } from 'react-bootstrap';
 import { TEXT_INPUT_LIMIT } from 'src/lib/constants';
 
@@ -8,7 +8,8 @@ type Props = FieldHookConfig<string> & {
     field: FieldInputProps<string>;
 };
 
-function businessCommunityRegistration(): JSX.Element {
+function businessCommunityRegistration(setBusinessWorkDetails: any): JSX.Element {
+  const {setFieldValue} = useFormikContext<any>();
     return (
       <>
         <BForm.Group>
@@ -18,6 +19,13 @@ function businessCommunityRegistration(): JSX.Element {
             name="organizationName"
             type="text"
             as={BForm.Control}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              setBusinessWorkDetails((prev: any) => ({
+                ...prev,
+                organizationName: e.target.value,
+              }));
+              setFieldValue('organizationName', e.target.value);
+            }}
           />
         </BForm.Group>
         <BForm.Group>

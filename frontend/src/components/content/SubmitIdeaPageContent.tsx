@@ -26,6 +26,7 @@ import {
 } from '../../lib/utilityFunctions';
 import { CONTENT, Toastie } from '../partials/LandingContent/CategoriesSection';
 import ImageUploader from 'react-images-upload';
+import { getMyUserSegmentInfoRefined } from 'src/lib/api/userSegmentRoutes';
 
 interface SubmitIdeaPageContentProps {
     categories: ICategory[] | undefined;
@@ -46,22 +47,32 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<IFetchError | null>(null);
     const history = useHistory();
+    const [userSegments, setUserSegments] = useState<ISegmentData[]>();
+
+    const segDatas = getMyUserSegmentInfoRefined(token, user!?.id);
+    segDatas.then((data) => {
+        setUserSegments(data);
+    }).catch((error) => {
+        console.log(error);
+    });
     const handleCommunityChange = (index: number) => {
-        if (updatedSegData[index].segType === 'Segment') {
-            formik.setFieldValue('segmentId', updatedSegData[index].id);
+        // if (updatedSegData[index].segType === 'Segment') {
+        if (true) {
+            // formik.setFieldValue('segmentId', updatedSegData[index].id);
+            formik.setFieldValue('segmentId', 2);
             formik.setFieldValue('superSegmentId', undefined);
             formik.setFieldValue('subSegmentId', undefined);
         }
-        if (updatedSegData[index].segType === 'Sub-Segment') {
-            formik.setFieldValue('subSegmentId', updatedSegData[index].id);
-            formik.setFieldValue('superSegmentId', undefined);
-            formik.setFieldValue('segmentId', undefined);
-        }
-        if (updatedSegData[index].segType === 'Super-Segment') {
-            formik.setFieldValue('superSegmentId', updatedSegData[index].id);
-            formik.setFieldValue('subSegmentId', undefined);
-            formik.setFieldValue('segmentId', undefined);
-        }
+        // if (updatedSegData[index].segType === 'Sub-Segment') {
+        //     formik.setFieldValue('subSegmentId', updatedSegData[index].id);
+        //     formik.setFieldValue('superSegmentId', undefined);
+        //     formik.setFieldValue('segmentId', undefined);
+        // }
+        // if (updatedSegData[index].segType === 'Super-Segment') {
+        //     formik.setFieldValue('superSegmentId', updatedSegData[index].id);
+        //     formik.setFieldValue('subSegmentId', undefined);
+        //     formik.setFieldValue('segmentId', undefined);
+        // }
     };
 
     const submitHandler = async (values: ICreateIdeaInput) => {
@@ -98,124 +109,7 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
     const destructuredSegData = Object.entries(segData);
     console.log('segData', segData);
     console.log('destructuredSegData', destructuredSegData);
-    if (destructuredSegData !== null) {
 
-        if (
-            destructuredSegData[2] &&
-            destructuredSegData[2][1] &&
-            destructuredSegData[2][1].toString() !== '' &&
-            destructuredSegData[3] &&
-            destructuredSegData[3][1] &&
-            destructuredSegData[3][1].toString() !== ''
-        ) {
-            updatedSegData.push({
-                id: parseInt(destructuredSegData[2][1].toString()),
-                name: destructuredSegData[3][1].toString(),
-                segType: 'Super-Segment',
-                userType: 'Resident'
-            });
-        }
-
-        if (
-            destructuredSegData[8] &&
-            destructuredSegData[8][1] &&
-            destructuredSegData[8][1].toString() !== '' &&
-            destructuredSegData[9] &&
-            destructuredSegData[9][1] &&
-            destructuredSegData[9][1].toString() !== ''
-        ) {
-            updatedSegData.push({
-                id: parseInt(destructuredSegData[8][1].toString()),
-                name: destructuredSegData[9][1].toString(),
-                segType: 'Segment',
-                userType: 'Resident'
-            });
-        }
-
-        if (
-            destructuredSegData[9][1].toString() !== destructuredSegData[13][1].toString() &&
-            destructuredSegData[10] &&
-            destructuredSegData[10][1] &&
-            destructuredSegData[10][1].toString() !== '' &&
-            destructuredSegData[11] &&
-            destructuredSegData[11][1] &&
-            destructuredSegData[11][1].toString() !== ''
-        ) {
-            updatedSegData.push({
-                id: parseInt(destructuredSegData[10][1].toString()),
-                name: destructuredSegData[11][1].toString(),
-                segType: 'Segment',
-                userType: 'Worker'
-            });
-        }
-
-        if (
-            destructuredSegData[11][1].toString() !== destructuredSegData[13][1].toString() &&
-            destructuredSegData[12] &&
-            destructuredSegData[12][1] &&
-            destructuredSegData[12][1].toString() !== '' &&
-            destructuredSegData[13] &&
-            destructuredSegData[13][1] &&
-            destructuredSegData[13][1].toString() !== ''
-        ) {
-            updatedSegData.push({
-                id: parseInt(destructuredSegData[12][1].toString()),
-                name: destructuredSegData[13][1].toString(),
-                segType: 'Segment',
-                userType: 'Student'
-            });
-        }
-
-        if (
-            destructuredSegData[14] &&
-            destructuredSegData[14][1] &&
-            destructuredSegData[14][1].toString() !== '' &&
-            destructuredSegData[15] &&
-            destructuredSegData[15][1] &&
-            destructuredSegData[15][1].toString() !== ''
-        ) {
-            updatedSegData.push({
-                id: parseInt(destructuredSegData[14][1].toString()),
-                name: destructuredSegData[15][1].toString(),
-                segType: 'Sub-Segment',
-                userType: 'Resident'
-            });
-        }
-
-        if (
-
-            destructuredSegData[16] &&
-            destructuredSegData[16][1] &&
-            destructuredSegData[16][1].toString() !== '' &&
-            destructuredSegData[17] &&
-            destructuredSegData[17][1] &&
-            destructuredSegData[17][1].toString() !== ''
-        ) {
-            updatedSegData.push({
-                id: parseInt(destructuredSegData[16][1].toString()),
-                name: destructuredSegData[17][1].toString(),
-                segType: 'Sub-Segment',
-                userType: 'Worker'
-            });
-        }
-
-        if (
-            destructuredSegData[17][1].toString() !== destructuredSegData[19][1].toString() &&
-            destructuredSegData[18] &&
-            destructuredSegData[18][1] &&
-            destructuredSegData[18][1].toString() !== '' &&
-            destructuredSegData[19] &&
-            destructuredSegData[19][1] &&
-            destructuredSegData[19][1].toString() !== ''
-        ) {
-            updatedSegData.push({
-                id: parseInt(destructuredSegData[18][1].toString()),
-                name: destructuredSegData[19][1].toString(),
-                segType: 'Sub-Segment',
-                userType: 'Student'
-            });
-        }
-    }
     const renderCommunitiesOfInterest = (segData: ISegmentData[], communityOfInterest: string | null) => {
         if (communityOfInterest) {
             return <option key={communityOfInterest} value={communityOfInterest}>
@@ -223,8 +117,9 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
             </option>;
         }
 
-        return segData &&
-            segData.map((seg, index) => (
+        console.log('segData', segData);
+        return userSegments &&
+            userSegments.map((seg: ISegmentData, index: number) => (
                 <option key={String(seg.name)} value={index}>
                     {`${capitalizeString(seg.name)} as ${capitalizeString(seg.userType)} `}
                 </option>
@@ -236,7 +131,8 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
             // TODO: CatId when chosen is a string value
             categoryId: categories ? categories[0].id : DEFAULT_CAT_ID,
             title: '',
-            userType: updatedSegData ? updatedSegData[0].userType : 'Resident',
+            // userType: updatedSegData ? updatedSegData[0].userType : 'Resident',
+            userType: 'Resident',
             description: '',
             proposal_role: '',
             requirements: '',
@@ -267,6 +163,7 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
     });
 
     useEffect(() => {
+
         if (segData) {
 
             const communityOfInterest = urlParams.get('communityOfInterest');

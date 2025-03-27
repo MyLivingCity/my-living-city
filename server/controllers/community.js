@@ -64,6 +64,13 @@ communityRouter.post(
                     time: time,
                     contactInfo: contactInfo,
                 },
+                include: {
+                    author: {
+                        include: {
+                            address: true, 
+                        }
+                    }
+                }
             });
 
 
@@ -95,6 +102,9 @@ communityRouter.get(
                 where: {
                     proposalId: parsedProposalId,
                 },
+                include: {
+                    author: true,
+                }
             });
             res.status(200).json(collaborators);
         } catch (error) {

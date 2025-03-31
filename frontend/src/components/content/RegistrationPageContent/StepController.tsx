@@ -129,7 +129,6 @@ function StepController() {
 
   const hasFetchedReachData = useRef(false);
   useEffect(() => {
-    console.log("Hello \n\n\\n\n\n", userType);
     if (
       step === 4 &&
       (userType === USER_TYPES.BUSINESS || userType === USER_TYPES.COMMUNITY) &&
@@ -244,6 +243,8 @@ function StepController() {
                 if (userType === USER_TYPES.RESIDENTIAL) {
                   wipeLocalStorage();
                   window.location.href = ROUTES.CHECKEMAIL;
+                } else if(userType === USER_TYPES.BUSINESS || userType === USER_TYPES.COMMUNITY){
+                  setStep(7);
                 }
               } catch (error: any) {
                 setSubmitError('An error occurred while creating your account.');

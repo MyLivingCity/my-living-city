@@ -5,6 +5,7 @@ import { FormikStep } from '../RegisterPageContent4';
 
 
 function SubmitForm({ submitError }: { submitError: any }) {
+  console.log(submitError);
     return (
       <FormikStep>
         {submitError && <Alert variant="danger">{submitError}</Alert>}

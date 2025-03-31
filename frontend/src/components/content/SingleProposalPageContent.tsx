@@ -178,7 +178,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
             if (name && subSegment) {
                 if (subSegment.id === userSegmentData.homeSubSegmentId || subSegment.id === userSegmentData.workSubSegmentId || subSegment.id === userSegmentData.schoolSubSegmentId) {
                     const communityOfInterest = getSegmentName(name);
-                    window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}`;
+                    window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}&category=${category?.id}`;   
                 } else {
                     setShowProposalSegmentError(true);
                 }
@@ -190,7 +190,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                 if (name && segment) {
                     if (segment.segId === userSegmentData.homeSegmentId || segment.segId === userSegmentData.workSegmentId || segment.segId === userSegmentData.schoolSegmentId) {
                         const communityOfInterest = getSegmentName(name);
-                        window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}`;
+                        window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}&category=${category?.id}`;
                     } else {
                         setShowProposalSegmentError(true);
                     }
@@ -201,7 +201,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                 name = superSegment.name;
                 if (superSegment.superSegId === userSegmentData.homeSuperSegId || superSegment.superSegId === userSegmentData.workSuperSegId || superSegment.superSegId === userSegmentData.schoolSuperSegId) {
                     const communityOfInterest = getSegmentName(name);
-                    window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}`;
+                    window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}&category=${category?.id}`;
                 } else {
                     setShowProposalSegmentError(true);
                 }
@@ -210,7 +210,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
             if (subSegment?.segId === userSegmentData.homeSubSegmentId || segment?.segId === userSegmentData.homeSegmentId || superSegment?.superSegId === userSegmentData.homeSuperSegId) {
                 let name = subSegment?.name || segment?.name || superSegment?.name;
                 const communityOfInterest = getSegmentName(name);
-                window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}`;
+                window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}&category=${category?.id}`;
             } else {
                 setShowProposalSegmentError(true);
             }
@@ -987,7 +987,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                                 (collaboration: any, index: number) => (
                                                     <tr>
                                                         <td>
-                                                            {collaboration.author.fname}@{collaboration.author.id}
+                                                            {collaboration.author.fname}@{collaboration.author.address.streetAddress || 'Unknown'}
                                                         </td>
                                                     </tr>
                                                 )

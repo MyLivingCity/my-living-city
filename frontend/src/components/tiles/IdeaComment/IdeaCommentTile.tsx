@@ -161,6 +161,11 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
 
     // Change default user types into user title descriptors
     const parseUserType = (userSegments: any) => {
+        // console.log('>>>');
+        // console.log(userSegments?.homeSegmentId, workSegmentId, schoolSegmentId,
+        //     homeSubSegmentId, workSubSegmentId, schoolSubSegmentId,
+        //     homeSuperSegmentId, workSuperSegmentId, schoolSuperSegmentId);
+        // console.log('<<<');
         if (userSegments?.homeSegmentId) return 'Resident';
         if (userSegments?.schoolSegmentId) return 'Student';
         if (userSegments?.workSegmentId) return 'Worker';

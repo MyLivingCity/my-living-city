@@ -72,7 +72,7 @@ export const SuggestedIdeasTable: React.FC<any> = (props) => {
                                         {suggestion.title}
                                     </a>
                                 </TableCell>
-                                <TableCell align='center'>{isNaN(averageRating) ? 0 : averageRating}</TableCell>
+                                <TableCell align='center'>{isNaN(averageRating) ? '0.00' : averageRating.toFixed(2)}</TableCell>
                                 <TableCell align='center'>{suggestion.ratings.length + suggestion.comments.length}</TableCell>
                                 <TableCell align='center'>{positiveRatings} / {negativeRatings}</TableCell>
                             </TableRow>

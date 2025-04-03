@@ -341,9 +341,14 @@ export const updateSchoolSegmentDetails = async (userId: string | undefined, dat
         }
     );
     console.log('updateSchoolSegmentDetails', res1.data);
-
+    console.log('Waiting for 10 seconds...');
+    await sleep(10000); // 10000 milliseconds = 10 seconds
+    console.log('10 seconds later...');
     return res.data;
 };
+function sleep(ms:number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 export const updateHomeSegmentDetails = async (userId: string | undefined, data: IHomeDetailsInput) => {
     const res1 = await axios.patch(

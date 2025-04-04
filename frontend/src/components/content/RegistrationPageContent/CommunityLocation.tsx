@@ -197,7 +197,7 @@ const CommunityLocation = ({
           </Button>
         </p>
       </BForm.Group>
-      {true && (
+      {showNext && (
         <>
           <BForm.Group>
             <BForm.Label>Select your community relationship</BForm.Label>

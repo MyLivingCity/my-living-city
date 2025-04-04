@@ -348,6 +348,7 @@ const getHandleBySegmentId = (segmentId: number, homeId: number | undefined | nu
     const userType = userData.userType;
 
     let handle = 'Unknown';
+
     switch (segmentId) {
         case homeId:
             handle = `${homeSegHandle}`;

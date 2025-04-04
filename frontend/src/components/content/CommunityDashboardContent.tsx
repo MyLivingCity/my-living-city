@@ -181,8 +181,7 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
         }
 
     };
-    const [isTableView, setIsTableView] = useState(true);
-
+    const [isTableView, setIsTableView] = useState(false);
 
     return (
         <Container className='user-profile-content w-100'>

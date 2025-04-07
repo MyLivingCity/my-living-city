@@ -181,6 +181,7 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
         }
 
     };
+    // Set to false to only display Card View (Table View disabled)
     const [isTableView, setIsTableView] = useState(false);
 
     return (

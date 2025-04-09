@@ -420,41 +420,6 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
         );
     });
 
-    {user?.userType === USER_TYPES.MUNICIPAL && (
-        <Form onSubmit={handleCommentSubmit} className='mb-4'>
-            <Form.Group>
-                <Form.Label>Select Subsegment</Form.Label>
-                <Form.Control
-                    as='select'
-                    required
-                    value={selectedSubSegmentId}
-                    onChange={(e) => setSelectedSubSegmentId(e.target.value)}
-                >
-                    <option value=''>Select a subsegment</option>
-                    {subSeg?.map((segment) => (
-                        <option key={segment.segId} value={segment.segId}>
-                            {segment.name}
-                        </option>
-                    ))}
-                </Form.Control>
-            </Form.Group>
-    
-            <Form.Group>
-                <Form.Label>Write Comment</Form.Label>
-                <Form.Control
-                    as='textarea'
-                    rows={3}
-                    required
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
-                />
-            </Form.Group>
-    
-            <Button type='submit' disabled={!selectedSubSegmentId}>
-                Submit Comment
-            </Button>
-        </Form>
-    );}
 
 
     if (user?.userType === USER_TYPES.MUNICIPAL_SEG_ADMIN) {

@@ -46,7 +46,7 @@ model User {
   userReach           UserReach[]
   userIdeaFollow      UserIdeaFollow[]
   userIdeaEndorse     UserIdeaEndorse[]
-  userSegments         UserSegment[]
+  userSegments         UserSegments[]
   userHandles          UserHandle[]
 
   //userRole        UserRole?    @relation(fields: [userRoleId], references: [id])
@@ -95,7 +95,7 @@ model UserHandle {
   @@map(name: "user_handle")
 }
 
-model UserSegment {
+model UserSegments {
   id                   Int        @id @default(autoincrement())
   userId               String        @map("user_id")
   userSegmentRelationship UserSegmentRelationShipType @map("user_segment_relationship_type")
@@ -141,9 +141,9 @@ model Segments {
   @@map(name: "segment")
 
   // relations 
-  userSegments   UserSegment[]
+  userSegment   UserSegments[]
   segmentType    SegmentType
-  ideas          IdeaSegment[]
+  ideas          Idea[]
 
 }
 
@@ -201,24 +201,11 @@ model Idea {
   supportedProposal        Proposal?                  @relation("supportedProposal", fields: [supportingProposalId], references: [id])
   champion                 User?                      @relation("ideaChampion", fields: [championId], references: [id])
   category                 Category                   @relation(fields: [categoryId], references: [id])
-  segments                 IdeaSegment[]
+  segments                 Segments[]
   Quarantine_Notifications Quarantine_Notifications[]
 
   @@unique([id, title])
   @@map(name: "idea")
-}
-
-model IdeaSegment {
-  id                   Int     @id @default(autoincrement())
-  ideaId               Int           @map("idea_id")
-  segmentId            Int 
-
-  // relationships 
-  idea                  Idea @relation(fields: [ideaId], references: [id])
-  segment               Segments @relation(fields: [segmentId] , references: [segId])
-
-
-  @@map(name: "idea_segment")
 }
 
 // Report Entity
@@ -633,7 +620,7 @@ model IdeaComment {
   // relations
   author            User                  @relation(fields: [authorId], references: [id])
   idea              Idea                  @relation(fields: [ideaId], references: [id])
-  userSeg           UserSegment          @relation(fields: [userSegId], references: [id])
+  userSeg           UserSegments          @relation(fields: [userSegId], references: [id])
   likes             UserCommentLikes[]
   commentFlags      CommentFlag[]
   commentBans       CommentBan[]

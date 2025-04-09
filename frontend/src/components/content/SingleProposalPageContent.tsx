@@ -987,7 +987,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                                 (collaboration: any, index: number) => (
                                                     <tr>
                                                         <td>
-                                                            {collaboration.author.fname}@{collaboration.author.address.streetAddress || 'Unknown'}
+                                                            {collaboration.author.fname}@{'Unknown'}
                                                         </td>
                                                     </tr>
                                                 )

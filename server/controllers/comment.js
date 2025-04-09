@@ -684,58 +684,5 @@ commentRouter.get(
   }
 );
 
-commentRouter.post(
-  '/create/subsegment/:subSegmentId',
-  passport.authenticate('jwt', { session: false }),
-  async (req, res) => {
-    try {
-      const { subSegmentId } = req.params;
-      const { content } = req.body;
-      const { id: userId, userType } = req.user;
-
-      // Ensure only municipal users can comment
-      if (userType !== "MUNICIPAL" && userType !== "MUNICIPAL_ADMIN") {
-        return res.status(403).json({ message: "Unauthorized: Only municipal users can post comments." });
-      }
-
-      // Check if the subsegment exists
-      const subSegment = await prisma.subSegment.findUnique({
-        where: { id: parseInt(subSegmentId) },
-        include: { segment: true }
-      });
-
-      if (!subSegment) {
-        return res.status(404).json({ message: "Subsegment not found." });
-      }
-
-      // Ensure the subsegment belongs to the user's municipality
-      const userSegment = await prisma.userSegments.findFirst({
-        where: { userId }
-      });
-
-      if (!userSegment || userSegment.homeSegmentId !== subSegment.segment.id) {
-        return res.status(403).json({
-          message: "Unauthorized: You can only comment on subsegments of your municipality."
-        });
-      }
-
-      // Create the comment
-      const newComment = await prisma.ideaComment.create({
-        data: {
-          content,
-          authorId: userId,
-          subSegmentId: parseInt(subSegmentId),
-        }
-      });
-
-      return res.status(201).json(newComment);
-    } catch (error) {
-      console.error("Error creating comment under subsegment:", error);
-      return res.status(500).json({ message: "Internal Server Error", error });
-    } finally {
-      await prisma.$disconnect();
-    }
-  }
-);
 
 module.exports = commentRouter;

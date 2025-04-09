@@ -136,21 +136,3 @@ export const checkSimilarComments = async (
   
     return res.data; // Return only the data property of the Axios response
 };
-
-export const createCommentUnderSubSegment = async (
-    subSegmentId: string,
-    token: string,
-    commentPayload: { content: string }
-): Promise<IComment> => {
-    if (!subSegmentId || !token) {
-        throw new Error('A subSegmentId and valid JWT must be specified to create a comment.');
-    }
-
-    const res = await axios.post<IComment>(
-        `${API_BASE_URL}/comment/create/subsegment/${subSegmentId}`,
-        commentPayload,
-        getAxiosJwtRequestOption(token)
-    );
-
-    return res.data;
-};

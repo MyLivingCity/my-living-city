@@ -181,8 +181,8 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
         }
 
     };
-    const [isTableView, setIsTableView] = useState(true);
-
+    // Set to false to only display Card View (Table View disabled)
+    const [isTableView, setIsTableView] = useState(false);
 
     return (
         <Container className='user-profile-content w-100'>

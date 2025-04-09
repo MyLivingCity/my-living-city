@@ -94,7 +94,9 @@
             // Send email verification
             sendEmailVerification(userExists)
             .catch((error) => console.log(error.message));
-            
+            //!!!
+            //!!!
+            //Should tell user there was an error.
             return done(null, false, { message: "User already exists. Please check your email for verification link."});
           }
           // --------------------------------------------

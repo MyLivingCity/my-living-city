@@ -157,7 +157,10 @@ schoolDetailsRouter.patch(
     '/updateCityNeighbourhood/:id',
     async (req, res) => {
         try {
-            if (req.body.neighbourhood === '') {
+            if (req.body.neighbourhood === '' || req.body.neighbourhood === null || req.body.neighbourhood === undefined) {
+                const city = await prisma.segments.findFirst({
+                    where: { name: { equals: req.body.city, mode: 'insensitive' } },
+                });
                 const result = await prisma.userSegments.update({
                     where: {
                         userId: req.params.id,
@@ -165,6 +168,8 @@ schoolDetailsRouter.patch(
                     data: {
                         schoolSubSegmentId: null,
                         schoolSubSegmentName: '',
+                        schoolSegmentId: city.segId,
+                        schoolSegmentName: city.name || "",
                     },
                 });
 
@@ -175,7 +180,6 @@ schoolDetailsRouter.patch(
 
                 return;
             }
-
             const city = await prisma.segments.findFirst({
                 where: { name: { equals: req.body.city, mode: 'insensitive' } },
             });

@@ -22,8 +22,8 @@ interface SegmentInfoProps {
     segments: ISegment[];
     edit: boolean;
     setEdit: (value: boolean) => void;
-    deleteFunction?: (user: string | undefined) => void;
-    updateFunction?: (user: string | undefined, data: any) => Promise<void>;
+    deleteFunction?: (user: string | undefined, segment: string | undefined) => void;
+    updateFunction?: (user: string | undefined, data: any, segment: string | undefined) => Promise<void>;
 }
 
 interface SegmentData {
@@ -95,7 +95,7 @@ export const SegmentInfo: React.FC<SegmentInfoProps> = ({
     const handleDelete = async () => {
         if (deleteFunction) {
             // TODO: Add confirmation modal (optional) and then delete 
-            deleteFunction(user.id);
+            deleteFunction(user.id, type);
             setEdit(!edit);
         }
         window.location.reload();
@@ -133,7 +133,8 @@ export const SegmentInfo: React.FC<SegmentInfoProps> = ({
     const [formCity, setFormCity] = useState<string>(segmentData.city);
     const [formNeighborhood, setFormNeighborhood] = useState<string>(segmentData.neighborhood);
 
-    // City input validation message
+    // City input validation mes
+    // ge
     const [firstNameMessage, setFirstNameMessage] = useState('');
     const [lastNameMessage, setLastNameMessage] = useState('');
     const [streetMessage, setStreetMessage] = useState('');
@@ -194,6 +195,7 @@ export const SegmentInfo: React.FC<SegmentInfoProps> = ({
     };
 
     const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        
         e.preventDefault();
         // Get form data
         const formData = new FormData(e.target as HTMLFormElement);
@@ -209,8 +211,12 @@ export const SegmentInfo: React.FC<SegmentInfoProps> = ({
         if (!data.displayFName || !data.displayLName || !data.streetAddress || !data.city || data.city === 'Not Selected' || !data.postalCode) {
             return;
         }
-
-        updateFunction && await updateFunction(user.id, data);
+        console.log('yikes\n\n\n\n\n -------------------------------------------------');
+        console.log('yikes\n\n\n\n\n -------------------------------------------------');
+        console.log('yikes\n\n\n\n\n -------------------------------------------------');
+        console.log('yikes\n\n\n\n\n -------------------------------------------------');
+        console.log('yikes\n\n\n\n\n -------------------------------------------------');
+        updateFunction && await updateFunction(user.id, data, type);
         // Reimplement this later
         // const newData = {
         //     displayFName: data.displayFName.toString(),
@@ -246,23 +252,26 @@ export const SegmentInfo: React.FC<SegmentInfoProps> = ({
                                         <Form.Control name='displayLName' type='text' placeholder='Last Name' defaultValue={capitalizeString(displayLName)} isInvalid={!!lastNameMessage}></Form.Control>
                                         <Form.Control.Feedback type='invalid'>{lastNameMessage}</Form.Control.Feedback>
                                     </Form.Group>
+
                                     <Form.Group controlId='street'>
                                         <Form.Label><strong>Street</strong></Form.Label>
                                         <Form.Control name='streetAddress' type='text' placeholder='Street' defaultValue={capitalizeString(street)} isInvalid={!!streetMessage}></Form.Control>
                                         <Form.Control.Feedback type='invalid'>{streetMessage}</Form.Control.Feedback>
                                     </Form.Group>
+
                                     <Form.Group controlId='city'>
                                         <Form.Label><strong>Municipality</strong>
                                             <Button
                                                 variant='info'
                                                 className='btn-sm'
                                                 style={{ marginLeft: '1rem' }}
-                                                onClick={handleShow}
+                                                onClick={handleSelectShow}
                                             > Change Municipality </Button>
                                         </Form.Label>
                                         <Form.Control name='city' type='text' placeholder='Not Selected' value={capitalizeString(formCity)} readOnly plaintext isInvalid={!!cityMessage}></Form.Control>
                                         <Form.Control.Feedback type='invalid'>{cityMessage}</Form.Control.Feedback>
                                     </Form.Group>
+
                                     <Form.Group controlId='postalCode'>
                                         <Form.Label><strong>Postal Code / Zip</strong></Form.Label>
                                         <Form.Control name='postalCode' type='text' placeholder='Postal Code / Zip' defaultValue={capitalizeString(postalCode)} isInvalid={!!postalCodeMessage}></Form.Control>

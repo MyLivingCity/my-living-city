@@ -13,11 +13,9 @@ import React, { useEffect, useState } from 'react';
 import { useCheckFlagBan } from 'src/hooks/flagHooks';
 import { capitalizeFirstLetterEachWord, capitalizeString, getUserHandle } from '../../../lib/utilityFunctions';
 // Added May 31
-import { FaRegThumbsUp } from 'react-icons/fa';
 import { IUser } from 'src/lib/types/data/user.type';
 import { USER_TYPES } from 'src/lib/constants';
 import { IAddress } from 'src/lib/types/data/address.type';
-import { IUserSegment } from 'src/lib/types/data/segment.type';
 
 interface IdeaCommentTileProps {
     commentData: IComment;
@@ -116,7 +114,13 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
         } as any;
         const userName = getUserHandle(subSegmentId, segmentId, superSegmentId, author);
 
-        return (<span className={`name d-block ${colour} !important`} style={{ fontSize: '70%' }}>{userName}</span>);
+        // Display the comment author as well as their user type
+        return (
+            <span className={`name d-block ${colour} !important`} style={{ fontSize: '70%' }}>
+                {userName} - {parseUserType(userSegments)}
+            </span>
+        );
+        
     };
 
     // const flagFunc = async(ideaId: number, token: string, userId: string, ideaActive: boolean, reason: string, quarantined_at: Date) => {
@@ -154,6 +158,20 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
         await createCommentFlagAndCheckThreshold(id, token!, user!.id, otherFlagReason, new Date());
 
     };
+
+    // Change default user types into user title descriptors
+    const parseUserType = (userSegments: any) => {
+        // console.log('>>>');
+        // console.log(userSegments?.homeSegmentId, workSegmentId, schoolSegmentId,
+        //     homeSubSegmentId, workSubSegmentId, schoolSubSegmentId,
+        //     homeSuperSegmentId, workSuperSegmentId, schoolSuperSegmentId);
+        // console.log('<<<');
+        if (userSegments?.homeSegmentId) return 'Resident';
+        if (userSegments?.schoolSegmentId) return 'Student';
+        if (userSegments?.workSegmentId) return 'Worker';
+        return 'Unknown';
+    };
+    
 
     useEffect(() => {
         if (!flagBanDataLoading) {

@@ -166,8 +166,8 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
     const [segments, setSegments] = useState<any[]>([]);
     const [subSegments, setSubSegments] = useState<any[]>([]);
     const [editPersonalInfo, setEditPersonalInfo] = useState(false);
-    const [showWorkSegment, setShowWorkSegment] = useState(!!userSegments?.workSegmentName);
-    const [showSchoolSegment, setShowSchoolSegment] = useState(!!userSegments?.schoolSegmentName);
+    const [showWorkSegment, setShowWorkSegment] = useState(!!userSegments?.workSegHandle);
+    const [showSchoolSegment, setShowSchoolSegment] = useState(!!userSegments?.schoolSegHandle);
     const [editHomeSegment, setEditHomeSegment] = useState(false);
     const [editWorkSegment, setEditWorkSegment] = useState(false);
     const [editSchoolSegment, setEditSchoolSegment] = useState(false);
@@ -460,7 +460,6 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                             </>
                         )}
                     </Card>
-
                     <Card style={{ width: '40rem' }}>
                         <Row className='justify-content-center mt-3'>
                             <ListGroup variant='flush' className=''>

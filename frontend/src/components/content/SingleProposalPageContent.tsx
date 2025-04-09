@@ -840,6 +840,10 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                 </Row>
             </Card>
 
+            {endorsedUsers && endorsedUsers.length > 0 &&
+                <EndorsedUsersSection endorsedUsers={endorsedUsers} />
+            }
+
             {needCollaborators && (
                 <div style={{ marginTop: '2rem' }}>
                     <Card>
@@ -1465,10 +1469,6 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                     </Card>
                 </div>
             )}
-
-            {endorsedUsers && endorsedUsers.length > 0 &&
-                <EndorsedUsersSection endorsedUsers={endorsedUsers} />
-            }
 
             <Row>
                 <RatingsSection ideaId={ideaId} allRatingsUnderIdea={allRatingsUnderIdea} commentAggregateUnderIdea={commentAggregateUnderIdea} />

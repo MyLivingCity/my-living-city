@@ -56,7 +56,7 @@ INSERT INTO public."user" VALUES ('cm69jv70g0000uiap1cw35gty', 'RESIDENTIAL', 'r
 
 -- Insert Super Segments FIRST
 WITH super_segments AS (
-    INSERT INTO public.segments (country, province, segment_name, created_at, update_at, lat, lon, "parentId", radius, "segmentType")
+    INSERT INTO public.segment (country, province, segment_name, created_at, update_at, lat, lon, "parentId", radius, "segmentType")
     VALUES
         ('Canada', 'British Columbia', 'CRD', NOW(), NOW(), NULL, NULL, NULL, NULL, 'superSegment'::"SegmentType"),
         ('Canada', 'British Columbia', 'Middle-Earth', NOW(), NOW(), NULL, NULL, NULL, NULL, 'superSegment'::"SegmentType"),
@@ -67,59 +67,59 @@ SELECT * FROM super_segments;
 
 -- Insert Segments NEXT, referencing Super Segment IDs
 WITH segments AS (
-    INSERT INTO public.segments (country, province, segment_name, created_at, update_at, lat, lon, "parentId", radius, "segmentType")
+    INSERT INTO public.segment (country, province, segment_name, created_at, update_at, lat, lon, "parentId", radius, "segmentType")
     VALUES
         ('Canada', 'British Columbia', 'Saanich', NOW(), NOW(), NULL, NULL, 
-         (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'), NULL, 'segment'::"SegmentType"),
+         (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'), NULL, 'segment'::"SegmentType"),
         ('Canada', 'British Columbia', 'Oak Bay', NOW(), NOW(), NULL, NULL, 
-         (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'), NULL, 'segment'::"SegmentType"),
+         (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'), NULL, 'segment'::"SegmentType"),
         ('Canada', 'British Columbia', 'Langford', NOW(), NOW(), NULL, NULL, 
-         (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'), NULL, 'segment'::"SegmentType"),
+         (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'), NULL, 'segment'::"SegmentType"),
         ('Canada', 'British Columbia', 'Victoria', NOW(), NOW(), NULL, NULL, 
-         (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'), NULL, 'segment'::"SegmentType"),
+         (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'), NULL, 'segment'::"SegmentType"),
         ('Canada', 'British Columbia', 'Esquimalt', NOW(), NOW(), NULL, NULL, 
-         (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'), NULL, 'segment'::"SegmentType"),
+         (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'), NULL, 'segment'::"SegmentType"),
         ('Canada', 'British Columbia', 'Mordor', NOW(), NOW(), NULL, NULL, 
-         (SELECT seg_id FROM public.segments WHERE segment_name = 'Middle-Earth'), NULL, 'segment'::"SegmentType"),
+         (SELECT seg_id FROM public.segment WHERE segment_name = 'Middle-Earth'), NULL, 'segment'::"SegmentType"),
         ('Canada', 'British Columbia', 'Gondor', NOW(), NOW(), NULL, NULL, 
-         (SELECT seg_id FROM public.segments WHERE segment_name = 'Middle-Earth'), NULL, 'segment'::"SegmentType"),
+         (SELECT seg_id FROM public.segment WHERE segment_name = 'Middle-Earth'), NULL, 'segment'::"SegmentType"),
         ('Canada', 'British Columbia', 'Minas Tirith', NOW(), NOW(), NULL, NULL, 
-         (SELECT seg_id FROM public.segments WHERE segment_name = 'Middle-Earth'), NULL, 'segment'::"SegmentType")
+         (SELECT seg_id FROM public.segment WHERE segment_name = 'Middle-Earth'), NULL, 'segment'::"SegmentType")
     RETURNING seg_id, segment_name
 )
 SELECT * FROM segments; 
 
 -- Insert SubSegments LAST, referencing the correct Segment IDs
-INSERT INTO public.segments (country, province, segment_name, created_at, update_at, lat, lon, "parentId", radius, "segmentType")
+INSERT INTO public.segment (country, province, segment_name, created_at, update_at, lat, lon, "parentId", radius, "segmentType")
 VALUES
     ('Canada', 'British Columbia', 'Uptown', NOW(), NOW(), 2.1, 2.1, 
-     (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'), 5.0, 'subSegment'::"SegmentType"),
+     (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'), 5.0, 'subSegment'::"SegmentType"),
     ('Canada', 'British Columbia', 'Esquimalt Village', NOW(), NOW(), 4.1, 4.1, 
-     (SELECT seg_id FROM public.segments WHERE segment_name = 'Esquimalt'), 5.0, 'subSegment'::"SegmentType"),
+     (SELECT seg_id FROM public.segment WHERE segment_name = 'Esquimalt'), 5.0, 'subSegment'::"SegmentType"),
     ('Canada', 'British Columbia', 'Westbay Village', NOW(), NOW(), 4.2, 4.2, 
-     (SELECT seg_id FROM public.segments WHERE segment_name = 'Esquimalt'), 5.0, 'subSegment'::"SegmentType"),
+     (SELECT seg_id FROM public.segment WHERE segment_name = 'Esquimalt'), 5.0, 'subSegment'::"SegmentType"),
     ('Canada', 'British Columbia', 'Goldstream Station', NOW(), NOW(), 4.1, 4.1, 
-     (SELECT seg_id FROM public.segments WHERE segment_name = 'Langford'), 5.0, 'subSegment'::"SegmentType"),
+     (SELECT seg_id FROM public.segment WHERE segment_name = 'Langford'), 5.0, 'subSegment'::"SegmentType"),
     ('Canada', 'British Columbia', 'UVIC', NOW(), NOW(), 2.2, 2.2, 
-     (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'), 5.0, 'subSegment'::"SegmentType"),
+     (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'), 5.0, 'subSegment'::"SegmentType"),
     ('Canada', 'British Columbia', 'Cadboro Bay', NOW(), NOW(), 3.1, 3.1, 
-     (SELECT seg_id FROM public.segments WHERE segment_name = 'Oak Bay'), 5.0, 'subSegment'::"SegmentType"),
+     (SELECT seg_id FROM public.segment WHERE segment_name = 'Oak Bay'), 5.0, 'subSegment'::"SegmentType"),
     ('Canada', 'British Columbia', 'Riverside', NOW(), NOW(), 2.3, 2.3, 
-     (SELECT seg_id FROM public.segments WHERE segment_name = 'Minas Tirith'), 5.0, 'subSegment'::"SegmentType"),
+     (SELECT seg_id FROM public.segment WHERE segment_name = 'Minas Tirith'), 5.0, 'subSegment'::"SegmentType"),
     ('Canada', 'British Columbia', 'Fairfield', NOW(), NOW(), 1.0, 1.0, 
-     (SELECT seg_id FROM public.segments WHERE segment_name = 'Victoria'), 1.0, 'subSegment'::"SegmentType"),
+     (SELECT seg_id FROM public.segment WHERE segment_name = 'Victoria'), 1.0, 'subSegment'::"SegmentType"),
     ('Canada', 'British Columbia', 'Downtown', NOW(), NOW(), 2.0, 2.0, 
-     (SELECT seg_id FROM public.segments WHERE segment_name = 'Victoria'), 2.0, 'subSegment'::"SegmentType"),
+     (SELECT seg_id FROM public.segment WHERE segment_name = 'Victoria'), 2.0, 'subSegment'::"SegmentType"),
     ('Canada', 'British Columbia', 'Doomview', NOW(), NOW(), 1.3, 1.3, 
-     (SELECT seg_id FROM public.segments WHERE segment_name = 'Mordor'), 5.0, 'subSegment'::"SegmentType"),
+     (SELECT seg_id FROM public.segment WHERE segment_name = 'Mordor'), 5.0, 'subSegment'::"SegmentType"),
     ('Canada', 'British Columbia', 'Whitewall', NOW(), NOW(), 1.1, 1.2, 
-     (SELECT seg_id FROM public.segments WHERE segment_name = 'Gondor'), 5.0, 'subSegment'::"SegmentType"),
+     (SELECT seg_id FROM public.segment WHERE segment_name = 'Gondor'), 5.0, 'subSegment'::"SegmentType"),
     ('Canada', 'British Columbia', 'Orcburg', NOW(), NOW(), 1.4, 1.4, 
-     (SELECT seg_id FROM public.segments WHERE segment_name = 'Mordor'), 5.0, 'subSegment'::"SegmentType"),
+     (SELECT seg_id FROM public.segment WHERE segment_name = 'Mordor'), 5.0, 'subSegment'::"SegmentType"),
     ('Canada', 'British Columbia', 'Camosun Interurban', NOW(), NOW(), 2.3, 2.3, 
-     (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'), 5.0, 'subSegment'::"SegmentType"),
+     (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'), 5.0, 'subSegment'::"SegmentType"),
     ('Canada', 'British Columbia', 'NastyVale', NOW(), NOW(), 1.5, 1.5, 
-     (SELECT seg_id FROM public.segments WHERE segment_name = 'Mordor'), 5.0, 'subSegment'::"SegmentType");
+     (SELECT seg_id FROM public.segment WHERE segment_name = 'Mordor'), 5.0, 'subSegment'::"SegmentType");
 
 -- TOC entry 3527 (class 0 OID 362036)
 -- Dependencies: 211
@@ -189,228 +189,228 @@ INSERT INTO public."FeedbackRating" VALUES (28, 7, 'cm4ha0tva001ol806sqh2vuqa', 
 --
 -- UUID version, requires unique insertions, keeping it here in case we need it for some reason
 /*
-INSERT INTO public."user_segments" VALUES ('cm4hc2ydv002el806pdnku91l', 'cm4hc2ydu002al806akxtnrsl', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES ('cm4hc2ydv002el806pdnku91l', 'cm4hc2ydu002al806akxtnrsl', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Victoria'));
-INSERT INTO public."user_segments" VALUES ('cm4hc2ydv002el806pdnku91l', 'cm4hc2ydu002al806akxtnrsl', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Downtown'));
-INSERT INTO public."user_segments" VALUES ('cm4hkq0vv002ol806c4ksv5hf', 'cm4hkq0vv002kl806nfnhhvjf', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES ('cm4hkq0vv002ol806c4ksv5hf', 'cm4hkq0vv002kl806nfnhhvjf', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Victoria'));
-INSERT INTO public."user_segments" VALUES ('cm4hkq0vv002ol806c4ksv5hf', 'cm4hkq0vv002kl806nfnhhvjf', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Downtown'));
-INSERT INTO public."user_segments" VALUES ('cm4hkq0vv002ol806c4ksv5hf', 'cm4hkq0vv002kl806nfnhhvjf', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES ('cm4hkq0vv002ol806c4ksv5hf', 'cm4hkq0vv002kl806nfnhhvjf', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public."user_segments" VALUES ('cm4hkq0vv002ol806c4ksv5hf', 'cm4hkq0vv002kl806nfnhhvjf', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'UVIC'));
-INSERT INTO public."user_segments" VALUES ('cm65wo2830078l8064ejcs76d', 'cm65wo2820074l8069221ul8j', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES ('cm65wo2830078l8064ejcs76d', 'cm65wo2820074l8069221ul8j', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Victoria'));
-INSERT INTO public."user_segments" VALUES ('cm65wo2830078l8064ejcs76d', 'cm65wo2820074l8069221ul8j', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Fairfield'));
-INSERT INTO public."user_segments" VALUES ('cm65wo2830078l8064ejcs76d', 'cm65wo2820074l8069221ul8j', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES ('cm65wo2830078l8064ejcs76d', 'cm65wo2820074l8069221ul8j', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Victoria'));
-INSERT INTO public."user_segments" VALUES ('cm65wo2830078l8064ejcs76d', 'cm65wo2820074l8069221ul8j', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES ('cm65wo2830078l8064ejcs76d', 'cm65wo2820074l8069221ul8j', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public."user_segments" VALUES ('cm65wo2830078l8064ejcs76d', 'cm65wo2820074l8069221ul8j', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'UVIC'));
-INSERT INTO public."user_segments" VALUES ('cm65vicne006yl8060ruitrbx', 'cm65vicnd006ul806fahzfmhr', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES ('cm65vicne006yl8060ruitrbx', 'cm65vicnd006ul806fahzfmhr', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public."user_segments" VALUES ('cm65vicne006yl8060ruitrbx', 'cm65vicnd006ul806fahzfmhr', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Uptown'));
-INSERT INTO public."user_segments" VALUES ('cm65vicne006yl8060ruitrbx', 'cm65vicnd006ul806fahzfmhr', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES ('cm65vicne006yl8060ruitrbx', 'cm65vicnd006ul806fahzfmhr', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public."user_segments" VALUES ('cm65vicne006yl8060ruitrbx', 'cm65vicnd006ul806fahzfmhr', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'UVIC'));
-INSERT INTO public."user_segments" VALUES ('cm65xdjtp007il806noc031z5', 'cm65xdjtp007el806j5gwno25', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES ('cm65xdjtp007il806noc031z5', 'cm65xdjtp007el806j5gwno25', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Victoria'));
-INSERT INTO public."user_segments" VALUES ('cm4huzceb004cl8064qob3rkb', 'cm4huzcea0048l806ll0dhddx', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES ('cm4huzceb004cl8064qob3rkb', 'cm4huzcea0048l806ll0dhddx', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Victoria'));
-INSERT INTO public."user_segments" VALUES ('cm4huzceb004cl8064qob3rkb', 'cm4huzcea0048l806ll0dhddx', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Downtown'));
-INSERT INTO public."user_segments" VALUES ('cm4huzceb004cl8064qob3rkb', 'cm4huzcea0048l806ll0dhddx', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES ('cm4huzceb004cl8064qob3rkb', 'cm4huzcea0048l806ll0dhddx', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public."user_segments" VALUES ('cm4huzceb004cl8064qob3rkb', 'cm4huzcea0048l806ll0dhddx', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Uptown'));
-INSERT INTO public."user_segments" VALUES ('cm4huzceb004cl8064qob3rkb', 'cm4huzcea0048l806ll0dhddx', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES ('cm4huzceb004cl8064qob3rkb', 'cm4huzcea0048l806ll0dhddx', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public."user_segments" VALUES ('cm4huzceb004cl8064qob3rkb', 'cm4huzcea0048l806ll0dhddx', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Camosun Interurban'));
-INSERT INTO public."user_segments" VALUES ('cm4humetf0042l806eckeomjd', 'cm4humete003yl806ffzxb4o9', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES ('cm4humetf0042l806eckeomjd', 'cm4humete003yl806ffzxb4o9', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Victoria'));
-INSERT INTO public."user_segments" VALUES ('cm4humetf0042l806eckeomjd', 'cm4humete003yl806ffzxb4o9', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Downtown'));
-INSERT INTO public."user_segments" VALUES ('cm4humetf0042l806eckeomjd', 'cm4humete003yl806ffzxb4o9', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES ('cm4humetf0042l806eckeomjd', 'cm4humete003yl806ffzxb4o9', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public."user_segments" VALUES ('cm4humetf0042l806eckeomjd', 'cm4humete003yl806ffzxb4o9', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Uptown'));
-INSERT INTO public."user_segments" VALUES ('cm4humetf0042l806eckeomjd', 'cm4humete003yl806ffzxb4o9', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES ('cm4humetf0042l806eckeomjd', 'cm4humete003yl806ffzxb4o9', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public."user_segments" VALUES ('cm4humetf0042l806eckeomjd', 'cm4humete003yl806ffzxb4o9', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Camosun Interurban'));
-INSERT INTO public."user_segments" VALUES ('cm4hvkcbs004ml806ycb9zdj0', 'cm4hvkcbs004il806bzksqj0p', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES ('cm4hvkcbs004ml806ycb9zdj0', 'cm4hvkcbs004il806bzksqj0p', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public."user_segments" VALUES ('cm4hvkcbs004ml806ycb9zdj0', 'cm4hvkcbs004il806bzksqj0p', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'UVIC'));
-INSERT INTO public."user_segments" VALUES ('cm4i18z9g0058l806jsl44118', 'cm4i18z9g0054l806g4ujmesy', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES ('cm4i18z9g0058l806jsl44118', 'cm4i18z9g0054l806g4ujmesy', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public."user_segments" VALUES ('cm4i1b7fs005il80684z6l7n3', 'cm4i1b7fs005el806o3jhmt23', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES ('cm4i1b7fs005il80684z6l7n3', 'cm4i1b7fs005el806o3jhmt23', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Victoria'));
-INSERT INTO public."user_segments" VALUES ('cm4i1dj6h005sl806fyeoagjp', 'cm4i1dj6h005ol806wnw7vryk', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES ('cm4i1dj6h005sl806fyeoagjp', 'cm4i1dj6h005ol806wnw7vryk', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Esquimalt'));
-INSERT INTO public."user_segments" VALUES ('cm4i1f5jr0062l806wa4cxlw6', 'cm4i1f5jr005yl806cjc5jwc6', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES ('cm4i1f5jr0062l806wa4cxlw6', 'cm4i1f5jr005yl806cjc5jwc6', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Langford'));
-INSERT INTO public."user_segments" VALUES ('cm4hlbbxo002yl8063xc6r0p8', 'cm4hlbbxo002ul8069lvnnj73', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES ('cm4hlbbxo002yl8063xc6r0p8', 'cm4hlbbxo002ul8069lvnnj73', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Victoria'));
-INSERT INTO public."user_segments" VALUES ('cm4hlbbxo002yl8063xc6r0p8', 'cm4hlbbxo002ul8069lvnnj73', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Fairfield'));
-INSERT INTO public."user_segments" VALUES ('cm4hlbbxo002yl8063xc6r0p8', 'cm4hlbbxo002ul8069lvnnj73', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES ('cm4hlbbxo002yl8063xc6r0p8', 'cm4hlbbxo002ul8069lvnnj73', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public."user_segments" VALUES ('cm4hlbbxo002yl8063xc6r0p8', 'cm4hlbbxo002ul8069lvnnj73', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'UVIC'));
-INSERT INTO public."user_segments" VALUES ('cm65xh81e007sl8069earjwca', 'cm65xh81d007ol8062w3m2vnl', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES ('cm65xh81e007sl8069earjwca', 'cm65xh81d007ol8062w3m2vnl', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Victoria'));
-INSERT INTO public."user_segments" VALUES ('cm4huch4e003sl8065f2wky34', 'cm4huch4e003ol806sp63ltf0', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES ('cm4huch4e003sl8065f2wky34', 'cm4huch4e003ol806sp63ltf0', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public."user_segments" VALUES ('cm4huch4e003sl8065f2wky34', 'cm4huch4e003ol806sp63ltf0', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES ('cm4huch4e003sl8065f2wky34', 'cm4huch4e003ol806sp63ltf0', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public."user_segments" VALUES ('cm4huch4e003sl8065f2wky34', 'cm4huch4e003ol806sp63ltf0', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'UVIC'));
-INSERT INTO public."user_segments" VALUES ('cm4hpmava0038l806u1sk42o8', 'cm4hpmava0034l806d9nf2lzz', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES ('cm4hpmava0038l806u1sk42o8', 'cm4hpmava0034l806d9nf2lzz', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Esquimalt'));
-INSERT INTO public."user_segments" VALUES ('cm4hpmava0038l806u1sk42o8', 'cm4hpmava0034l806d9nf2lzz', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Esquimalt Village'));
-INSERT INTO public."user_segments" VALUES ('cm4hpmava0038l806u1sk42o8', 'cm4hpmava0034l806d9nf2lzz', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES ('cm4hpmava0038l806u1sk42o8', 'cm4hpmava0034l806d9nf2lzz', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public."user_segments" VALUES ('cm4hpmava0038l806u1sk42o8', 'cm4hpmava0034l806d9nf2lzz', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Uptown'));
-INSERT INTO public."user_segments" VALUES ('cm4hpmava0038l806u1sk42o8', 'cm4hpmava0034l806d9nf2lzz', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES ('cm4hpmava0038l806u1sk42o8', 'cm4hpmava0034l806d9nf2lzz', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public."user_segments" VALUES ('cm4hpmava0038l806u1sk42o8', 'cm4hpmava0034l806d9nf2lzz', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'UVIC'));
-INSERT INTO public."user_segments" VALUES ('cm4htz9hi003il806z7klcadx', 'cm4htz9hh003el806oat8fnet', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES ('cm4htz9hi003il806z7klcadx', 'cm4htz9hh003el806oat8fnet', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Esquimalt'));
-INSERT INTO public."user_segments" VALUES ('cm4htz9hi003il806z7klcadx', 'cm4htz9hh003el806oat8fnet', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Westbay Village'));
-INSERT INTO public."user_segments" VALUES ('cm4htz9hi003il806z7klcadx', 'cm4htz9hh003el806oat8fnet', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES ('cm4htz9hi003il806z7klcadx', 'cm4htz9hh003el806oat8fnet', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public."user_segments" VALUES ('cm4htz9hi003il806z7klcadx', 'cm4htz9hh003el806oat8fnet', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Uptown'));
-INSERT INTO public."user_segments" VALUES ('cm4htz9hi003il806z7klcadx', 'cm4htz9hh003el806oat8fnet', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES ('cm4htz9hi003il806z7klcadx', 'cm4htz9hh003el806oat8fnet', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public."user_segments" VALUES ('cm4htz9hi003il806z7klcadx', 'cm4htz9hh003el806oat8fnet', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Camosun Interurban'));
-INSERT INTO public."user_segments" VALUES ('cm605kwu4006cl806226h4jol', 'cm605kwu40068l806uyzrpx52', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES ('cm605kwu4006cl806226h4jol', 'cm605kwu40068l806uyzrpx52', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public."user_segments" VALUES ('cm605kwu4006cl806226h4jol', 'cm605kwu40068l806uyzrpx52', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Uptown'));
-INSERT INTO public."user_segments" VALUES ('cm69jv70i0004uiapjcyfoaxs', 'cm69jv70g0000uiap1cw35gty', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES ('cm69jv70i0004uiapjcyfoaxs', 'cm69jv70g0000uiap1cw35gty', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public."user_segments" VALUES ('cm69jv70i0004uiapjcyfoaxs', 'cm69jv70g0000uiap1cw35gty', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES ('cm69jv70i0004uiapjcyfoaxs', 'cm69jv70g0000uiap1cw35gty', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public."user_segments" VALUES ('cm6eqv1ij0004lg06twpxdfjy', 'cm6eqv1ii0000lg06bw4zice6', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES ('cm6eqv1ij0004lg06twpxdfjy', 'cm6eqv1ii0000lg06bw4zice6', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Oak Bay'));
-INSERT INTO public."user_segments" VALUES ('cm6eqv1ij0004lg06twpxdfjy', 'cm6eqv1ii0000lg06bw4zice6', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Cadboro Bay'));
-INSERT INTO public."user_segments" VALUES ('cm6forp100004uiofkl14fwyi', 'cm6forp0y0000uiofp5k5l1qg', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES ('cm6forp100004uiofkl14fwyi', 'cm6forp0y0000uiofp5k5l1qg', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public."user_segments" VALUES ('cm6v18qri000elg06x9acdvxc', 'cm6v18qri000alg06awi67bsh', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES ('cm6v18qri000elg06x9acdvxc', 'cm6v18qri000alg06awi67bsh', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Victoria'));
-INSERT INTO public."user_segments" VALUES ('cm6v18qri000elg06x9acdvxc', 'cm6v18qri000alg06awi67bsh', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Downtown'));
-INSERT INTO public."user_segments" VALUES ('cm4h9p4k2001il806vexkgos0', 'cm4h9p4k1001el8067oolrsbb', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES ('cm4h9p4k2001il806vexkgos0', 'cm4h9p4k1001el8067oolrsbb', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Esquimalt'));
-INSERT INTO public."user_segments" VALUES ('cm4h9p4k2001il806vexkgos0', 'cm4h9p4k1001el8067oolrsbb', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Esquimalt Village'));
-INSERT INTO public."user_segments" VALUES ('cm4h9p4k2001il806vexkgos0', 'cm4h9p4k1001el8067oolrsbb', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES ('cm4h9p4k2001il806vexkgos0', 'cm4h9p4k1001el8067oolrsbb', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Langford'));
-INSERT INTO public."user_segments" VALUES ('cm4h9p4k2001il806vexkgos0', 'cm4h9p4k1001el8067oolrsbb', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Goldstream Station'));
-INSERT INTO public."user_segments" VALUES ('cm4ha0tva001sl806e9euqgw7', 'cm4ha0tva001ol806sqh2vuqa', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES ('cm4ha0tva001sl806e9euqgw7', 'cm4ha0tva001ol806sqh2vuqa', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Victoria'));
-INSERT INTO public."user_segments" VALUES ('cm4ha0tva001sl806e9euqgw7', 'cm4ha0tva001ol806sqh2vuqa', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Downtown'));
+INSERT INTO public."UserSegments" VALUES ('cm4hc2ydv002el806pdnku91l', 'cm4hc2ydu002al806akxtnrsl', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES ('cm4hc2ydv002el806pdnku91l', 'cm4hc2ydu002al806akxtnrsl', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Victoria'));
+INSERT INTO public."UserSegments" VALUES ('cm4hc2ydv002el806pdnku91l', 'cm4hc2ydu002al806akxtnrsl', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Downtown'));
+INSERT INTO public."UserSegments" VALUES ('cm4hkq0vv002ol806c4ksv5hf', 'cm4hkq0vv002kl806nfnhhvjf', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES ('cm4hkq0vv002ol806c4ksv5hf', 'cm4hkq0vv002kl806nfnhhvjf', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Victoria'));
+INSERT INTO public."UserSegments" VALUES ('cm4hkq0vv002ol806c4ksv5hf', 'cm4hkq0vv002kl806nfnhhvjf', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Downtown'));
+INSERT INTO public."UserSegments" VALUES ('cm4hkq0vv002ol806c4ksv5hf', 'cm4hkq0vv002kl806nfnhhvjf', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES ('cm4hkq0vv002ol806c4ksv5hf', 'cm4hkq0vv002kl806nfnhhvjf', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public."UserSegments" VALUES ('cm4hkq0vv002ol806c4ksv5hf', 'cm4hkq0vv002kl806nfnhhvjf', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'UVIC'));
+INSERT INTO public."UserSegments" VALUES ('cm65wo2830078l8064ejcs76d', 'cm65wo2820074l8069221ul8j', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES ('cm65wo2830078l8064ejcs76d', 'cm65wo2820074l8069221ul8j', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Victoria'));
+INSERT INTO public."UserSegments" VALUES ('cm65wo2830078l8064ejcs76d', 'cm65wo2820074l8069221ul8j', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Fairfield'));
+INSERT INTO public."UserSegments" VALUES ('cm65wo2830078l8064ejcs76d', 'cm65wo2820074l8069221ul8j', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES ('cm65wo2830078l8064ejcs76d', 'cm65wo2820074l8069221ul8j', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Victoria'));
+INSERT INTO public."UserSegments" VALUES ('cm65wo2830078l8064ejcs76d', 'cm65wo2820074l8069221ul8j', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES ('cm65wo2830078l8064ejcs76d', 'cm65wo2820074l8069221ul8j', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public."UserSegments" VALUES ('cm65wo2830078l8064ejcs76d', 'cm65wo2820074l8069221ul8j', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'UVIC'));
+INSERT INTO public."UserSegments" VALUES ('cm65vicne006yl8060ruitrbx', 'cm65vicnd006ul806fahzfmhr', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES ('cm65vicne006yl8060ruitrbx', 'cm65vicnd006ul806fahzfmhr', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public."UserSegments" VALUES ('cm65vicne006yl8060ruitrbx', 'cm65vicnd006ul806fahzfmhr', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Uptown'));
+INSERT INTO public."UserSegments" VALUES ('cm65vicne006yl8060ruitrbx', 'cm65vicnd006ul806fahzfmhr', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES ('cm65vicne006yl8060ruitrbx', 'cm65vicnd006ul806fahzfmhr', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public."UserSegments" VALUES ('cm65vicne006yl8060ruitrbx', 'cm65vicnd006ul806fahzfmhr', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'UVIC'));
+INSERT INTO public."UserSegments" VALUES ('cm65xdjtp007il806noc031z5', 'cm65xdjtp007el806j5gwno25', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES ('cm65xdjtp007il806noc031z5', 'cm65xdjtp007el806j5gwno25', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Victoria'));
+INSERT INTO public."UserSegments" VALUES ('cm4huzceb004cl8064qob3rkb', 'cm4huzcea0048l806ll0dhddx', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES ('cm4huzceb004cl8064qob3rkb', 'cm4huzcea0048l806ll0dhddx', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Victoria'));
+INSERT INTO public."UserSegments" VALUES ('cm4huzceb004cl8064qob3rkb', 'cm4huzcea0048l806ll0dhddx', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Downtown'));
+INSERT INTO public."UserSegments" VALUES ('cm4huzceb004cl8064qob3rkb', 'cm4huzcea0048l806ll0dhddx', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES ('cm4huzceb004cl8064qob3rkb', 'cm4huzcea0048l806ll0dhddx', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public."UserSegments" VALUES ('cm4huzceb004cl8064qob3rkb', 'cm4huzcea0048l806ll0dhddx', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Uptown'));
+INSERT INTO public."UserSegments" VALUES ('cm4huzceb004cl8064qob3rkb', 'cm4huzcea0048l806ll0dhddx', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES ('cm4huzceb004cl8064qob3rkb', 'cm4huzcea0048l806ll0dhddx', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public."UserSegments" VALUES ('cm4huzceb004cl8064qob3rkb', 'cm4huzcea0048l806ll0dhddx', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Camosun Interurban'));
+INSERT INTO public."UserSegments" VALUES ('cm4humetf0042l806eckeomjd', 'cm4humete003yl806ffzxb4o9', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES ('cm4humetf0042l806eckeomjd', 'cm4humete003yl806ffzxb4o9', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Victoria'));
+INSERT INTO public."UserSegments" VALUES ('cm4humetf0042l806eckeomjd', 'cm4humete003yl806ffzxb4o9', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Downtown'));
+INSERT INTO public."UserSegments" VALUES ('cm4humetf0042l806eckeomjd', 'cm4humete003yl806ffzxb4o9', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES ('cm4humetf0042l806eckeomjd', 'cm4humete003yl806ffzxb4o9', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public."UserSegments" VALUES ('cm4humetf0042l806eckeomjd', 'cm4humete003yl806ffzxb4o9', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Uptown'));
+INSERT INTO public."UserSegments" VALUES ('cm4humetf0042l806eckeomjd', 'cm4humete003yl806ffzxb4o9', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES ('cm4humetf0042l806eckeomjd', 'cm4humete003yl806ffzxb4o9', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public."UserSegments" VALUES ('cm4humetf0042l806eckeomjd', 'cm4humete003yl806ffzxb4o9', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Camosun Interurban'));
+INSERT INTO public."UserSegments" VALUES ('cm4hvkcbs004ml806ycb9zdj0', 'cm4hvkcbs004il806bzksqj0p', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES ('cm4hvkcbs004ml806ycb9zdj0', 'cm4hvkcbs004il806bzksqj0p', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public."UserSegments" VALUES ('cm4hvkcbs004ml806ycb9zdj0', 'cm4hvkcbs004il806bzksqj0p', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'UVIC'));
+INSERT INTO public."UserSegments" VALUES ('cm4i18z9g0058l806jsl44118', 'cm4i18z9g0054l806g4ujmesy', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES ('cm4i18z9g0058l806jsl44118', 'cm4i18z9g0054l806g4ujmesy', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public."UserSegments" VALUES ('cm4i1b7fs005il80684z6l7n3', 'cm4i1b7fs005el806o3jhmt23', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES ('cm4i1b7fs005il80684z6l7n3', 'cm4i1b7fs005el806o3jhmt23', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Victoria'));
+INSERT INTO public."UserSegments" VALUES ('cm4i1dj6h005sl806fyeoagjp', 'cm4i1dj6h005ol806wnw7vryk', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES ('cm4i1dj6h005sl806fyeoagjp', 'cm4i1dj6h005ol806wnw7vryk', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Esquimalt'));
+INSERT INTO public."UserSegments" VALUES ('cm4i1f5jr0062l806wa4cxlw6', 'cm4i1f5jr005yl806cjc5jwc6', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES ('cm4i1f5jr0062l806wa4cxlw6', 'cm4i1f5jr005yl806cjc5jwc6', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Langford'));
+INSERT INTO public."UserSegments" VALUES ('cm4hlbbxo002yl8063xc6r0p8', 'cm4hlbbxo002ul8069lvnnj73', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES ('cm4hlbbxo002yl8063xc6r0p8', 'cm4hlbbxo002ul8069lvnnj73', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Victoria'));
+INSERT INTO public."UserSegments" VALUES ('cm4hlbbxo002yl8063xc6r0p8', 'cm4hlbbxo002ul8069lvnnj73', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Fairfield'));
+INSERT INTO public."UserSegments" VALUES ('cm4hlbbxo002yl8063xc6r0p8', 'cm4hlbbxo002ul8069lvnnj73', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES ('cm4hlbbxo002yl8063xc6r0p8', 'cm4hlbbxo002ul8069lvnnj73', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public."UserSegments" VALUES ('cm4hlbbxo002yl8063xc6r0p8', 'cm4hlbbxo002ul8069lvnnj73', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'UVIC'));
+INSERT INTO public."UserSegments" VALUES ('cm65xh81e007sl8069earjwca', 'cm65xh81d007ol8062w3m2vnl', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES ('cm65xh81e007sl8069earjwca', 'cm65xh81d007ol8062w3m2vnl', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Victoria'));
+INSERT INTO public."UserSegments" VALUES ('cm4huch4e003sl8065f2wky34', 'cm4huch4e003ol806sp63ltf0', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES ('cm4huch4e003sl8065f2wky34', 'cm4huch4e003ol806sp63ltf0', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public."UserSegments" VALUES ('cm4huch4e003sl8065f2wky34', 'cm4huch4e003ol806sp63ltf0', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES ('cm4huch4e003sl8065f2wky34', 'cm4huch4e003ol806sp63ltf0', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public."UserSegments" VALUES ('cm4huch4e003sl8065f2wky34', 'cm4huch4e003ol806sp63ltf0', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'UVIC'));
+INSERT INTO public."UserSegments" VALUES ('cm4hpmava0038l806u1sk42o8', 'cm4hpmava0034l806d9nf2lzz', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES ('cm4hpmava0038l806u1sk42o8', 'cm4hpmava0034l806d9nf2lzz', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Esquimalt'));
+INSERT INTO public."UserSegments" VALUES ('cm4hpmava0038l806u1sk42o8', 'cm4hpmava0034l806d9nf2lzz', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Esquimalt Village'));
+INSERT INTO public."UserSegments" VALUES ('cm4hpmava0038l806u1sk42o8', 'cm4hpmava0034l806d9nf2lzz', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES ('cm4hpmava0038l806u1sk42o8', 'cm4hpmava0034l806d9nf2lzz', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public."UserSegments" VALUES ('cm4hpmava0038l806u1sk42o8', 'cm4hpmava0034l806d9nf2lzz', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Uptown'));
+INSERT INTO public."UserSegments" VALUES ('cm4hpmava0038l806u1sk42o8', 'cm4hpmava0034l806d9nf2lzz', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES ('cm4hpmava0038l806u1sk42o8', 'cm4hpmava0034l806d9nf2lzz', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public."UserSegments" VALUES ('cm4hpmava0038l806u1sk42o8', 'cm4hpmava0034l806d9nf2lzz', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'UVIC'));
+INSERT INTO public."UserSegments" VALUES ('cm4htz9hi003il806z7klcadx', 'cm4htz9hh003el806oat8fnet', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES ('cm4htz9hi003il806z7klcadx', 'cm4htz9hh003el806oat8fnet', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Esquimalt'));
+INSERT INTO public."UserSegments" VALUES ('cm4htz9hi003il806z7klcadx', 'cm4htz9hh003el806oat8fnet', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Westbay Village'));
+INSERT INTO public."UserSegments" VALUES ('cm4htz9hi003il806z7klcadx', 'cm4htz9hh003el806oat8fnet', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES ('cm4htz9hi003il806z7klcadx', 'cm4htz9hh003el806oat8fnet', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public."UserSegments" VALUES ('cm4htz9hi003il806z7klcadx', 'cm4htz9hh003el806oat8fnet', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Uptown'));
+INSERT INTO public."UserSegments" VALUES ('cm4htz9hi003il806z7klcadx', 'cm4htz9hh003el806oat8fnet', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES ('cm4htz9hi003il806z7klcadx', 'cm4htz9hh003el806oat8fnet', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public."UserSegments" VALUES ('cm4htz9hi003il806z7klcadx', 'cm4htz9hh003el806oat8fnet', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Camosun Interurban'));
+INSERT INTO public."UserSegments" VALUES ('cm605kwu4006cl806226h4jol', 'cm605kwu40068l806uyzrpx52', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES ('cm605kwu4006cl806226h4jol', 'cm605kwu40068l806uyzrpx52', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public."UserSegments" VALUES ('cm605kwu4006cl806226h4jol', 'cm605kwu40068l806uyzrpx52', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Uptown'));
+INSERT INTO public."UserSegments" VALUES ('cm69jv70i0004uiapjcyfoaxs', 'cm69jv70g0000uiap1cw35gty', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES ('cm69jv70i0004uiapjcyfoaxs', 'cm69jv70g0000uiap1cw35gty', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public."UserSegments" VALUES ('cm69jv70i0004uiapjcyfoaxs', 'cm69jv70g0000uiap1cw35gty', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES ('cm69jv70i0004uiapjcyfoaxs', 'cm69jv70g0000uiap1cw35gty', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public."UserSegments" VALUES ('cm6eqv1ij0004lg06twpxdfjy', 'cm6eqv1ii0000lg06bw4zice6', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES ('cm6eqv1ij0004lg06twpxdfjy', 'cm6eqv1ii0000lg06bw4zice6', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Oak Bay'));
+INSERT INTO public."UserSegments" VALUES ('cm6eqv1ij0004lg06twpxdfjy', 'cm6eqv1ii0000lg06bw4zice6', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Cadboro Bay'));
+INSERT INTO public."UserSegments" VALUES ('cm6forp100004uiofkl14fwyi', 'cm6forp0y0000uiofp5k5l1qg', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES ('cm6forp100004uiofkl14fwyi', 'cm6forp0y0000uiofp5k5l1qg', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public."UserSegments" VALUES ('cm6v18qri000elg06x9acdvxc', 'cm6v18qri000alg06awi67bsh', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES ('cm6v18qri000elg06x9acdvxc', 'cm6v18qri000alg06awi67bsh', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Victoria'));
+INSERT INTO public."UserSegments" VALUES ('cm6v18qri000elg06x9acdvxc', 'cm6v18qri000alg06awi67bsh', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Downtown'));
+INSERT INTO public."UserSegments" VALUES ('cm4h9p4k2001il806vexkgos0', 'cm4h9p4k1001el8067oolrsbb', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES ('cm4h9p4k2001il806vexkgos0', 'cm4h9p4k1001el8067oolrsbb', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Esquimalt'));
+INSERT INTO public."UserSegments" VALUES ('cm4h9p4k2001il806vexkgos0', 'cm4h9p4k1001el8067oolrsbb', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Esquimalt Village'));
+INSERT INTO public."UserSegments" VALUES ('cm4h9p4k2001il806vexkgos0', 'cm4h9p4k1001el8067oolrsbb', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES ('cm4h9p4k2001il806vexkgos0', 'cm4h9p4k1001el8067oolrsbb', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Langford'));
+INSERT INTO public."UserSegments" VALUES ('cm4h9p4k2001il806vexkgos0', 'cm4h9p4k1001el8067oolrsbb', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Goldstream Station'));
+INSERT INTO public."UserSegments" VALUES ('cm4ha0tva001sl806e9euqgw7', 'cm4ha0tva001ol806sqh2vuqa', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES ('cm4ha0tva001sl806e9euqgw7', 'cm4ha0tva001ol806sqh2vuqa', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Victoria'));
+INSERT INTO public."UserSegments" VALUES ('cm4ha0tva001sl806e9euqgw7', 'cm4ha0tva001ol806sqh2vuqa', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Downtown'));
 
 */
 
 -- USER SEGMENTS WITH INTEGER ID's
-INSERT INTO public."user_segments" VALUES (1, 'cm4hc2ydu002al806akxtnrsl', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES (2, 'cm4hc2ydu002al806akxtnrsl', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Victoria'));
-INSERT INTO public."user_segments" VALUES (3, 'cm4hc2ydu002al806akxtnrsl', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Downtown'));
-INSERT INTO public."user_segments" VALUES (4, 'cm4hkq0vv002kl806nfnhhvjf', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES (5, 'cm4hkq0vv002kl806nfnhhvjf', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Victoria'));
-INSERT INTO public."user_segments" VALUES (6, 'cm4hkq0vv002kl806nfnhhvjf', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Downtown'));
-INSERT INTO public."user_segments" VALUES (7, 'cm4hkq0vv002kl806nfnhhvjf', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES (8, 'cm4hkq0vv002kl806nfnhhvjf', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public."user_segments" VALUES (9, 'cm4hkq0vv002kl806nfnhhvjf', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'UVIC'));
-INSERT INTO public."user_segments" VALUES (10, 'cm65wo2820074l8069221ul8j', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES (11, 'cm65wo2820074l8069221ul8j', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Victoria'));
-INSERT INTO public."user_segments" VALUES (12, 'cm65wo2820074l8069221ul8j', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Fairfield'));
-INSERT INTO public."user_segments" VALUES (13, 'cm65wo2820074l8069221ul8j', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES (14, 'cm65wo2820074l8069221ul8j', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Victoria'));
-INSERT INTO public."user_segments" VALUES (15, 'cm65wo2820074l8069221ul8j', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES (16, 'cm65wo2820074l8069221ul8j', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public."user_segments" VALUES (17, 'cm65wo2820074l8069221ul8j', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'UVIC'));
-INSERT INTO public."user_segments" VALUES (18, 'cm65vicnd006ul806fahzfmhr', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES (19, 'cm65vicnd006ul806fahzfmhr', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public."user_segments" VALUES (20, 'cm65vicnd006ul806fahzfmhr', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Uptown'));
-INSERT INTO public."user_segments" VALUES (21, 'cm65vicnd006ul806fahzfmhr', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES (22, 'cm65vicnd006ul806fahzfmhr', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public."user_segments" VALUES (23, 'cm65vicnd006ul806fahzfmhr', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'UVIC'));
-INSERT INTO public."user_segments" VALUES (24, 'cm65xdjtp007el806j5gwno25', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES (25, 'cm65xdjtp007el806j5gwno25', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Victoria'));
-INSERT INTO public."user_segments" VALUES (26, 'cm4huzcea0048l806ll0dhddx', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES (27, 'cm4huzcea0048l806ll0dhddx', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Victoria'));
-INSERT INTO public."user_segments" VALUES (28, 'cm4huzcea0048l806ll0dhddx', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Downtown'));
-INSERT INTO public."user_segments" VALUES (29, 'cm4huzcea0048l806ll0dhddx', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES (30, 'cm4huzcea0048l806ll0dhddx', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public."user_segments" VALUES (31, 'cm4huzcea0048l806ll0dhddx', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Uptown'));
-INSERT INTO public."user_segments" VALUES (32, 'cm4huzcea0048l806ll0dhddx', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES (33, 'cm4huzcea0048l806ll0dhddx', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public."user_segments" VALUES (34, 'cm4huzcea0048l806ll0dhddx', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Camosun Interurban'));
-INSERT INTO public."user_segments" VALUES (35, 'cm4humete003yl806ffzxb4o9', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES (36, 'cm4humete003yl806ffzxb4o9', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Victoria'));
-INSERT INTO public."user_segments" VALUES (37, 'cm4humete003yl806ffzxb4o9', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Downtown'));
-INSERT INTO public."user_segments" VALUES (38, 'cm4humete003yl806ffzxb4o9', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES (39, 'cm4humete003yl806ffzxb4o9', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public."user_segments" VALUES (40, 'cm4humete003yl806ffzxb4o9', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Uptown'));
-INSERT INTO public."user_segments" VALUES (41, 'cm4humete003yl806ffzxb4o9', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES (42, 'cm4humete003yl806ffzxb4o9', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public."user_segments" VALUES (43, 'cm4humete003yl806ffzxb4o9', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Camosun Interurban'));
-INSERT INTO public."user_segments" VALUES (44, 'cm4hvkcbs004il806bzksqj0p', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES (45, 'cm4hvkcbs004il806bzksqj0p', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public."user_segments" VALUES (46, 'cm4hvkcbs004il806bzksqj0p', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'UVIC'));
-INSERT INTO public."user_segments" VALUES (47, 'cm4i18z9g0054l806g4ujmesy', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES (48, 'cm4i18z9g0054l806g4ujmesy', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public."user_segments" VALUES (49, 'cm4i1b7fs005el806o3jhmt23', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES (50, 'cm4i1b7fs005el806o3jhmt23', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Victoria'));
-INSERT INTO public."user_segments" VALUES (51, 'cm4i1dj6h005ol806wnw7vryk', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES (52, 'cm4i1dj6h005ol806wnw7vryk', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Esquimalt'));
-INSERT INTO public."user_segments" VALUES (53, 'cm4i1f5jr005yl806cjc5jwc6', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES (54, 'cm4i1f5jr005yl806cjc5jwc6', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Langford'));
-INSERT INTO public."user_segments" VALUES (55, 'cm4hlbbxo002ul8069lvnnj73', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES (56, 'cm4hlbbxo002ul8069lvnnj73', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Victoria'));
-INSERT INTO public."user_segments" VALUES (57, 'cm4hlbbxo002ul8069lvnnj73', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Fairfield'));
-INSERT INTO public."user_segments" VALUES (58, 'cm4hlbbxo002ul8069lvnnj73', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES (59, 'cm4hlbbxo002ul8069lvnnj73', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public."user_segments" VALUES (60, 'cm4hlbbxo002ul8069lvnnj73', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'UVIC'));
-INSERT INTO public."user_segments" VALUES (61, 'cm65xh81d007ol8062w3m2vnl', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES (62, 'cm65xh81d007ol8062w3m2vnl', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Victoria'));
-INSERT INTO public."user_segments" VALUES (63, 'cm4huch4e003ol806sp63ltf0', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES (64, 'cm4huch4e003ol806sp63ltf0', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public."user_segments" VALUES (65, 'cm4huch4e003ol806sp63ltf0', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES (66, 'cm4huch4e003ol806sp63ltf0', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public."user_segments" VALUES (67, 'cm4huch4e003ol806sp63ltf0', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'UVIC'));
-INSERT INTO public."user_segments" VALUES (68, 'cm4hpmava0034l806d9nf2lzz', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES (69, 'cm4hpmava0034l806d9nf2lzz', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Esquimalt'));
-INSERT INTO public."user_segments" VALUES (70, 'cm4hpmava0034l806d9nf2lzz', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Esquimalt Village'));
-INSERT INTO public."user_segments" VALUES (71, 'cm4hpmava0034l806d9nf2lzz', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES (72, 'cm4hpmava0034l806d9nf2lzz', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public."user_segments" VALUES (73, 'cm4hpmava0034l806d9nf2lzz', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Uptown'));
-INSERT INTO public."user_segments" VALUES (74, 'cm4hpmava0034l806d9nf2lzz', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES (75, 'cm4hpmava0034l806d9nf2lzz', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public."user_segments" VALUES (76, 'cm4hpmava0034l806d9nf2lzz', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'UVIC'));
-INSERT INTO public."user_segments" VALUES (77, 'cm4htz9hh003el806oat8fnet', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES (78, 'cm4htz9hh003el806oat8fnet', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Esquimalt'));
-INSERT INTO public."user_segments" VALUES (79, 'cm4htz9hh003el806oat8fnet', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Westbay Village'));
-INSERT INTO public."user_segments" VALUES (80, 'cm4htz9hh003el806oat8fnet', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES (81, 'cm4htz9hh003el806oat8fnet', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public."user_segments" VALUES (82, 'cm4htz9hh003el806oat8fnet', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Uptown'));
-INSERT INTO public."user_segments" VALUES (83, 'cm4htz9hh003el806oat8fnet', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES (84, 'cm4htz9hh003el806oat8fnet', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public."user_segments" VALUES (85, 'cm4htz9hh003el806oat8fnet', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Camosun Interurban'));
-INSERT INTO public."user_segments" VALUES (86, 'cm605kwu40068l806uyzrpx52', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES (87, 'cm605kwu40068l806uyzrpx52', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public."user_segments" VALUES (88, 'cm605kwu40068l806uyzrpx52', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Uptown'));
-INSERT INTO public."user_segments" VALUES (89, 'cm69jv70g0000uiap1cw35gty', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES (90, 'cm69jv70g0000uiap1cw35gty', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public."user_segments" VALUES (91, 'cm69jv70g0000uiap1cw35gty', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES (92, 'cm69jv70g0000uiap1cw35gty', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public."user_segments" VALUES (93, 'cm6eqv1ii0000lg06bw4zice6', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES (94, 'cm6eqv1ii0000lg06bw4zice6', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Oak Bay'));
-INSERT INTO public."user_segments" VALUES (95, 'cm6eqv1ii0000lg06bw4zice6', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Cadboro Bay'));
-INSERT INTO public."user_segments" VALUES (96, 'cm6forp0y0000uiofp5k5l1qg', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES (97, 'cm6forp0y0000uiofp5k5l1qg', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public."user_segments" VALUES (98, 'cm6v18qri000alg06awi67bsh', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES (99, 'cm6v18qri000alg06awi67bsh', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Victoria'));
-INSERT INTO public."user_segments" VALUES (100, 'cm6v18qri000alg06awi67bsh', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Downtown'));
-INSERT INTO public."user_segments" VALUES (101, 'cm4h9p4k1001el8067oolrsbb', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES (102, 'cm4h9p4k1001el8067oolrsbb', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Esquimalt'));
-INSERT INTO public."user_segments" VALUES (103, 'cm4h9p4k1001el8067oolrsbb', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Esquimalt Village'));
-INSERT INTO public."user_segments" VALUES (104, 'cm4h9p4k1001el8067oolrsbb', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES (105, 'cm4h9p4k1001el8067oolrsbb', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Langford'));
-INSERT INTO public."user_segments" VALUES (106, 'cm4h9p4k1001el8067oolrsbb', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Goldstream Station'));
-INSERT INTO public."user_segments" VALUES (107, 'cm4ha0tva001ol806sqh2vuqa', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'CRD'));
-INSERT INTO public."user_segments" VALUES (108, 'cm4ha0tva001ol806sqh2vuqa', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Victoria'));
-INSERT INTO public."user_segments" VALUES (109, 'cm4ha0tva001ol806sqh2vuqa', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segments WHERE segment_name = 'Downtown'));
+INSERT INTO public."UserSegments" VALUES (1, 'cm4hc2ydu002al806akxtnrsl', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES (2, 'cm4hc2ydu002al806akxtnrsl', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Victoria'));
+INSERT INTO public."UserSegments" VALUES (3, 'cm4hc2ydu002al806akxtnrsl', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Downtown'));
+INSERT INTO public."UserSegments" VALUES (4, 'cm4hkq0vv002kl806nfnhhvjf', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES (5, 'cm4hkq0vv002kl806nfnhhvjf', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Victoria'));
+INSERT INTO public."UserSegments" VALUES (6, 'cm4hkq0vv002kl806nfnhhvjf', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Downtown'));
+INSERT INTO public."UserSegments" VALUES (7, 'cm4hkq0vv002kl806nfnhhvjf', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES (8, 'cm4hkq0vv002kl806nfnhhvjf', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public."UserSegments" VALUES (9, 'cm4hkq0vv002kl806nfnhhvjf', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'UVIC'));
+INSERT INTO public."UserSegments" VALUES (10, 'cm65wo2820074l8069221ul8j', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES (11, 'cm65wo2820074l8069221ul8j', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Victoria'));
+INSERT INTO public."UserSegments" VALUES (12, 'cm65wo2820074l8069221ul8j', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Fairfield'));
+INSERT INTO public."UserSegments" VALUES (13, 'cm65wo2820074l8069221ul8j', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES (14, 'cm65wo2820074l8069221ul8j', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Victoria'));
+INSERT INTO public."UserSegments" VALUES (15, 'cm65wo2820074l8069221ul8j', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES (16, 'cm65wo2820074l8069221ul8j', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public."UserSegments" VALUES (17, 'cm65wo2820074l8069221ul8j', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'UVIC'));
+INSERT INTO public."UserSegments" VALUES (18, 'cm65vicnd006ul806fahzfmhr', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES (19, 'cm65vicnd006ul806fahzfmhr', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public."UserSegments" VALUES (20, 'cm65vicnd006ul806fahzfmhr', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Uptown'));
+INSERT INTO public."UserSegments" VALUES (21, 'cm65vicnd006ul806fahzfmhr', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES (22, 'cm65vicnd006ul806fahzfmhr', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public."UserSegments" VALUES (23, 'cm65vicnd006ul806fahzfmhr', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'UVIC'));
+INSERT INTO public."UserSegments" VALUES (24, 'cm65xdjtp007el806j5gwno25', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES (25, 'cm65xdjtp007el806j5gwno25', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Victoria'));
+INSERT INTO public."UserSegments" VALUES (26, 'cm4huzcea0048l806ll0dhddx', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES (27, 'cm4huzcea0048l806ll0dhddx', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Victoria'));
+INSERT INTO public."UserSegments" VALUES (28, 'cm4huzcea0048l806ll0dhddx', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Downtown'));
+INSERT INTO public."UserSegments" VALUES (29, 'cm4huzcea0048l806ll0dhddx', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES (30, 'cm4huzcea0048l806ll0dhddx', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public."UserSegments" VALUES (31, 'cm4huzcea0048l806ll0dhddx', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Uptown'));
+INSERT INTO public."UserSegments" VALUES (32, 'cm4huzcea0048l806ll0dhddx', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES (33, 'cm4huzcea0048l806ll0dhddx', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public."UserSegments" VALUES (34, 'cm4huzcea0048l806ll0dhddx', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Camosun Interurban'));
+INSERT INTO public."UserSegments" VALUES (35, 'cm4humete003yl806ffzxb4o9', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES (36, 'cm4humete003yl806ffzxb4o9', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Victoria'));
+INSERT INTO public."UserSegments" VALUES (37, 'cm4humete003yl806ffzxb4o9', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Downtown'));
+INSERT INTO public."UserSegments" VALUES (38, 'cm4humete003yl806ffzxb4o9', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES (39, 'cm4humete003yl806ffzxb4o9', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public."UserSegments" VALUES (40, 'cm4humete003yl806ffzxb4o9', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Uptown'));
+INSERT INTO public."UserSegments" VALUES (41, 'cm4humete003yl806ffzxb4o9', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES (42, 'cm4humete003yl806ffzxb4o9', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public."UserSegments" VALUES (43, 'cm4humete003yl806ffzxb4o9', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Camosun Interurban'));
+INSERT INTO public."UserSegments" VALUES (44, 'cm4hvkcbs004il806bzksqj0p', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES (45, 'cm4hvkcbs004il806bzksqj0p', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public."UserSegments" VALUES (46, 'cm4hvkcbs004il806bzksqj0p', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'UVIC'));
+INSERT INTO public."UserSegments" VALUES (47, 'cm4i18z9g0054l806g4ujmesy', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES (48, 'cm4i18z9g0054l806g4ujmesy', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public."UserSegments" VALUES (49, 'cm4i1b7fs005el806o3jhmt23', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES (50, 'cm4i1b7fs005el806o3jhmt23', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Victoria'));
+INSERT INTO public."UserSegments" VALUES (51, 'cm4i1dj6h005ol806wnw7vryk', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES (52, 'cm4i1dj6h005ol806wnw7vryk', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Esquimalt'));
+INSERT INTO public."UserSegments" VALUES (53, 'cm4i1f5jr005yl806cjc5jwc6', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES (54, 'cm4i1f5jr005yl806cjc5jwc6', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Langford'));
+INSERT INTO public."UserSegments" VALUES (55, 'cm4hlbbxo002ul8069lvnnj73', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES (56, 'cm4hlbbxo002ul8069lvnnj73', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Victoria'));
+INSERT INTO public."UserSegments" VALUES (57, 'cm4hlbbxo002ul8069lvnnj73', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Fairfield'));
+INSERT INTO public."UserSegments" VALUES (58, 'cm4hlbbxo002ul8069lvnnj73', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES (59, 'cm4hlbbxo002ul8069lvnnj73', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public."UserSegments" VALUES (60, 'cm4hlbbxo002ul8069lvnnj73', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'UVIC'));
+INSERT INTO public."UserSegments" VALUES (61, 'cm65xh81d007ol8062w3m2vnl', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES (62, 'cm65xh81d007ol8062w3m2vnl', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Victoria'));
+INSERT INTO public."UserSegments" VALUES (63, 'cm4huch4e003ol806sp63ltf0', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES (64, 'cm4huch4e003ol806sp63ltf0', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public."UserSegments" VALUES (65, 'cm4huch4e003ol806sp63ltf0', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES (66, 'cm4huch4e003ol806sp63ltf0', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public."UserSegments" VALUES (67, 'cm4huch4e003ol806sp63ltf0', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'UVIC'));
+INSERT INTO public."UserSegments" VALUES (68, 'cm4hpmava0034l806d9nf2lzz', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES (69, 'cm4hpmava0034l806d9nf2lzz', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Esquimalt'));
+INSERT INTO public."UserSegments" VALUES (70, 'cm4hpmava0034l806d9nf2lzz', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Esquimalt Village'));
+INSERT INTO public."UserSegments" VALUES (71, 'cm4hpmava0034l806d9nf2lzz', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES (72, 'cm4hpmava0034l806d9nf2lzz', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public."UserSegments" VALUES (73, 'cm4hpmava0034l806d9nf2lzz', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Uptown'));
+INSERT INTO public."UserSegments" VALUES (74, 'cm4hpmava0034l806d9nf2lzz', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES (75, 'cm4hpmava0034l806d9nf2lzz', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public."UserSegments" VALUES (76, 'cm4hpmava0034l806d9nf2lzz', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'UVIC'));
+INSERT INTO public."UserSegments" VALUES (77, 'cm4htz9hh003el806oat8fnet', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES (78, 'cm4htz9hh003el806oat8fnet', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Esquimalt'));
+INSERT INTO public."UserSegments" VALUES (79, 'cm4htz9hh003el806oat8fnet', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Westbay Village'));
+INSERT INTO public."UserSegments" VALUES (80, 'cm4htz9hh003el806oat8fnet', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES (81, 'cm4htz9hh003el806oat8fnet', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public."UserSegments" VALUES (82, 'cm4htz9hh003el806oat8fnet', 'WORK'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Uptown'));
+INSERT INTO public."UserSegments" VALUES (83, 'cm4htz9hh003el806oat8fnet', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES (84, 'cm4htz9hh003el806oat8fnet', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public."UserSegments" VALUES (85, 'cm4htz9hh003el806oat8fnet', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Camosun Interurban'));
+INSERT INTO public."UserSegments" VALUES (86, 'cm605kwu40068l806uyzrpx52', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES (87, 'cm605kwu40068l806uyzrpx52', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public."UserSegments" VALUES (88, 'cm605kwu40068l806uyzrpx52', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Uptown'));
+INSERT INTO public."UserSegments" VALUES (89, 'cm69jv70g0000uiap1cw35gty', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES (90, 'cm69jv70g0000uiap1cw35gty', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public."UserSegments" VALUES (91, 'cm69jv70g0000uiap1cw35gty', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES (92, 'cm69jv70g0000uiap1cw35gty', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public."UserSegments" VALUES (93, 'cm6eqv1ii0000lg06bw4zice6', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES (94, 'cm6eqv1ii0000lg06bw4zice6', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Oak Bay'));
+INSERT INTO public."UserSegments" VALUES (95, 'cm6eqv1ii0000lg06bw4zice6', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Cadboro Bay'));
+INSERT INTO public."UserSegments" VALUES (96, 'cm6forp0y0000uiofp5k5l1qg', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES (97, 'cm6forp0y0000uiofp5k5l1qg', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public."UserSegments" VALUES (98, 'cm6v18qri000alg06awi67bsh', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES (99, 'cm6v18qri000alg06awi67bsh', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Victoria'));
+INSERT INTO public."UserSegments" VALUES (100, 'cm6v18qri000alg06awi67bsh', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Downtown'));
+INSERT INTO public."UserSegments" VALUES (101, 'cm4h9p4k1001el8067oolrsbb', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES (102, 'cm4h9p4k1001el8067oolrsbb', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Esquimalt'));
+INSERT INTO public."UserSegments" VALUES (103, 'cm4h9p4k1001el8067oolrsbb', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Esquimalt Village'));
+INSERT INTO public."UserSegments" VALUES (104, 'cm4h9p4k1001el8067oolrsbb', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES (105, 'cm4h9p4k1001el8067oolrsbb', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Langford'));
+INSERT INTO public."UserSegments" VALUES (106, 'cm4h9p4k1001el8067oolrsbb', 'SCHOOL'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Goldstream Station'));
+INSERT INTO public."UserSegments" VALUES (107, 'cm4ha0tva001ol806sqh2vuqa', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'CRD'));
+INSERT INTO public."UserSegments" VALUES (108, 'cm4ha0tva001ol806sqh2vuqa', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Victoria'));
+INSERT INTO public."UserSegments" VALUES (109, 'cm4ha0tva001ol806sqh2vuqa', 'HOME'::public."user_segment_relationship_type", (SELECT seg_id FROM public.segment WHERE segment_name = 'Downtown'));
 
 
 --
@@ -451,36 +451,36 @@ INSERT INTO public.donors VALUES (1, 7, 'cm4huch4e003ol806sp63ltf0', 'anything',
 -- Data for Name: idea_segment; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 -- INSERT INTO public.idea_segment (idea_id, "segmentId") VALUES
---   (160, (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich')),
---   (160, (SELECT seg_id FROM public.segments WHERE segment_name = 'UVIC')),
---   (161, (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich')),
---   (161, (SELECT seg_id FROM public.segments WHERE segment_name = 'UVIC')),
---   (162, (SELECT seg_id FROM public.segments WHERE segment_name = 'Victoria')),
---   (162, (SELECT seg_id FROM public.segments WHERE segment_name = 'Downtown')),
---   (163, (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich')),
---   (163, (SELECT seg_id FROM public.segments WHERE segment_name = 'UVIC')),
---   (168, (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich')),
---   (168, (SELECT seg_id FROM public.segments WHERE segment_name = 'Uptown')),
---   (169, (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich')),
---   (169, (SELECT seg_id FROM public.segments WHERE segment_name = 'UVIC')),
---   (170, (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich')),
---   (170, (SELECT seg_id FROM public.segments WHERE segment_name = 'UVIC')),
---   (164, (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich')),
---   (164, (SELECT seg_id FROM public.segments WHERE segment_name = 'UVIC')),
---   (165, (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich')),
---   (165, (SELECT seg_id FROM public.segments WHERE segment_name = 'UVIC')),
---   (166, (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich')),
---   (166, (SELECT seg_id FROM public.segments WHERE segment_name = 'UVIC')),
---   (167, (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich')),
---   (167, (SELECT seg_id FROM public.segments WHERE segment_name = 'Victoria')),
---   (171, (SELECT seg_id FROM public.segments WHERE segment_name = 'Victoria')),
---   (171, (SELECT seg_id FROM public.segments WHERE segment_name = 'Downtown')),
---   (172, (SELECT seg_id FROM public.segments WHERE segment_name = 'Victoria')),
---   (172, (SELECT seg_id FROM public.segments WHERE segment_name = 'Downtown')),
---   (173, (SELECT seg_id FROM public.segments WHERE segment_name = 'Victoria')),
---   (173, (SELECT seg_id FROM public.segments WHERE segment_name = 'Downtown')),
---   (174, (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich')),
---   (174, (SELECT seg_id FROM public.segments WHERE segment_name = 'UVIC'));
+--   (160, (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich')),
+--   (160, (SELECT seg_id FROM public.segment WHERE segment_name = 'UVIC')),
+--   (161, (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich')),
+--   (161, (SELECT seg_id FROM public.segment WHERE segment_name = 'UVIC')),
+--   (162, (SELECT seg_id FROM public.segment WHERE segment_name = 'Victoria')),
+--   (162, (SELECT seg_id FROM public.segment WHERE segment_name = 'Downtown')),
+--   (163, (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich')),
+--   (163, (SELECT seg_id FROM public.segment WHERE segment_name = 'UVIC')),
+--   (168, (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich')),
+--   (168, (SELECT seg_id FROM public.segment WHERE segment_name = 'Uptown')),
+--   (169, (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich')),
+--   (169, (SELECT seg_id FROM public.segment WHERE segment_name = 'UVIC')),
+--   (170, (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich')),
+--   (170, (SELECT seg_id FROM public.segment WHERE segment_name = 'UVIC')),
+--   (164, (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich')),
+--   (164, (SELECT seg_id FROM public.segment WHERE segment_name = 'UVIC')),
+--   (165, (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich')),
+--   (165, (SELECT seg_id FROM public.segment WHERE segment_name = 'UVIC')),
+--   (166, (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich')),
+--   (166, (SELECT seg_id FROM public.segment WHERE segment_name = 'UVIC')),
+--   (167, (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich')),
+--   (167, (SELECT seg_id FROM public.segment WHERE segment_name = 'Victoria')),
+--   (171, (SELECT seg_id FROM public.segment WHERE segment_name = 'Victoria')),
+--   (171, (SELECT seg_id FROM public.segment WHERE segment_name = 'Downtown')),
+--   (172, (SELECT seg_id FROM public.segment WHERE segment_name = 'Victoria')),
+--   (172, (SELECT seg_id FROM public.segment WHERE segment_name = 'Downtown')),
+--   (173, (SELECT seg_id FROM public.segment WHERE segment_name = 'Victoria')),
+--   (173, (SELECT seg_id FROM public.segment WHERE segment_name = 'Downtown')),
+--   (174, (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich')),
+--   (174, (SELECT seg_id FROM public.segment WHERE segment_name = 'UVIC'));
 
 
 
@@ -817,21 +817,21 @@ INSERT INTO public.user_idea_follow VALUES (14, 'cm4huch4e003ol806sp63ltf0', 164
 -- Dependencies: 242
 -- Data for Name: user_reach; Type: TABLE DATA; Schema: public; Owner: postgres
 --
-INSERT INTO public.user_reach VALUES ('cm4ha0tvb001ul8064oeora18', 'cm4ha0tva001ol806sqh2vuqa', (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public.user_reach VALUES ('cm4ha0tvb001vl8061ya7sust', 'cm4ha0tva001ol806sqh2vuqa', (SELECT seg_id FROM public.segments WHERE segment_name = 'Oak Bay'));
-INSERT INTO public.user_reach VALUES ('cm4ha0tvb001wl806xhnlp9yj', 'cm4ha0tva001ol806sqh2vuqa', (SELECT seg_id FROM public.segments WHERE segment_name = 'Langford'));
-INSERT INTO public.user_reach VALUES ('cm4ha0tvb001xl8062vut45q9', 'cm4ha0tva001ol806sqh2vuqa', (SELECT seg_id FROM public.segments WHERE segment_name = 'Victoria'));
-INSERT INTO public.user_reach VALUES ('cm4ha0tvb001yl806qrwk02lo', 'cm4ha0tva001ol806sqh2vuqa', (SELECT seg_id FROM public.segments WHERE segment_name = 'Esquimalt'));
-INSERT INTO public.user_reach VALUES ('cm4hvkcbt004ol8066vr75nwt', 'cm4hvkcbs004il806bzksqj0p', (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public.user_reach VALUES ('cm4hvkcbt004pl80657ma13n1', 'cm4hvkcbs004il806bzksqj0p', (SELECT seg_id FROM public.segments WHERE segment_name = 'Oak Bay'));
-INSERT INTO public.user_reach VALUES ('cm4hvkcbt004ql8068ozzhwu8', 'cm4hvkcbs004il806bzksqj0p', (SELECT seg_id FROM public.segments WHERE segment_name = 'Langford'));
-INSERT INTO public.user_reach VALUES ('cm4hvkcbt004rl80654psoik2', 'cm4hvkcbs004il806bzksqj0p', (SELECT seg_id FROM public.segments WHERE segment_name = 'Victoria'));
-INSERT INTO public.user_reach VALUES ('cm4hvkcbt004sl80683qqtf8c', 'cm4hvkcbs004il806bzksqj0p', (SELECT seg_id FROM public.segments WHERE segment_name = 'Esquimalt'));
-INSERT INTO public.user_reach VALUES ('cm605kwu4006el806z2sf02ia', 'cm605kwu40068l806uyzrpx52', (SELECT seg_id FROM public.segments WHERE segment_name = 'Saanich'));
-INSERT INTO public.user_reach VALUES ('cm605kwu4006fl806qgx0gfh5', 'cm605kwu40068l806uyzrpx52', (SELECT seg_id FROM public.segments WHERE segment_name = 'Oak Bay'));
-INSERT INTO public.user_reach VALUES ('cm605kwu4006gl806c3o9g7b9', 'cm605kwu40068l806uyzrpx52', (SELECT seg_id FROM public.segments WHERE segment_name = 'Langford'));
-INSERT INTO public.user_reach VALUES ('cm605kwu4006hl806np5qf9aq', 'cm605kwu40068l806uyzrpx52', (SELECT seg_id FROM public.segments WHERE segment_name = 'Victoria'));
-INSERT INTO public.user_reach VALUES ('cm605kwu4006il806x2rlv13i', 'cm605kwu40068l806uyzrpx52', (SELECT seg_id FROM public.segments WHERE segment_name = 'Esquimalt'));
+INSERT INTO public.user_reach VALUES ('cm4ha0tvb001ul8064oeora18', 'cm4ha0tva001ol806sqh2vuqa', (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public.user_reach VALUES ('cm4ha0tvb001vl8061ya7sust', 'cm4ha0tva001ol806sqh2vuqa', (SELECT seg_id FROM public.segment WHERE segment_name = 'Oak Bay'));
+INSERT INTO public.user_reach VALUES ('cm4ha0tvb001wl806xhnlp9yj', 'cm4ha0tva001ol806sqh2vuqa', (SELECT seg_id FROM public.segment WHERE segment_name = 'Langford'));
+INSERT INTO public.user_reach VALUES ('cm4ha0tvb001xl8062vut45q9', 'cm4ha0tva001ol806sqh2vuqa', (SELECT seg_id FROM public.segment WHERE segment_name = 'Victoria'));
+INSERT INTO public.user_reach VALUES ('cm4ha0tvb001yl806qrwk02lo', 'cm4ha0tva001ol806sqh2vuqa', (SELECT seg_id FROM public.segment WHERE segment_name = 'Esquimalt'));
+INSERT INTO public.user_reach VALUES ('cm4hvkcbt004ol8066vr75nwt', 'cm4hvkcbs004il806bzksqj0p', (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public.user_reach VALUES ('cm4hvkcbt004pl80657ma13n1', 'cm4hvkcbs004il806bzksqj0p', (SELECT seg_id FROM public.segment WHERE segment_name = 'Oak Bay'));
+INSERT INTO public.user_reach VALUES ('cm4hvkcbt004ql8068ozzhwu8', 'cm4hvkcbs004il806bzksqj0p', (SELECT seg_id FROM public.segment WHERE segment_name = 'Langford'));
+INSERT INTO public.user_reach VALUES ('cm4hvkcbt004rl80654psoik2', 'cm4hvkcbs004il806bzksqj0p', (SELECT seg_id FROM public.segment WHERE segment_name = 'Victoria'));
+INSERT INTO public.user_reach VALUES ('cm4hvkcbt004sl80683qqtf8c', 'cm4hvkcbs004il806bzksqj0p', (SELECT seg_id FROM public.segment WHERE segment_name = 'Esquimalt'));
+INSERT INTO public.user_reach VALUES ('cm605kwu4006el806z2sf02ia', 'cm605kwu40068l806uyzrpx52', (SELECT seg_id FROM public.segment WHERE segment_name = 'Saanich'));
+INSERT INTO public.user_reach VALUES ('cm605kwu4006fl806qgx0gfh5', 'cm605kwu40068l806uyzrpx52', (SELECT seg_id FROM public.segment WHERE segment_name = 'Oak Bay'));
+INSERT INTO public.user_reach VALUES ('cm605kwu4006gl806c3o9g7b9', 'cm605kwu40068l806uyzrpx52', (SELECT seg_id FROM public.segment WHERE segment_name = 'Langford'));
+INSERT INTO public.user_reach VALUES ('cm605kwu4006hl806np5qf9aq', 'cm605kwu40068l806uyzrpx52', (SELECT seg_id FROM public.segment WHERE segment_name = 'Victoria'));
+INSERT INTO public.user_reach VALUES ('cm605kwu4006il806x2rlv13i', 'cm605kwu40068l806uyzrpx52', (SELECT seg_id FROM public.segment WHERE segment_name = 'Esquimalt'));
 
 --
 -- TOC entry 3557 (class 0 OID 362807)

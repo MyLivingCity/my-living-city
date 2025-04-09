@@ -106,7 +106,6 @@ model UserSegments {
   segmentId Int 
 
   user User @relation(fields: [userId], references: [id])
-  @@map(name: "user_segment")
 }
 
 enum UserSegmentRelationShipType {

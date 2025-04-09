@@ -21,7 +21,6 @@ import { EditUserInfoModal } from '../modal/EditUserInfoModal';
 import UserChangePasswordModal from '../modal/UserChangePasswordModal';
 import { postUserSegmentInfo } from 'src/lib/api/userSegmentRoutes';
 import { unendorseIdeaByUser } from 'src/lib/api/ideaRoutes';
-import { createCommentUnderSubSegment } from 'src/lib/api/commentRoutes';
 
 interface UserManagementContentProps {
     users: IUser[] | undefined;
@@ -101,8 +100,6 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
     };
     const [buttonText, setButtonText] = useState(user?.userType === USER_TYPES.SUPER_ADMIN || user?.userType === USER_TYPES.ADMIN ? 'User Creation Wizard' : 'Municipal User Creation Wizard');
     const [showCreateAccountForm, setShowCreateAccountForm] = useState(false);
-    const [selectedSubSegmentId, setSelectedSubSegmentId] = useState<string>('');
-    const [comment, setComment] = useState<string>('');
 
     let newHomeID = 1;
     const [selectedUserType, setSelectedUserType] = useState('');
@@ -286,27 +283,6 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
         }
     };
 
-    const handleCommentSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-    
-        if (!selectedSubSegmentId || !comment.trim()) {
-            alert('Please select a subsegment and enter a comment.');
-            return;
-        }
-    
-        try {
-            const response = await createCommentUnderSubSegment(selectedSubSegmentId, token!, {
-                content: comment,
-            });
-    
-            if (response) {
-                alert('Comment posted successfully!');
-                setComment('');
-            }
-        } catch (error) {
-            console.error('Error posting comment:', error);
-        }
-    };
 
     const capitalizeString = (s: string) => {
         if (s === null) {
@@ -444,41 +420,6 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
         );
     });
 
-    {user?.userType === USER_TYPES.MUNICIPAL && (
-        <Form onSubmit={handleCommentSubmit} className='mb-4'>
-            <Form.Group>
-                <Form.Label>Select Subsegment</Form.Label>
-                <Form.Control
-                    as='select'
-                    required
-                    value={selectedSubSegmentId}
-                    onChange={(e) => setSelectedSubSegmentId(e.target.value)}
-                >
-                    <option value=''>Select a subsegment</option>
-                    {subSeg?.map((segment) => (
-                        <option key={segment.segId} value={segment.segId}>
-                            {segment.name}
-                        </option>
-                    ))}
-                </Form.Control>
-            </Form.Group>
-    
-            <Form.Group>
-                <Form.Label>Write Comment</Form.Label>
-                <Form.Control
-                    as='textarea'
-                    rows={3}
-                    required
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
-                />
-            </Form.Group>
-    
-            <Button type='submit' disabled={!selectedSubSegmentId}>
-                Submit Comment
-            </Button>
-        </Form>
-    );}
 
 
     if (user?.userType === USER_TYPES.MUNICIPAL_SEG_ADMIN) {

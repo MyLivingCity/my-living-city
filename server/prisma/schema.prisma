@@ -46,7 +46,7 @@ model User {
   userReach           UserReach[]
   userIdeaFollow      UserIdeaFollow[]
   userIdeaEndorse     UserIdeaEndorse[]
-  userSegments         UserSegments[]
+  userSegment         UserSegments[]
   userHandles          UserHandle[]
 
   //userRole        UserRole?    @relation(fields: [userRoleId], references: [id])

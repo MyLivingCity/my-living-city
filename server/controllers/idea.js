@@ -17,7 +17,7 @@ let errorStack = '';
 // post request to create an idea
 ideaRouter.post(
   '/create',
-  [passport.authenticate('jwt', { session: false }), upload],
+  // [passport.authenticate('jwt', { session: false }), upload],
   async (req, res) => {
     let imagePath;
     try {
@@ -317,144 +317,179 @@ ideaRouter.post(
   }
 )
 
-ideaRouter.post(
-  '/getall/aggregations',
-  async (req, res, next) => {
+ideaRouter.post('/getall/aggregations', async (req, res, next) => {
+  try {
     let take = req.body.take;
     take = Number.isInteger(take) ? Number(take) : undefined;
-    let takeClause = '';
-    if (!!take) {
-      takeClause = `limit ${take}`;
-    }
 
-    try {
-      // TODO: if rating is adjusted raw query will break
-      console.log("The data:" + req.params.userId)
-      const rawData = await prisma.$queryRawUnsafe(`
-        select
-        i.id,
-        i.author_id as "authorId",
-        i.category_id as "categoryId",
-        i.title,
-        i.description,
-        i.proposal_role,
-        i.requirements,
-        i.proposal_benefits,
-        i.notification_dismissed,
-        i.quarantined_at,
-        i.segment_id as "segId",
-        i.sub_segment_id as "subSegId",
-        i.super_segment_id as "superSegId",
-        i.community_impact as "communityImpact",
-        i.nature_impact as "natureImpact",
-        i.energy_impact as "energyImpact",
-        i.manufacturing_impact as "manufacturingImpact",
-        i.arts_impact as "artsImpact",
-        coalesce(ic.total_comments + ir.total_ratings, 0) as engagements,
-        coalesce(ir.avg_rating, 0) as "ratingAvg",
-        coalesce(ic.total_comments, 0) as "commentCount",
-        coalesce(ir.total_ratings, 0) as "ratingCount",
-        coalesce(pr.pos_rating, 0) as "posRatings",
-        coalesce(nr.neg_rating, 0) as "negRatings",
-        coalesce(sn.segment_name, '') as "segmentName",
-        coalesce(sbn.sub_segment_name, '') as "subSegmentName",
-        coalesce(userfname.f_name, '') as "firstName",
-        coalesce(userStreetAddress.street_address, '') as "streetAddress",
-        i.state,
-        i.active,
-        i.banned,
-        i.reviewed,
-        i.updated_at as "updatedAt",
-        i.created_at as "createdAt"
-          from idea i
-          -- Aggregate total comments
-          left join (
-              select
-                idea_id,
-                count(id) as total_comments
-              from idea_comment
-              group by idea_comment.idea_id
-          ) ic on i.id = ic.idea_id
-          -- Aggregate total ratings and rating avg
-          left join (
-              select
-                idea_id,
-                count(id) as total_ratings,
-                avg(rating) as avg_rating
-              from idea_rating
-              group by idea_rating.idea_id
-          ) ir on	i.id = ir.idea_id
-          -- Aggregate total neg ratings
-          left join (
-              select
-                idea_id,
-                count(id) as neg_rating
-              from idea_rating
-              where rating < 0
-              group by idea_id
-          ) nr on	i.id = nr.idea_id
-          -- Aggregate total pos ratings
-          left join (
-              select
-                idea_id,
-                count(id) as pos_rating
-              from idea_rating
-              where rating > 0
-              group by idea_id
-          ) pr on	i.id = pr.idea_id
-          -- Aggregate idea segment name
-          left join (
-              select seg_id, segment_name
-              from segment
-              ) sn on i.segment_id = sn.seg_id
-          -- Aggregate idea sub segment name
-          left join (
-              select id, sub_segment_name
-              from sub_segment
-              ) sbn on i.sub_segment_id = sbn.id
-          -- Aggregate author's first name
-          left join  (
-              select id, f_name
-              from "user"
-              ) userfname on i.author_id = userfname.id
-          -- Aggregate author's address
-          left join (
-              select user_id, street_address
-              from user_address
-              ) userStreetAddress on i.author_id = userStreetAddress.user_id
-          order by
-            "ratingCount" desc,
-            "ratingAvg" desc,
-            updated_at desc,
-            engagements desc
-            ${takeClause}
-        
-      `);
-      const data = rawData.map((row) => {
-        const newRow = {};
-        for (const key in row) {
-          if (typeof row[key] === 'bigint') {
-            newRow[key] = String(row[key]);
-          } else {
-            newRow[key] = row[key];
+    const ideas = await prisma.idea.findMany({
+      take: take,
+      include: {
+        segments: {
+          include: {
+            parentSegment: true,
+            children: true
           }
-        }
-        return newRow;
+        },
+        author: {
+          select: {
+            fname: true,
+          }
+        },
+        address: {
+          select: {
+            streetAddress: true,
+          }
+        },
+        category: true,
+        comments: {
+          select: {
+            id: true,
+          }
+        },
+        ratings: {
+          select: {
+            id: true,
+            rating: true,
+          }
+        },
+      },
+      orderBy: [
+        { updatedAt: 'desc' }
+      ]
+    });
+
+    // Process the results to match the expected format
+    const processedIdeas = ideas.map(idea => {
+      // Calculate ratings stats
+      const ratings = idea.ratings || [];
+      const comments = idea.comments || [];
+      const totalRatings = ratings.length;
+      const totalComments = comments.length;
+
+      const ratingsSum = ratings.reduce((sum, r) => sum + r.rating, 0);
+      const avgRating = totalRatings > 0 ? ratingsSum / totalRatings : 0;
+
+      const posRatings = ratings.filter(r => r.rating > 0).length;
+      const negRatings = ratings.filter(r => r.rating < 0).length;
+
+      const engagements = totalRatings + totalComments;
+
+      // Process segments
+      const segmentData = idea.segments.map(segment => {
+        const isTopLevel = !segment.parentId;
+        const hasChildren = segment.children.length > 0;
+        const segmentType = isTopLevel
+          ? 'superSegment'
+          : (hasChildren ? 'segment' : 'subSegment');
+
+        return {
+          segId: segment.segId,
+          segmentName: segment.name,
+          parentSegmentName: segment.parentSegment?.name || null,
+          segmentType,
+        };
       });
-      return res.status(200).json(data);
-    } catch (error) {
-      console.error(error);
-      return res.status(400).json({
-        message: "An error occurred while trying to fetch all ideas",
-        details: {
-          errorMessage: error.message,
-          errorStack: error.stack,
+
+      // Find one segment of each type (if exists)
+      const superSegment = segmentData.find(s => s.segmentType === 'superSegment');
+      const mainSegment = segmentData.find(s => s.segmentType === 'segment');
+      const subSegment = segmentData.find(s => s.segmentType === 'subSegment');
+
+      return {
+        id: idea.id,
+        authorId: idea.authorId,
+        categoryId: idea.categoryId,
+        title: idea.title,
+        description: idea.description,
+        proposal_role: idea.proposal_role,
+        requirements: idea.requirements,
+        proposal_benefits: idea.proposal_benefits,
+        notification_dismissed: idea.notification_dismissed,
+        quarantined_at: idea.quarantined_at,
+
+        // Segment data
+        segId: mainSegment?.segId || null,
+        subSegId: subSegment?.segId || null,
+        superSegId: superSegment?.segId || null,
+        segmentName: mainSegment?.segmentName || null,
+        subSegmentName: subSegment?.segmentName || null,
+
+        // Impact data
+        communityImpact: idea.communityImpact,
+        natureImpact: idea.natureImpact,
+        energyImpact: idea.energyImpact,
+        manufacturingImpact: idea.manufacturingImpact,
+        artsImpact: idea.artsImpact,
+
+        // Engagement metrics
+        engagements: engagements,
+        ratingAvg: avgRating,
+        commentCount: totalComments,
+        ratingCount: totalRatings,
+        posRatings: posRatings,
+        negRatings: negRatings,
+
+        // User data
+        firstName: idea.author?.fname || '',
+        streetAddress: idea.address?.streetAddress || '',
+
+        // Status data
+        state: idea.state,
+        active: idea.active,
+        banned: idea.banned,
+        reviewed: idea.reviewed,
+        updatedAt: idea.updatedAt,
+        createdAt: idea.createdAt
+      };
+    });
+
+    // Sort the processed results to match the original ordering
+    const sortedResults = processedIdeas.sort((a, b) => {
+      // First by rating count, descending
+      if (b.ratingCount !== a.ratingCount) {
+        return b.ratingCount - a.ratingCount;
+      }
+      // Then by rating average, descending
+      if (b.ratingAvg !== a.ratingAvg) {
+        return b.ratingAvg - a.ratingAvg;
+      }
+      // Then by update date, descending
+      if (b.updatedAt !== a.updatedAt) {
+        return new Date(b.updatedAt) - new Date(a.updatedAt);
+      }
+      // Finally by engagements, descending
+      return b.engagements - a.engagements;
+    });
+
+    // Convert any BigInt to strings
+    const finalResults = sortedResults.map(row => {
+      const newRow = {};
+      for (const key in row) {
+        if (typeof row[key] === 'bigint') {
+          newRow[key] = String(row[key]);
+        } else {
+          newRow[key] = row[key];
         }
-      });
-    } finally {
-      await prisma.$disconnect();
-    }
-  });
+      }
+      return newRow;
+    });
+
+    return res.status(200).json(finalResults);
+
+  } catch (error) {
+    console.error(error);
+    return res.status(400).json({
+      message: "An error occurred while trying to fetch all ideas",
+      details: {
+        errorMessage: error.message,
+        errorStack: error.stack,
+      }
+    });
+  } finally {
+    await prisma.$disconnect();
+  }
+});
 
 ideaRouter.post(
   '/getall/by-segment',
@@ -533,10 +568,6 @@ ideaRouter.post(
             from segment
         ) sn on i.segment_id = sn.seg_id
         left join (
-            select id, sub_segment_name
-            from sub_segment
-        ) sbn on i.sub_segment_id = sbn.id
-        left join (
             select id, f_name
             from "user"
         ) userfname on i.author_id = userfname.id
@@ -580,7 +611,7 @@ ideaRouter.post(
     }
   }
 );
-  
+
 
 // Get all ideas from a specific author
 ideaRouter.get(

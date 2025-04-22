@@ -15,7 +15,7 @@ export const getAllSegments = async () => {
 export const getAllSuperSegments = async () => {
     const res = await axios({
         method: 'get',
-        url: `${API_BASE_URL}/superSegment/getAll`,
+        url: `${API_BASE_URL}/segment/getByType/superSegment`,
     });
     return res.data;
 };
@@ -28,7 +28,7 @@ export const getAllSuperSegmentsByCountryProvince = async (country: string, prov
 };
 
 export const getAllSubSegmentsWithId = async (segId: any) => {
-    const res = await axios.get<ISubSegment[]>(`${API_BASE_URL}/subSegment/getBySegmentId/${segId}`);
+    const res = await axios.get<ISubSegment[]>(`${API_BASE_URL}/segment/getChildren/${segId}`);
     return res.data;
 };
 

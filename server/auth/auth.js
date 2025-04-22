@@ -1,397 +1,214 @@
-  const passport = require('passport');
-  const localStrategy = require('passport-local').Strategy;
-  const { JWT_SECRET } = require('../lib/constants');
-  const prisma = require('../lib/prismaClient');
-  const { argon2Hash, argon2ConfirmHash } = require('../lib/utilityFunctions');
-  const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-  const { getSegmentInfo, cleanAddress } = require('../helpers/userSegmentHelpers');
-  const createAppPasswordTransport = require('./appPasswordTransport');
+const passport = require('passport');
+const localStrategy = require('passport-local').Strategy;
+const { JWT_SECRET } = require('../lib/constants');
+const prisma = require('../lib/prismaClient');
+const { argon2Hash, argon2ConfirmHash } = require('../lib/utilityFunctions');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const { getSegmentInfo, cleanAddress } = require('../helpers/userSegmentHelpers');
+const createAppPasswordTransport = require('./appPasswordTransport');
+const { verify } = require('jsonwebtoken');
+const { validateUserData, verifyUserExists } = require('./authHelpers/authValidations');
+const { processAdminAccount, processBusinessAccount, processResidentialAccount, processUserSegments } = require('./authHelpers/processAccountTypes');
+const createUser = require('./authHelpers/dao/user');
+const ValidationError = require('../types/ValidationError');
+const UserExistsError = require('../types/UserExistsError');
 
-  passport.use(
-    "signup",
-    new localStrategy.Strategy(
-      {
-        usernameField: "email",
-        passwordField: "password",
-        passReqToCallback: true,
-      },
-      async (req, email, password, done) => {
-        try {
-          // --------------------------------------------
-          // Verify User data
-          // --------------------------------------------
-          if (!email) {
-            return done({ message: "You must supply an email." });
-          }
+passport.use(
+  "signup",
+  new localStrategy.Strategy(
+    {
+      usernameField: "email",
+      passwordField: "password",
+      passReqToCallback: true,
+    },
+    async (req, email, password, done) => {
+      try {
+        // Validate basic user data
+        const validatedData = await validateUserData(
+          email,
+          password,
+          req.body.confirmPassword
+        );
 
-          if (!password) {
-            return done({ message: "You must supply a password." });
-          }
+        // Check if user exists
+        await verifyUserExists(validatedData.email);
 
-          const parsedMainData1 = {
-            ...req.body,
-            email: email.toLowerCase(),
-          };
+        // Process account based on type
+        let userData = {
+          ...req.body,
+          ...validatedData,
+        };
 
-          console.log('Parsed id: ' + parsedMainData1.id)
-          const { id, ...parsedMainData } = parsedMainData1;
-          
-          // hash password
-          const hashedPassword = await argon2Hash(password);
+        // Process different account types
+        userData = await processAdminAccount(userData);
+        userData = await processBusinessAccount(userData);
+        userData = processResidentialAccount(userData);
+        userData = processUserSegments(userData);
 
-          // Check if confirmPassword and password are the same
-          const { confirmPassword } = req.body;
-          const passwordConfirmation = password === confirmPassword;
-          if (!passwordConfirmation) {
-            return done({
-              message:
-                "Both password and password confirmation must be the same. Please try again.",
-            });
-          }
+        // Create user in database
+        const createdUser = await createUser(userData);
 
-          // --------------------------------------------
-          // ADMIN ACCOUNTS ONLY SECTION
-          // --------------------------------------------
-          // If admin use the generated email
-          // TODO move the Admin account types to a constant shared accross the app
-          if (
-            [
-              "SUPER_ADMIN",
-              "ADMIN",
-              "MOD",
-              "SEG_ADMIN",
-              "SEG_MOD",
-              "MUNICIPAL_SEG_ADMIN",
-            ].includes(parsedMainData.userType)
-          ) {
-            // Need to ensure that the generated adminmodEmail is unique
-            let uniqueEmailGenerated = false;
-            while (!uniqueEmailGenerated) {
-              const randomDigits = Math.floor(Math.random() * 100).toString().padStart(2, "0");
-              const randomChars = Math.random().toString(36).substring(2, 4).toLowerCase();
-              let adminmodEmail = `${parsedMainData.userType}${randomDigits}${randomChars}@mylivingcity.org`.toLowerCase();
-              const adminmodUser = await prisma.user.findFirst({
-                where: { email: adminmodEmail },
-              });
-              if (!adminmodUser) {
-                uniqueEmailGenerated = true;
-                parsedMainData.adminmodEmail = parsedMainData.email.toLowerCase();
-                parsedMainData.email = adminmodEmail;
-              }
-            }
-          }
-          // --------------------------------------------
-          // END ADMIN ACCOUNTS ONLY SECTION
-
-          // Check if user exists
-          const userExists = await prisma.user.findUnique({
-            where: { email: parsedMainData.email },
-          });
-          if (userExists && userExists.verified === true) {
-            return done(null, false, { message: "User already exists." });
-          }
-          if (userExists && userExists.verified !== true) {
-            // Send email verification
-            sendEmailVerification(userExists)
-            .catch((error) => console.log(error.message));
-            
-            return done(null, false, { message: "User already exists. Please check your email for verification link."});
-          }
-          // --------------------------------------------
-          // END Verify User data
-
-          // Validate address data
-          const addressData = { ...req.body.address };
-
-          // Validate geo data
-          const geoData = { ...req.body.geo };
-          
-          //remove the user address to isolate the street name for the user handle
-          const cleanStreetAddress = cleanAddress(req.body?.address?.streetAddress);
-
-          // Need to get the rest of segment data to fill in the userSegments table
-          const userSegmentData = await getSegmentInfo(
-              req.body?.userSegment,
-              req.body?.fname,
-              cleanStreetAddress, // Use cleaned address
-              req.body?.workDetails?.company,
-              req.body?.schoolDetails?.faculty
-          );
-
-          // Validate segment request data
-          const segmentRequest = (req.body?.segmentRequest || []).filter(newSegment => newSegment);
-
-          // --------------------------------------------
-          // COMMUNITY AND BUSINESS ACCOUNTS ONLY SECTION
-          // --------------------------------------------
-          const userReachRequest = [];
-          let stripeAccount = null;
-          if (parsedMainData.userType === "BUSINESS" || parsedMainData.userType === "COMMUNITY") 
-          {
-            // create stripe account
-            const newStripCustomer = await stripe.customers.create({
-              email: email.toLowerCase(),
-            });
-            stripeAccount = { stripeId: newStripCustomer.id, status: "incomplete"};
-            // and Validate user reach segment data
-            if (parsedMainData.userReach && parsedMainData.userReach.length > 0) {
-              const theSegments = await prisma.segments.findMany({
-                where: {
-                    segId: {
-                        in: parsedMainData.userReach
-                    }
-                }
-              });
-              for (let segId of parsedMainData.userReach) {
-                if (!theSegments.some(segment => segment.segId === segId)) {
-                  return done(null, false, {
-                    message: `The Segment with id ${segId} cannot be found!`
-                  });
-                } else {
-                  userReachRequest.push({segId: segId});
-                }
-              }
-            }
-          }
-          // --------------------------------------------
-          // END COMMUNITY AND BUSINESS ACCOUNTS ONLY SECTION 
-
-          // --------------------------------------------
-          // RESIDENTIAL ACCOUNTS ONLY SECTION
-          // --------------------------------------------
-          let School_Details = req.body?.schoolDetails
-          let Work_Details = req.body?.workDetails
-          if (parsedMainData.userType === "RESIDENTIAL") {
-            if (!School_Details) {School_Details = {};}
-            if (!Work_Details) {Work_Details = {};}
-          }
-          if (School_Details && School_Details.programCompletionDate) {
-            School_Details.programCompletionDate = new Date(School_Details.programCompletionDate);
-            if (isNaN(School_Details.programCompletionDate)) {
-              return done(null, false, {
-                message: "Invalid date for program completion date."
-              });
-            }
-          } else {
-            School_Details.programCompletionDate = null;
-          }
-          // --------------------------------------------
-          // END RESIDENTIAL ACCOUNTS ONLY SECTION
-
-          // Remove unnecessary data
-          delete parsedMainData.geo;
-          delete parsedMainData.address;
-          delete parsedMainData.confirmPassword;
-          delete parsedMainData.reachSegmentIds;
-          delete parsedMainData.userSegment;
-          delete parsedMainData.segmentRequest;
-          delete parsedMainData.userReach;
-          delete parsedMainData.schoolDetails;
-          delete parsedMainData.workDetails;
-
-          // Create user
-          const createdUser = await prisma.user.create({
-            data: {
-              geo: {
-                create: geoData,
-              },
-              address: {
-                create: addressData,
-              },
-              userSegments: {
-                create: userSegmentData,
-              },
-              segmentRequest: {
-                create: segmentRequest,
-              },
-              userReach: {
-                create: userReachRequest,
-              },
-              School_Details: {
-                create: School_Details,
-              },
-              Work_Details: {
-                create: Work_Details,
-              },
-              ...(stripeAccount && { stripe: { create: stripeAccount } }),
-              ...parsedMainData,
-              password: hashedPassword,
-            },
-            include: {
-              geo: true,
-              address: true,
-              userSegments: true,
-              stripe: true,
-              segmentRequest: true,
-              userReach: true,
-              School_Details: true,
-              Work_Details: true,
-            },
-          });
-
-          // Delete password fields of returned user
-          delete createdUser.password;
-          delete createdUser.passCode;
-
-          if (createdUser.verified === false) {
-            sendEmailVerification(createdUser)
-            .then((result) => console.log("Email sent...", result))
-            .catch((error) => console.log(error.message));
-          }
-          return done(null, createdUser);
-        } catch (error) {
-          console.error("signup error", error);
-          done(error);
-        } finally {
-          await prisma.$disconnect();
+        if (!createdUser.verified) {
+          await sendEmailVerification(createdUser);
         }
-      }
-    )
-  );
 
-  passport.use(
-    "login",
-    new localStrategy.Strategy(
-      {
-        usernameField: "email",
-        passwordField: "password",
-        passReqToCallback: true,
-      },
-      async (_req, email, password, done) => {
-        try {
-          const foundUser = await prisma.user.findFirst({
-            where: {
-                email: email.toLowerCase(),
-            },
-            // TODO: May cause unnecessary queries to database
-            include: {
-              geo: true,
-              address: true,
-              //userRole: true,
-            },
-          });
-
-          if (!foundUser) {
-            console.log("User not found");
-            return done(null, false, {
-              message: `User with email ${email} could not be found!`,
-            });
-          }
-
-          const validPassword = await argon2ConfirmHash(
-            password,
-            foundUser.password
-          );
-          if (!validPassword) {
-            return done(null, false, {
-              message: "Invalid password. Please try again.",
-            });
-          }
-
-          const parsedUser = {
-            ...foundUser,
-            password: null,
-          };
-
-          if (parsedUser.verified === false) {
-            await sendEmailVerification(parsedUser)
-            .then((result) => console.log("Email sent...", result))
-            .catch((error) => console.log(error.message));
-            return done(null, false, {
-              message:
-                "User is not verified. Please check your email for verification link.",
-            });
-          }
-
-          if (parsedUser.status === false) {
-            return done(null, false, { message: "Account is deactivated. Please contact Admin for assitance" })
-          }
-
-          return done(null, parsedUser, { message: "Logged in succesfully" });
-        } catch (error) {
-          console.log("Error is thrown", error);
-          return done(error);
-        } finally {
-          await prisma.$disconnect();
+        return done(null, createdUser);
+      } catch (error) {
+        if (error instanceof ValidationError || error instanceof UserExistsError) {
+          return done(null, false, { message: error.message });
         }
+        console.error("Signup error:", error);
+        return done(error);
+      } finally {
+        await prisma.$disconnect();
       }
-    )
-  );
-
-  const JWTStrategy = require('passport-jwt').Strategy;
-  const ExtractJWT = require('passport-jwt').ExtractJwt;
-
-  passport.use(
-    new JWTStrategy(
-      {
-        secretOrKey: JWT_SECRET,
-        jwtFromRequest: ExtractJWT.fromExtractors([
-          ExtractJWT.fromUrlQueryParameter('x-auth-token'),
-          ExtractJWT.fromHeader('x-auth-token'),
-          ExtractJWT.fromAuthHeaderAsBearerToken(),
-          ExtractJWT.fromAuthHeaderWithScheme('jwt'),
-        ]),
-      },
-      async (token, done) => {
-        try {
-          // console.log("token user", token.user);
-
-          if (!token?.user || !token?.user.id) {
-            // console.log("Invalid token: User ID is not present");
-            return done(null, false, {
-              message: "Invalid token: User ID is not present.",
-            });
-          }
-
-          // Check if given token user is valid
-          const foundUser = await prisma.user.findUnique({
-            where: { id: token.user.id }
-          });
-
-          if (!foundUser) {
-            // console.log('User could not be found in Database');
-            return done(null, false, { message: 'User could not be found in Database.'})
-          }
-          
-          // console.log('User found in database', foundUser);
-          // console.log("User token info", token.user);
-          return done(null, foundUser);
-        } catch (error) {
-          // console.log('Error is thrown', error);
-          done(error);
-        } finally {
-          await prisma.$disconnect();
-        }
-      }
-    )
+    }
   )
+);
 
-  const sendEmailVerification = async (user) => {
-    try {
+passport.use(
+  "login",
+  new localStrategy.Strategy(
+    {
+      usernameField: "email",
+      passwordField: "password",
+      passReqToCallback: true,
+    },
+    async (_req, email, password, done) => {
+      try {
+        const foundUser = await prisma.user.findFirst({
+          where: {
+            email: email.toLowerCase(),
+          },
+          // TODO: May cause unnecessary queries to database
+          include: {
+            geo: true,
+            address: true,
+            //userRole: true,
+          },
+        });
 
-      // Generate a unique verification token for the user
-      const token = Math.random().toString(36).substring(2, 8).toUpperCase();
-      await prisma.user.update({
-        where: { id: user.id },
-        data: { verifiedToken: token },
-      });
+        if (!foundUser) {
+          console.log("User not found");
+          return done(null, false, {
+            message: `User with email ${email} could not be found!`,
+          });
+        }
 
-      const appUrl = process.env.APP_URL || 'http://localhost:3000';
-      var url = process.env.APP_URL || 'http://localhost:3001';
-      url += `/emailVerification/checkVerificationCode/${user.id}/${token}`;
+        const validPassword = await argon2ConfirmHash(
+          password,
+          foundUser.password
+        );
+        if (!validPassword) {
+          return done(null, false, {
+            message: "Invalid password. Please try again.",
+          });
+        }
 
-      // Use App Password transport (or OAuth)
-      const transport = createAppPasswordTransport();
+        const parsedUser = {
+          ...foundUser,
+          password: null,
+        };
 
-      const mailOptions = {
-        from: 'MyLivingCity Email Verification<' + process.env.EMAIL + '>', // sender address
-        to: user.email, // list of receivers
-        subject: "Email Verification", // Subject line
-        text: "Please click the link to verify your email" + url, // plain text body
-        // Html should have an element with a get request to the url
-        // html: `<a href="${url}">Click here to verify your email</a>
-        // email template: https://codepen.io/md-khokon/pen/bPLqzV
-        html: `<!DOCTYPE html>
+        if (parsedUser.verified === false) {
+          await sendEmailVerification(parsedUser)
+            .then((result) => console.log("Email sent...", result))
+            .catch((error) => console.log(error.message));
+          return done(null, false, {
+            message:
+              "User is not verified. Please check your email for verification link.",
+          });
+        }
+
+        if (parsedUser.status === false) {
+          return done(null, false, { message: "Account is deactivated. Please contact Admin for assitance" })
+        }
+
+        return done(null, parsedUser, { message: "Logged in succesfully" });
+      } catch (error) {
+        console.log("Error is thrown", error);
+        return done(error);
+      } finally {
+        await prisma.$disconnect();
+      }
+    }
+  )
+);
+
+const JWTStrategy = require('passport-jwt').Strategy;
+const ExtractJWT = require('passport-jwt').ExtractJwt;
+
+passport.use(
+  new JWTStrategy(
+    {
+      secretOrKey: JWT_SECRET,
+      jwtFromRequest: ExtractJWT.fromExtractors([
+        ExtractJWT.fromUrlQueryParameter('x-auth-token'),
+        ExtractJWT.fromHeader('x-auth-token'),
+        ExtractJWT.fromAuthHeaderAsBearerToken(),
+        ExtractJWT.fromAuthHeaderWithScheme('jwt'),
+      ]),
+    },
+    async (token, done) => {
+      try {
+        // console.log("token user", token.user);
+
+        if (!token?.user || !token?.user.id) {
+          // console.log("Invalid token: User ID is not present");
+          return done(null, false, {
+            message: "Invalid token: User ID is not present.",
+          });
+        }
+
+        // Check if given token user is valid
+        const foundUser = await prisma.user.findUnique({
+          where: { id: token.user.id }
+        });
+
+        if (!foundUser) {
+          // console.log('User could not be found in Database');
+          return done(null, false, { message: 'User could not be found in Database.' })
+        }
+
+        // console.log('User found in database', foundUser);
+        // console.log("User token info", token.user);
+        return done(null, foundUser);
+      } catch (error) {
+        // console.log('Error is thrown', error);
+        done(error);
+      } finally {
+        await prisma.$disconnect();
+      }
+    }
+  )
+)
+
+const sendEmailVerification = async (user) => {
+  try {
+
+    // Generate a unique verification token for the user
+    const token = Math.random().toString(36).substring(2, 8).toUpperCase();
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { verifiedToken: token },
+    });
+
+    const appUrl = process.env.APP_URL || 'http://localhost:3000';
+    var url = process.env.APP_URL || 'http://localhost:3001';
+    url += `/emailVerification/checkVerificationCode/${user.id}/${token}`;
+
+    // Use App Password transport (or OAuth)
+    const transport = createAppPasswordTransport();
+
+    const mailOptions = {
+      from: 'MyLivingCity Email Verification<' + process.env.EMAIL + '>', // sender address
+      to: user.email, // list of receivers
+      subject: "Email Verification", // Subject line
+      text: "Please click the link to verify your email" + url, // plain text body
+      // Html should have an element with a get request to the url
+      // html: `<a href="${url}">Click here to verify your email</a>
+      // email template: https://codepen.io/md-khokon/pen/bPLqzV
+      html: `<!DOCTYPE html>
         <html>
         <head>
     
@@ -626,13 +443,14 @@
     
         </body>
         </html>`
-    
-      };
 
-      await transport.sendMail(mailOptions);
+    };
 
-    } catch (error) {
-        console.error('Error sending verification email:', error);
-        throw new Error('Failed to send verification email.');
-    }
-  };
+    await transport.sendMail(mailOptions);
+
+  } catch (error) {
+    console.error('Error sending verification email:', error);
+    throw new Error('Failed to send verification email.');
+  }
+};
+

@@ -122,35 +122,72 @@ export const getUserSchoolSegmentInfo = async (token: string | null) => {
 //     return segData
 // }
 export const getMyUserSegmentInfoRefined = async (token: string | null, userId: string | null) => {
-    const sortByType = (a: ISegmentData) => {
-        if (a.userType === 'Resident' && a.segType === 'Segment') return -1;
-        if (a.userType === 'Resident') return -1;
-        else return 1;
-    };
-    const one = await axios.get(`${API_BASE_URL}/userSegment/homeSegment`, getAxiosJwtRequestOption(token!));
-    const two = await axios.get(`${API_BASE_URL}/userSegment/homeSubSegment`, getAxiosJwtRequestOption(token!));
-    const three = await axios.get(`${API_BASE_URL}/userSegment/workSegment`, getAxiosJwtRequestOption(token!));
-    const four = await axios.get(`${API_BASE_URL}/userSegment/workSubSegment`, getAxiosJwtRequestOption(token!));
-    const five = await axios.get(`${API_BASE_URL}/userSegment/schoolSegment`, getAxiosJwtRequestOption(token!));
-    const six = await axios.get(`${API_BASE_URL}/userSegment/schoolSubSegment`, getAxiosJwtRequestOption(token!));
-    const originalData = await axios.all([one, two, three, four, five, six]).then(axios.spread((...res) => {
-        console.log(res);
-        let homeSuper: ISegmentData = { id: res[0].data.superSegId, name: res[0].data.superSegName, segType: 'Super-Segment', userType: 'Resident' };
-        let homeSeg: ISegmentData = { id: res[0].data.segId, name: res[0].data.name, segType: 'Segment', userType: 'Resident' };
-        let homeSub: ISegmentData = { id: res[1].data.id, name: res[1].data.name, segType: 'Sub-Segment', userType: 'Resident' };
-        let workSuper: ISegmentData = { id: res[2].data.superSegId, name: res[2].data.superSegName, segType: 'Super-Segment', userType: 'Worker' };
-        let workSeg: ISegmentData = { id: res[2].data.segId, name: res[2].data.name, segType: 'Segment', userType: 'Worker' };
-        let workSub: ISegmentData = { id: res[3].data.id, name: res[3].data.name, segType: 'Sub-Segment', userType: 'Worker' };
-        let schoolSuper: ISegmentData = { id: res[4].data.superSegId, name: res[4].data.superSegName, segType: 'Super-Segment', userType: 'Student' };
-        let schoolSeg: ISegmentData = { id: res[4].data.segId, name: res[4].data.name, segType: 'Segment', userType: 'Student' };
-        let schoolSub: ISegmentData = { id: res[5].data.id, name: res[5].data.name, segType: 'Sub-Segment', userType: 'Student' };
-        return [workSuper, workSeg, workSub, schoolSuper, schoolSeg, schoolSub, homeSeg, homeSuper, homeSub,];
-    }));
-    let removeUndefined = originalData.filter(({ name }) => name !== undefined);
-    let names = removeUndefined.map(o => o.name);
-    let filteredData = removeUndefined.filter(({ name }, index) => (!names.includes(name, index + 1)));
-    return filteredData.sort(sortByType);
+    try {
+        // Sort function for segments prioritizing Resident and Segment types
+        const sortByType = (a: ISegmentData, b: ISegmentData) => {
+            if (a.userType === 'Resident' && a.segType === 'Segment') return -1;
+            if (a.userType === 'Resident') return -1;
+            if (b.userType === 'Resident') return 1;
+            return 0;
+        };
+
+        // Make a single API call to our new endpoint
+        const response = await axios.get(
+            `${API_BASE_URL}/userSegment`,
+            getAxiosJwtRequestOption(token!)
+        );
+
+        // Transform the response data into the expected format
+        const segments = response.data.data.map((userSegment: any) => {
+            // Extract segment data
+            const segment = userSegment.segment;
+
+            // Determine segment type from relationship or structure
+            let segType: 'Super-Segment' | 'Segment' | 'Sub-Segment';
+            if (segment.isSubSegment) {
+                segType = 'Sub-Segment';
+            } else if (segment.isSuperSegment) {
+                segType = 'Super-Segment';
+            } else {
+                segType = 'Segment';
+            }
+
+            // Determine user type from the relationship
+            const userType = userSegment.userSegmentRelationship === 'HOME'
+                ? 'Resident'
+                : userSegment.userSegmentRelationship === 'WORK'
+                    ? 'Worker'
+                    : 'Student';
+
+            // Create the segment data object
+            return {
+                id: segment.segId,
+                name: segment.name,
+                segType,
+                userType,
+                // If super segment info is needed
+                superSegId: segment.superSegmentId,
+                superSegName: segment.superSegment?.name
+            } as ISegmentData;
+        });
+
+        // Remove undefined names
+        const validSegments = segments.filter((segment: ISegmentData) => segment.name !== undefined);
+
+        // Remove duplicates by name
+        const uniqueSegments = validSegments.filter(
+            (segment: ISegment, index: number, self: ISegmentData[]) =>
+                index === self.findIndex((s: ISegmentData) => s.name === segment.name)
+        );
+
+        // Sort and return
+        return uniqueSegments.sort(sortByType);
+    } catch (error) {
+        console.error('Error fetching user segments:', error);
+        throw error;
+    }
 };
+
 
 export const patchUserSegment = async (userId: string | null, data: any) => {
     if (!userId || !data) {

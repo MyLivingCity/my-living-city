@@ -6,6 +6,89 @@ const { isInteger } = require('lodash');
 const { isEmpty } = require('lodash');
 const { subSegments, user } = require('../lib/prismaClient');
 const { UploadPartOutputFilterSensitiveLog } = require('@aws-sdk/client-s3');
+const { admob_v1beta } = require('googleapis');
+
+/**
+ * @swagger
+ * /api/user-segments:
+ *   get:
+ *     summary: Get all segments for the authenticated user
+ *     description: Retrieves all segments associated with the authenticated user
+ *     security:
+ *       - bearerAuth: []
+ *     tags:
+ *       - User Segments
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved user segments
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                       segmentHandle:
+ *                         type: string
+ *                       userSegmentRelationship:
+ *                         type: string
+ *                       segmentId:
+ *                         type: integer
+ *                       segment:
+ *                         type: object
+ *       401:
+ *         description: Unauthorized - User not authenticated
+ *       500:
+ *         description: Server error
+ */
+userSegmentRouter.get(
+  '/',
+  passport.authenticate('jwt', { session: false }),
+  async (req, res, next) => {
+    try {
+      // Extract user ID from authenticated request
+      const { id: userId } = req.user;
+
+      if (!userId) {
+        return res.status(400).json({
+          success: false,
+          message: 'User ID is required',
+        });
+      }
+
+      // Query the database for all segments associated with this user
+      const userSegments = await prisma.userSegments.findMany({
+        where: {
+          userId: userId,
+        },
+        include: {
+          segment: true, // Include related segment data
+        },
+      });
+
+      // Return the segments
+      return res.status(200).json({
+        success: true,
+        data: userSegments,
+      });
+    } catch (error) {
+      console.error('Error fetching user segments:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'An error occurred while fetching user segments',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined,
+      });
+    }
+  }
+);
 
 userSegmentRouter.post(
     '/create',
@@ -1279,3 +1362,4 @@ userSegmentRouter.patch('/:userId/patch', async (req, res) => {
 })
 
 module.exports = userSegmentRouter;
+

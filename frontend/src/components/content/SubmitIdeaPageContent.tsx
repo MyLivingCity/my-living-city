@@ -31,7 +31,9 @@ import { getMyUserSegmentInfoRefined } from 'src/lib/api/userSegmentRoutes';
 interface SubmitIdeaPageContentProps {
     categories: ICategory[] | undefined;
     segData: ISegmentData[];
+    userSegments?: ISegmentData[];
 }
+
 
 /**
  * Idea needs categoryId to submit
@@ -42,19 +44,13 @@ const DEFAULT_CAT_ID = 1;
 const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
     categories,
     segData,
+    userSegments
 }) => {
     const { token, user } = useContext(UserProfileContext);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<IFetchError | null>(null);
     const history = useHistory();
-    const [userSegments, setUserSegments] = useState<ISegmentData[]>();
 
-    const segDatas = getMyUserSegmentInfoRefined(token, user!?.id);
-    segDatas.then((data) => {
-        setUserSegments(data);
-    }).catch((error) => {
-        console.log(error);
-    });
     const handleCommunityChange = (index: number) => {
         // if (updatedSegData[index].segType === 'Segment') {
         if (true) {

@@ -44,10 +44,10 @@ export const getMyUserSegmentInfo = async (token: string | null, userId: string 
     return req.data;
 };
 
-export const updateUserSegmentInfo = async (segmentInfo: IUserSegment, token: string | null) => {
+export const updateUserSegmentInfo = async (userId: string, segmentInfo: IUserSegment[], token: string | null) => {
     const res = await axios({
         method: 'put',
-        url: `${API_BASE_URL}/userSegment/update/${segmentInfo.userId}`,
+        url: `${API_BASE_URL}/userSegment/update/${userId}`,
         data: segmentInfo,
         headers: { 'Access-Control-Allow-Origin': '*', 'x-auth-token': token },
         withCredentials: true

@@ -43,31 +43,6 @@ export interface ISegmentRequest {
   segmentName: string;
   subSegmentName: string;
 }
-// export interface IUserSegment {
-//   id: string;
-//   userId: string;
-//   homeSuperSegId: number;
-//   homeSuperSegName: string;
-//   workSuperSegId: number | null,
-//   workSuperSegName: string | null,
-//   schoolSuperSegId: number | null,
-//   schoolSuperSegName: string | null,
-//   homeSegmentId: number;
-//   homeSegmentName: string;
-//   workSegmentId: number;
-//   workSegmentName: string;
-//   schoolSegmentId: number;
-//   schoolSegmentName: string;
-//   homeSubSegmentId: number;
-//   homeSubSegmentName: string;
-//   workSubSegmentId: number;
-//   workSubSegmentName: string;
-//   schoolSubSegmentId: number;
-//   schoolSubSegmentName: string;
-//   homeSegHandle: string;
-//   workSegHandle: string;
-//   schoolSegHandle: string;
-// }
 
 export interface IUserSegment {
   id: number;

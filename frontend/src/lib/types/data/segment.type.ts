@@ -1,14 +1,19 @@
+import { StringLiteral } from 'typescript';
 import { IUser } from './user.type';
 
 export interface ISegment {
   segId: number;
-  superSegId: number;
+  parentId: number;
+  parentSegment?: ISegment;
+  name: string;
   country: string;
   province: string;
-  name: string;
-  superSegName?: string;
-  createdAt: Date;
+  lat: number;
+  lon: number;
+  radius: number;
+  createdAt: Date
   updatedAt: Date;
+  segmentType: SegmentType;
 }
 export interface ISubSegment {
   id: number;
@@ -38,30 +43,38 @@ export interface ISegmentRequest {
   segmentName: string;
   subSegmentName: string;
 }
+// export interface IUserSegment {
+//   id: string;
+//   userId: string;
+//   homeSuperSegId: number;
+//   homeSuperSegName: string;
+//   workSuperSegId: number | null,
+//   workSuperSegName: string | null,
+//   schoolSuperSegId: number | null,
+//   schoolSuperSegName: string | null,
+//   homeSegmentId: number;
+//   homeSegmentName: string;
+//   workSegmentId: number;
+//   workSegmentName: string;
+//   schoolSegmentId: number;
+//   schoolSegmentName: string;
+//   homeSubSegmentId: number;
+//   homeSubSegmentName: string;
+//   workSubSegmentId: number;
+//   workSubSegmentName: string;
+//   schoolSubSegmentId: number;
+//   schoolSubSegmentName: string;
+//   homeSegHandle: string;
+//   workSegHandle: string;
+//   schoolSegHandle: string;
+// }
+
 export interface IUserSegment {
-  id: string;
+  id: number;
   userId: string;
-  homeSuperSegId: number;
-  homeSuperSegName: string;
-  workSuperSegId: number | null,
-  workSuperSegName: string | null,
-  schoolSuperSegId: number | null,
-  schoolSuperSegName: string | null,
-  homeSegmentId: number;
-  homeSegmentName: string;
-  workSegmentId: number;
-  workSegmentName: string;
-  schoolSegmentId: number;
-  schoolSegmentName: string;
-  homeSubSegmentId: number;
-  homeSubSegmentName: string;
-  workSubSegmentId: number;
-  workSubSegmentName: string;
-  schoolSubSegmentId: number;
-  schoolSubSegmentName: string;
-  homeSegHandle: string;
-  workSegHandle: string;
-  schoolSegHandle: string;
+  userSegmentRelationship: UserSegmentRelationshipEnum;
+  segmentId: number;
+  segment?: ISegment;
 }
 
 export interface ISegmentData {
@@ -69,6 +82,18 @@ export interface ISegmentData {
   name: string;
   segType: 'Segment' | 'Sub-Segment' | 'Super-Segment';
   userType: 'Resident' | 'Worker' | 'Student';
+}
+
+export interface IParsedSegment {
+  segId: number;
+  name: string;
+  segmentType: 'subSegment' | 'segment' | 'superSegment';
+}
+
+export enum SegmentType {
+  subSegment = 'subSegment',
+  segment = 'segment',
+  superSegment = 'superSegment',
 }
 
 export interface ISegmentAggregateInfo {
@@ -92,4 +117,22 @@ export interface ISegmentUserInfo {
   residents: IUser[];
   workers: IUser[];
   students: IUser[];
+}
+
+export enum UserSegmentRelationshipEnum {
+  HOME = 'HOME',
+  SCHOOL = 'SCHOOL',
+  WORK = 'WORK',
+}
+
+export interface SegmentGroup {
+  superSegment?: ISegment;
+  segment?: ISegment;
+  subSegment?: ISegment;
+}
+
+export interface SegmentsByRelation {
+  homeSegments: SegmentGroup;
+  workSegments: SegmentGroup;
+  schoolSegments: SegmentGroup;
 }

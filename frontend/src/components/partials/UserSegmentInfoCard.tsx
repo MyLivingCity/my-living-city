@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Card, Table } from 'react-bootstrap';
 import { getMyUserSegmentInfo } from 'src/lib/api/userSegmentRoutes';
-import { capitalizeString } from 'src/lib/utilityFunctions';
-import { IUserSegment } from './../../lib/types/input/register.input';
+import { capitalizeString, getSegmentsFromUserSegments } from 'src/lib/utilityFunctions';
+import { IUserSegment, UserSegmentRelationshipEnum } from './../../lib/types/data/segment.type';
 
 interface UserSegmentInfoCardProps {
     email: string;
@@ -13,21 +13,20 @@ interface UserSegmentInfoCardProps {
 export const UserSegmentInfoCard: React.FC<UserSegmentInfoCardProps> = ({email, id, token}) => {
     const [showReq, setShowReq] = useState(false);
     const [update, setUpdate] = useState(false);
-    const [userSegment, setUserSegment] = useState<IUserSegment | null>();
+    const [userSegments, setUserSegments] = useState<IUserSegment[] | null>();
     const capitalizeString = (s: string) => {
         return s.charAt(0).toUpperCase() + s.slice(1);
     };
     useEffect(()=>{
         async function fetchData() {
             const response = await getMyUserSegmentInfo(token!, id);
-            if(response) {
-                setUserSegment(response);
-            }else{
-                setUserSegment(null);
-            } 
+            setUserSegments(response || null);
         }
         fetchData();
     },[id, token]);
+
+    const { homeSegments, workSegments, schoolSegments} = getSegmentsFromUserSegments(userSegments ?? undefined);
+
     return (
 
         <Card>
@@ -47,26 +46,13 @@ export const UserSegmentInfoCard: React.FC<UserSegmentInfoCardProps> = ({email, 
                     </thead>
                     <tbody>
                         <tr>
-                            <td>{userSegment ? capitalizeString(userSegment.homeSegmentName) : ''}</td>
-                            <td>{userSegment ? capitalizeString(userSegment.workSegmentName) : ''}</td>
-                            <td>{userSegment ? capitalizeString(userSegment.schoolSegmentName) : ''}</td>
-                            <td>{userSegment ? capitalizeString(userSegment.homeSubSegmentName) : ''}</td>
-                            <td>{userSegment ? capitalizeString(userSegment.workSubSegmentName) : ''}</td>
-                            <td>{userSegment ? capitalizeString(userSegment.schoolSubSegmentName) : ''}</td>
+                            <td>{capitalizeString(homeSegments?.segment?.name || '')}</td>
+                            <td>{capitalizeString(workSegments?.segment?.name || '')}</td>
+                            <td>{capitalizeString(schoolSegments?.segment?.name || '')}</td>
+                            <td>{capitalizeString(homeSegments?.subSegment?.name || '')}</td>
+                            <td>{capitalizeString(workSegments?.subSegment?.name || '')}</td>
+                            <td>{capitalizeString(schoolSegments?.subSegment?.name || '')}</td>
                         </tr>
-                        {/* {segReq?.map((req: ISegmentRequest, index: number) => (
-                <tr key={req.id}>
-                    <td>{req.segmentName ? capitalizeFirstLetterEachWord(req.segmentName) : ''}</td>
-                    <td>{req.subSegmentName ? capitalizeFirstLetterEachWord(req.subSegmentName) : ''}</td>
-                    <td>{req.country}</td>
-                    <td>{req.province}</td>
-                    <td><Button size="sm" variant="outline-danger" onClick={()=>{
-                        deleteUserSegmentById(String(req.id), token);
-                        segReq.splice(index,1);
-                        setUpdate(b=>!b);
-                    }}>Delete</Button></td>
-                </tr>
-                ))} */}
                     </tbody>
                 </Table>
             </Card.Body>}

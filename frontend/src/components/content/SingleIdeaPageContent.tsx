@@ -6,7 +6,6 @@ import { useSingleIdea } from 'src/hooks/ideaHooks';
 import {
     capitalizeFirstLetterEachWord,
     capitalizeString,
-    getUserHandle
 } from '../../lib/utilityFunctions';
 import CommentsSection from '../partials/SingleIdeaContent/CommentsSection';
 import RatingsSection from '../partials/SingleIdeaContent/RatingsSection';
@@ -47,6 +46,7 @@ import Form from 'react-bootstrap/Form';
 import { useCheckFlagBan } from 'src/hooks/flagHooks';
 import EndorsedUsersSection from '../partials/SingleIdeaContent/EndorsedUsersSection';
 import { IUser } from 'src/lib/types/data/user.type';
+import { UserSegmentRelationshipEnum } from 'src/lib/types/data/segment.type';
 
 interface SingleIdeaPageContentProps {
     ideaData: IIdeaWithRelationship;
@@ -709,24 +709,26 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
                             <div className='footer-handle'>
                                 {
-                                    author?.userSegments?.homeSegmentId == segmentId &&
+                                        author?.userSegments?.find( seg => seg.userSegmentRelationship === UserSegmentRelationshipEnum.HOME)?.id == segmentId &&
                                     (
                                         <div>
-                                            {author?.fname}@{author?.address?.streetAddress} as Resident
+                                            {author?.userHandles?.find( h => h.userSegmentRelationship === UserSegmentRelationshipEnum.HOME)?.handle ?? 
+                                            `${author?.fname}@${author?.address?.streetAddress}`} as Resident
                                         </div>
                                     ) ||
 
-                                    author?.userSegments?.schoolSegmentId == segmentId &&
+                                    author?.userSegments?.find( seg => seg.userSegmentRelationship === UserSegmentRelationshipEnum.SCHOOL)?.id == segmentId &&
+
                                     (
                                         <div>
-                                            {author?.userSegments?.schoolSegHandle} as Student
+                                            {author?.userHandles?.find( h => h.userSegmentRelationship === UserSegmentRelationshipEnum.SCHOOL)} as Student
                                         </div>
                                     ) ||
 
-                                    author?.userSegments?.workSegmentId == segmentId &&
+                                    author?.userSegments?.find( seg => seg.userSegmentRelationship === UserSegmentRelationshipEnum.WORK)?.id == segmentId &&
                                     (
                                         <div>
-                                            {author?.userSegments?.workSegHandle} as Worker
+                                            {author?.userHandles?.find( h => h.userSegmentRelationship === UserSegmentRelationshipEnum.WORK)} as Worker
                                         </div>
                                     )
                                 }

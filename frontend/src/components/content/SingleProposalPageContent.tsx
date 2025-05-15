@@ -14,8 +14,7 @@ import {
 import { IIdea, IIdeaWithRelationship } from '../../lib/types/data/idea.type';
 import {
     capitalizeFirstLetterEachWord,
-    capitalizeString,
-    getUserHandle
+    capitalizeString
 } from '../../lib/utilityFunctions';
 import LoadingSpinnerInline from '../ui/LoadingSpinnerInline';
 import CommentsSection from '../partials/SingleIdeaContent/CommentsSection';
@@ -62,13 +61,14 @@ import {
 import { createFlagUnderIdea, compareIdeaFlagsWithThreshold } from 'src/lib/api/flagRoutes';
 import { useCheckFlagBan } from 'src/hooks/flagHooks';
 import EndorsedUsersSection from '../partials/SingleIdeaContent/EndorsedUsersSection';
-import { IUserSegment } from '../../lib/types/data/segment.type';
+import { ISegment, IUserSegment } from '../../lib/types/data/segment.type';
 import { getMyUserSegmentInfo } from '../../lib/api/userSegmentRoutes';
 import { useAllUserSegments } from 'src/hooks/userSegmentHooks';
 import { BsPeople, BsHeartHalf } from 'react-icons/bs';
 import { AiOutlineRadiusBottomright, AiOutlineStar } from 'react-icons/ai';
 import { IUser } from 'src/lib/types/data/user.type';
 import SuggestedIdeasTable from '../partials/SuggestedIdeasTable';
+import { UserSegmentRelationshipEnum } from 'src/lib/types/data/segment.type';
 
 
 interface SingleIdeaPageContentProps {
@@ -833,7 +833,30 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                     <RedditIcon size={32} round />
                                 </RedditShareButton>
                             </div>
-                            <div className='footer-handle'>{getUserHandle(ideaData.subSegmentId, ideaData.segmentId, ideaData.superSegmentId, author)}</div>
+                            <div className='footer-handle'>
+                                {
+                                        author?.userSegments?.find( seg => seg.userSegmentRelationship === UserSegmentRelationshipEnum.HOME)?.id == segment?.segId &&
+                                    (
+                                        <div>
+                                            {author?.userHandles?.find( h => h.userSegmentRelationship === UserSegmentRelationshipEnum.HOME)?.handle ?? 
+                                            `${author?.fname}@${author?.address?.streetAddress}`} as Resident
+                                        </div>
+                                    ) ||
+                                    author?.userSegments?.find( seg => seg.userSegmentRelationship === UserSegmentRelationshipEnum.SCHOOL)?.id == segment?.segId &&
+
+                                    (
+                                        <div>
+                                            {author?.userHandles?.find( h => h.userSegmentRelationship === UserSegmentRelationshipEnum.SCHOOL)} as Student
+                                        </div>
+                                    ) ||
+                                    author?.userSegments?.find( seg => seg.userSegmentRelationship === UserSegmentRelationshipEnum.WORK)?.id == segment?.segId &&
+                                    (
+                                        <div>
+                                            {author?.userHandles?.find( h => h.userSegmentRelationship === UserSegmentRelationshipEnum.WORK)} as Worker
+                                        </div>
+                                    )
+                                }
+                            </div>
                         </Card.Footer>
 
                     </Col>

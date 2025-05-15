@@ -16,7 +16,7 @@ import { UserManagementBanHistoryModal } from '../modal/UserManagementBanHistory
 import { IBanUser } from 'src/lib/types/data/banUser.type';
 import { UserSegPlainText } from '../partials/UserSegPlainText';
 import { IRegisterInput } from './../../lib/types/input/register.input';
-import { ISegment, ISuperSegment } from 'src/lib/types/data/segment.type';
+import { ISegment, ISuperSegment, UserSegmentRelationshipEnum, SegmentType } from 'src/lib/types/data/segment.type';
 import { EditUserInfoModal } from '../modal/EditUserInfoModal';
 import UserChangePasswordModal from '../modal/UserChangePasswordModal';
 import { postUserSegmentInfo } from 'src/lib/api/userSegmentRoutes';
@@ -123,6 +123,18 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
         setSelectedSchoolRegion(selectedRegionName);
     };
 
+    const homeSegment = userVerbose?.userSegments?.find(
+        us => us.userSegmentRelationship === UserSegmentRelationshipEnum.HOME && us.segment?.segmentType === SegmentType.segment
+    );
+      
+    const workSegment = userVerbose?.userSegments?.find(
+        us => us.userSegmentRelationship === UserSegmentRelationshipEnum.WORK && us.segment?.segmentType === SegmentType.segment
+    );
+
+    const schoolSegment = userVerbose?.userSegments?.find(
+        us => us.userSegmentRelationship === UserSegmentRelationshipEnum.SCHOOL && us.segment?.segmentType === SegmentType.segment
+    );
+
     let userFalseFlags: number[] = [];
     let userFlags: number[] = [];
     if (users && flags) {
@@ -197,7 +209,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
 
             // Return the municipal seg admin's organization name or fallback to their homeSegmentName if an org name is not set.
             case USER_TYPES.MUNICIPAL_SEG_ADMIN: {
-                return userVerbose?.organizationName || userVerbose?.userSegments?.homeSegmentName;
+                return userVerbose?.organizationName || homeSegment?.segment?.name;
             }
         }
         return undefined; 
@@ -245,7 +257,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
                 faculty: '',
                 programCompletionDate: new Date(),
             },
-            homeSegmentId: userVerbose?.userType === USER_TYPES.SUPER_ADMIN || userVerbose?.userType === USER_TYPES.ADMIN ? newHomeID : userVerbose?.userSegments?.homeSegmentId,
+            homeSegmentId: userVerbose?.userType === USER_TYPES.SUPER_ADMIN || userVerbose?.userType === USER_TYPES.ADMIN ? newHomeID : homeSegment?.segment?.segId,
             workSegmentId: userVerbose?.userType === USER_TYPES.SUPER_ADMIN || userVerbose?.userType === USER_TYPES.ADMIN ? newWorkID : undefined,
             schoolSegmentId: userVerbose?.userType === USER_TYPES.SUPER_ADMIN || userVerbose?.userType === USER_TYPES.ADMIN ? newSchoolID : undefined,
             homeSubSegmentId: undefined,
@@ -345,8 +357,9 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
                 const municipalFilteredUsers = users.filter(
                     user =>
                         user.userType === 'MUNICIPAL' &&
-                        userVerbose.userSegments?.homeSegmentId &&
-                        user.userSegments?.homeSegmentId == userVerbose.userSegments.homeSegmentId
+                        homeSegment?.segment?.segId &&
+                        homeSegment?.segment?.segId == user.userSegments?.find(us => us.userSegmentRelationship == UserSegmentRelationshipEnum.HOME 
+                            && us.segment?.segmentType == SegmentType.segment)?.segment?.segId
                 );
                 setMunicipalFilteredUsers(municipalFilteredUsers);
             }
@@ -355,7 +368,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
     }, [users, userVerbose]);
 
     const [validEmail, setValidEmail] = useState(true);
-
+    
 
     if (user?.userType === USER_TYPES.MUNICIPAL_SEG_ADMIN) {
         return (
@@ -588,7 +601,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
                                     <Form.Control as='select' name='inputCom' onChange={(event) => { newHomeID = parseInt(event.target.value); }}>
                                         <option value=''>Select Community</option>
                                         {subSeg && subSeg
-                                            .filter(seg => seg.superSegName?.toUpperCase() === selectedHomeRegion.toUpperCase())
+                                            .filter(seg => seg.parentSegment?.name.toUpperCase() === selectedHomeRegion.toUpperCase())
                                             .map(seg => (
                                                 <option key={seg.segId + 'hc'} value={seg.segId}>
                                                     {capitalizeString(seg.name)}
@@ -616,7 +629,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
                                             <Form.Control as='select' name='inputWorkCommunity' onChange={(event) => { newWorkID = parseInt(event.target.value); }}>
                                                 <option value=''>Select Community</option>
                                                 {subSeg && subSeg
-                                                    .filter(seg => seg.superSegName?.toUpperCase() === selectedWorkRegion.toUpperCase())
+                                                    .filter(seg => seg.parentSegment?.name.toUpperCase() === selectedWorkRegion.toUpperCase())
                                                     .map(seg => (
                                                         <option key={seg.segId + 'wc'} value={seg.segId}>
                                                             {capitalizeString(seg.name)}
@@ -643,7 +656,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
                                             <Form.Control as='select' name='inputSchoolCommunity' onChange={(event) => { newSchoolID = parseInt(event.target.value); }}>
                                                 <option value=''>Select Community</option>
                                                 {subSeg && subSeg
-                                                    .filter(seg => seg.superSegName?.toUpperCase() === selectedSchoolRegion.toUpperCase())
+                                                    .filter(seg => seg.parentSegment?.name.toUpperCase() === selectedSchoolRegion.toUpperCase())
                                                     .map(seg => (
                                                         <option key={seg.segId + 'sc'} value={seg.segId}>
                                                             {capitalizeString(seg.name)}
@@ -701,9 +714,12 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
                                                 <td className='text-center align-middle'>{req.fname}</td>
                                                 <td className='text-center align-middle'>{req.lname}</td>
                                                 <td className='text-center align-middle'>{req.userType}</td>
-                                                <td className='text-center align-middle'>{req?.userSegments?.homeSegmentName || 'NA'}</td>
-                                                <td className='text-center align-middle'>{req?.userSegments?.schoolSegmentName || 'NA'}</td>
-                                                <td className='text-center align-middle'>{req?.userSegments?.workSegmentName || 'NA'}</td>
+                                                <td className='text-center align-middle'>{req?.userSegments?.find( s => 
+                                                    s.userSegmentRelationship == UserSegmentRelationshipEnum.HOME && s.segment?.segmentType == SegmentType.segment) || 'NA'}</td>
+                                                <td className='text-center align-middle'>{req?.userSegments?.find( s => 
+                                                    s.userSegmentRelationship == UserSegmentRelationshipEnum.SCHOOL && s.segment?.segmentType == SegmentType.segment) || 'NA'}</td>
+                                                <td className='text-center align-middle'>{req?.userSegments?.find( s => 
+                                                    s.userSegmentRelationship == UserSegmentRelationshipEnum.WORK && s.segment?.segmentType == SegmentType.segment) || 'NA'}</td>
                                                 <td className='text-center align-middle'>{userFlags![index].toString()}</td>
                                                 <td className='text-center align-middle'>{userFalseFlags![index].toString()}</td>
                                                 <td className='text-center align-middle'>{req.banned ? 'Yes' : 'No'}</td>

@@ -16,6 +16,7 @@ import {
     ISubSegment,
     ISegmentRequest,
     ISuperSegment,
+    SegmentType,
 } from '../../lib/types/data/segment.type';
 import { IFetchError } from '../../lib/types/types';
 import { capitalizeString } from '../../lib/utilityFunctions';
@@ -336,9 +337,25 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
         name: '',
         country: '',
         province: '',
-        superSegName: '',
+        parentSegment: {
+            name: '',
+            segId: 0,
+            parentId: 0,
+            country: '',
+            province: '',
+            lat: 0,
+            lon: 0,
+            radius: 0,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            segmentType: SegmentType.subSegment
+        },
         segId: 0,
-        superSegId: 0,
+        parentId: 0,
+        lat: 0,
+        lon: 0,
+        radius: 0,
+        segmentType: SegmentType.segment,
         createdAt: new Date(),
         updatedAt: new Date(),
     });
@@ -410,7 +427,7 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
                 await updateSuperSegment(updateData, token);
                 setSegments((prevSegments) => {
                     const updatedSegments = prevSegments.map((segment) => {
-                        if (segment.superSegId === updateData.superSegId) {
+                        if (segment.parentId === updateData.superSegId) {
                             return {
                                 ...segment,
                                 superSegName: updateData.name,
@@ -462,7 +479,7 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
 
     const handleDeleteSuperSegment = async (superSegId: number) => {
         // Check if it has any Segments
-        const hasSegments = segments!.find(segment => segment.superSegId === superSegId);
+        const hasSegments = segments!.find(segment => segment.parentId === superSegId);
         if (hasSegments) {
             setError({ message: 'Cannot delete a Super Segment with associated Segments' });
             return;
@@ -736,9 +753,9 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
                                                             : ''}
                                                     </td>
                                                     <td>
-                                                        {segment.superSegName
+                                                        {segment.parentSegment?.name
                                                             ? capitalizeFirstLetterEachWord(
-                                                                segment.superSegName.toLowerCase()
+                                                                segment.parentSegment?.name.toLowerCase()
                                                             )
                                                             : ''}
                                                     </td>
@@ -806,9 +823,11 @@ export const ShowSegments: React.FC<ShowSegmentsProps> = ({
                                                     <td>
                                                         <Form.Control
                                                             as='select'
-                                                            defaultValue={segment.superSegName}
+                                                            defaultValue={segment.parentSegment?.name}
                                                             onChange={(e) => {
-                                                                segment.superSegName = e.target.value.toLowerCase();
+                                                                if (segment.parentSegment) {
+                                                                    segment.parentSegment.name = e.target.value.toLowerCase();
+                                                                }
                                                             }}
                                                         >
                                                             {(superSegments).map((superSegment) => (

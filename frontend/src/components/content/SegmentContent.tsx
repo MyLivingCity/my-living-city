@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Table, Container, Card, Row, Col, Pagination, Form } from 'react-bootstrap';
 import { USER_TYPES } from 'src/lib/constants';
 import { IUser } from 'src/lib/types/data/user.type';
+import { SegmentType, UserSegmentRelationshipEnum } from 'src/lib/types/data/segment.type';
 import { EditUserInfoModal } from '../modal/EditUserInfoModal';
 import { ShowSubSegments } from './SegmentManagementContent';
 import { useAllSegments, useAllSubSegmentsWithId, useAllSuperSegments, useSegmentsUsers, useSingleSegmentBySegmentId } from 'src/hooks/segmentHooks';
@@ -151,51 +152,48 @@ export const SegmentContent: React.FC<SegmentContentProps> = ({token, user, segI
         if (segmentUserData && segmentUserData?.users.length !== 0) {
             const sortFunction = makeSortFunction(sortByValue);
             const dataSet = inSegmentFilter === 'True' ? segmentUserData.users : allUsers || [];
+    
             const filteredUsers = dataSet
                 .filter((user) => {
-                    if (userTypeFilter === 'All') {
-                        return true;
-                    }
+                    if (userTypeFilter === 'All') return true;
                     return user.userType === userTypeFilter;
                 })
                 .filter((user) => {
-                    if (segmentTypeFilter === 'All') {
-                        return true;
-                    } else if (segmentTypeFilter === 'Home') {
-                        return user.userSegments?.homeSegmentId === segId;
-                    } else if (segmentTypeFilter === 'Work') {
-                        return user.userSegments?.workSegmentId === segId;
-                    } else if (segmentTypeFilter === 'School') {
-                        return user.userSegments?.schoolSegmentId === segId;
-                    } else if (segmentTypeFilter === 'None') {
-                        return user.userSegments?.homeSegmentId !== segId && user.userSegments?.workSegmentId !== segId && user.userSegments?.schoolSegmentId !== segId; 
+                    const segments = user.userSegments ?? [];
+    
+                    if (segmentTypeFilter === 'All') return true;
+                    if (segmentTypeFilter === 'None') {
+                        return !segments.some(us => us.segmentId === segId);
                     }
-                    return user.userSegments?.schoolSegmentId === segId;
+    
+                    const relationship = segmentTypeFilter.toUpperCase() as UserSegmentRelationshipEnum;
+                    return segments.some(us =>
+                        us.userSegmentRelationship === relationship &&
+                        us.segmentId === segId
+                    );
                 })
                 .filter((user) => {
-                    if (subsegmentFilter === 'All') {
-                        return true;
-                    } else if (segmentTypeFilter === 'Home') {
-                        return user.userSegments?.homeSubSegmentName === subsegmentFilter;
-                    } else if (segmentTypeFilter === 'Work') {
-                        return user.userSegments?.workSubSegmentName === subsegmentFilter;
-                    } else if (segmentTypeFilter === 'School') {
-                        return user.userSegments?.schoolSubSegmentName === subsegmentFilter;
-                    }
-                    return user.userSegments?.homeSubSegmentName === subsegmentFilter
-                        || user.userSegments?.workSubSegmentName === subsegmentFilter
-                        || user.userSegments?.schoolSubSegmentName === subsegmentFilter;
+                    const segments = user.userSegments ?? [];
+    
+                    if (subsegmentFilter === 'All') return true;
+    
+                    const relationship = segmentTypeFilter.toUpperCase() as UserSegmentRelationshipEnum;
+                    return segments.some(us =>
+                        us.userSegmentRelationship === relationship &&
+                        us.segment?.segmentType === SegmentType.subSegment &&
+                        us.segment?.name === subsegmentFilter
+                    );
                 })
                 .filter((user) => {
-                    if (searchFilter === '') {
-                        return true;
-                    }
+                    if (searchFilter === '') return true;
+                    const fullName = `${user.fname ?? ''} ${user.lname ?? ''}`;
                     return user.email.includes(searchFilter)
-                        || (user.fname && user.fname.includes(searchFilter))
-                        || (user.lname && user.lname.includes(searchFilter))
-                        || (user.fname && user.lname && `${user.fname} ${user.lname}`.includes(searchFilter));
+                        || (user.fname?.includes(searchFilter))
+                        || (user.lname?.includes(searchFilter))
+                        || fullName.includes(searchFilter);
                 })
                 .sort(sortFunction);
+    
             setFilteredUsers(filteredUsers);
             setActive(1);
         } else {
@@ -203,6 +201,7 @@ export const SegmentContent: React.FC<SegmentContentProps> = ({token, user, segI
             setActive(1);
         }
     }, [segmentUserData, segmentUserLoading, userTypeFilter, segmentTypeFilter, searchFilter, subsegmentFilter, sortByValue, segId, allUsers, inSegmentFilter]);
+
 
     useEffect(() => {
         if (inSegmentFilter === 'False' && allUsers.length === 0) {
@@ -212,36 +211,47 @@ export const SegmentContent: React.FC<SegmentContentProps> = ({token, user, segI
         }
     }, [inSegmentFilter, allUsers, token, segId]);
 
-    const getCorrectSubsegmentData = (user: IUser) => {
-        if (segmentTypeFilter === 'Home') {
-            return user.userSegments?.homeSubSegmentName;
-        } else if (segmentTypeFilter === 'Work') {
-            return user.userSegments?.workSubSegmentName;
-        } else if (segmentTypeFilter === 'School') {
-            return user.userSegments?.schoolSubSegmentName;
-        } else if (user.userSegments?.homeSegmentId === segId) {
-            return user.userSegments?.homeSubSegmentName;
-        } else if (user.userSegments?.workSegmentId === segId) {
-            return user.userSegments?.workSubSegmentName;
-        } else if (user.userSegments?.schoolSegmentId === segId) {
-            return user.userSegments?.schoolSubSegmentName;
+    const getCorrectSubsegmentData = (user: IUser): string => {
+        const type = segmentTypeFilter;
+    
+        if (['Home', 'Work', 'School'].includes(type)) {
+            const rel = type.toUpperCase() as UserSegmentRelationshipEnum;
+    
+            const match = user.userSegments?.find(us =>
+                us.userSegmentRelationship === rel &&
+                us.segment?.segmentType === SegmentType.subSegment
+            );
+    
+            return match?.segment?.name ?? 'N/A';
         }
-        return 'N/A';
+    
+        const matchBySegmentId = user.userSegments?.find(us =>
+            us.segmentId === segId &&
+            us.segment?.segmentType === SegmentType.subSegment
+        );
+    
+        return matchBySegmentId?.segment?.name ?? 'N/A';
     };
+    
+    
 
-    const getRelationshipsString = (user: IUser) => {
-        let relationships = [];
-        if (user.userSegments?.homeSegmentId === segId) {
-            relationships.push('Home');
-        }
-        if (user.userSegments?.workSegmentId === segId) {
-            relationships.push('Work');
-        }
-        if (user.userSegments?.schoolSegmentId === segId) {
-            relationships.push('School');
-        }
-        return relationships.join(', ');
+    const getRelationshipsString = (user: IUser): string => {
+        const matches = user.userSegments?.filter(us => us.segmentId === segId) ?? [];
+    
+        const uniqueRelationships = new Set(
+            matches.map(us => {
+                switch (us.userSegmentRelationship) {
+                    case 'HOME': return 'Home';
+                    case 'WORK': return 'Work';
+                    case 'SCHOOL': return 'School';
+                    default: return null;
+                }
+            }).filter(Boolean)
+        );
+    
+        return Array.from(uniqueRelationships).join(', ') || 'N/A';
     };
+    
 
     return (
         <Container style={{ maxWidth: '1600px', margin: 'auto' }}>
@@ -271,7 +281,7 @@ export const SegmentContent: React.FC<SegmentContentProps> = ({token, user, segI
                                         <Col>Province: {segmentData?.province}</Col>
                                     </Row>
                                     <Row>
-                                        <Col>Super Segment: {segmentData?.superSegName}</Col>
+                                        <Col>Super Segment: {segmentData?.parentSegment?.name}</Col>
                                     </Row>
                                     <Row>
                                         <Col>Created At: {new Date(segmentData?.createdAt || '').toLocaleDateString()}</Col>

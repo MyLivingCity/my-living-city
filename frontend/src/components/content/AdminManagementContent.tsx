@@ -292,13 +292,13 @@ export const AdminManagementContent: React.FC<AdminManagementContentProps> = ({
                                 required
                             >
                                 <option value=''>Select Community</option>
-                                {subSeg
+                                {segs
                                     .filter(
                                         (seg) =>
-                                            seg.superSegName?.toUpperCase() === selectedRegion.toUpperCase()
+                                            seg.name?.toUpperCase() === selectedRegion.toUpperCase()
                                     )
                                     .map((seg) => (
-                                        <option key={seg.superSegId} value={seg.segId}>
+                                        <option key={seg.superSegId} value={seg.superSegId}>
                                             {capitalizeString(seg.name)}
                                         </option>
                                     ))}

@@ -231,6 +231,7 @@ userRouter.get(
 				include: {
 					address: true,
 					geo: true,
+					userHandles: true,
 					userSegment: {
                         include: {
                             segment: true

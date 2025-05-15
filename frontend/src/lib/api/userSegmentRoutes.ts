@@ -39,7 +39,7 @@ export const postUserSegmentInfo = async (registerData: IRegisterInput, token: s
 };
 export const getMyUserSegmentInfo = async (token: string | null, userId: string | null) => {
 
-    const req = await axios.get<IUserSegment>(`${API_BASE_URL}/userSegment/getUserSegment/${userId}`, getAxiosJwtRequestOption(token!));
+    const req = await axios.get<IUserSegment[]>(`${API_BASE_URL}/userSegment/getUserSegment/${userId}`, getAxiosJwtRequestOption(token!));
 
     return req.data;
 };

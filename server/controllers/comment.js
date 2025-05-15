@@ -133,8 +133,15 @@ commentRouter.get(
           idea: {
             select: {
               id: true,
-              segmentId: true,
-              subSegmentId: true
+              title: true, 
+              description: true,
+              segments: {
+                select: {
+                  segId: true,
+                  name: true,
+                  segmentType: true
+                }
+              }
             }
           },
           // userSeg: {

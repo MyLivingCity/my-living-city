@@ -19,6 +19,7 @@ publicProfileRouter.get(
 
             const result = await prisma.user.findFirst({
                 where: { id: userId },
+                include: { userHandles: true},
             });
 
             if (!result) {

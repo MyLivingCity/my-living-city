@@ -9,7 +9,8 @@ import { IFetchError } from '../lib/types/types';
 import { v4 as uuidv4 } from 'uuid';
 import { IUser } from '../lib/types/data/user.type';
 import { useEffect, useState } from 'react';
-import { handlePotentialAxiosError } from 'src/lib/utilityFunctions';
+import { handlePotentialAxiosError, getSegmentId } from 'src/lib/utilityFunctions';
+import { SegmentType, UserSegmentRelationshipEnum } from 'src/lib/types/data/segment.type';
 
 export const useAllComments = () => {
     return useQuery<IComment[], IFetchError>(
@@ -68,7 +69,11 @@ export const useCreateCommentMutation = (
         ),
         {
             onMutate: async (newComment) => {
-                const { id: userId, fname, lname, organizationName, email, address, userSegments, userType} = user!;
+                const { id: userId, fname, lname, organizationName, email, address, userSegments, userType, userHandles} = user!;
+                const homeHandle = userHandles?.find(h => h.userSegmentRelationship === UserSegmentRelationshipEnum.HOME)?.handle ?? '';
+                const workHandle = userHandles?.find(h => h.userSegmentRelationship === UserSegmentRelationshipEnum.WORK)?.handle ?? '';
+                const schoolHandle = userHandles?.find(h => h.userSegmentRelationship === UserSegmentRelationshipEnum.SCHOOL)?.handle ?? '';
+          
 
                 // snapshot previous value
                 const previousCommentAggregate = 
@@ -113,21 +118,26 @@ export const useCreateCommentMutation = (
                                         streetAddress: address?.streetAddress ?? '',
                                     },
                                     userSegments:{
-                                        homeSegmentId: userSegments?.homeSegmentId ?? -1,
-                                        workSegmentId: userSegments?.workSegmentId ?? -1,
-                                        schoolSegmentId: userSegments?.schoolSegmentId ?? -1,
-                                        homeSubSegmentId: userSegments?.homeSubSegmentId ?? -1,
-                                        workSubSegmentId: userSegments?.workSubSegmentId ?? -1,
-                                        schoolSubSegmentId: userSegments?.schoolSubSegmentId ?? -1,
-                                        homeSuperSegmentId: userSegments?.homeSubSegmentId ?? -1,
-                                        workSuperSegmentId: userSegments?.workSubSegmentId ?? -1,
-                                        schoolSuperSegmentId: userSegments?.schoolSubSegmentId ?? -1,
-                                        homeSegHandle: userSegments?.homeSegHandle ?? '',
-                                        workSegHandle: userSegments?.workSegHandle ?? '',
-                                        schoolSegHandle: userSegments?.schoolSegHandle ?? '',
+                                        homeSegmentId: getSegmentId(userSegments, UserSegmentRelationshipEnum.HOME, SegmentType.segment),
+                                        homeSubSegmentId: getSegmentId(userSegments, UserSegmentRelationshipEnum.HOME, SegmentType.subSegment),
+                                        homeSuperSegmentId: getSegmentId(userSegments, UserSegmentRelationshipEnum.HOME, SegmentType.superSegment),
+                                        workSegmentId: getSegmentId(userSegments, UserSegmentRelationshipEnum.WORK, SegmentType.segment),
+                                        workSubSegmentId: getSegmentId(userSegments, UserSegmentRelationshipEnum.WORK, SegmentType.subSegment),
+                                        workSuperSegmentId: getSegmentId(userSegments, UserSegmentRelationshipEnum.WORK, SegmentType.superSegment),
+                                        schoolSegmentId: getSegmentId(userSegments, UserSegmentRelationshipEnum.SCHOOL, SegmentType.segment),
+                                        schoolSubSegmentId: getSegmentId(userSegments, UserSegmentRelationshipEnum.SCHOOL, SegmentType.subSegment),
+                                        schoolSuperSegmentId: getSegmentId(userSegments, UserSegmentRelationshipEnum.SCHOOL, SegmentType.superSegment),
+                                      
+                                        
+                                        homeSegHandle: homeHandle,
+                                        workSegHandle: workHandle,
+                                        schoolSegHandle: schoolHandle,
                                     }
                                 },
-                                idea: {segmentId: -1, subSegmentId: -1},
+                                idea: {segments: [
+                                    {segId: -1, name: '', segmentType: SegmentType.segment}, 
+                                    {segId: -2, name: '', segmentType: SegmentType.subSegment}, 
+                                ]},
                                 likes: [],
                                 dislikes: [],
                                 content: newComment.content,

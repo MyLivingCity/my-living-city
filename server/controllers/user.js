@@ -250,7 +250,9 @@ userRouter.get(
 			const parsedUser = {
 				...foundUser,
 				password: null,
+				userSegments: foundUser.userSegment,
 			}
+			delete parsedUser.userSegment;
 
 			res.status(200);
 			res.json({

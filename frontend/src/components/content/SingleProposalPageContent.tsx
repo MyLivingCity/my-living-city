@@ -835,7 +835,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                             </div>
                             <div className='footer-handle'>
                                 {
-                                        author?.userSegments?.find( seg => seg.userSegmentRelationship === UserSegmentRelationshipEnum.HOME)?.id == segment?.segId &&
+                                    author?.userSegments?.find( seg => seg.userSegmentRelationship === UserSegmentRelationshipEnum.HOME)?.id == segment?.segId &&
                                     (
                                         <div>
                                             {author?.userHandles?.find( h => h.userSegmentRelationship === UserSegmentRelationshipEnum.HOME)?.handle ?? 

@@ -4,7 +4,7 @@ import { IFeedbackRating, IFeedbackRatingScaleAggregateSummary, IFeedbackRatingY
 import { IUser } from './types/data/user.type';
 import { ISegment, IUserSegment, SegmentsByRelation, IParsedSegment, UserSegmentRelationshipEnum, SegmentType } from './types/data/segment.type';
 import { IFetchError } from './types/types';
-import {IUserHandle} from './types/data/userHandle.type'
+import {IUserHandle} from './types/data/userHandle.type';
 import { IIdeaWithRelationship } from './types/data/idea.type';
 import { IParsedCommentAuthor } from './types/data/comment.type';
 
@@ -351,73 +351,73 @@ export const getFeedbackRatingScaleAggregateSummary = (feedbackRatings: IFeedbac
 export function getUserHandle(
     ideaSegments: IParsedSegment[],
     user: IUser
-  ): string {
+): string {
     if (!user || !ideaSegments?.length || !user.userSegments?.length || !user.userHandles?.length) {
-      return 'Unknown';
+        return 'Unknown';
     }
   
     const RELATIONSHIP_PRIORITY: UserSegmentRelationshipEnum[] = [
-      UserSegmentRelationshipEnum.HOME,
-      UserSegmentRelationshipEnum.WORK,
-      UserSegmentRelationshipEnum.SCHOOL
+        UserSegmentRelationshipEnum.HOME,
+        UserSegmentRelationshipEnum.WORK,
+        UserSegmentRelationshipEnum.SCHOOL
     ];
   
     const SEGMENT_TYPE_PRIORITY: SegmentType[] = [
-      SegmentType.subSegment,
-      SegmentType.segment,
-      SegmentType.superSegment
+        SegmentType.subSegment,
+        SegmentType.segment,
+        SegmentType.superSegment    
     ];
   
     let baseHandle = 'Unknown';
 
-  for (const relationship of RELATIONSHIP_PRIORITY) {
-    for (const segType of SEGMENT_TYPE_PRIORITY) {
-      const ideaSeg = ideaSegments.find(seg => seg.segmentType === segType);
-      if (!ideaSeg) continue;
+    for (const relationship of RELATIONSHIP_PRIORITY) {
+        for (const segType of SEGMENT_TYPE_PRIORITY) {
+            const ideaSeg = ideaSegments.find(seg => seg.segmentType === segType);
+            if (!ideaSeg) continue;
 
-      const match = user.userSegments.find(
-        us => us.userSegmentRelationship === relationship && us.segmentId === ideaSeg.segId
-      );
+            const match = user.userSegments.find(
+                us => us.userSegmentRelationship === relationship && us.segmentId === ideaSeg.segId
+            );
 
-      if (match) {
-        const handle = user.userHandles.find(
-          h => h.userSegmentRelationship === relationship
-        )?.handle;
+            if (match) {
+                const handle = user.userHandles.find(
+                    h => h.userSegmentRelationship === relationship
+                )?.handle;
 
-        if (handle) {
-          baseHandle = handle;
-          break;
+                if (handle) {
+                    baseHandle = handle;
+                    break;
+                }
+            }
         }
-      }
+
+        if (baseHandle !== 'Unknown') break;
     }
 
-    if (baseHandle !== 'Unknown') break;
-  }
+    // Append or override with role-based suffix
+    switch (user.userType) {
+        case 'SUPER_ADMIN':
+            baseHandle += ' as Super Admin';
+            break;
+        case 'ADMIN':
+            baseHandle += ' as Admin';
+            break;
+        case 'MOD':
+            baseHandle += ' as Mod';
+            break;
+        case 'MUNICIPAL_SEG_ADMIN':
+        case 'MUNICIPAL':
+            baseHandle = `${user.fname}@${user.organizationName ?? 'Unknown Municipality'}`;
+            break;
+        case 'BUSINESS':
+            baseHandle = `${user.organizationName ?? 'Business'} as Business Member`;
+            break;
+        case 'COMMUNITY':
+            baseHandle = `${user.organizationName ?? 'Community'} as Community Member`;
+            break;
+    }
 
-  // Append or override with role-based suffix
-  switch (user.userType) {
-    case 'SUPER_ADMIN':
-      baseHandle += ' as Super Admin';
-      break;
-    case 'ADMIN':
-      baseHandle += ' as Admin';
-      break;
-    case 'MOD':
-      baseHandle += ' as Mod';
-      break;
-    case 'MUNICIPAL_SEG_ADMIN':
-    case 'MUNICIPAL':
-      baseHandle = `${user.fname}@${user.organizationName ?? 'Unknown Municipality'}`;
-      break;
-    case 'BUSINESS':
-      baseHandle = `${user.organizationName ?? 'Business'} as Business Member`;
-      break;
-    case 'COMMUNITY':
-      baseHandle = `${user.organizationName ?? 'Community'} as Community Member`;
-      break;
-  }
-
-  return baseHandle;
+    return baseHandle;
 }
   
 /**
@@ -432,15 +432,15 @@ export const getSegmentId = (
     userSegments: IUserSegment[] | undefined,
     rel: UserSegmentRelationshipEnum,
     type: SegmentType
-  ): number => {
+): number => {
     return (
-      userSegments?.find(
-        seg =>
-          seg.userSegmentRelationship === rel &&
-          seg.segment?.segmentType === type
-      )?.segmentId ?? -1
+        userSegments?.find(
+            seg =>
+                seg.userSegmentRelationship === rel &&
+                seg.segment?.segmentType === type
+        )?.segmentId ?? -1
     );
-  };
+};
 
 /**
  * Extracts the user's segments by relationship type (home, work, school),

@@ -398,8 +398,11 @@ userSegmentRouter.get(
         try {
             const { userId } = req.params;
             console.log(userId);
-            const result = await prisma.userSegments.findFirst({
-                where: { userId: userId }
+            const result = await prisma.userSegments.findMany({
+                where: { userId: userId },
+                include: {
+                    segment: true,
+                }
             })
 
             if (!result) {

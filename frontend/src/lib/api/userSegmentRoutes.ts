@@ -188,7 +188,7 @@ export const getMyUserSegmentInfoRefined = async (token: string | null, userId: 
     }
 };
 
-
+// No longer to be used, kept in user routes now for updating the handle etc...
 export const patchUserSegment = async (userId: string | null, data: any) => {
     if (!userId || !data) {
         return;

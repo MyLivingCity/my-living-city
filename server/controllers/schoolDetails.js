@@ -2,6 +2,7 @@ const passport = require('passport');
 const express = require('express');
 const schoolDetailsRouter = express.Router();
 const prisma = require('../lib/prismaClient');
+const {upsertUserSegment} = require('../helpers/userHelpers');
 
 schoolDetailsRouter.post(
     '/create',
@@ -147,107 +148,75 @@ schoolDetailsRouter.patch(
 // Updates the usersegment to match the new data
 schoolDetailsRouter.patch(
     '/updateCityNeighbourhood/:id',
-    async (req, res) => {
-        try {
+	async (req, res, next) => {
+		try {
 
-            const { city, neighbourhood } = req.body;
-            const userId = req.params.id;
+			const userId = req.params.id;
+			console.log('CITY: ', req.body.city);
+			console.log('NEIGHBOURHOOD: ', req.body.neighbourhood);
 
-            // If neighbourhood is removed, delete only the subSegment entry in UserSegment
-            if (!neighbourhood) {
-                const userSubSegment = await prisma.userSegment.findFirst({
-                    where: {
-                        userId,
-                        userSegmentRelationship: 'SCHOOL',
-                        segment: {
-                            segmentType: 'subSegment',
-                        },
-                    },
-                    select: { id: true },
-                });
+			const city = await prisma.segments.findFirst({
+				where: { name: { equals: req.body.city, mode: "insensitive" } },
+			});
 
-                if (userSubSegment) {
-                    await prisma.userSegment.delete({
-                        where: { id: userSubSegment.id },
-                    });
-                }
+			const neighbourhood = await prisma.segments.findFirst({
+				where: { name: { equals: req.body.neighbourhood, mode: "insensitive"} }
+			})
 
-                res.status(200).json({
-                    message: 'Neighbourhood removed, userSegment deleted successfully',
-                });
-
-                return;
-            }
-
-            // Find the city and neighbourhood in the Segments table
-            const citySegment = await prisma.segments.findFirst({
-                where: { name: { equals: city, mode: 'insensitive' } },
-            });
-
-            const neighbourhoodSegment = await prisma.segments.findFirst({
-                where: { name: { equals: neighbourhood, mode: 'insensitive' } },
-            });
-
-            const segmentId = citySegment ? citySegment.segId : null;
-            const subSegmentId = neighbourhoodSegment ? neighbourhoodSegment.segId : null
-
-            if (segmentId) {
-                await prisma.userSegment.upsert({
-                    where: {
-                        id: (
-                            await prisma.userSegment.findFirst({
-                                where: {
-                                    userId,
-                                    userSegmentRelationship: 'SCHOOL',
-                                    segment: { segmentType: 'segment' },
-                                },
-                                select: { id: true },
-                            })
-                        )?.id ?? -1, // -1 triggers an insert
-                    },
-                    update: { segmentId },
-                    create: {
-                        userId,
-                        userSegmentRelationship: 'SCHOOL',
-                        segmentId,
-                    },
+			if (!neighbourhood) {
+                return res.status(400).json({
+                    message: "Error: A neighbourhood is required.",
                 });
             }
 
-            // If there is a neighborhood/subseg, then update that neighborhood
-            if (subSegmentId) {
-                await prisma.userSegment.upsert({
-                    where: {
-                        id: (
-                            await prisma.userSegment.findFirst({
-                                where: {
-                                    userId,
-                                    userSegmentRelationship: 'SCHOOL',
-                                    segment: { segmentType: 'subSegment' },
-                                },
-                                select: { id: true },
-                            })
-                        )?.id ?? -1, // -1 triggers an insert
-                    },
-                    update: { segmentId: subSegmentId },
-                    create: {
-                        userId,
-                        userSegmentRelationship: 'SCHOOL',
-                        segmentId: subSegmentId,
-                    },
-                });
-            }
-            res.status(200).json({
-                message: 'City and neighbourhood updated successfully',
-            });
-        } catch (error) {
-            console.log(error);
-            res.status(400).json({ error: error.message });
-        } finally {
-            await prisma.$disconnect();
-        }
-        
-    }
+			const segmentId = city ? city.segId : null;
+            const subSegmentId = neighbourhood.segId;
+
+			console.log('segmentID: ', segmentId);
+			console.log('subSegmentId: ', subSegmentId);
+
+			const userCitySegment = await prisma.userSegments.findFirst({
+				where: {
+					userId,
+					userSegmentRelationship: "SCHOOL",
+					segment: {
+						segmentType: 'segment'
+					}
+				}
+			});
+
+			const userNeighbourhoodSegment = await prisma.userSegments.findFirst({
+				where: {
+					userId,
+					userSegmentRelationship: "SCHOOL",
+					segment: {
+						segmentType: 'subSegment'
+					}
+				}
+			});
+
+			console.log('userCitySegment: ', userCitySegment);
+			console.log('userNeighbourhoodSegment: ', userNeighbourhoodSegment);
+
+			await upsertUserSegment(userCitySegment, userId, segmentId, 'SCHOOL');
+			await upsertUserSegment(userNeighbourhoodSegment, userId, subSegmentId, 'SCHOOL');
+
+			res.status(200).json({
+				message: "City and neighbourhood successfully updated"
+			});
+		} catch (error) {
+			console.log(error)
+			res.status(400).json({
+				message: `An Error occured while trying to update city and neighbourhood.`,
+				details: {
+					errorMessage: error.message,
+					errorStack: error.stack,
+				}
+			});
+		} finally {
+			await prisma.$disconnect();
+		}
+	}
 );
 
 module.exports = schoolDetailsRouter;

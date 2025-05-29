@@ -9,6 +9,7 @@ import { IWorkDetailsInput } from '../types/input/workDetails.input';
 import { ISchoolDetailsInput } from '../types/input/schoolDetails.input';
 import { IHomeDetailsInput } from '../types/input/homeDetails.input';
 import { getUserIdeas } from './ideaRoutes';
+import { UserSegmentRelationshipEnum } from '../types/data/segment.type';
 
 export interface LoginData {
   email: string;
@@ -349,13 +350,6 @@ export const updateSchoolSegmentDetails = async (userId: string | undefined, dat
 };
 
 export const updateHomeSegmentDetails = async (userId: string | undefined, data: IHomeDetailsInput) => {
-    const res1 = await axios.patch(
-        `${API_BASE_URL}/user/updateDisplayName/${userId}`,
-        {
-            displayFName: data.displayFName,
-            displayLName: data.displayLName
-        }
-    );
 
     const res2 = await axios.patch(
         `${API_BASE_URL}/user/updateAddress/${userId}`,
@@ -365,6 +359,9 @@ export const updateHomeSegmentDetails = async (userId: string | undefined, data:
         }
     );
 
+    console.log('CITY:', data.city);
+    console.log('NIGHBORHOOD:', data.neighbourhood);
+
     const res3 = await axios.patch(
         `${API_BASE_URL}/user/updateCityNeighbourhood/${userId}`,
         {
@@ -373,11 +370,11 @@ export const updateHomeSegmentDetails = async (userId: string | undefined, data:
         }
     );
 
-    console.log('updateHomeSegmentDetails, part1', res1.data);
+    // console.log('updateHomeSegmentDetails, part1', res1.data);
     console.log('updateHomeSegmentDetails, part2', res2.data);
     console.log('updateHomeSegmentDetails, part3', res3.data);
     // Combine data from both responses
-    return { ...res1.data, ...res2.data };
+    return {...res2.data };
 };
 
 export const getUserGeoData = async (userId: string | undefined) => {
@@ -386,4 +383,15 @@ export const getUserGeoData = async (userId: string | undefined) => {
     );
     console.log('getUserGeoData', res.data);
     return res.data;
+};
+
+export const patchUserHandle = async (userId: string | null, data: { handle: string; userSegmentRelationship: UserSegmentRelationshipEnum.HOME | UserSegmentRelationshipEnum.WORK | UserSegmentRelationshipEnum.SCHOOL }) => {
+    if (!userId || !data) return;
+
+    const response = await axios.patch(
+        `${API_BASE_URL}/user/${userId}/patchHandle`,
+        data
+    );
+
+    return response.data;
 };

@@ -6,7 +6,8 @@ const { JWT_SECRET, JWT_EXPIRY } = require('../lib/constants');
 const { argon2ConfirmHash, argon2Hash, imagePathsToS3Url } = require('../lib/utilityFunctions');
 const prisma = require('../lib/prismaClient');
 const { authenticate } = require('passport');
-const { checkUserCreationAuthorization } = require('../helpers/userHelpers');
+const { checkUserCreationAuthorization, upsertUserSegment } = require('../helpers/userHelpers');
+
 
 /**
  * @swagger
@@ -1487,16 +1488,15 @@ userRouter.patch(
 		try {
 
 			const userId = req.params.id;
-			const user = await prisma.user.findUnique({
-				where: { id: userId },
-			});
+			console.log('CITY: ', req.body.city);
+			console.log('NEIGHBOURHOOD: ', req.body.neighbourhood);
 
 			const city = await prisma.segments.findFirst({
 				where: { name: { equals: req.body.city, mode: "insensitive" } },
 			});
 
 			const neighbourhood = await prisma.segments.findFirst({
-				where: { name: { equals: req.body.neighborhood, mode: "insensitive"} }
+				where: { name: { equals: req.body.neighbourhood, mode: "insensitive"} }
 			})
 
 			if (!neighbourhood) {
@@ -1508,37 +1508,34 @@ userRouter.patch(
 			const segmentId = city ? city.segId : null;
             const subSegmentId = neighbourhood.segId;
 
-            await prisma.userSegment.upsert({
-                where: {
-                    userId_userSegmentRelationship_segmentId: {
-                        userId,
-                        userSegmentRelationship: "HOME",
-                        segmentId: segmentId || 0,
-                    },
-                },
-                update: { segmentId },
-                create: {
-                    userId,
-                    userSegmentRelationship: "HOME",
-                    segmentId,
-                },
-            });
+			console.log('segmentID: ', segmentId);
+			console.log('subSegmentId: ', subSegmentId);
 
-            await prisma.userSegment.upsert({
-                where: {
-                    userId_userSegmentRelationship_segmentId: {
-                        userId,
-                        userSegmentRelationship: "HOME",
-                        segmentId: subSegmentId,
-                    },
-                },
-                update: { segmentId: subSegmentId },
-                create: {
-                    userId,
-                    userSegmentRelationship: "HOME",
-                    segmentId: subSegmentId,
-                },
-            });
+			const userCitySegment = await prisma.userSegments.findFirst({
+				where: {
+					userId,
+					userSegmentRelationship: "HOME",
+					segment: {
+						segmentType: 'segment'
+					}
+				}
+			});
+
+			const userNeighbourhoodSegment = await prisma.userSegments.findFirst({
+				where: {
+					userId,
+					userSegmentRelationship: "HOME",
+					segment: {
+						segmentType: 'subSegment'
+					}
+				}
+			});
+
+			console.log('userCitySegment: ', userCitySegment);
+			console.log('userNeighbourhoodSegment: ', userNeighbourhoodSegment);
+
+			await upsertUserSegment(userCitySegment, userId, segmentId, 'HOME');
+			await upsertUserSegment(userNeighbourhoodSegment, userId, subSegmentId, 'HOME');
 
 			res.status(200).json({
 				message: "City and neighbourhood successfully updated"
@@ -1557,9 +1554,6 @@ userRouter.patch(
 		}
 	}
 )
-
-
-
 
 
 userRouter.get(
@@ -1602,5 +1596,42 @@ userRouter.get(
 	}
 )
 
+userRouter.patch('/:userId/patchHandle', async (req, res) => {
+    const { userId } = req.params;
+    const {userSegmentRelationship, ...updates} = req.body;
+
+    if (!userSegmentRelationship || Object.keys(updates).length === 0) {
+        return res.status(400).json({
+            message: 'Missing required key (userSegmentRelationship) or no update fields provided'
+        });
+    }
+
+    try {
+        const updatedUserHandle = await prisma.userHandle.update({
+            where: {
+				userId_userSegmentRelationship: {
+					userId,
+					userSegmentRelationship
+				} 
+			},
+            data: updates
+        });
+
+        return res.status(200).json({
+            message: 'UserHandle updated successfully',
+            userHandle: updatedUserHandle
+        });
+    } catch (error) {
+        res.status(400).json({
+            message: "An error occured while trying to update a user segment.",
+            details: {
+                errorMessage: error.message,
+                errorStack: error.stack,
+            }
+        });
+    } finally {
+        await prisma.$disconnect();
+    }
+})
 
 module.exports = userRouter;

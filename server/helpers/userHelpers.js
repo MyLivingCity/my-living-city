@@ -1,3 +1,4 @@
+const prisma = require('../lib/prismaClient');
 
 /**
  * Checks if a user is authorized to create a new user of a certain role
@@ -14,6 +15,36 @@ function checkUserCreationAuthorization(userToCreate, user) {
   return true // or false
 }
 
+/**
+ * Inserts or updates a user segment entry in the UserSegments table.
+ * 
+ * If a matching user segment already exists (e.g., by user, relationship, and segment type),
+ * it will be updated with the new `segmentId`. If it does not exist, a new entry will be created.
+ * 
+ * @param {Object|null} existing - The existing userSegment entry, if found (e.g., via findFirst).
+ * @param {string} userId - The ID of the user associated with the segment.
+ * @param {number|null} segmentId - The ID of the segment to associate with the user.
+ * @param {'HOME' | 'WORK' | 'SCHOOL'} relationship - The type of user-segment relationship.
+ */
+const upsertUserSegment = async (existing, userId, segmentId, relationship) => {
+  if (existing) {
+    await prisma.userSegments.update({
+      where: { id: existing.id },
+      data: { segmentId },
+    });
+  } else {
+    await prisma.userSegments.create({
+      data: {
+        userId,
+        userSegmentRelationship: relationship,
+        segmentId,
+      },
+    });
+  }
+};
+
+
 module.exports = {
-  checkUserCreationAuthorization
+  checkUserCreationAuthorization,
+  upsertUserSegment
 }

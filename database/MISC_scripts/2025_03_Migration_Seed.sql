@@ -887,4 +887,33 @@ COMMIT;
 -- ROLLBACK;
 
 
+-- Reset Auto-increment sequences
+BEGIN;
+
+DO $$
+DECLARE
+  seq RECORD;
+BEGIN
+  FOR seq IN
+    SELECT
+      s.relname AS sequence_name,
+      t.relname AS table_name,
+      a.attname AS column_name
+    FROM pg_class s
+    JOIN pg_depend d ON d.objid = s.oid
+    JOIN pg_class t ON d.refobjid = t.oid
+    JOIN pg_attribute a ON a.attrelid = t.oid AND a.attnum = d.refobjsubid
+    WHERE s.relkind = 'S'
+      AND a.attname = 'id'
+  LOOP
+    RAISE NOTICE 'Resetting % to match max(id) from %', seq.sequence_name, seq.table_name;
+
+    EXECUTE format(
+      'SELECT setval(''public.%I'', GREATEST((SELECT COALESCE(MAX(id), 0) FROM public.%I), 1))',
+      seq.sequence_name, seq.table_name
+    );
+  END LOOP;
+END $$;
+
+COMMIT;
 

@@ -51,7 +51,7 @@ import {
     getUserGeoData,
 } from 'src/lib/api/userRoutes';
 import { getAllSegments } from 'src/lib/api/segmentRoutes';
-import { patchUserSegment } from 'src/lib/api/userSegmentRoutes';
+import { patchUserHandle } from 'src/lib/api/userRoutes';
 import { SegmentType, UserSegmentRelationshipEnum } from 'src/lib/types/data/segment.type';
 
 interface ProfileContentProps {
@@ -91,9 +91,10 @@ const updateSchoolSegmentDetail = async (
         // Build segment handle for UserSegment table
         const segmentHandle = `${data.displayFName}@${data.displayLName}`;
 
-        // Update the userSegement work handle
-        await patchUserSegment(user, {
-            schoolSegHandle: segmentHandle
+        // Update the scho0ol userHandle
+        await patchUserHandle(user, {
+            handle: segmentHandle,
+            userSegmentRelationship: UserSegmentRelationshipEnum.SCHOOL
         });
 
         // Update the user details
@@ -108,9 +109,10 @@ const updateWorkSegmentDetail = async (user: string | undefined, data: any) => {
         // Build segment handle for UserSegment table
         const segmentHandle = `${data.displayFName}@${data.displayLName}`;
 
-        // Update the userSegement work handle
-        await patchUserSegment(user, {
-            workSegHandle: segmentHandle
+        // Update the "work" userHandle
+        await patchUserHandle(user, {
+            handle: segmentHandle,
+            userSegmentRelationship: UserSegmentRelationshipEnum.WORK
         });
 
         // Update the user details
@@ -124,10 +126,13 @@ const updateHomeSegmentDetail = async (user: string | undefined, data: any) => {
         // Build segment handle for UserSegment table
         const segmentHandle = `${data.displayFName}@${data.displayLName}`;
 
-        // Update the userSegement work handle
-        await patchUserSegment(user, {
-            homeSegHandle: segmentHandle
+        // Update the "home" userHandle
+        await patchUserHandle(user, {
+            handle: segmentHandle,
+            userSegmentRelationship: UserSegmentRelationshipEnum.HOME
         });
+
+        console.log('updateSegment data: ', data);
 
         // Update the user details
         await updateHomeSegmentDetails(user, data);
@@ -169,8 +174,8 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
     const [segments, setSegments] = useState<any[]>([]);
     const [subSegments, setSubSegments] = useState<any[]>([]);
     const [editPersonalInfo, setEditPersonalInfo] = useState(false);
-    const [showWorkSegment, setShowWorkSegment] = useState(!!workSegments);
-    const [showSchoolSegment, setShowSchoolSegment] = useState(!!schoolSegments);
+    const [showWorkSegment, setShowWorkSegment] = useState(!!workSegments.segment);
+    const [showSchoolSegment, setShowSchoolSegment] = useState(!!schoolSegments.segment);
     const [editHomeSegment, setEditHomeSegment] = useState(false);
     const [editWorkSegment, setEditWorkSegment] = useState(false);
     const [editSchoolSegment, setEditSchoolSegment] = useState(false);
@@ -179,6 +184,12 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
     console.log('userHandles', userHandles);
     console.log('User Segments:', userSegments);
     console.log('Full user object in ProfileContent', user);
+    console.log('HOMESEGMENT: ', homeSegments);
+    console.log('CITY:',  homeSegments?.segment?.name);
+    console.log('NEIGHBOOURHOOD:',  homeSegments?.subSegment?.name);
+    console.log('SETSCHOOLSEGMENTS: ', showSchoolSegment);
+    console.log('SCHOOLSEGMENT: ', schoolSegments);
+    console.log('schoolData: ', schoolData);
 
     function handleEditPersonalInfo() {
         setEditPersonalInfo(!editPersonalInfo);
@@ -1660,7 +1671,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                         type={'home'}
                         segmentData={{
                             segmentId: homeSegments?.segment ? homeSegments.segment.segId : 0,
-                            segmentHandle: userHandles?.find(h => h.userSegmentRelationship === UserSegmentRelationshipEnum.SCHOOL)?.handle ?? '',
+                            segmentHandle: userHandles?.find(h => h.userSegmentRelationship === UserSegmentRelationshipEnum.HOME)?.handle ?? '',
                             street: streetAddress ? streetAddress : UNKNOWN,
                             city: homeSegments.segment ? homeSegments.segment.name : NOT_SELECTED,
                             postalCode: postalCode ? postalCode : UNKNOWN,
@@ -1677,7 +1688,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                     ></SegmentInfo>
                 </Row>
                 <Row className='mt-3'>
-                    {showWorkSegment ? Object.keys(workData).length > 0 && (
+                    {showWorkSegment ? (
                         <SegmentInfo
                             user={user!}
                             token={token!}
@@ -1706,7 +1717,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                     )}
                 </Row>
                 <Row className='mt-3'>
-                    {showSchoolSegment ? Object.keys(schoolData).length > 0 && (
+                    {showSchoolSegment ? (
                         <SegmentInfo
                             user={user!}
                             token={token!}
@@ -1715,9 +1726,9 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                             segmentData={{
                                 segmentId: schoolSegments?.segment ? schoolSegments.segment.segId : 0,
                                 segmentHandle: userHandles?.find(h => h.userSegmentRelationship === UserSegmentRelationshipEnum.SCHOOL)?.handle ?? '',
-                                street: schoolData!.streetAddress ? schoolData!.streetAddress : UNKNOWN,
+                                street: schoolData?.streetAddress ?? UNKNOWN,
                                 city: schoolSegments?.segment ? schoolSegments.segment.name : NOT_SELECTED,
-                                postalCode: schoolData!.postalCode ? schoolData!.postalCode : UNKNOWN,
+                                postalCode: schoolData?.postalCode ?? UNKNOWN,
                                 neighborhood: schoolSegments.subSegment ? schoolSegments.subSegment.name : NOT_SELECTED,
                             }}
                             geoData={{

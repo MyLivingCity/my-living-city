@@ -149,6 +149,14 @@ export const SegmentInfo: React.FC<SegmentInfoProps> = ({
         setDisplayLName(handleLName);
     }, []);
 
+    useEffect(() => {
+        if (!segmentData) return;
+        setStreet(segmentData.street);
+        setPostalCode(segmentData.postalCode);
+        setFormCity(segmentData.city);
+        setFormNeighborhood(segmentData.neighborhood);
+    }, [segmentData]);
+
     // Update neighborhood dropdown (sugsegment) when (municipality) segment changes
     function handleSegmentChange(e: any) {
         const selectedSegId = e.target.value;
@@ -211,6 +219,7 @@ export const SegmentInfo: React.FC<SegmentInfoProps> = ({
         }
 
         updateFunction && await updateFunction(user.id, data);
+        
         // Reimplement this later
         // const newData = {
         //     displayFName: data.displayFName.toString(),

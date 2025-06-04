@@ -122,51 +122,58 @@ const processUserSegments = (userData) => {
   // Process home segment if exists
   if (userSegment.homeSegmentId) {
     processedSegments.push({
-      segmentHandle: 'HOME',
       userSegmentRelationship: 'HOME',
       segmentId: userSegment.homeSegmentId
     });
+
+    processedSegments.push({
+      userSegmentRelationship: 'HOME',
+      segmentId: userSegment.homeSuperSegmentId
+    })
   }
 
   // Process work segment if exists
   if (userSegment.workSegmentId) {
     processedSegments.push({
-      segmentHandle: 'WORK',
       userSegmentRelationship: 'WORK',
       segmentId: userSegment.workSegmentId
+    });
+    processedSegments.push({
+      userSegmentRelationship: 'WORK',
+      segmentId: userSegment.workSuperSegmentId
     });
   }
 
   // Process school segment if exists
   if (userSegment.schoolSegmentId) {
     processedSegments.push({
-      segmentHandle: 'SCHOOL',
       userSegmentRelationship: 'SCHOOL',
       segmentId: userSegment.schoolSegmentId
+    });
+    processedSegments.push({
+      userSegmentRelationship: 'SCHOOL',
+      segmentId: userSegment.schoolSuperSegmentId
     });
   }
 
   // Add sub-segments if they exist
   if (userSegment.homeSubSegmentId) {
     processedSegments.push({
-      segmentHandle: 'HOME_SUB',
-      userSegmentRelationship: 'HOME_SUB',
+      userSegmentRelationship: 'HOME',
       segmentId: userSegment.homeSubSegmentId
     });
   }
 
   if (userSegment.workSubSegmentId) {
     processedSegments.push({
-      segmentHandle: 'WORK_SUB',
-      userSegmentRelationship: 'WORK_SUB',
+      userSegmentRelationship: 'WORK',
       segmentId: userSegment.workSubSegmentId
     });
   }
 
   if (userSegment.schoolSubSegmentId) {
     processedSegments.push({
-      segmentHandle: 'SCHOOL_SUB',
-      userSegmentRelationship: 'SCHOOL_SUB',
+      userSegmentRelationship: 'SCHOOL',
       segmentId: userSegment.schoolSubSegmentId
     });
   }

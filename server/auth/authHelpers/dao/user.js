@@ -6,7 +6,7 @@ const createUser = async (userData) => {
     const {
       geo,
       address,
-      userSegment, // This will now need to include segmentHandle and userSegmentRelationship
+      userSegment,
       segmentRequest,
       userReachRequest,
       schoolDetails,
@@ -33,7 +33,6 @@ const createUser = async (userData) => {
         // User segment data - modified according to new schema
         userSegment: {
           create: userSegment.map(segment => ({
-            segmentHandle: segment.segmentHandle || "",
             userSegmentRelationship: segment.userSegmentRelationship,
             segment: {
               connect: {

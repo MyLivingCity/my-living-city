@@ -18,6 +18,7 @@ export interface ISegment {
 export interface ISubSegment {
   id: number;
   segId: number;
+  parentId: number;
   name: string;
   lat: number;
   lon: number;

@@ -269,7 +269,7 @@ export const delay = (
 export const refactorStateArray = (stateArray: any, index: number, newVal: any, stateSetter: any) => {
     let newArr = [...stateArray];
     newArr[index] = newVal;
-    console.log(stateArray);
+    console.log('REFACTOR STATE ARRAY', stateArray);
     stateSetter(newArr);
 };
 

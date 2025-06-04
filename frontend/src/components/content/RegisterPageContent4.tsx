@@ -67,6 +67,7 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
     const [subSegments2, setSubSegments2] = useState<ISubSegment[]>();
     const [subIds, setSubIds] = useState<any[]>([]);
     const [segIds, setSegIds] = useState<any[]>([]);
+    const [superIds, setSuperIds] = useState<any[]>([]);
     const [avatar, setAvatar] = useState(undefined);
     const [segmentRequests, setSegmentRequests] = useState<any[]>([]);
     const [userType, setUserType] = useState<string>(USER_TYPES.RESIDENTIAL);
@@ -78,14 +79,16 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
     const [workTransfer, transferHomeToWork] = useState(false);
     const [schoolTransfer, transferWorkToSchool] = useState(false);
     const displaySubSegList = (id: number) => {
-        if (subSegments && subSegments[0].segId === id) {
+        console.log('subSegments: ', subSegments);
+        console.log('ID: ', id);
+        if (subSegments && subSegments[0].parentId === id) {
             return subSegments?.map((subSeg) => (
-                <option key={subSeg.id} value={subSeg.id}>
+                <option key={subSeg.segId} value={subSeg.segId}>
                     {capitalizeFirstLetterEachWord(subSeg.name)}
                 </option>
             ));
         }
-        if (subSegments2 && subSegments2[0].segId === id) {
+        if (subSegments2 && subSegments2[0].parentId === id) {
             return subSegments2?.map((subSeg) => (
                 <option key={subSeg.id} value={subSeg.id}>
                     {capitalizeFirstLetterEachWord(subSeg.name)}
@@ -176,6 +179,7 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
             if (selectedSegment) {
                 setSubsegData(selectedSegment.segId);
                 console.log('Selected Segment for index', index, ':', selectedSegment);
+                console.log('Found segments: ', fetchedSegments);
             } else {
                 console.warn('No segments fetched');
                 setSubSegments([]);
@@ -199,7 +203,7 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
             console.log('Fetched Subsegments for Segment ID', segmentId, ':', subsegments);
             setSubSegments(subsegments);
     
-            refactorStateArray(subIds, 0, subsegments[0]?.subSegId || null, setSubIds);
+            refactorStateArray(subIds, 0, subsegments[0]?.id || null, setSubIds);
         } catch (err) {
             console.error('Error fetching subsegments:', err);
             setError(new Error('An error occurred while fetching the subsegments'));
@@ -250,6 +254,9 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                     homeSubSegmentId: undefined,
                     workSubSegmentId: undefined,
                     schoolSubSegmentId: undefined,
+                    homeSuperSegmentId: undefined,
+                    workSuperSegmentId: undefined,
+                    schoolSuperSegmentId: undefined,
                     userType: USER_TYPES.RESIDENTIAL,
                     reachSegmentIds: [],
                 }}
@@ -264,6 +271,7 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                 segIds={segIds}
                 showMap={showMap}
                 subIds={subIds}
+                superIds={superIds}
                 workTransfer={workTransfer}
                 schoolTransfer={schoolTransfer}
                 avatar={avatar}
@@ -271,7 +279,7 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                 reachSegmentIds={selectedSegId}
                 communityType={communityType}         
                 setCommunityType={setCommunityType}
-                setSegData={setSegData}        // Pass setSegData
+                setSegData={setSegData}
                 setSubsegData={setSubsegData}
                 onSubmit={async (values, helpers) => {
                     console.log('Formik Values:', values);
@@ -663,6 +671,7 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                                 setSegment(selectedSegment);
                                 refactorStateArray(segIds, 0, selectedSegment.segId, setSegIds);
                                 refactorStateArray(subIds, 0, null, setSubIds);
+                                refactorStateArray(superIds, 0, selectedSegment.parentId ?? null, setSuperIds);
                                 setSubsegData(selectedSegment.segId);
                             }
                         }}
@@ -681,12 +690,16 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
                             name='homeSubName'
                             as='select'
                             onChange={(e) => {  
+                                console.log('Subseg prefactor subIds:', subIds);
+                                console.log('E:', e);
                                 refactorStateArray(
                                     subIds,
                                     0,
                                     parseInt(e.target.value),
                                     setSubIds
                                 );
+                                console.log('Subseg postfactor subIds:', subIds);
+
                             }}
                         >
                             <option hidden></option>
@@ -968,6 +981,7 @@ export interface FormikStepperProps extends FormikConfig<IRegisterInput> {
   setSegIds: any;
   segIds: any;
   subIds: any;
+  superIds: any,
   workTransfer: boolean;
   schoolTransfer: boolean;
   avatar: any;
@@ -984,6 +998,7 @@ export function FormikStepper({
     showMap,
     subIds,
     segIds,
+    superIds,
     schoolTransfer,
     workTransfer,
     setSubIds,
@@ -1212,6 +1227,7 @@ export function FormikStepper({
                         if (communityType === 'home') {
                             helpers.setFieldValue('homeSegmentId', segIds[0] || null);
                             helpers.setFieldValue('homeSubSegmentId', subIds[0] || null);
+                            helpers.setFieldValue('homeSuperSegmentId', superIds[0] || null);
 
                             //clear other fields
                             helpers.setFieldValue('workDetails', { streetAddress: '', postalCode: '', company: '' });

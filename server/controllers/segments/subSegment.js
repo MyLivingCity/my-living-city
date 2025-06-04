@@ -2,6 +2,7 @@ const passport = require('passport');
 const express = require('express');
 const subSegmentRouter = express.Router();
 const prisma = require('../../lib/prismaClient');
+const { SegmentType } = require('@prisma/client');
 
 const { isEmpty, isNumber, isString, isInteger } = require('lodash');
 const { UserType } = require('@prisma/client');
@@ -261,9 +262,10 @@ subSegmentRouter.get(
 
             const parsedSegmentId = parseInt(segmentId);
 
-            const theSubSegments = await prisma.subSegments.findMany({
+            const theSubSegments = await prisma.segments.findMany({
                 where: {
-                    segId: parsedSegmentId
+                    parentId: parsedSegmentId,
+                    segmentType: SegmentType.subSegment
                 }
             });
 

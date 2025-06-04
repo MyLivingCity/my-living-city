@@ -161,6 +161,9 @@ export const postRegisterUser = async (registerData: IRegisterInput, requestData
         homeSubSegmentId,
         workSubSegmentId,
         schoolSubSegmentId,
+        homeSuperSegmentId,
+        workSuperSegmentId,
+        schoolSuperSegmentId,
         userType,
         reachSegmentIds,
         verified,
@@ -184,6 +187,20 @@ export const postRegisterUser = async (registerData: IRegisterInput, requestData
 
     const displayFName = fname;
     const displayLName = address?.streetAddress || '';
+    console.log('Registration Data: ', registerData);
+
+    const userSegment = {
+        homeSegmentId,
+        homeSubSegmentId,
+        homeSuperSegmentId,
+        workSegmentId,
+        workSubSegmentId,
+        workSuperSegmentId,
+        schoolSegmentId,
+        schoolSubSegmentId,
+        schoolSuperSegmentId,
+    };
+
 
     // Create User
     const createUserRequest = await axios.post<LoginResponse>(`${API_BASE_URL}/user/signup`, {
@@ -199,14 +216,7 @@ export const postRegisterUser = async (registerData: IRegisterInput, requestData
         verified, 
         displayFName, 
         displayLName,
-        userSegment: {
-            homeSegmentId,
-            workSegmentId,
-            schoolSegmentId,
-            homeSubSegmentId,
-            workSubSegmentId,
-            schoolSubSegmentId
-        },
+        userSegment,
         segmentRequest: requestData,
         userReach: reachSegmentIds,
         workDetails,

@@ -23,6 +23,9 @@ export interface IRegisterInput {
   homeSubSegmentId?: number;
   workSubSegmentId?: number;
   schoolSubSegmentId?: number;
+  homeSuperSegmentId?: number;
+  workSuperSegmentId?: number;
+  schoolSuperSegmentId?: number;
   userType: string;
   reachSegmentIds: any[];
   displayFName?: string;

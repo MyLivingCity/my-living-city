@@ -2,6 +2,8 @@ const passport = require('passport');
 const express = require('express');
 const segmentRouter = express.Router();
 const prisma = require('../../lib/prismaClient');
+const { SegmentType } = require('@prisma/client');
+
 
 const { isEmpty, isInteger, isString } = require('lodash');
 const { UserType } = require('@prisma/client');
@@ -117,7 +119,11 @@ segmentRouter.get(
     '/getAll',
     async (req, res) => {
         try {
-            const result = await prisma.segments.findMany();
+            const result = await prisma.segments.findMany({
+                where : {
+                    segmentType: SegmentType.segment
+                }
+            });
             res.status(200).send(result);
         } catch (error) {
             console.log(error);

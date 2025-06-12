@@ -7,13 +7,13 @@ const createUser = async (userData) => {
       geo,
       address,
       userSegment,
+      userHandle,
       segmentRequest,
       userReachRequest,
       schoolDetails,
       workDetails,
       stripeAccount,
-      hashedPassword,
-      // Remove data that's already been processed into other fields
+      hashedPassword, 
       confirmPassword,
       reachSegmentIds,
       userReach,
@@ -30,7 +30,6 @@ const createUser = async (userData) => {
         address: {
           create: address
         },
-        // User segment data - modified according to new schema
         userSegment: {
           create: userSegment.map(segment => ({
             userSegmentRelationship: segment.userSegmentRelationship,
@@ -40,6 +39,9 @@ const createUser = async (userData) => {
               }
             }
           }))
+        },
+        userHandles: {
+          create: userHandle || []
         },
         // Segment request data
         segmentRequest: {

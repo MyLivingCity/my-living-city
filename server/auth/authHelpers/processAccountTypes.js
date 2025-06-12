@@ -1,4 +1,6 @@
 const ADMIN_ROLES = require("../../constants/AdminRoles");
+const { cleanAddress } = require('../../helpers/userSegmentHelpers');
+
 
 const generateAdminEmail = async () => {
   try {
@@ -115,11 +117,18 @@ const processResidentialAccount = (userData) => {
     throw error;
   }
 };
+
 const processUserSegments = (userData) => {
   const { userSegment, ...restUserData } = userData;
   const processedSegments = [];
+  const userHandles = [];
 
-  // Process home segment if exists
+  // Clean the user data
+  const cleanUserAddress = cleanAddress(restUserData.address?.streetAddress);
+  const userCompany = restUserData.workDetails?.company;
+  const userFaculty = restUserData.schoolDetails?.faculty;
+
+  // Process home segment, supersegment, and handle if exists
   if (userSegment.homeSegmentId) {
     processedSegments.push({
       userSegmentRelationship: 'HOME',
@@ -129,6 +138,11 @@ const processUserSegments = (userData) => {
     processedSegments.push({
       userSegmentRelationship: 'HOME',
       segmentId: userSegment.homeSuperSegmentId
+    })
+
+    userHandles.push({
+      userSegmentRelationship: 'HOME',
+      handle: `${restUserData.fname}@${cleanUserAddress || ''}`
     })
   }
 
@@ -142,6 +156,11 @@ const processUserSegments = (userData) => {
       userSegmentRelationship: 'WORK',
       segmentId: userSegment.workSuperSegmentId
     });
+
+    userHandles.push({
+      userSegmentRelationship: 'WORK',
+      handle: `${restUserData.fname}@${ userCompany || ''}`
+    })
   }
 
   // Process school segment if exists
@@ -154,6 +173,12 @@ const processUserSegments = (userData) => {
       userSegmentRelationship: 'SCHOOL',
       segmentId: userSegment.schoolSuperSegmentId
     });
+
+    processedSegments.push({
+      userSegmentRelationship: 'SCHOOL',
+      handle: `${restUserData.fname}@${ userFaculty || ''}`
+    });
+
   }
 
   // Add sub-segments if they exist
@@ -180,7 +205,8 @@ const processUserSegments = (userData) => {
 
   return {
     ...restUserData,
-    userSegment: processedSegments
+    userSegment: processedSegments,
+    userHandle: userHandles
   };
 };
 

@@ -7,6 +7,7 @@ const { imagePathsToS3Url } = require('../lib/utilityFunctions');
 const { deleteImage } = require('../lib/imageBucket');
 const { isInteger, isEmpty } = require('lodash');
 const { makeUpload } = require('../lib/imageBucket');
+const { validateIdeaPostingAccess } = require("../helpers/idea/ideaHelpers.js")
 
 const upload = makeUpload("idea-proposal").single('imagePath');
 
@@ -17,7 +18,7 @@ let errorStack = '';
 // post request to create an idea
 ideaRouter.post(
   '/create',
-  // [passport.authenticate('jwt', { session: false }), upload],
+  [passport.authenticate('jwt', { session: false }), upload],
   async (req, res) => {
     let imagePath;
     try {
@@ -54,16 +55,13 @@ ideaRouter.post(
         })
       }
 
-
-
-      // passport middleware provides this based on JWT
-      const { email } = req.user;
-
-      const theUserSegment = await prisma.userSegments.findFirst({ where: { userId: id } });
-
-      const { homeSuperSegId, workSuperSegId, schoolSuperSegId, homeSegmentId, workSegmentId, schoolSegmentId, homeSubSegmentId, workSubSegmentId, schoolSubSegmentId } = theUserSegment;
-
-      let { categoryId, superSegmentId, segmentId, subSegmentId, banned, title,
+      let {
+        categoryId,
+        superSegmentId,
+        segmentId,
+        subSegmentId,
+        banned,
+        title,
         description,
         proposal_role,
         requirements,
@@ -75,96 +73,33 @@ ideaRouter.post(
         manufacturingImpact,
         supportingProposalId,
         state,
-        //TODO
       } = req.body;
-      console.log(req.body)
 
-      if (supportingProposalId) {
-        supportingProposalId = parseInt(supportingProposalId);
-      }
-      categoryId = parseInt(categoryId);
+      // passport middleware provides this based on JWT
+      const { email } = req.user;
 
-      if (subSegmentId) {
-        subSegmentId = parseInt(subSegmentId);
-      } else if (segmentId) {
-        segmentId = parseInt(segmentId);
-      } else if (superSegmentId) {
-        superSegmentId = parseInt(superSegmentId);
+      const theUserSegment = await prisma.userSegments.findMany({ where: { userId: id }, include: { segment: true } });
+      const userSegments = []
+
+      const { homeSuperSegId, workSuperSegId, schoolSuperSegId, homeSegmentId, workSegmentId, schoolSegmentId, homeSubSegmentId, workSubSegmentId, schoolSubSegmentId } = theUserSegment;
+
+      if (!isInteger(categoryId)) {
+        categoryId = parseInt(categoryId)
       }
 
-      banned = (banned === 'true');
+      const validationResult = await validateIdeaPostingAccess({
+        userId: id,
+        subSegmentId,
+        segmentId,
+        superSegmentId,
+        categoryId,
+        banned,
+        userSegments
+      });
 
-      if (banned === true) {
-        error += 'You are banned';
-        errorMessage += 'You must be un-banned before you can post ideas';
-        errorStack += 'Users can not post ideas with a pending ban status of true';
+      if (validationResult.error) {
+        return res.status(400).json(validationResult);
       }
-      // Check if category id is added
-      if (!categoryId || !isInteger(categoryId)) {
-        error += 'An Idea must be under a specific category.';
-        errorMessage += 'Creating an idea must explicitly be supplied with a "categoryId" field.';
-        errorStack += '"CategoryId" must be defined in the body with a valid id found in the database.';
-      } else {
-        const theCategory = await prisma.category.findUnique({ where: { id: categoryId } });
-
-        if (!theCategory) {
-          error += 'An Idea must be under a valid category.';
-          errorMessage += 'Creating an idea must explicitly be supplied with valid a "categoryId" field.';
-          errorStack += '"CategoryId" must be defined in the body with a valid id found in the database.';
-        }
-      }
-
-      if (isInteger(subSegmentId)) {
-        theSubSegment = await prisma.subSegments.findUnique({ where: { id: subSegmentId } });
-
-        if (!theSubSegment) {
-          error += 'Sub segment id must be valid.';
-          errorMessage += 'Creating an idea must explicitly be supplied with a valid "subSegmentId" field.';
-          errorStack += '"subSegmentId" must be provided with a valid id found in the database.';
-        } else if (subSegmentId == homeSubSegmentId || subSegmentId == workSubSegmentId || subSegmentId == schoolSubSegmentId) {
-          segmentId = theSubSegment.segId;
-
-          const theSegment = await prisma.segments.findUnique({ where: { segId: segmentId } });
-
-          superSegmentId = theSegment.superSegId;
-        } else {
-          error += 'You must belongs to the subSemgent you want to post to. ';
-          errorMessage += 'Your subsegment ids don\'t match the subsegment id you porvided. ';
-          errorStack += 'User does\'t belongs to the subsegment he/she wants to post idea to. '
-        }
-      } else if (isInteger(segmentId)) {
-        const theSegment = await prisma.segments.findUnique({ where: { segId: segmentId } });
-
-        if (!theSegment) {
-          error += 'An Idea must belong to a municipality.';
-          errorMessage += 'Creating an idea must explicitly be supplied with a valid "segmentId" field.';
-          errorStack += '"segmentId" must be defined in the body with a valid id found in the database.';
-        } else if (segmentId == homeSegmentId || segmentId == workSegmentId || segmentId == schoolSegmentId) {
-          superSegmentId = theSegment.superSegId;
-        } else {
-          error += 'You must belongs to the semgent you want to post to. ';
-          errorMessage += 'Your segment ids don\'t match the segment id you porvided. ';
-          errorStack += 'User does\'t belongs to the segment he/she wants to post idea to. '
-        }
-      } else if (isInteger(superSegmentId)) {
-        const theSuperSegment = await prisma.superSegment.findUnique({ where: { superSegId: superSegmentId } });
-
-        if (!theSuperSegment) {
-          error += 'An Idea must belong to a area.';
-          errorMessage += 'Creating an idea must explicitly be supplied with a valid "superSegmentId" field.';
-          errorStack += '"segmentId" must be defined in the body with a valid id found in the database.';
-        } else if (superSegmentId != homeSuperSegId && superSegmentId != workSuperSegId && superSegmentId != schoolSegmentId) {
-          error += 'You must belongs to the superSemgent you want to post to. ';
-          errorMessage += 'Your subsegment ids don\'t match the superSegment id you porvided. ';
-          errorStack += 'User does\'t belongs to the superSegment he/she wants to post idea to. '
-        }
-      } else {
-        error += 'An idea must belongs to a area';
-        errorMessage += 'Creating an idea must explicitly be supplied with a valid "superSegmentId" or "segmentId" or "subSegmentId" field.';
-        errorStack += 'One of the area id must explicitly be supplied with a valid id found in the database. '
-      }
-
-
 
       // Parse data
       const geoData = JSON.parse(req.body.geo);
@@ -196,11 +131,21 @@ ideaRouter.post(
       }
       let notification_dismissed = false
       let quarantined_at = new Date()
+
+      const segments = { connect : [] }
+
+      if (segmentId) { 
+        segments.connect.push( { segId: parseInt(segmentId) } )
+      } 
+      if (superSegmentId) { 
+        segments.connect.push( { segId: parseInt(superSegmentId) } )
+      } 
+      if (subSegmentId) { 
+        segments.connect.push( { segId: parseInt(subSegmentId) } )
+      }
+
       const ideaData = {
         categoryId,
-        superSegmentId,
-        segmentId,
-        subSegmentId,
         authorId: id,
         imagePath: imagePath,
         title,
@@ -217,6 +162,7 @@ ideaRouter.post(
         state,
         notification_dismissed,
         quarantined_at,
+        segments: segments
       };
 
       // Create an idea and make the author JWT bearer
@@ -224,12 +170,13 @@ ideaRouter.post(
         data: {
           geo: { create: geoData },
           address: { create: addressData },
-          ...ideaData
+          ...ideaData,
         },
         include: {
           geo: true,
           address: true,
           category: true,
+          segments:true,
         }
       });
 

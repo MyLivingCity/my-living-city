@@ -1,0 +1,47 @@
+{
+  "missingCategoryId": {
+    "error": "An Idea must be under a specific category.",
+    "errorMessage": "Creating an idea must explicitly be supplied with a \"categoryId\" field.",
+    "errorStack": "\"CategoryId\" must be defined in the body with a valid id found in the database."
+  },
+  "invalidCategoryId": {
+    "error": "An Idea must be under a valid category.",
+    "errorMessage": "Creating an idea must explicitly be supplied with a valid \"categoryId\" field.",
+    "errorStack": "\"CategoryId\" must be defined in the body with a valid id found in the database."
+  },
+  "invalidSubSegmentId": {
+    "error": "Sub segment id must be valid.",
+    "errorMessage": "Creating an idea must explicitly be supplied with a valid \"subSegmentId\" field.",
+    "errorStack": "\"subSegmentId\" must be provided with a valid id found in the database."
+  },
+  "unauthorizedSubSegment": {
+    "error": "You must belong to the subSegment you want to post to.",
+    "errorMessage": "Your subsegment ids don't match the subsegment id you provided.",
+    "errorStack": "User doesn't belong to the subsegment they want to post idea to."
+  },
+  "invalidSegmentId": {
+    "error": "An Idea must belong to a municipality.",
+    "errorMessage": "Creating an idea must explicitly be supplied with a valid \"segmentId\" field.",
+    "errorStack": "\"segmentId\" must be defined in the body with a valid id found in the database."
+  },
+  "unauthorizedSegment": {
+    "error": "You must belong to the segment you want to post to.",
+    "errorMessage": "Your segment ids don't match the segment id you provided.",
+    "errorStack": "User doesn't belong to the segment they want to post idea to."
+  },
+  "invalidSuperSegmentId": {
+    "error": "An Idea must belong to an area.",
+    "errorMessage": "Creating an idea must explicitly be supplied with a valid \"superSegmentId\" field.",
+    "errorStack": "\"superSegmentId\" must be defined in the body with a valid id found in the database."
+  },
+  "unauthorizedSuperSegment": {
+    "error": "You must belong to the superSegment you want to post to.",
+    "errorMessage": "Your superSegment ids don't match the superSegment id you provided.",
+    "errorStack": "User doesn't belong to the superSegment they want to post idea to."
+  },
+  "missingAreaId": {
+    "error": "An idea must belong to an area.",
+    "errorMessage": "Creating an idea must explicitly be supplied with a valid \"superSegmentId\", \"segmentId\", or \"subSegmentId\" field.",
+    "errorStack": "One of the area ids must be supplied with a valid id found in the database."
+  }
+}

@@ -83,6 +83,8 @@ export const ROUTES = {
     COMMUNITY_DASHBOARD: '/community-dashboard/:segId',
     MUNICIPAL_DASHBOARD: '/municipal-dashboard/:segId',
     MOD_MANAGEMENT: '/mod/management',
+    //* This is the route for the SubGroupManagerPage
+    SUBGROUP_MANAGEMENT: '/subgroup-management',
 };
 
 export enum BAN_USER_TYPES {

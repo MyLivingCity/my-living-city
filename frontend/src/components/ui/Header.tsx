@@ -14,6 +14,7 @@ import { FindBadPostingBehaviorDetails } from 'src/hooks/badPostingBehaviorHooks
 import { WarningMessageModal } from '../modal/WarningMessageModal';
 import { useBadPostingThreshhold } from 'src/hooks/threshholdHooks';
 import { useAllUserSegments } from 'src/hooks/userSegmentHooks';
+import { NavLink } from 'react-router-dom';
 
 function Header() {
     const [stripeStatus, setStripeStatus] = useState('');
@@ -201,6 +202,8 @@ function Header() {
                                         <Nav.Link href='/segment/management/all'>Segments</Nav.Link>
                                         <Nav.Link href='/user/management'>User Manager</Nav.Link>
                                         <Nav.Link href='/admin/management'>Admin Manager</Nav.Link>
+                                        {/*//TODO: This link should be shown if the user is a subGroup Manager */}
+                                        <Nav.Link href='/subgroup-management'>SubGroup Manager</Nav.Link>
                                     </NavDropdown>
                                 )}
 

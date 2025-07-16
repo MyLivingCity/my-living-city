@@ -7,7 +7,8 @@ const { imagePathsToS3Url } = require('../lib/utilityFunctions');
 const { deleteImage } = require('../lib/imageBucket');
 const { isInteger, isEmpty } = require('lodash');
 const { makeUpload } = require('../lib/imageBucket');
-const { validateIdeaPostingAccess } = require("../helpers/idea/ideaHelpers.js")
+const { validateIdeaPostingAccess } = require("../helpers/idea/ideaHelpers.js");
+const { UserSegmentRelationShipType } = require('@prisma/client');
 
 const upload = makeUpload("idea-proposal").single('imagePath');
 
@@ -747,26 +748,15 @@ ideaRouter.get(
                   streetAddress: true,
                 }
               },
-              userSegments: {
-                select: {
-                  id: true,
-                  homeSegmentId: true,
-                  workSegmentId: true,
-                  schoolSegmentId: true,
-                  homeSubSegmentId: true,
-                  workSubSegmentId: true,
-                  schoolSubSegmentId: true,
-                  homeSegHandle: true,
-                  workSegHandle: true,
-                  schoolSegHandle: true,
+              userSegment: {
+                include: {
+                  segment: true,
                 }
-              }
+              },
+              userHandles: true,
             }
           },
-          segment: true,
-          subSegment: true,
-          superSegment: true,
-          supportedProposal: true
+          segments: true,
         }
       });
       if (!foundIdea) {

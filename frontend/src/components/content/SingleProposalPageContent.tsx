@@ -14,7 +14,8 @@ import {
 import { IIdea, IIdeaWithRelationship } from '../../lib/types/data/idea.type';
 import {
     capitalizeFirstLetterEachWord,
-    capitalizeString
+    capitalizeString,
+    getIdeaSegmentsMap,
 } from '../../lib/utilityFunctions';
 import LoadingSpinnerInline from '../ui/LoadingSpinnerInline';
 import CommentsSection from '../partials/SingleIdeaContent/CommentsSection';
@@ -103,8 +104,6 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
         createdAt,
         category,
         segment,
-        subSegment,
-        superSegment,
         author,
         reviewed,
         state,
@@ -169,6 +168,16 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
         return !ideaData.champion && !!ideaData.isChampionable;
     };
 
+    /**
+     * Breaks idea segments into key-value pairs and constants
+     */
+    const segmentMap = getIdeaSegmentsMap(segment);
+
+    const primarySegment = segmentMap.segment;
+    const subSegment = segmentMap.subSegment;
+    const superSegment = segmentMap.superSegment;
+
+
     const [showProposalSegmentError, setShowProposalSegmentError] = useState(false);
 
     function redirectToIdeaSubmit() {
@@ -185,10 +194,10 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
             }
 
             if (!name && segment) {
-                name = segment.name;
+                name = primarySegment?.name;
 
-                if (name && segment) {
-                    if (segment.segId === userSegmentData.homeSegmentId || segment.segId === userSegmentData.workSegmentId || segment.segId === userSegmentData.schoolSegmentId) {
+                if (name && primarySegment) {
+                    if (primarySegment.segId === userSegmentData.homeSegmentId || primarySegment.segId === userSegmentData.workSegmentId || primarySegment.segId === userSegmentData.schoolSegmentId) {
                         const communityOfInterest = getSegmentName(name);
                         window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}`;
                     } else {
@@ -199,7 +208,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
             if (!name && superSegment) {
                 name = superSegment.name;
-                if (superSegment.superSegId === userSegmentData.homeSuperSegId || superSegment.superSegId === userSegmentData.workSuperSegId || superSegment.superSegId === userSegmentData.schoolSuperSegId) {
+                if (superSegment.segId === userSegmentData.homeSuperSegId || superSegment.segId === userSegmentData.workSuperSegId || superSegment.segId === userSegmentData.schoolSuperSegId) {
                     const communityOfInterest = getSegmentName(name);
                     window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}`;
                 } else {
@@ -207,8 +216,8 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                 }
             }
         } else {
-            if (subSegment?.segId === userSegmentData.homeSubSegmentId || segment?.segId === userSegmentData.homeSegmentId || superSegment?.superSegId === userSegmentData.homeSuperSegId) {
-                let name = subSegment?.name || segment?.name || superSegment?.name;
+            if (subSegment?.segId === userSegmentData.homeSubSegmentId || primarySegment?.segId === userSegmentData.homeSegmentId || superSegment?.segId === userSegmentData.homeSuperSegId) {
+                let name = subSegment?.name || primarySegment?.name || superSegment?.name;
                 const communityOfInterest = getSegmentName(name);
                 window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}`;
             } else {
@@ -680,10 +689,10 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                         </div>
                                     ) : null}
 
-                                    {segment ? (
+                                    {primarySegment ? (
                                         <div className='info-container'>
                                             <h5 className='title'>Municipality:&nbsp;</h5>
-                                            <h5 className='value'>{getSegmentName(segment.name)}</h5>
+                                            <h5 className='value'>{getSegmentName(primarySegment.name)}</h5>
                                         </div>
                                     ) : null}
 
@@ -835,24 +844,26 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                             </div>
                             <div className='footer-handle'>
                                 {
-                                    author?.userSegments?.find( seg => seg.userSegmentRelationship === UserSegmentRelationshipEnum.HOME)?.id == segment?.segId &&
+                                    author?.userSegments?.find( seg => seg.userSegmentRelationship === UserSegmentRelationshipEnum.HOME)?.segmentId == primarySegment?.segId &&
                                     (
                                         <div>
                                             {author?.userHandles?.find( h => h.userSegmentRelationship === UserSegmentRelationshipEnum.HOME)?.handle ?? 
                                             `${author?.fname}@${author?.address?.streetAddress}`} as Resident
                                         </div>
                                     ) ||
-                                    author?.userSegments?.find( seg => seg.userSegmentRelationship === UserSegmentRelationshipEnum.SCHOOL)?.id == segment?.segId &&
+
+                                    author?.userSegments?.find( seg => seg.userSegmentRelationship === UserSegmentRelationshipEnum.SCHOOL)?.segmentId == primarySegment?.segId &&
 
                                     (
                                         <div>
-                                            {author?.userHandles?.find( h => h.userSegmentRelationship === UserSegmentRelationshipEnum.SCHOOL)} as Student
+                                            {author?.userHandles?.find( h => h.userSegmentRelationship === UserSegmentRelationshipEnum.SCHOOL)?.handle} as Student
                                         </div>
                                     ) ||
-                                    author?.userSegments?.find( seg => seg.userSegmentRelationship === UserSegmentRelationshipEnum.WORK)?.id == segment?.segId &&
+
+                                    author?.userSegments?.find( seg => seg.userSegmentRelationship === UserSegmentRelationshipEnum.WORK)?.segmentId == primarySegment?.segId &&
                                     (
                                         <div>
-                                            {author?.userHandles?.find( h => h.userSegmentRelationship === UserSegmentRelationshipEnum.WORK)} as Worker
+                                            {author?.userHandles?.find( h => h.userSegmentRelationship === UserSegmentRelationshipEnum.WORK)?.handle} as Worker
                                         </div>
                                     )
                                 }

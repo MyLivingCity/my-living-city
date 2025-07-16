@@ -6,6 +6,7 @@ import { useSingleIdea } from 'src/hooks/ideaHooks';
 import {
     capitalizeFirstLetterEachWord,
     capitalizeString,
+    getIdeaSegmentsMap,
 } from '../../lib/utilityFunctions';
 import CommentsSection from '../partials/SingleIdeaContent/CommentsSection';
 import RatingsSection from '../partials/SingleIdeaContent/RatingsSection';
@@ -46,7 +47,7 @@ import Form from 'react-bootstrap/Form';
 import { useCheckFlagBan } from 'src/hooks/flagHooks';
 import EndorsedUsersSection from '../partials/SingleIdeaContent/EndorsedUsersSection';
 import { IUser } from 'src/lib/types/data/user.type';
-import { UserSegmentRelationshipEnum } from 'src/lib/types/data/segment.type';
+import { SegmentType, UserSegmentRelationshipEnum } from 'src/lib/types/data/segment.type';
 
 interface SingleIdeaPageContentProps {
     ideaData: IIdeaWithRelationship;
@@ -69,10 +70,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
         manufacturingImpact,
         createdAt,
         category,
-        segmentId,
         segment,
-        subSegment,
-        superSegment,
         author,
         state,
         active,
@@ -146,7 +144,14 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
         setOtherFlagReason('OTHER: ' + val.target.value);
 
     }
-    //console.log(proposalIdea);
+
+    //Segments mapped by segmentType
+    const segmentMap = getIdeaSegmentsMap(segment);
+
+    const primarySegment = segmentMap.segment;
+    const subSegment = segmentMap.subSegment;
+    const superSegment = segmentMap.superSegment;
+
     const handleHideFlagButton = () => setShowFlagButton(false);
 
     const handleClose = () => setShow(false);
@@ -575,15 +580,15 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                         <div className='info-container'>
                                             <h5 className='title'>District:&nbsp;</h5>
                                             <h5 className='value'>
-                                                {superSegment ? capitalizeFirstLetterEachWord(superSegment.name) : 'N/A'}
+                                                {capitalizeFirstLetterEachWord(superSegment.name)}
                                             </h5>
                                         </div>
                                     ) : null}
 
-                                    {segment ? (
+                                    {primarySegment ? (
                                         <div className='info-container'>
                                             <h5 className='title'>Municipality:&nbsp;</h5>
-                                            <h5 className='value'>{capitalizeFirstLetterEachWord(segment.name)}</h5>
+                                            <h5 className='value'>{capitalizeFirstLetterEachWord(primarySegment.name)}</h5>
                                         </div>
                                     ) : null}
 
@@ -591,7 +596,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                         <div className='info-container'>
                                             <h5 className='title'>Neighborhood:&nbsp;</h5>
                                             <h5 className='value'>
-                                                {subSegment ? capitalizeFirstLetterEachWord(subSegment.name) : 'N/A'}
+                                                {capitalizeFirstLetterEachWord(subSegment.name)}
                                             </h5>
                                         </div>
                                     ) : null}
@@ -709,7 +714,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
                             <div className='footer-handle'>
                                 {
-                                    author?.userSegments?.find( seg => seg.userSegmentRelationship === UserSegmentRelationshipEnum.HOME)?.id == segmentId &&
+                                    author?.userSegments?.find( seg => seg.userSegmentRelationship === UserSegmentRelationshipEnum.HOME)?.segmentId == primarySegment?.segId &&
                                     (
                                         <div>
                                             {author?.userHandles?.find( h => h.userSegmentRelationship === UserSegmentRelationshipEnum.HOME)?.handle ?? 
@@ -717,18 +722,18 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                         </div>
                                     ) ||
 
-                                    author?.userSegments?.find( seg => seg.userSegmentRelationship === UserSegmentRelationshipEnum.SCHOOL)?.id == segmentId &&
+                                    author?.userSegments?.find( seg => seg.userSegmentRelationship === UserSegmentRelationshipEnum.SCHOOL)?.segmentId == primarySegment?.segId &&
 
                                     (
                                         <div>
-                                            {author?.userHandles?.find( h => h.userSegmentRelationship === UserSegmentRelationshipEnum.SCHOOL)} as Student
+                                            {author?.userHandles?.find( h => h.userSegmentRelationship === UserSegmentRelationshipEnum.SCHOOL)?.handle} as Student
                                         </div>
                                     ) ||
 
-                                    author?.userSegments?.find( seg => seg.userSegmentRelationship === UserSegmentRelationshipEnum.WORK)?.id == segmentId &&
+                                    author?.userSegments?.find( seg => seg.userSegmentRelationship === UserSegmentRelationshipEnum.WORK)?.segmentId == primarySegment?.segId &&
                                     (
                                         <div>
-                                            {author?.userHandles?.find( h => h.userSegmentRelationship === UserSegmentRelationshipEnum.WORK)} as Worker
+                                            {author?.userHandles?.find( h => h.userSegmentRelationship === UserSegmentRelationshipEnum.WORK)?.handle} as Worker
                                         </div>
                                     )
                                 }

@@ -478,3 +478,25 @@ export function getSegmentsFromUserSegments(userSegments: IUserSegment[]| undefi
     }
     return result;
 }
+
+/**
+ * 
+ * Converts an array of ISegment into a map by SegmentType, assumes only one of each type.
+ * 
+ * @param segments - array of segments for an entity such as an idea
+ * @returns Record<SegmentType, ISegment>
+ */
+export const getIdeaSegmentsMap = (segments: ISegment[] | undefined):
+Partial<Record<SegmentType, ISegment>> => {
+    const map: Partial<Record<SegmentType, ISegment>> = {};
+
+    if(!segments) return map;
+    
+    for(const seg of segments){
+        if(seg.segmentType in SegmentType) {
+            map[seg.segmentType] = seg;
+        }
+    }
+
+    return map;
+};

@@ -1,28 +1,40 @@
+/**
+ * SubGroupSelector.tsx
+ * 
+ * Displays a selector dropdown to choose a subgroup to manage,
+ * and renders details of the currently selected subgroup.
+ */
+
 import React from 'react';
 import { Row, Col, Form, Card, ListGroup, ListGroupItem } from 'react-bootstrap';
-import { SubGroup } from '../../pages/SubGroupManagementPage';
+
+// Types
+import { ISubGroup } from 'src/lib/types/data/subGroup.type';
+
+// Utility functions 
+import { formatDateString } from 'src/lib/utilityFunctions';
 
 interface SubGroupSelectorProps {
-    subGroups: SubGroup[];
     subGroupName: string;
+    selectedSubGroup: ISubGroup | null;
+    subGroups: ISubGroup[];
     setSubGroupName: React.Dispatch<React.SetStateAction<string>>;
-    selectedSubGroup: SubGroup | null;
 }
 
 export const SubGroupSelector: React.FC<SubGroupSelectorProps> = ({
-    subGroups,
     subGroupName,
-    setSubGroupName,
     selectedSubGroup,
+    subGroups,
+    setSubGroupName,
 }) => {
-
+    // Define fields to display in the subgroup details
     const fields = selectedSubGroup
         ? [
             { label: 'Group Name', value: selectedSubGroup.name },
-            { label: 'Created At', value: selectedSubGroup.createdAt },
-            { label: 'Visibility', value: selectedSubGroup.visibility },
-            { label: 'Group Type', value: selectedSubGroup.groupType },
-            { label: 'Nested Under', value: selectedSubGroup.nestedUnder },
+            { label: 'Created At', value: formatDateString(selectedSubGroup.createdAt) },
+            { label: 'Visibility', value: selectedSubGroup.privacyField },
+            { label: 'Group Type', value: selectedSubGroup.isVirtual ? 'Virtual' : 'Nested' },
+            { label: 'Nested Under', value: selectedSubGroup.regionId || 'None' },
         ]
         : [];
 
@@ -35,7 +47,7 @@ export const SubGroupSelector: React.FC<SubGroupSelectorProps> = ({
                         <Card.Body>
                             <Row>
                                 {/* Selector */}
-                                <Col xs={12} md={5}>
+                                <Col xs={12} md={6}>
                                     <Form.Label>SubGroup Name</Form.Label>
                                     <Form.Control
                                         size='sm'
@@ -53,6 +65,14 @@ export const SubGroupSelector: React.FC<SubGroupSelectorProps> = ({
                                             </option>
                                         ))}
                                     </Form.Control>
+
+                                    {/* Description */}
+                                    {selectedSubGroup?.description && (
+                                        <div className='mt-3'>
+                                            <Form.Label>Description</Form.Label>
+                                            <Card.Text>{selectedSubGroup.description}</Card.Text>
+                                        </div>
+                                    )}
                                 </Col>
 
                                 {/* Labels + Values */}

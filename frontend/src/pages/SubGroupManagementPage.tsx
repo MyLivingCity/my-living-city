@@ -1,48 +1,31 @@
+/** 
+ * SubGroupManagementPage.tsx
+ * 
+ * This page handles the management of subgroups, allowing users to view the subgroups they manage, 
+ * add or remove users, and accept or reject user requests to join subgroups.
+*/
+
 import { useContext } from 'react';
-import { useAllUsers, useUserWithJwtVerbose } from 'src/hooks/userHooks';
+
+// Context 
 import { UserProfileContext } from '../contexts/UserProfile.Context';
+
+// Components
 import SubGroupManagementContent from '../components/content/SubGroupManagementContent';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 
-export interface SubGroup {
-    name: string;
-    createdAt: string;
-    visibility: 'Public' | 'Private' | 'Test';
-    groupType: 'Virtual' | 'Nested';
-    nestedUnder: string | 'None (Virtual Group)';
-}
-
-//* Dummy data for subgroups
-//* This should be replaced with actual data fetched from the backend
-const dummySubGroups: SubGroup[] = [
-    {
-        name: 'SubGroup A',
-        createdAt: '2024-01-01',
-        visibility: 'Public',
-        groupType: 'Virtual',
-        nestedUnder: 'None (Virtual Group)',
-    },
-    {
-        name: 'SubGroup B',
-        createdAt: '2024-03-15',
-        visibility: 'Private',
-        groupType: 'Nested',
-        nestedUnder: 'Main Group 2',
-    },
-    {
-        name: 'SubGroup C',
-        createdAt: '2024-05-10',
-        visibility: 'Public',
-        groupType: 'Nested',
-        nestedUnder: 'Main Group 3',
-    },
-];
+// Hooks
+import { useGetSubGroupsManaged } from '../hooks/subGroupsHooks';
 
 export default function SubGroupManagementPage() {
-    const { token, user } = useContext(UserProfileContext);
-    const { data: userData, isLoading: userLoading } = useAllUsers(token);
 
-    if (userLoading) {
+    // Get user token and profile from context
+    const { token, user } = useContext(UserProfileContext);
+
+    // Fetch subgroups managed by the user
+    const { data: managedSubGroups, isLoading: subGroupsLoading } = useGetSubGroupsManaged(token);
+
+    if (subGroupsLoading) {
         return (
             <div className='wrapper'>
                 <LoadingSpinner />
@@ -52,10 +35,10 @@ export default function SubGroupManagementPage() {
 
     return (
         <div className='wrapper'>
-            <SubGroupManagementContent 
-                subGroups={dummySubGroups} 
-                token={token ?? ''} 
-                users={userData!}
+            <SubGroupManagementContent
+                user={user} 
+                token={token ?? ''}
+                subGroups={managedSubGroups || []} 
             />
         </div>
     );

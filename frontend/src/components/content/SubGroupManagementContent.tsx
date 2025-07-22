@@ -1,97 +1,67 @@
+/** 
+ * SubGroupManagementContent.tsx
+ * 
+ * Component for managing a selected subgroup, this includes:
+ * - SubGroupSelector: Display and select a subgroup to manage
+ * - SubGroupMembersTable: Shows current members of the subgroup
+ * - UserSubGroupRequestCard: Displays join and rejected requests
+ * - SubGroupUserManagement: Allows management of user not in the subgroup to add them to the subgroup
+*/
+
 import React, {useState, useEffect } from 'react';
 import { Container } from 'react-bootstrap';
-import { SubGroup } from '../../pages/SubGroupManagementPage';
+
+// Partial components
 import { UserSubGroupRequestCard } from '../partials/SubGroupContent/SubGroupRequestCard';
-import { SubGroupSelector } from '../content/SubGroupSelector';
-import { SubGroupMembersTable } from '../content/SubGroupMembersTable';
-import SubGroupUserManagement from './SubGroupUserManagement';
+import { SubGroupSelector } from '../partials/SubGroupContent/SubGroupSelector';
+import { SubGroupMembersTable } from '../partials/SubGroupContent/SubGroupMembersTable';
+import SubGroupUserManagement from '../partials/SubGroupContent/SubGroupUserManagement';
+import LoadingSpinner from '../ui/LoadingSpinner';
+
+// Types
 import { IUser } from 'src/lib/types/data/user.type';
+import { ISubGroup } from 'src/lib/types/data/subGroup.type';
+
+// Hooks
+import { useGetUserNotInSubGroup, useGetUserInSubGroup } from '../../hooks/subGroupsHooks';
 
 interface SubGroupManagementContentProps {
-    subGroups: SubGroup[];
+    user: IUser | null;
     token: string;
-    users: IUser[] | undefined
+    subGroups: ISubGroup[];
 }
-
-export interface FakeUser {
-    email: string;
-    organization: string;
-    first: string;
-    last: string;
-    userType: string;
-    homeSegment: string;
-    schoolSegment: string;
-}
-
-//* Dummy data for users in subgroups
-//* This should be replaced with actual data fetched from the backend
-const fakeUsersBySubGroup: Record<string, FakeUser[]> = {
-    'subgroup a': [
-        {
-            email: 'green.jane@example.com',
-            organization: 'EcoFuture Org',
-            first: 'Jane',
-            last: 'Green',
-            userType: 'Educator',
-            homeSegment: 'Downtown',
-            schoolSegment: 'Sustainability School'
-        },
-        {
-            email: 'recycle.tom@example.com',
-            organization: 'GreenLoop',
-            first: 'Tom',
-            last: 'Cycle',
-            userType: 'Student',
-            homeSegment: 'Uptown',
-            schoolSegment: 'Riverdale High'
-        }
-    ],
-    'subgroup b': [
-        {
-            email: 'sam.digital@example.com',
-            organization: 'RemoteAid',
-            first: 'Sam',
-            last: 'Digital',
-            userType: 'Volunteer',
-            homeSegment: 'Online',
-            schoolSegment: 'N/A'
-        }
-    ],
-    'subgroup c': [
-        {
-            email: 'alex.brick@example.com',
-            organization: 'UrbanUnity',
-            first: 'Alex',
-            last: 'Brick',
-            userType: 'Community Member',
-            homeSegment: 'Maple Street',
-            schoolSegment: 'Maple Secondary'
-        },
-        {
-            email: 'lee.foundation@example.com',
-            organization: 'CivicBuild',
-            first: 'Lee',
-            last: 'Foundation',
-            userType: 'Engineer',
-            homeSegment: 'Oak Block',
-            schoolSegment: 'CityTech'
-        }
-    ]
-};
 
 const SubGroupManagementContent: React.FC<SubGroupManagementContentProps> = ({
-    subGroups,
+    user,
     token,
-    users
+    subGroups,
 }) => {
+    // State for selected subgroup name and details
     const [subGroupName, setSubGroupName] = useState<string>(' ');
-    const [selectedSubGroup, setSelectedSubGroup] = useState<SubGroup | null>(null);
+    const [selectedSubGroup, setSelectedSubGroup] = useState<ISubGroup | null>(null);
+    
+    // Fetch users in the selected subgroup
+    const { data: usersInSubGroup, isLoading: userInSubGroupLoading, refetch: refetchUsersInSubGroup  } = useGetUserInSubGroup(token, selectedSubGroup?.id || '');
 
-    // Initialize default subgroup
+    // Filter users based on their member status
+    const currentMembers = usersInSubGroup ? usersInSubGroup.filter((user) => user.status === 'APPROVED') : [];
+    const joinRequests = usersInSubGroup ? usersInSubGroup.filter((user) => user.status === 'PENDING') : [];
+    const rejectedUsers = usersInSubGroup ? usersInSubGroup.filter((user) => user.status === 'REJECTED') : [];
+
+    // Fetch users not in the selected subgroup
+    const { data: usersNotInSubGroup, isLoading: usersNotInSubGroupLoading } = useGetUserNotInSubGroup(token, selectedSubGroup?.id || '');
+
+    // Initialize default subgroup from localStorage or first in list
     useEffect(() => {
         if (subGroups && subGroups.length > 0) {
-            const defaultName = subGroups[0].name.toLowerCase();
-            setSubGroupName(defaultName);
+            const savedSubGroupName = localStorage.getItem('selectedSubGroupName');
+
+            if (savedSubGroupName && subGroups.some(sg => sg.name.toLowerCase() === savedSubGroupName.toLowerCase())) {
+                setSubGroupName(savedSubGroupName);
+            } else {
+                const defaultName = subGroups[0].name.toLowerCase();
+                setSubGroupName(defaultName);
+            }
         }
     }, [subGroups]);
 
@@ -102,40 +72,61 @@ const SubGroupManagementContent: React.FC<SubGroupManagementContentProps> = ({
         );
         setSelectedSubGroup(match || null);
     }, [subGroupName, subGroups]);
+
+    // Save selected subgroup members to local state
+    useEffect(() => {
+        if (subGroupName.trim() !== '') {
+            localStorage.setItem('selectedSubGroupName', subGroupName);
+        }
+    }, [subGroupName]);
+
+    if (userInSubGroupLoading || usersNotInSubGroupLoading) {
+        return (
+            <div className='wrapper'>
+                <LoadingSpinner />
+            </div>
+        );
+    }
     
     return (
         <Container className='mb-4 mt-4'>
             <h2 className='pb-2 pt-2 display-6'>SubGroup Manager</h2>
             <SubGroupSelector
-                subGroups={subGroups}
                 subGroupName={subGroupName}
-                setSubGroupName={setSubGroupName}
                 selectedSubGroup={selectedSubGroup}
+                subGroups={subGroups}
+                setSubGroupName={setSubGroupName}
             />
 
             <br />
 
             <SubGroupMembersTable 
+                token={token} 
+                subGroupId={selectedSubGroup?.id || ''}
                 subGroupName={subGroupName}
-                members={fakeUsersBySubGroup[subGroupName] || []}
-                token={''} 
+                members={currentMembers}
+                refetchMembers={refetchUsersInSubGroup}
             />
 
             <br />
-      
+
             <UserSubGroupRequestCard 
-                segReq={undefined} 
-                token={''} 
+                token={token}
+                subGroupId={selectedSubGroup?.id || ''}
+                joinRequests={joinRequests}
+                rejectedUsers={rejectedUsers}
+                refetchUsersInSubGroup={refetchUsersInSubGroup} 
             />
 
             <br />
 
             <SubGroupUserManagement 
-                user={null}
-                users={users} 
-                token={''}
-            />
-            
+                user={user}
+                token={token}
+                subGroupId={selectedSubGroup?.id || ''}
+                users={usersNotInSubGroup} 
+                refetchUsersInSubGroup={refetchUsersInSubGroup}
+            /> 
         </Container>
     );
 }; 

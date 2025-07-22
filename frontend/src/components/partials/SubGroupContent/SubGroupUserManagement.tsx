@@ -1,61 +1,34 @@
+/** 
+ * SubGroupManagementContent.tsx
+ * 
+ * Displays a user management card for subgroups with filters and user controls
+ * Includes filtering by email, organization, first name and last name.
+ * Allows adding users to the subgroup by calling the addUserToSubGroup API.
+*/
+
 import React, { useContext, useState } from 'react';
-import { Form, Table, Row, Col, Card, Button, Dropdown} from 'react-bootstrap';
+import { Form, Table, Row, Col, Card, Button, Dropdown, Modal} from 'react-bootstrap';
+
+// Types
 import { IUser } from 'src/lib/types/data/user.type';
 
-// interface IUser {
-//     email: string;
-//     organization?: string;
-//     firstName?: string;
-//     lastName?: string;
-//     userType?: string;
-//     homeSegment?: string;
-//     schoolSegment?: string;
-//     workSegment?: string;
-// }
-
-// const dummyUsers: IUser[] = [
-//     {
-//         email: 'julia.green@example.com',
-//         organization: 'EcoFuture Org',
-//         firstName: 'Julia',
-//         lastName: 'Green',
-//         userType: 'Educator',
-//         homeSegment: 'Downtown',
-//         schoolSegment: 'Sustainability School',
-//         workSegment: 'Environmental Initiatives'
-//     },
-//     {
-//         email: 'sam.tech@example.com',
-//         organization: 'RemoteTech',
-//         firstName: 'Sam',
-//         lastName: 'Techman',
-//         userType: 'Developer',
-//         homeSegment: 'Uptown',
-//         schoolSegment: 'Tech High',
-//         workSegment: 'Engineering Hub'
-//     },
-//     {
-//         email: 'lee.urban@example.com',
-//         organization: 'CityBuild',
-//         firstName: 'Lee',
-//         lastName: 'Urban',
-//         userType: 'Planner',
-//         homeSegment: 'East Side',
-//         schoolSegment: 'Urban Academy',
-//         workSegment: 'Municipal Office'
-//     }
-// ];
+// API
+import { addUserToSubGroup } from 'src/lib/api/subGroupRoutes';
 
 interface SubGroupManagementContentProps {
-    users: IUser[] | undefined;
-    token: string | null;
     user : IUser | null;
+    token: string | null;
+    users: IUser[] | undefined;
+    subGroupId: string;
+    refetchUsersInSubGroup: () => void;
 }
 
 const SubGroupManagementContent: React.FC<SubGroupManagementContentProps> = ({
-    users = [], 
-    token,
     user,
+    token,
+    users = [], 
+    subGroupId,
+    refetchUsersInSubGroup
 }) => {
 
     // Filter States
@@ -63,6 +36,9 @@ const SubGroupManagementContent: React.FC<SubGroupManagementContentProps> = ({
     const [organizationFilter, setOrganizationFilter] = useState<string>('');
     const [firstNameFilter, setFirstNameFilter] = useState<string>('');
     const [lastNameFilter, setLastNameFilter] = useState<string>('');
+
+    // Toggle display of requests table
+    const [showReq, setShowReq] = useState(false);
 
     // Apply filtering to the users list
     const filteredUsersList = users.filter((u) => {
@@ -74,11 +50,29 @@ const SubGroupManagementContent: React.FC<SubGroupManagementContentProps> = ({
         return emailMatch && orgMatch && firstNameMatch && lastNameMatch;
     });
 
-    // State for showing requests and updating
-    const [showReq, setShowReq] = useState(false);
-    const [update, setUpdate] = useState(false);
+    // Modal state for confirmation dialog
+    const [ showModal, setShowModal ] = useState<boolean>(false);
+    const [ modalMessage, setModalMessage ] = useState<string>(''); 
 
-    console.log(users);
+    const handleAddUser = async (userId: string) => {
+        try {
+            if (!token || !subGroupId) {
+                setModalMessage('Missing token or subgroup ID');
+                setShowModal(true);
+                return;
+            }
+            
+            const res = await addUserToSubGroup(token, subGroupId, userId);
+            setModalMessage(`User ${res.email} added successfully to subgroup: ${res.subGroupName}`);
+            setShowModal(true);
+
+            await refetchUsersInSubGroup(); 
+        } catch (error) {
+            console.error('Error adding user:', error);
+            setModalMessage('Failed to add user. Please try again.');
+            setShowModal(true);
+        };
+    };
 
     return (
         <Card>
@@ -98,6 +92,7 @@ const SubGroupManagementContent: React.FC<SubGroupManagementContentProps> = ({
             {showReq && (
                 <Card.Body>
                     <Form>
+                        {/* Filter Inputs */}
                         <Row>
                             <Col>
                                 <Form.Group>
@@ -158,23 +153,23 @@ const SubGroupManagementContent: React.FC<SubGroupManagementContentProps> = ({
                             <Table bordered hover size='sm' className='mt-4'>
                                 <thead>
                                     <tr>
-                                        <th scope='col' className='text-center align-middle'>Email</th>
-                                        <th scope='col' className='text-center align-middle'>Organization</th>
-                                        <th scope='col' className='text-center align-middle'>First</th>
-                                        <th scope='col' className='text-center align-middle'>Last</th>
-                                        <th scope='col' className='text-center align-middle'>User Type</th>
-                                        <th scope='col' className='text-center align-middle'>Controls</th>
+                                        <th>Email</th>
+                                        <th>Organization</th>
+                                        <th>First</th>
+                                        <th>Last</th>
+                                        <th>User Type</th>
+                                        <th>Controls</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {filteredUsersList.map((user, index) => (
                                         <tr key={index}>
-                                            <td className='text-start align-middle'>{user.email}</td>
-                                            <td className='text-center align-middle'>{user.organizationName || 'N/A'}</td>
-                                            <td className='text-center align-middle'>{user.fname || 'N/A'}</td>
-                                            <td className='text-center align-middle'>{user.lname || 'N/A'}</td>
-                                            <td className='text-center align-middle'>{user.userType || 'N/A'}</td>
-                                            <td className='text-center align-middle'>
+                                            <td>{user.email}</td>
+                                            <td>{user.organizationName || 'N/A'}</td>
+                                            <td>{user.fname || 'N/A'}</td>
+                                            <td>{user.lname || 'N/A'}</td>
+                                            <td>{user.userType || 'N/A'}</td>
+                                            <td>
                                                 <Dropdown>
                                                     <Dropdown.Toggle
                                                         as='a'
@@ -191,7 +186,7 @@ const SubGroupManagementContent: React.FC<SubGroupManagementContentProps> = ({
                                                     Controls
                                                     </Dropdown.Toggle>
                                                     <Dropdown.Menu>
-                                                        <Dropdown.Item onClick={() => alert('User Added')}>
+                                                        <Dropdown.Item onClick={() => handleAddUser(user.id)}>
                                                             Add User
                                                         </Dropdown.Item>
                                                     </Dropdown.Menu>
@@ -205,6 +200,18 @@ const SubGroupManagementContent: React.FC<SubGroupManagementContentProps> = ({
                     </Form>
                 </Card.Body>
             )}
+            {/* Modal */}
+            <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Notification</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>{modalMessage}</Modal.Body>
+                <Modal.Footer className='d-flex justify-content-center'>
+                    <Button variant='secondary' onClick={() => setShowModal(false)}>
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </Card>
     );
 };

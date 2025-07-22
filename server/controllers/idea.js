@@ -276,7 +276,7 @@ ideaRouter.post('/getall/aggregations', async (req, res, next) => {
         segments: {
           include: {
             parentSegment: true,
-            children: true
+            children: true,
           }
         },
         author: {
@@ -324,25 +324,18 @@ ideaRouter.post('/getall/aggregations', async (req, res, next) => {
       const engagements = totalRatings + totalComments;
 
       // Process segments
-      const segmentData = idea.segments.map(segment => {
-        const isTopLevel = !segment.parentId;
-        const hasChildren = segment.children.length > 0;
-        const segmentType = isTopLevel
-          ? 'superSegment'
-          : (hasChildren ? 'segment' : 'subSegment');
-
-        return {
-          segId: segment.segId,
-          segmentName: segment.name,
-          parentSegmentName: segment.parentSegment?.name || null,
-          segmentType,
-        };
-      });
+      const segmentData = idea.segments.map(segment => ({
+        segId: segment.segId,
+        segmentName: segment.name,
+        parentSegmentName: segment.parentSegment?.name || null,
+        segmentType: segment.segmentType,
+      }));
 
       // Find one segment of each type (if exists)
       const superSegment = segmentData.find(s => s.segmentType === 'superSegment');
       const mainSegment = segmentData.find(s => s.segmentType === 'segment');
       const subSegment = segmentData.find(s => s.segmentType === 'subSegment');
+
 
       return {
         id: idea.id,

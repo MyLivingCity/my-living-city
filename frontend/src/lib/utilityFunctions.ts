@@ -478,3 +478,31 @@ export function getSegmentsFromUserSegments(userSegments: IUserSegment[]| undefi
     }
     return result;
 }
+
+/** 
+ * Get a date string and format it to a more readable format
+ * @param dateString A date string in ISO format
+ * @param isLongFormat If true, returns long format (e.g. July 14, 2025, 11:04 AM). If false, returns short format (e.g. 07/14/2025).
+ * @returns A formatted date string
+ */
+export const formatDateString = (dateString: string, isLongFormat = true): string => {
+    const options: Intl.DateTimeFormatOptions = isLongFormat
+        ? {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true,
+        }
+        : {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true,
+        };
+
+    return new Date(dateString).toLocaleDateString('en-US', options);
+};

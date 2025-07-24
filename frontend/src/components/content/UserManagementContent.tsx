@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from 'react-query';
-import { Table, Dropdown, Container, Button, Form, NavDropdown } from 'react-bootstrap';
+import { Table, Dropdown, Container, Button, Form, NavDropdown, Row, Col, Card } from 'react-bootstrap';
 import { updateUser, getUserBanHistory, removeFlagQuarantine, removePostCommentQuarantine, deleteUser, postRegisterUser, getUserWithEmail, updateUserPassword } from 'src/lib/api/userRoutes';
 import { API_BASE_URL, USER_TYPES } from 'src/lib/constants';
 import { IComment } from 'src/lib/types/data/comment.type';
@@ -16,7 +16,7 @@ import { UserManagementBanHistoryModal } from '../modal/UserManagementBanHistory
 import { IBanUser } from 'src/lib/types/data/banUser.type';
 import { UserSegPlainText } from '../partials/UserSegPlainText';
 import { IRegisterInput } from './../../lib/types/input/register.input';
-import { ISegment, ISuperSegment, UserSegmentRelationshipEnum, SegmentType } from 'src/lib/types/data/segment.type';
+import { ISegment, ISuperSegment, UserSegmentRelationshipEnum, SegmentType  } from 'src/lib/types/data/segment.type';
 import { EditUserInfoModal } from '../modal/EditUserInfoModal';
 import UserChangePasswordModal from '../modal/UserChangePasswordModal';
 import { postUserSegmentInfo } from 'src/lib/api/userSegmentRoutes';
@@ -126,7 +126,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
     const homeSegment = userVerbose?.userSegments?.find(
         us => us.userSegmentRelationship === UserSegmentRelationshipEnum.HOME && us.segment?.segmentType === SegmentType.segment
     );
-      
+        
     const workSegment = userVerbose?.userSegments?.find(
         us => us.userSegmentRelationship === UserSegmentRelationshipEnum.WORK && us.segment?.segmentType === SegmentType.segment
     );
@@ -134,6 +134,30 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
     const schoolSegment = userVerbose?.userSegments?.find(
         us => us.userSegmentRelationship === UserSegmentRelationshipEnum.SCHOOL && us.segment?.segmentType === SegmentType.segment
     );
+
+    const userHomeSegment = user?.userSegments?.find(us => us.userSegmentRelationship == UserSegmentRelationshipEnum.HOME 
+                            && us.segment?.segmentType == SegmentType.segment)?.segment;
+    
+    const userWorkSegment = user?.userSegments?.find(us => us.userSegmentRelationship == UserSegmentRelationshipEnum.WORK 
+                            && us.segment?.segmentType == SegmentType.segment)?.segment;
+    
+    const userSchoolSegment = user?.userSegments?.find(us => us.userSegmentRelationship == UserSegmentRelationshipEnum.SCHOOL 
+                            && us.segment?.segmentType == SegmentType.segment)?.segment;
+
+
+    const [emailFilter, setEmailFilter] = useState<string>('');
+    const [orgFilter, setOrgFilter] = useState<string>('');
+    const [fnameFilter, setFnameFilter] = useState<string>('');
+    const [lnameFilter, setLnameFilter] = useState<string>('');
+    const [userTypeFilter, setUserTypeFilter] = useState<string>('');
+    const [homeSegmentFilter, setHomeSegmentFilter] = useState<string>('');
+    const [schoolSegmentFilter, setSchoolSegmentFilter] = useState<string>('');
+    const [workSegmentFilter, setWorkSegmentFilter] = useState<string>('');
+    const [totalFlagsFilter, setTotalFlagsFilter] = useState<'all' | 'flagged' | 'not-flagged'>('all');
+    const [falseFlagsFilter, setFalseFlagsFilter] = useState<'all' | 'flagged' | 'not-flagged'>('all');
+    const [bannedFilter, setBannedFilter] = useState<string>('');
+    const [reviewedFilter, setReviewedFilter] = useState<string>('');
+    const [verifiedFilter, setVerifiedFilter] = useState<string>('');
 
     let userFalseFlags: number[] = [];
     let userFlags: number[] = [];
@@ -332,6 +356,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
         }
     };
 
+
     useEffect(() => {
         const filterUsers = async () => {
             if (users) {
@@ -358,8 +383,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
                     user =>
                         user.userType === 'MUNICIPAL' &&
                         homeSegment?.segment?.segId &&
-                        homeSegment?.segment?.segId == user.userSegments?.find(us => us.userSegmentRelationship == UserSegmentRelationshipEnum.HOME 
-                            && us.segment?.segmentType == SegmentType.segment)?.segment?.segId
+                        homeSegment?.segment?.segId == userHomeSegment?.segId
                 );
                 setMunicipalFilteredUsers(municipalFilteredUsers);
             }
@@ -368,7 +392,57 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
     }, [users, userVerbose]);
 
     const [validEmail, setValidEmail] = useState(true);
+
+    const usersWithFlags = users!.map((user, index) => {
+        // Ensure proper number conversion and handle undefined/NaN cases
+        const totalFlags = Math.max(0, Number(userFlags[index]) || 0);
+        const falseFlags = Math.max(0, Number(userFalseFlags[index]) || 0);
+        
+        // Create a new object with all user properties plus the flag counts
+        return {
+            ...user,
+            totalFlags: totalFlags,
+            falseFlags: falseFlags,
+            // Ensure these are numbers in the object
+            _totalFlags: totalFlags,
+            _falseFlags: falseFlags
+        };
+    });
     
+    const filteredUsersList = usersWithFlags.filter((user) => {
+        // Use the already converted numbers from usersWithFlags
+        const totalFlags = user._totalFlags; // or user.totalFlags
+        const falseFlags = user._falseFlags; // or user.falseFlags
+    
+        console.log('Filtering user:', {
+            email: user.email,
+            totalFlags: totalFlags,
+            falseFlags: falseFlags,
+            originalTotalFlags: user.totalFlags,
+            originalFalseFlags: user.falseFlags
+        });
+    
+        return (
+            (emailFilter === '' || user.email.includes(emailFilter)) &&
+            (orgFilter === '' || (user.organizationName || '').includes(orgFilter)) &&
+            (fnameFilter === '' || user.fname?.includes(fnameFilter)) &&
+            (lnameFilter === '' || user.lname?.includes(lnameFilter)) &&
+            (userTypeFilter === '' || user.userType.includes(userTypeFilter)) &&
+            (homeSegmentFilter === '' || (userHomeSegment?.name || '').includes(homeSegmentFilter)) &&
+            (schoolSegmentFilter === '' || (userSchoolSegment?.name || '').includes(schoolSegmentFilter)) &&
+            (workSegmentFilter === '' || (userWorkSegment?.name || '').includes(workSegmentFilter)) &&
+            // STRICT flag filtering:
+            (totalFlagsFilter === 'all' || 
+            (totalFlagsFilter === 'flagged' ? totalFlags >= 1 : totalFlags === 0)) &&
+            (falseFlagsFilter === 'all' || 
+            (falseFlagsFilter === 'flagged' ? falseFlags >= 1 : falseFlags === 0)) &&
+            (bannedFilter === '' || (user.banned ? 'Yes' : 'No') === bannedFilter) &&
+            (reviewedFilter === '' || (user.reviewed ? 'Yes' : 'No') === reviewedFilter) &&
+            (verifiedFilter === '' || (user.verified ? 'Yes' : 'No') === verifiedFilter)
+        );
+    });
+
+
 
     if (user?.userType === USER_TYPES.MUNICIPAL_SEG_ADMIN) {
         return (
@@ -672,39 +746,299 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
                         </Form>
                     )
                 }
-                <Form style={{overflow: 'auto'}}>
+                <Form style={{ overflow: 'auto' }}>
+                    <Row>
+                        <Col>
+                            <Form.Group>
+                                <Card>
+                                    <Card.Header>Filter Users</Card.Header>
+                                    <Card.Body>
+                                        <Row>
+                                            {/* Email Filter */}
+                                            <Col>
+                                                <Form.Label>Email</Form.Label>
+                                                <Form.Control
+                                                    type='text'
+                                                    placeholder='Filter Email'
+                                                    value={emailFilter}
+                                                    onChange={(e) => setEmailFilter(e.target.value)}
+                                                    size='sm'
+                                                />
+                                            </Col>
+                                            
+                                            {/* Organization Filter */}
+                                            <Col>
+                                                <Form.Label>Organization</Form.Label>
+                                                <Form.Control
+                                                    type='text'
+                                                    placeholder='Filter Organization'
+                                                    value={orgFilter}
+                                                    onChange={(e) => setOrgFilter(e.target.value)}
+                                                    size='sm'
+                                                />
+                                            </Col>
+                                        </Row>
+                                        
+                                        <Row className='mt-3'>
+                                            {/* First Name Filter */}
+                                            <Col>
+                                                <Form.Label>First Name</Form.Label>
+                                                <Form.Control
+                                                    type='text'
+                                                    placeholder='Filter First Name'
+                                                    value={fnameFilter}
+                                                    onChange={(e) => setFnameFilter(e.target.value)}
+                                                    size='sm'
+                                                />
+                                            </Col>
+                                            
+                                            {/* Last Name Filter */}
+                                            <Col>
+                                                <Form.Label>Last Name</Form.Label>
+                                                <Form.Control
+                                                    type='text'
+                                                    placeholder='Filter Last Name'
+                                                    value={lnameFilter}
+                                                    onChange={(e) => setLnameFilter(e.target.value)}
+                                                    size='sm'
+                                                />
+                                            </Col>
+                                        </Row>
+                                        
+                                        <Row className='mt-3'>
+                                            {/* User Type Filter */}
+                                            <Col>
+                                                <Form.Label>User Type</Form.Label>
+                                                <Form.Control
+                                                    as='select'
+                                                    value={userTypeFilter}
+                                                    onChange={(e) => setUserTypeFilter(e.target.value)}
+                                                    size='sm'
+                                                >
+                                                    <option value=''>All</option>
+                                                    {Array.from(new Set(
+                                                        filteredUsers
+                                                            ?.map((user) => user.userType)
+                                                            .filter((type) => type && type !== 'SUPER_ADMIN' && type !== 'ADMIN' && type !== 'SEG_ADMIN' && type !== 'MUNICIPAL_SEG_ADMIN' && type !== 'DEVELOPER' && type !== 'IN_PROGRESS' && type !== 'ASSOCIATE' && type !== 'MOD' && type !== 'SEG_MOD')
+                                                    )).map((type) => (
+                                                        <option key={type} value={type}>
+                                                            {type}
+                                                        </option>
+                                                    ))}
+                                                </Form.Control>
+                                            </Col>
+                                            
+                                            {/* Home Segment Filter */}
+                                            <Col>
+                                                <Form.Label>Home Segment</Form.Label>
+                                                <Form.Control
+                                                    as='select'
+                                                    value={homeSegmentFilter}
+                                                    onChange={(e) => setHomeSegmentFilter(e.target.value)}
+                                                    size='sm'
+                                                >
+                                                    <option value=''>All</option>
+                                                    {Array.from(new Set(
+                                                        filteredUsers
+                                                            ?.map((user) => userHomeSegment?.name)
+                                                            .filter((name) => name)
+                                                    )).map((name) => (
+                                                        <option key={name} value={name}>
+                                                            {name}
+                                                        </option>
+                                                    ))}
+                                                </Form.Control>
+                                            </Col>
+                                        </Row>
+                                        
+                                        <Row className='mt-3'>
+                                            {/* School Segment Filter */}
+                                            <Col>
+                                                <Form.Label>School Segment</Form.Label>
+                                                <Form.Control
+                                                    as='select'
+                                                    value={schoolSegmentFilter}
+                                                    onChange={(e) => setSchoolSegmentFilter(e.target.value)}
+                                                    size='sm'
+                                                >
+                                                    <option value=''>All</option>
+                                                    {Array.from(new Set(
+                                                        filteredUsers
+                                                            ?.map((user) => userSchoolSegment?.name)
+                                                            .filter((name) => name && name !== 'NA' && name !== 'N/A')
+                                                    )).map((name) => (
+                                                        <option key={name} value={name}>
+                                                            {name}
+                                                        </option>
+                                                    ))}
+                                                </Form.Control>
+                                            </Col>
+                                            
+                                            {/* Work Segment Filter */}
+                                            <Col>
+                                                <Form.Label>Work Segment</Form.Label>
+                                                <Form.Control
+                                                    as='select'
+                                                    value={workSegmentFilter}
+                                                    onChange={(e) => setWorkSegmentFilter(e.target.value)}
+                                                    size='sm'
+                                                >
+                                                    <option value=''>All</option>
+                                                    {Array.from(new Set(
+                                                        filteredUsers
+                                                            ?.map((user) => userWorkSegment?.name)
+                                                            .filter((name) => name && name !== 'NA' && name !== 'N/A')
+                                                    )).map((name) => (
+                                                        <option key={name} value={name}>
+                                                            {name}
+                                                        </option>
+                                                    ))}
+                                                </Form.Control>
+                                            </Col>
+                                        </Row>
+                                        
+                                        <Row className='mt-3'>
+                                            {/* Total Flags Filter */}
+                                            <Col>
+                                                <Form.Label>Has Flags</Form.Label>
+                                                <Form.Control
+                                                    as='select'
+                                                    value={totalFlagsFilter}
+                                                    onChange={(e) => setTotalFlagsFilter(e.target.value as 'all' | 'flagged' | 'not-flagged')}
+                                                    size='sm'
+                                                >
+                                                    <option value='all'>All</option>
+                                                    <option value='flagged'>Yes (≥1 flags)</option>
+                                                    <option value='not-flagged'>No (0 flags)</option>
+                                                </Form.Control>
+                                            </Col>
+                                            
+                                            {/* False Flags Filter */}
+                                            <Col>
+                                                <Form.Label>Has False Flags</Form.Label>
+                                                <Form.Control
+                                                    as='select'
+                                                    value={falseFlagsFilter}
+                                                    onChange={(e) => setFalseFlagsFilter(e.target.value as 'all' | 'flagged' | 'not-flagged')}
+                                                    size='sm'
+                                                >
+                                                    <option value='all'>All</option>
+                                                    <option value='flagged'>Yes (≥1 flags)</option>
+                                                    <option value='not-flagged'>No (0 flags)</option>
+                                                </Form.Control>
+                                            </Col>
+                                        </Row>
+                                        
+                                        <Row className='mt-3'>
+                                            {/* Banned Filter */}
+                                            <Col>
+                                                <Form.Label>Banned</Form.Label>
+                                                <Form.Control
+                                                    as='select'
+                                                    value={bannedFilter}
+                                                    onChange={(e) => setBannedFilter(e.target.value)}
+                                                    size='sm'
+                                                >
+                                                    <option value=''>All</option>
+                                                    <option value='Yes'>Yes</option>
+                                                    <option value='No'>No</option>
+                                                </Form.Control>
+                                            </Col>
+                                            
+                                            {/* Reviewed Filter */}
+                                            <Col>
+                                                <Form.Label>Reviewed</Form.Label>
+                                                <Form.Control
+                                                    as='select'
+                                                    value={reviewedFilter}
+                                                    onChange={(e) => setReviewedFilter(e.target.value)}
+                                                    size='sm'
+                                                >
+                                                    <option value=''>All</option>
+                                                    <option value='Yes'>Yes</option>
+                                                    <option value='No'>No</option>
+                                                </Form.Control>
+                                            </Col>
+                                        </Row>
+                                        
+                                        <Row className='mt-3'>
+                                            {/* Verified Filter */}
+                                            <Col>
+                                                <Form.Label>Verified</Form.Label>
+                                                <Form.Control
+                                                    as='select'
+                                                    value={verifiedFilter}
+                                                    onChange={(e) => setVerifiedFilter(e.target.value)}
+                                                    size='sm'
+                                                >
+                                                    <option value=''>All</option>
+                                                    <option value='Yes'>Yes</option>
+                                                    <option value='No'>No</option>
+                                                </Form.Control>
+                                            </Col>
+                                            
+                                            {/* Empty column for alignment */}
+                                            <Col></Col>
+                                        </Row>
+                                    </Card.Body>
+                                </Card>
+                            </Form.Group>
+                        </Col>
+                    </Row>
                     <Table bordered hover size='sm' style={{ fontSize: '0.8rem' }}>
                         <thead className='table-active'>
                             <tr>
-                                <th scope='col' className='text-center align-middle'>Email</th>
-                                <th scope='col' className='text-center align-middle'>Organization</th>
-                                <th scope='col' className='text-center align-middle'>First</th>
-                                <th scope='col' className='text-center align-middle'>Last</th>
-                                <th scope='col' className='text-center align-middle'>User Type</th>
-                                <th scope='col' className='text-center align-middle'>Home Segment</th>
-                                <th scope='col' className='text-center align-middle'>School Segment</th>
-                                <th scope='col' className='text-center align-middle'>Work Segment</th>
-                                <th scope='col' className='text-center align-middle'>Total Flags</th>
-                                <th scope='col' className='text-center align-middle'>False Flags</th>
-                                <th scope='col' className='text-center align-middle'>Banned</th>
-                                <th scope='col' className='text-center align-middle'>Reviewed</th>
-                                <th scope='col' className='text-center align-middle'>Verified</th>
+                                <th scope='col' className='text-center align-middle'>
+                                    Email
+                                </th>
+                                <th scope='col' className='text-center align-middle'>
+                                    Organization
+                                </th>
+                                <th scope='col' className='text-center align-middle'>
+                                    First
+                                </th>
+                                <th scope='col' className='text-center align-middle'>
+                                    Last
+                                </th>
+                                <th scope='col' className='text-center align-middle'>
+                                    User Type
+                                </th>
+                                <th scope='col' className='text-center align-middle'>
+                                    Home Segment
+                                </th>
+                                <th scope='col' className='text-center align-middle'>
+                                    School Segment
+                                </th>
+                                <th scope='col' className='text-center align-middle'>
+                                    Work Segment
+                                </th>
+                                <th scope='col' className='text-center align-middle'>
+                                    Total Flags
+                                </th>
+                                <th scope='col' className='text-center align-middle'>
+                                    False Flags
+                                </th>
+                                <th scope='col' className='text-center align-middle'>
+                                    Banned
+                                </th>
+                                <th scope='col' className='text-center align-middle'>
+                                    Reviewed
+                                </th>
+                                <th scope='col' className='text-center align-middle'>
+                                    Verified
+                                </th>
                                 <th scope='col' className='text-center align-middle'>Controls</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredUsers?.map((req: IUser, index: number) => (
+                            {filteredUsersList?.map((req: IUser, index: number) => (
                                 req.userType !== 'SUPER_ADMIN' && req.userType !== 'ADMIN' && req.userType !== 'MOD' && req.userType !== 'SEG_MOD' && req.userType !== 'MUNICIPAL_SEG_ADMIN' && req.userType !== 'SEG_ADMIN' ? (
                                     <tr
                                         key={req.id}
                                         onClick={() => {
-                                            console.log('hode', hideControls);
                                             if (hideControls === null || hideControls === '') {
                                                 setShowEditUserModal(true);
                                                 setModalUser(req);
-                                                console.log(req);
-                                                console.log(segs);
-                                                console.log(subSeg);
                                             }
                                         }}>
                                         {req.id !== hideControls ?
@@ -733,18 +1067,18 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
                                                 <td><Form.Control type='text' defaultValue={req.lname} onChange={(e) => req.lname = e.target.value} /></td>
                                                 <td><Form.Control as='select' onChange={(e) => { (req.userType as string) = e.target.value; }}>
                                                     {userTypes
-                                                        .filter((type => type !== 'SUPER_ADMIN'))
-                                                        .filter((type => type !== 'ADMIN'))
-                                                        .filter((type => type !== 'SEG_ADMIN'))
-                                                        .filter((type => type !== 'MUNICIPAL_SEG_ADMIN'))
-                                                        .filter((type => type !== 'DEVELOPER'))
-                                                        .filter((type => type !== 'IN_PROGRESS'))
-                                                        .filter((type => type !== 'ASSOCIATE'))
-                                                        .filter((type => type !== 'MOD'))
-                                                        .filter((type => type !== 'SEG_MOD'))
-                                                        .map(item =>
+                                                        .filter((type) => type !== 'SUPER_ADMIN')
+                                                        .filter((type) => type !== 'ADMIN')
+                                                        .filter((type) => type !== 'SEG_ADMIN')
+                                                        .filter((type) => type !== 'MUNICIPAL_SEG_ADMIN')
+                                                        .filter((type) => type !== 'DEVELOPER')
+                                                        .filter((type) => type !== 'IN_PROGRESS')
+                                                        .filter((type) => type !== 'ASSOCIATE')
+                                                        .filter((type) => type !== 'MOD')
+                                                        .filter((type) => type !== 'SEG_MOD')
+                                                        .map((item) => (
                                                             <option key={item}>{item}</option>
-                                                        )}
+                                                        ))}
                                                 </Form.Control>
                                                 </td>
                                                 <td className='text-center align-middle '><Button onClick={() => setShowUserFlagsModal(true)}>Info</Button></td>

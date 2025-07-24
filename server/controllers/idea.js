@@ -723,6 +723,11 @@ ideaRouter.get(
           address: true,
           category: true,
           projectInfo: true,
+          proposalInfo: {
+            select: {
+              id: true,
+            },
+          },
           champion: {
             include: {
               address: {

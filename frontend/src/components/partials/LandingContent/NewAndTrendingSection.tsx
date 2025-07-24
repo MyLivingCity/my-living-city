@@ -263,6 +263,19 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
             return dateB - dateA;
         }
     });
+    const itemsPerPage = 6;
+    const filteredIdeas = sortedIdeas.filter(doesIdeaPassFilter);
+    const totalFilteredPages = Math.ceil(filteredIdeas.length / itemsPerPage);
+    const [activeIndex, setActiveIndex] = useState(0);
+    
+
+    const handleSelect = (selectedIndex: number) => {
+        if (selectedIndex >= 0 && selectedIndex < totalFilteredPages) {
+            setActiveIndex(selectedIndex);
+        }
+    };
+
+
 
     return (
         <Container className='system' id='hanging-icons'>
@@ -338,33 +351,40 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
             {!isLoading && isError && <ErrorMessage message='There was an error loading the new and trending section.' />}
             {!isLoading && !isError && (
                 <>
-                    <Carousel controls={true} interval={null} slide={true} fade={false}>
+                    <Carousel
+                        activeIndex={activeIndex}
+                        onSelect={handleSelect}
+                        controls={true}
+                        interval={null}
+                        slide={true}
+                        fade={false}
+                        nextIcon={
+                            activeIndex >= (totalFilteredPages  - 1) || totalFilteredPages  <= 1 ? null : (
+                                <span aria-hidden='true' className='carousel-control-next-icon' />
+                            )
+                        }
+                        prevIcon={
+                            activeIndex === 0 || totalFilteredPages  <= 1 ? null : (
+                                <span aria-hidden='true' className='carousel-control-prev-icon' />
+                            )
+                        }
+                    >
+
+
                         {[...Array(topIdeasPages)].map((x, i) => (
                             <Carousel.Item key={i}>
-
                                 {sortedIdeas && allProposals ? (
                                     sortedIdeas.slice(i * 6, i * 6 + 6).map((idea) => {
                                         return doesIdeaPassFilter(idea) ? (
-                                            <Col
-                                                key={idea.id}
-                                                md={6}
-                                                lg={4}
-                                                className='pt-3 align-items-stretch'
-                                            >
+                                            <Col key={idea.id} md={6} lg={4} className='pt-3 align-items-stretch'>
                                                 {idea.state === 'IDEA' ? (
-                                                    <IdeaTile
-                                                        ideaData={idea}
-                                                        showFooter={true}
-                                                        postType={'Idea'}
-                                                    />
+                                                    <IdeaTile ideaData={idea} showFooter={true} postType={'Idea'} />
                                                 ) : (
                                                     <ProposalTile
                                                         proposalData={{
-                                                            id: allProposals.filter((obj) => {
-                                                                if (obj.ideaId == idea.id) return obj;
-                                                            })[0]?.id,
+                                                            id: allProposals.find(obj => obj.ideaId === idea.id)?.id ?? 0, // 기본값 0 설정
                                                             ideaId: idea.id,
-                                                            idea,
+                                                            idea
                                                         }}
                                                         showFooter={true}
                                                         postType={'Proposal'}
@@ -375,20 +395,15 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
                                     })
                                 ) : (
                                     [...Array(12)].map((x, i) => (
-                                        <Col
-                                            key={i}
-                                            md={6}
-                                            lg={4}
-                                            className='pt-3 align-items-stretch'
-                                        >
+                                        <Col key={i} md={6} lg={4} className='pt-3 align-items-stretch'>
                                             <PlaceholderIdeaTile />
                                         </Col>
                                     ))
                                 )}
-
                             </Carousel.Item>
                         ))}
                     </Carousel>
+
 
                     <Modal show={showModal} onHide={handleModalCancel} animation={false}>
                         <Modal.Header closeButton>

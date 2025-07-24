@@ -53,7 +53,7 @@ export const SuggestedIdeasTable: React.FC<any> = (props) => {
                                             ? `${suggestion?.author?.userSegments?.homeSegHandle} As Resident`
                                             : Number(suggestion?.subSegment?.id) === suggestion?.author?.userSegments?.workSubSegmentId
                                                 ? suggestion?.author?.userSegments?.workSegHandle || `${suggestion?.author?.userSegments?.homeSegHandle} As Worker`
-                                                : Number(suggestion?.subSegment?.id) === suggestion?.author?.userSegments?.schoolSubSegmentID
+                                                : Number(suggestion?.subSegment?.id) === suggestion?.author?.userSegments?.schoolSubSegmentId
                                                     ? `${suggestion?.author?.userSegments?.schoolSegHandle} As Student`
                                                     : `${suggestion?.author?.userSegments?.homeSegHandle} As Resident`
                                     ) : Number(suggestion?.segment?.segId) ? (
@@ -72,7 +72,7 @@ export const SuggestedIdeasTable: React.FC<any> = (props) => {
                                         {suggestion.title}
                                     </a>
                                 </TableCell>
-                                <TableCell align='center'>{isNaN(averageRating) ? 0 : averageRating}</TableCell>
+                                <TableCell align='center'>{isNaN(averageRating) ? '0.00' : averageRating.toFixed(2)}</TableCell>
                                 <TableCell align='center'>{suggestion.ratings.length + suggestion.comments.length}</TableCell>
                                 <TableCell align='center'>{positiveRatings} / {negativeRatings}</TableCell>
                             </TableRow>

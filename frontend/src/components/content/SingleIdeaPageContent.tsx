@@ -77,7 +77,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
         reviewed,
         supportedProposal,
         // Proposal and Project info
-
+        proposalInfo,
         projectInfo,
     } = ideaData;
     const { title: catTitle } = category!;
@@ -111,7 +111,6 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
     };
 
     const shouldDisplayChampionButton = (): boolean => {
-
 
         return !ideaData.champion && !!ideaData.isChampionable;
     };
@@ -167,6 +166,12 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
         || user?.userType === USER_TYPES.MUNICIPAL || user?.userType === USER_TYPES.MUNICIPAL_SEG_ADMIN;
 
     const canEndorse = canEndorseByUserType && userCanEndorseByOrg;
+
+    useEffect(() => {
+        if (confirmProposalState() && proposalInfo?.id) {
+            window.location.href = `/proposals/${proposalInfo.id}`;
+        }
+    }, [state, proposalInfo]);
 
 
     useEffect(() => {

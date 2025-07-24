@@ -181,13 +181,13 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     const [showProposalSegmentError, setShowProposalSegmentError] = useState(false);
 
     function redirectToIdeaSubmit() {
-        if (userType === 'RESIDENT') {
+        if (userType === 'Resident') {
             let name = subSegment?.name;
 
             if (name && subSegment) {
-                if (subSegment.segId === userSegmentData.homeSubSegmentId || subSegment.segId === userSegmentData.workSubSegmentId || subSegment.segId === userSegmentData.schoolSubSegmentId) {
+                if (subSegment.id === userSegmentData.homeSubSegmentId || subSegment.id === userSegmentData.workSubSegmentId || subSegment.id === userSegmentData.schoolSubSegmentId) {
                     const communityOfInterest = getSegmentName(name);
-                    window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}`;
+                    window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}&category=${category?.id}`;   
                 } else {
                     setShowProposalSegmentError(true);
                 }
@@ -199,7 +199,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                 if (name && primarySegment) {
                     if (primarySegment.segId === userSegmentData.homeSegmentId || primarySegment.segId === userSegmentData.workSegmentId || primarySegment.segId === userSegmentData.schoolSegmentId) {
                         const communityOfInterest = getSegmentName(name);
-                        window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}`;
+                        window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}&category=${category?.id}`;
                     } else {
                         setShowProposalSegmentError(true);
                     }
@@ -210,7 +210,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                 name = superSegment.name;
                 if (superSegment.segId === userSegmentData.homeSuperSegId || superSegment.segId === userSegmentData.workSuperSegId || superSegment.segId === userSegmentData.schoolSuperSegId) {
                     const communityOfInterest = getSegmentName(name);
-                    window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}`;
+                    window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}&category=${category?.id}`;
                 } else {
                     setShowProposalSegmentError(true);
                 }
@@ -219,7 +219,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
             if (subSegment?.segId === userSegmentData.homeSubSegmentId || primarySegment?.segId === userSegmentData.homeSegmentId || superSegment?.segId === userSegmentData.homeSuperSegId) {
                 let name = subSegment?.name || primarySegment?.name || superSegment?.name;
                 const communityOfInterest = getSegmentName(name);
-                window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}`;
+                window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}&category=${category?.id}`;
             } else {
                 setShowProposalSegmentError(true);
             }
@@ -874,6 +874,10 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                 </Row>
             </Card>
 
+            {endorsedUsers && endorsedUsers.length > 0 &&
+                <EndorsedUsersSection endorsedUsers={endorsedUsers} />
+            }
+
             {needCollaborators && (
                 <div style={{ marginTop: '2rem' }}>
                     <Card>
@@ -1017,8 +1021,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                                 (collaboration: any, index: number) => (
                                                     <tr>
                                                         <td>
-                                                            {collaboration.author.fname}{' '}
-                                                            {collaboration.author.lname}
+                                                            {collaboration.author.fname}@{'Unknown'}
                                                         </td>
                                                     </tr>
                                                 )
@@ -1500,10 +1503,6 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                     </Card>
                 </div>
             )}
-
-            {endorsedUsers && endorsedUsers.length > 0 &&
-                <EndorsedUsersSection endorsedUsers={endorsedUsers} />
-            }
 
             <Row>
                 <RatingsSection ideaId={ideaId} allRatingsUnderIdea={allRatingsUnderIdea} commentAggregateUnderIdea={commentAggregateUnderIdea} />

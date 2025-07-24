@@ -4,7 +4,7 @@ import { USER_TYPES } from 'src/lib/constants';
 import { IUser } from 'src/lib/types/data/user.type';
 import { SegmentType, UserSegmentRelationshipEnum } from 'src/lib/types/data/segment.type';
 import { EditUserInfoModal } from '../modal/EditUserInfoModal';
-import { ShowSubSegments } from './SegmentManagementContent';
+import { ShowSubSegments } from 'src/components/content/ShowSubSegments';
 import { useAllSegments, useAllSubSegmentsWithId, useAllSuperSegments, useSegmentsUsers, useSingleSegmentBySegmentId } from 'src/hooks/segmentHooks';
 import LoadingSpinnerInline from '../ui/LoadingSpinnerInline';
 import { getAllRegularUsers } from 'src/lib/api/userRoutes';

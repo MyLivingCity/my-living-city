@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from 'react-query';
 import { Table, Dropdown, Container, Button, Form, NavDropdown, Row, Col, Card } from 'react-bootstrap';
+import { Table, Dropdown, Container, Button, Form, NavDropdown, Row, Col, Card } from 'react-bootstrap';
 import { updateUser, getUserBanHistory, removeFlagQuarantine, removePostCommentQuarantine, deleteUser, postRegisterUser, getUserWithEmail, updateUserPassword } from 'src/lib/api/userRoutes';
 import { API_BASE_URL, USER_TYPES } from 'src/lib/constants';
 import { IComment } from 'src/lib/types/data/comment.type';
@@ -355,6 +356,7 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
             }
         }
     };
+
 
 
     useEffect(() => {

@@ -479,7 +479,6 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                             </>
                         )}
                     </Card>
-
                     <Card style={{ width: '40rem' }}>
                         <Row className='justify-content-center mt-3'>
                             <ListGroup variant='flush' className=''>

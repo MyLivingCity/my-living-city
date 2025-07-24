@@ -50,7 +50,7 @@ export interface IIdeaWithRelationship extends IIdea {
   segment?: ISegment[];
   author?: IUser;
   champion?: IUser | null;
-
+  proposalInfo?: { id: number } | null;
   projectInfo?: IProject | null;
 
   // Comments and Ratings are fetched seperately but could be fetched

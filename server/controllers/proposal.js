@@ -356,8 +356,7 @@ proposalRouter.get(
                                 select: {
                                     id: true,
                                     fname: true,
-                                    lname: true,
-                                }
+                                    lname: true,}
                             }
                         },
                     },

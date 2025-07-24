@@ -23,7 +23,8 @@ export default function SegmentManagementPage() {
 
     return (
         <div className='wrapper'>
-            <SegmentManagementContent segments={ data } token = {token} segReq={segReq.data}/>
+            <SegmentManagementContent segments={data} token={token ?? ''} segReq={segReq.data} />
+
         </div>
     );
 }

@@ -1473,8 +1473,7 @@ export function FormikStepper({
                         setInferStep((s) => s + 1);
                         //helpers.setTouched({});
                     }
-                    //These fields added here due to update reasons. If these fields are in the above section the state is not updated. Due to setFieldValue being async.
-
+                    
                     setIsLoading(false);
                 }}
             >

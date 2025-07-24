@@ -274,7 +274,7 @@ const SubmitDirectProposalPageContent: React.FC<
     const formik = useFormik<ICreateIdeaInput>({
         initialValues: {
             // TODO: CatId when chosen is a string
-            categoryId: categories ? categories[0].id : DEFAULT_CAT_ID,
+            categoryId: categories ? categories[0]?.id : DEFAULT_CAT_ID,
             title: '',
             userType: segData && segData.length > 0 ? segData[0].userType : 'Resident',
             description: '',
@@ -517,17 +517,19 @@ const SubmitDirectProposalPageContent: React.FC<
                                 value={formik.values.categoryId}
                             >
                                 {categories &&
-                  categories.map((cat) => (
-                      <option
-                          key={String(cat.id)}
-                          value={Number(cat.id)}
-                          style={{
-                              textTransform: 'capitalize',
-                          }}
-                      >
-                          {capitalizeString(cat.title)}
-                      </option>
-                  ))}
+                            categories
+                                .filter(cat => cat.title !== 'MyLivingCity App Feature Suggestion')
+                                .map((cat) => (
+                                    <option
+                                        key={String(cat.id)}
+                                        value={Number(cat.id)}
+                                        style={{
+                                            textTransform: 'capitalize',
+                                        }}
+                                    >
+                                        {capitalizeString(cat.title)}
+                                    </option>
+                                ))}
                             </Form.Control>
                         </Form.Group>
                         <Form.Group>

@@ -112,11 +112,11 @@ function StepController() {
   const getReachData = async () => {
     let data: CheckBoxItem[] = [];
     let region: CheckBoxItem = {
-      label: segment?.superSegName,
+      label: segment?.parentSegment?.name,
       value: 'SuperSeg',
       children: [],
     };
-    const res = await getAllSegmentsWithSuperSegId(segment?.superSegId);
+    const res = await getAllSegmentsWithSuperSegId(segment?.parentSegment?.segId);
     res.forEach((segment) => {
       region.children?.push({
         label: segment?.name,
@@ -201,6 +201,7 @@ function StepController() {
             } as IRegisterInput & { communityType: string }}
             markers={markers}
             setSegment={setSegment}
+            setSegments={setSegments}
             setSegment2={setSegment2}
             setSubSegments={setSubSegments}
             setSubSegments2={setSubSegments2}
@@ -230,7 +231,6 @@ function StepController() {
             showModal={showModal}
             segmentRequests={segmentRequests}
             setSegmentRequests={setSegmentRequests}
-            setSegments={setSegments}
             setSegData={setSegData}
             step={step}
             setStep={setStep}

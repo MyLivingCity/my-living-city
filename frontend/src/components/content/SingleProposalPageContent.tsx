@@ -185,7 +185,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
             let name = subSegment?.name;
 
             if (name && subSegment) {
-                if (subSegment.id === userSegmentData.homeSubSegmentId || subSegment.id === userSegmentData.workSubSegmentId || subSegment.id === userSegmentData.schoolSubSegmentId) {
+                if (subSegment.segId === userSegmentData.homeSubSegmentId || subSegment.segId === userSegmentData.workSubSegmentId || subSegment.segId === userSegmentData.schoolSubSegmentId) {
                     const communityOfInterest = getSegmentName(name);
                     window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}&category=${category?.id}`;   
                 } else {

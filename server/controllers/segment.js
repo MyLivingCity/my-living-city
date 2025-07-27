@@ -4,7 +4,7 @@ const segmentRouter = express.Router();
 const prisma = require('../lib/prismaClient');
 
 const { isEmpty, isInteger, isString } = require('lodash');
-const { UserType } = require('@prisma/client');
+const { UserType, SegmentType } = require('@prisma/client');
 
 segmentRouter.post(
     '/create',
@@ -28,7 +28,7 @@ segmentRouter.post(
 
                 console.log(req.body);
 
-                const theSuperSeg = await prisma.superSegment.findFirst({ where: { superSegId: superSegId } });
+                const theSuperSeg = await prisma.segments.findFirst({ where: { segId: superSegId } });
 
                 //if there's no object in the request body
                 if (isEmpty(req.body)) {
@@ -54,7 +54,7 @@ segmentRouter.post(
                     errorStack += 'province must be provided in the body with a valid value. ';
                 }
 
-                if (!name || !isString(province)) {
+                if (!name || !isString(name)) {
                     error += 'A segment must has a name field. ';
                     errorMessage += 'Creating a segment must explicitly be supplied with a name field. ';
                     errorStack += 'name must be provided in the body with a valid value. ';
@@ -83,8 +83,7 @@ segmentRouter.post(
                         country: country,
                         province: province,
                         name: name,
-                        superSegId: theSuperSeg.superSegId,
-                        superSegName: theSuperSeg.name
+                        parentId: theSuperSeg.segId,
                     }
                 })
 
@@ -117,11 +116,13 @@ segmentRouter.get(
     '/getAll',
     async (req, res) => {
         try {
-            const result = await prisma.segments.findMany();
-            console.log(result);
+            const result = await prisma.segments.findMany({ 
+                where: { 
+                    segmentType: SegmentType.segment
+                }
+            });
             res.status(200).send(result);
         } catch (error) {
-            console.log(error);
             res.status(400).json({
                 message: "An error occured while trying to retrieve segments.",
                 details: {
@@ -163,25 +164,26 @@ segmentRouter.get(
     '/getBySuperSegId/:superSegId',
     async(req,res) => {
         try {
-        let {superSegId} = req.params;
-        superSegId = parseInt(superSegId, 10);
-        if(!isInteger(superSegId)){
-            return res.status(400).json("super segment id is invalid. ")
-        }
+            let { superSegId } = req.params;
+            superSegId = Number(superSegId);
 
-        const theSuperSegment = await prisma.superSegment.findUnique({
-            where: { superSegId: superSegId }
-        })
+            if (!Number.isInteger(superSegId)) {
+                return res.status(400).json({ message: "Invalid super segment ID." });
+            }
 
-        if (!theSuperSegment) {
-            return res.status(404).json("super segment id is not in the database! ")
-        }
+            const theSuperSegment = await prisma.segments.findUnique({
+                where: { segId: superSegId, segmentType: SegmentType.superSegment }
+            })
 
-        const segments = await prisma.segments.findMany({
-            where: { superSegId: superSegId }
-        });
+            if (!theSuperSegment) {
+                return res.status(404).json("super segment id is not in the database! ")
+            }
 
-        res.status(200).json(segments);
+            const segments = await prisma.segments.findMany({
+                where: { parentId: superSegId }
+            });
+
+            res.status(200).json(segments);
         } catch (error) {
             console.log(error);
             res.status(400).json({
@@ -201,37 +203,30 @@ segmentRouter.get(
     '/getBySegmentId/:segmentId',
     async (req, res, next) => {
         try {
-            const parsedSegId = parseInt(req.params.segmentId);
+            const parsedSegId = parseInt(req.params.segmentId, 10);
 
-            // Check if id is valid
-            if (!parsedSegId) {
+            if (Number.isNaN(parsedSegId)) {
                 return res.status(400).json({
-                    message: `A valid segmentId must be specified in the route parameter`
+                    message: `A valid segmentId must be specified in the route parameter`,
                 });
             }
-            if (parsedSegId) {
-                const foundSegment = await prisma.segments.findUnique({
-                    where: { segId: parsedSegId }
-                });
-                if (foundSegment) {
-                    res.status(200).json(foundSegment);
-                }
-                if (!foundSegment) {
-                    return res.status(400).json({
-                        message: `The segment with listed ID (${parsedSegId}) does not exist.`,
-                    });
-                }
-            } else {
-                res.status(404).json("segmentId is not found!");
+
+            const foundSegment = await prisma.segments.findUnique({
+                where: { segId: parsedSegId }
+            });
+
+            if (foundSegment) {
+                return res.status(200).json(foundSegment);
             }
 
-
-
-
+            return res.status(404).json({
+                message: `The segment with ID (${parsedSegId}) does not exist.`,
+            });
 
         } catch (error) {
+            console.error("Error retrieving segment:", error);
             res.status(400).json({
-                message: "An error occured while trying to fetch all segments",
+                message: "An error occurred while trying to fetch the segment",
                 details: {
                     errorMessage: error.message,
                     errorStack: error.stack,
@@ -241,13 +236,20 @@ segmentRouter.get(
             await prisma.$disconnect();
         }
     }
-)
+);
+
 
 segmentRouter.get(
     '/getBySubSegmentId/:SubSegmentId',
     async (req, res, next) => {
         try {
-            const parsedSubSegId = parseInt(req.params.SubSegmentId);
+            const parsedSubSegId = parseInt(req.params.SubSegmentId, 10);
+
+            if (Number.isNaN(parsedSubSegId)) {
+                return res.status(400).json({
+                    message: "A valid subSegmentId must be specified in the route parameter.",
+                });
+            }
 
             // // Check if id is valid
             // if (!parsedSubSegId) {
@@ -255,23 +257,17 @@ segmentRouter.get(
             //     //return res.sendStatus(204);
             // }
 
-            if (parsedSubSegId) {
-                const foundSubSegment = await prisma.subSegments.findUnique({
-                    where: { id: parsedSubSegId }
-                });
-                if (foundSubSegment) {
-                    res.status(200).json(foundSubSegment);
-                }
-                if (!foundSubSegment) {
-                    return res.status(404).json({
-                        message: `The subSegment with listed ID (${parsedSubSegId}) does not exist.`,
-                    });
-                }
-
-            } else {
-                res.status(404).json("subSegmentId is not found!");
+            const foundSubSegment = await prisma.segments.findUnique({
+                where: { segId: parsedSubSegId, segmentType: SegmentType.subSegment}
+            });
+            if (foundSubSegment) {
+                return res.status(200).json(foundSubSegment);
             }
 
+
+            return res.status(404).json({
+                message: `The subSegment with listed ID (${parsedSubSegId}) does not exist.`,
+            });
 
         } catch (error) {
             res.status(400).json({
@@ -311,26 +307,27 @@ segmentRouter.delete(
 
                 if (!theSegment) {
                     return res.status(404).json("the segment need to be deleted not found!");
-                } else {
-                    await prisma.userReach.deleteMany({
-                        where: {
-                            segId: parsedSegmentId
-                        }
-                    });
+                } 
 
-                    await prisma.subSegments.deleteMany({
-                        where: {
-                            segId: parsedSegmentId
-                        }
-                    });
+                await prisma.userReach.deleteMany({
+                    where: {
+                        segId: parsedSegmentId
+                    }
+                });
 
-                    await prisma.segments.delete({
-                        where: {
-                            segId: parsedSegmentId
-                        }
-                    });
-                    res.sendStatus(204);
-                }
+                await prisma.segments.deleteMany({
+                    where: {
+                        parentId: parsedSegmentId
+                    }
+                });
+
+                await prisma.segments.delete({
+                    where: {
+                        segId: parsedSegmentId
+                    }
+                });
+                res.sendStatus(204);
+                
             } else {
                 return res.status(403).json({
                     message: "You don't have the right to delete a segment!",
@@ -425,7 +422,7 @@ segmentRouter.post(
                         errorMessage += 'Updating a segment must explicitly be supplied with a super segment id. '
                         errorStack += 'super segment id must be provided in the body with a valid value. '
                     } else if (segmentId && isInteger(superSegId)) {
-                        const theSuperSegment = await prisma.superSegment.findUnique({
+                        const theSuperSegment = await prisma.segments.findUnique({
                             where: { superSegId: superSegId }
                         });
 

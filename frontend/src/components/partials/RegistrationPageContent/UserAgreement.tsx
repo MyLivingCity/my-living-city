@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import { FormikStep } from '../RegisterPageContent4';
+import { FormikStep } from '../../content/RegisterPageContent4';
 
 function UserAgreement({ submitError }: { submitError: any }) {
     return (

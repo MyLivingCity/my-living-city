@@ -2,7 +2,7 @@
 
 # https://stackoverflow.com/questions/59574047/how-to-use-optional-chaining-in-node-js-12
 # Stage 1 - set Environment Must use node 14! Optional chaining is used in backend "?."
-FROM node:18.20.3
+FROM node:18-bullseye-slim
 
 # Create Directory to store backend API
 WORKDIR /usr/src/app/server

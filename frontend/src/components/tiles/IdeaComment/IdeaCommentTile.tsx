@@ -61,12 +61,11 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
         }
     } = commentData;
 
-    const { email, fname, lname, organizationName, address, userSegments, userType } = commentData?.author;
+    const { email, fname, lname, organizationName, address, userSegments, userType} = commentData?.author;
     const { segmentId, subSegmentId, superSegmentId } = commentData as any;
     const { homeSegmentId, workSegmentId, schoolSegmentId,
         homeSubSegmentId, workSubSegmentId, schoolSubSegmentId,
         homeSuperSegmentId, workSuperSegmentId, schoolSuperSegmentId,
-        homeSegHandle, workSegHandle, schoolSegHandle
     } = userSegments;
 
     const colouredUserNameHandle = (segmentId: number, homeId?: number, workId?: number, schoolId?: number) => {
@@ -112,7 +111,7 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
             userType: USER_TYPES[userType as keyof typeof USER_TYPES],
             userSegments: userSegments as any,
         } as any;
-        const userName = getUserHandle(subSegmentId, segmentId, superSegmentId, author);
+        const userName = getUserHandle(commentData.idea.segments ,author);
 
         // Display the comment author as well as their user type
         return (

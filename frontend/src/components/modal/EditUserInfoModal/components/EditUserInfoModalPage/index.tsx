@@ -81,7 +81,7 @@ export const EditUserInfoModalPage = ({
                         {hook.superSegOptions?.filter(seg => {
                             if (hook.editSegmentsOnly) {
                                 return seg.value === hook.selectedHomeSuperSegment || 
-                                    seg.value === hook.editSegmentOnlySegment?.superSegId.toString();
+                                    seg.value === hook.editSegmentOnlySegment?.parentId.toString();
                             }
                             return true;
                         })
@@ -95,7 +95,7 @@ export const EditUserInfoModalPage = ({
                 </div>
                 <div className='form-group col-md-6'>
                     <label htmlFor='inputCom'>Home Municipality</label>
-                    <Form.Control className='text-capitalize' as='select' name='inputCom' value={hook.selectedHomeSegment} onChange={hook.handleHomeSegmentChange} disabled={hook.editSegmentsOnly && hook.selectedHomeSuperSegment !== hook.editSegmentOnlySegment?.superSegId.toString()}>
+                    <Form.Control className='text-capitalize' as='select' name='inputCom' value={hook.selectedHomeSegment} onChange={hook.handleHomeSegmentChange} disabled={hook.editSegmentsOnly && hook.selectedHomeSuperSegment !== hook.editSegmentOnlySegment?.parentId.toString()}>
                         <option value={DEFAULT_MUNICIPALITY.value}>{DEFAULT_MUNICIPALITY.label}</option>
                         {hook.homeSegOptions.filter(seg => {
                             if (hook.editSegmentsOnly) {
@@ -185,7 +185,7 @@ export const EditUserInfoModalPage = ({
                                 {hook.superSegOptions?.filter(seg => {
                                     if (hook.editSegmentsOnly) {
                                         return seg.value === hook.selectedWorkSuperSegment ||
-                                            seg.value === hook.editSegmentOnlySegment?.superSegId.toString();
+                                            seg.value === hook.editSegmentOnlySegment?.parentId.toString();
                                     }
                                     return true;
                                 }).map(seg => (
@@ -197,7 +197,7 @@ export const EditUserInfoModalPage = ({
                         </div>
                         <div className='form-group col-md-6'>
                             <label htmlFor='inputWorkCommunity'>Work Municipality</label>
-                            <Form.Control className='text-capitalize' as='select' name='inputWorkCommunity' onChange={hook.handleWorkSegmentChange} value={hook.selectedWorkSegment} disabled={hook.editSegmentsOnly && hook.selectedWorkSuperSegment !== hook.editSegmentOnlySegment?.superSegId.toString()}>
+                            <Form.Control className='text-capitalize' as='select' name='inputWorkCommunity' onChange={hook.handleWorkSegmentChange} value={hook.selectedWorkSegment} disabled={hook.editSegmentsOnly && hook.selectedWorkSuperSegment !== hook.editSegmentOnlySegment?.parentId.toString()}>
                                 <option value={DEFAULT_MUNICIPALITY.value}>{DEFAULT_MUNICIPALITY.label}</option>
                                 {hook.workSegOptions
                                     .filter(seg => {
@@ -248,7 +248,7 @@ export const EditUserInfoModalPage = ({
                         </div>
                         <div className='form-group col-md-6'>
                             <label htmlFor='inputSchoolCommunity'>School Municipality</label>
-                            <Form.Control className='text-capitalize' as='select' name='inputSchoolCommunity' onChange={hook.handleSchoolSegmentChange} value={hook.selectedSchoolSegment} disabled={hook.editSegmentsOnly && hook.selectedSchoolSuperSegment !== hook.editSegmentOnlySegment?.superSegId.toString()}>
+                            <Form.Control className='text-capitalize' as='select' name='inputSchoolCommunity' onChange={hook.handleSchoolSegmentChange} value={hook.selectedSchoolSegment} disabled={hook.editSegmentsOnly && hook.selectedSchoolSuperSegment !== hook.editSegmentOnlySegment?.parentId.toString()}>
                                 <option value={DEFAULT_MUNICIPALITY.value}>{DEFAULT_MUNICIPALITY.label}</option>
                                 {hook.schoolSegOptions
                                     .filter(seg => {

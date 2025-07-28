@@ -1,4 +1,7 @@
 import { IIdea } from './idea.type';
+import { IUserHandle } from './userHandle.type';
+import { IParsedSegment} from './segment.type';
+
 
 export interface ICommentLikeAndDislikeAggregation {
   likes: number;
@@ -34,11 +37,10 @@ export interface IParsedCommentAuthor {
     workSegHandle: string;
     schoolSegHandle: string;
   }
+  userHandles?: IUserHandle[];
 }
 export interface IParsedIdea {
-  segmentId: number;
-  subSegmentId?:number;
-  superSegmentId?:number;
+  segments: IParsedSegment[];
   description?: string;
   title?: string;
 }

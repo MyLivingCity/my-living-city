@@ -55,11 +55,11 @@ const main = async () => {
 	const advertisementRouter = require('./controllers/advertisement');
 	const avatarRouter = require('./controllers/avatar');
 	const sendEmailRouter = require('./controllers/sendEmailReset');
-	const segmentRouter = require('./controllers/segment');
-	const subSegmentRouter = require('./controllers/subSegment');
+	const segmentRouter = require('./controllers/segments/segment');
+	const subSegmentRouter = require('./controllers/segments/subSegment');
 	const googleLocationAPI = require('./controllers/googleMap');
 	const userSegmentRequestRouter = require('./controllers/userSegmentRequest');
-	const superSegmentRouter = require('./controllers/superSegment');
+	const superSegmentRouter = require('./controllers/segments/superSegment');
 	const userSegmentRouter = require('./controllers/userSegment');
 	const proposalRouter = require('./controllers/proposal');
 	const communityRouter = require('./controllers/community');

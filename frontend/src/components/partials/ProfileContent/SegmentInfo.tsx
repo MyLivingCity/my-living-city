@@ -150,6 +150,14 @@ export const SegmentInfo: React.FC<SegmentInfoProps> = ({
         setDisplayLName(handleLName);
     }, []);
 
+    useEffect(() => {
+        if (!segmentData) return;
+        setStreet(segmentData.street);
+        setPostalCode(segmentData.postalCode);
+        setFormCity(segmentData.city);
+        setFormNeighborhood(segmentData.neighborhood);
+    }, [segmentData]);
+
     // Update neighborhood dropdown (sugsegment) when (municipality) segment changes
     function handleSegmentChange(e: any) {
         const selectedSegId = e.target.value;
@@ -211,12 +219,9 @@ export const SegmentInfo: React.FC<SegmentInfoProps> = ({
         if (!data.displayFName || !data.displayLName || !data.streetAddress || !data.city || data.city === 'Not Selected' || !data.postalCode) {
             return;
         }
-        console.log('yikes\n\n\n\n\n -------------------------------------------------');
-        console.log('yikes\n\n\n\n\n -------------------------------------------------');
-        console.log('yikes\n\n\n\n\n -------------------------------------------------');
-        console.log('yikes\n\n\n\n\n -------------------------------------------------');
-        console.log('yikes\n\n\n\n\n -------------------------------------------------');
-        updateFunction && await updateFunction(user.id, data, type);
+
+        updateFunction && await updateFunction(user.id, data);
+        
         // Reimplement this later
         // const newData = {
         //     displayFName: data.displayFName.toString(),

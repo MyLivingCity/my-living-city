@@ -323,34 +323,24 @@ proposalRouter.get(
                         select: {
                             id: true,
                             title: true,
-                            segment: true,
-                            subSegment: true,
-                            superSegment: true,
+                            segments: true,
                             ratings: true,
                             comments: true,
-
                             author: {
                                 select: {
                                     fname: true,
                                     lname: true,
                                     displayFName: true,
                                     displayLName: true,
-                                    userSegments: true,
                                     School_Details: true,
                                     Work_Details: true,
-                                    userSegments: {
-                                        select: {
-                                            id: true,
-                                            homeSegmentId: true,
-                                            workSegmentId: true,
-                                            schoolSegmentId: true,
-                                            homeSubSegmentId: true,
-                                            workSubSegmentId: true,
-                                            schoolSubSegmentId: true,
-                                            homeSegHandle: true,
-                                            workSegHandle: true,
-                                            schoolSegHandle: true,
-                                        }
+                                    userHandles: true,
+                                    userSegment: {
+                                    select: {
+                                        userSegmentRelationship: true,
+                                        segmentId: true,
+                                        segment: true,
+                                    }
                                     },
                                 }
                             }

@@ -94,7 +94,7 @@ export const useEditUserInfoModal = ({
         SetSuperSegment(option);
         if (subSeg && option !== '') {
             const newSegmentOptions = subSeg
-                .filter((seg) => seg.superSegId === parseInt(option))
+                .filter((seg) => seg.parentId === parseInt(option))
                 .map((seg) => ({ label: seg.name, value: seg.segId.toString() }));
             SetSegmentOptions(newSegmentOptions);
         } else {
@@ -201,22 +201,11 @@ export const useEditUserInfoModal = ({
             displayFName: firstName,
             displayLName: lastName,
             organizationName,
-            ...orginalSegmentInfo && {
-                userSegments: {
-                    ...orginalSegmentInfo,
-                    userId: modalUser?.id || '',
-                    homeSuperSegId: parseInt(selectedHomeSuperSegment),
-                    homeSegmentId: parseInt(selectedHomeSegment),
-                    homeSubSegmentId: parseInt(selectedHomeSubSegment),
-                    workSuperSegId: parseInt(selectedWorkSuperSegment),
-                    workSegmentId: parseInt(selectedWorkSegment),
-                    workSubSegmentId: parseInt(selectedWorkSubSegment),
-                    schoolSuperSegId: parseInt(selectedSchoolSuperSegment),
-                    schoolSegmentId: parseInt(selectedSchoolSegment),
-                    schoolSubSegmentId: parseInt(selectedSchoolSubSegment),
-                },
-                userReach: selectedReachSegIds.map((segId) => ({ segId: parseInt(segId), userId: modalUser.id })),
-            },
+            userSegments: modalUser.userSegments,
+            userReach: selectedReachSegIds.map((segId) => ({
+                segId: parseInt(segId),
+                userId: modalUser.id
+            })),
         };
         try {
             if (updatedUserData.userType === USER_TYPES.BUSINESS || updatedUserData.userType === USER_TYPES.COMMUNITY) {
@@ -225,7 +214,7 @@ export const useEditUserInfoModal = ({
             if (updatedUserData.userSegments) {
                 const [updateUserResult, updateSegmentResult] = await Promise.all([
                     updateUser(updatedUserData, token, currentUser),
-                    updateUserSegmentInfo(updatedUserData.userSegments, token)
+                    updateUserSegmentInfo(updatedUserData.id, updatedUserData.userSegments, token)
                 ]);
                 // To update the user in the parent component
                 changesSaved && changesSaved(updateUserResult.user);

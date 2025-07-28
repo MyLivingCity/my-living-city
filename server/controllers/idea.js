@@ -7,6 +7,8 @@ const { imagePathsToS3Url } = require('../lib/utilityFunctions');
 const { deleteImage } = require('../lib/imageBucket');
 const { isInteger, isEmpty } = require('lodash');
 const { makeUpload } = require('../lib/imageBucket');
+const { validateIdeaPostingAccess } = require("../helpers/idea/ideaHelpers.js");
+const { UserSegmentRelationShipType } = require('@prisma/client');
 
 const upload = makeUpload("idea-proposal").single('imagePath');
 
@@ -54,16 +56,13 @@ ideaRouter.post(
         })
       }
 
-
-
-      // passport middleware provides this based on JWT
-      const { email } = req.user;
-
-      const theUserSegment = await prisma.userSegments.findFirst({ where: { userId: id } });
-
-      const { homeSuperSegId, workSuperSegId, schoolSuperSegId, homeSegmentId, workSegmentId, schoolSegmentId, homeSubSegmentId, workSubSegmentId, schoolSubSegmentId } = theUserSegment;
-
-      let { categoryId, superSegmentId, segmentId, subSegmentId, banned, title,
+      let {
+        categoryId,
+        superSegmentId,
+        segmentId,
+        subSegmentId,
+        banned,
+        title,
         description,
         proposal_role,
         requirements,
@@ -75,96 +74,33 @@ ideaRouter.post(
         manufacturingImpact,
         supportingProposalId,
         state,
-        //TODO
       } = req.body;
-      console.log(req.body)
 
-      if (supportingProposalId) {
-        supportingProposalId = parseInt(supportingProposalId);
-      }
-      categoryId = parseInt(categoryId);
+      // passport middleware provides this based on JWT
+      const { email } = req.user;
 
-      if (subSegmentId) {
-        subSegmentId = parseInt(subSegmentId);
-      } else if (segmentId) {
-        segmentId = parseInt(segmentId);
-      } else if (superSegmentId) {
-        superSegmentId = parseInt(superSegmentId);
+      const theUserSegment = await prisma.userSegments.findMany({ where: { userId: id }, include: { segment: true } });
+      const userSegments = []
+
+      const { homeSuperSegId, workSuperSegId, schoolSuperSegId, homeSegmentId, workSegmentId, schoolSegmentId, homeSubSegmentId, workSubSegmentId, schoolSubSegmentId } = theUserSegment;
+
+      if (!isInteger(categoryId)) {
+        categoryId = parseInt(categoryId)
       }
 
-      banned = (banned === 'true');
+      const validationResult = await validateIdeaPostingAccess({
+        userId: id,
+        subSegmentId,
+        segmentId,
+        superSegmentId,
+        categoryId,
+        banned,
+        userSegments
+      });
 
-      if (banned === true) {
-        error += 'You are banned';
-        errorMessage += 'You must be un-banned before you can post ideas';
-        errorStack += 'Users can not post ideas with a pending ban status of true';
+      if (validationResult.error) {
+        return res.status(400).json(validationResult);
       }
-      // Check if category id is added
-      if (!categoryId || !isInteger(categoryId)) {
-        error += 'An Idea must be under a specific category.';
-        errorMessage += 'Creating an idea must explicitly be supplied with a "categoryId" field.';
-        errorStack += '"CategoryId" must be defined in the body with a valid id found in the database.';
-      } else {
-        const theCategory = await prisma.category.findUnique({ where: { id: categoryId } });
-
-        if (!theCategory) {
-          error += 'An Idea must be under a valid category.';
-          errorMessage += 'Creating an idea must explicitly be supplied with valid a "categoryId" field.';
-          errorStack += '"CategoryId" must be defined in the body with a valid id found in the database.';
-        }
-      }
-
-      if (isInteger(subSegmentId)) {
-        theSubSegment = await prisma.subSegments.findUnique({ where: { id: subSegmentId } });
-
-        if (!theSubSegment) {
-          error += 'Sub segment id must be valid.';
-          errorMessage += 'Creating an idea must explicitly be supplied with a valid "subSegmentId" field.';
-          errorStack += '"subSegmentId" must be provided with a valid id found in the database.';
-        } else if (subSegmentId == homeSubSegmentId || subSegmentId == workSubSegmentId || subSegmentId == schoolSubSegmentId) {
-          segmentId = theSubSegment.segId;
-
-          const theSegment = await prisma.segments.findUnique({ where: { segId: segmentId } });
-
-          superSegmentId = theSegment.superSegId;
-        } else {
-          error += 'You must belongs to the subSemgent you want to post to. ';
-          errorMessage += 'Your subsegment ids don\'t match the subsegment id you porvided. ';
-          errorStack += 'User does\'t belongs to the subsegment he/she wants to post idea to. '
-        }
-      } else if (isInteger(segmentId)) {
-        const theSegment = await prisma.segments.findUnique({ where: { segId: segmentId } });
-
-        if (!theSegment) {
-          error += 'An Idea must belong to a municipality.';
-          errorMessage += 'Creating an idea must explicitly be supplied with a valid "segmentId" field.';
-          errorStack += '"segmentId" must be defined in the body with a valid id found in the database.';
-        } else if (segmentId == homeSegmentId || segmentId == workSegmentId || segmentId == schoolSegmentId) {
-          superSegmentId = theSegment.superSegId;
-        } else {
-          error += 'You must belongs to the semgent you want to post to. ';
-          errorMessage += 'Your segment ids don\'t match the segment id you porvided. ';
-          errorStack += 'User does\'t belongs to the segment he/she wants to post idea to. '
-        }
-      } else if (isInteger(superSegmentId)) {
-        const theSuperSegment = await prisma.superSegment.findUnique({ where: { superSegId: superSegmentId } });
-
-        if (!theSuperSegment) {
-          error += 'An Idea must belong to a area.';
-          errorMessage += 'Creating an idea must explicitly be supplied with a valid "superSegmentId" field.';
-          errorStack += '"segmentId" must be defined in the body with a valid id found in the database.';
-        } else if (superSegmentId != homeSuperSegId && superSegmentId != workSuperSegId && superSegmentId != schoolSegmentId) {
-          error += 'You must belongs to the superSemgent you want to post to. ';
-          errorMessage += 'Your subsegment ids don\'t match the superSegment id you porvided. ';
-          errorStack += 'User does\'t belongs to the superSegment he/she wants to post idea to. '
-        }
-      } else {
-        error += 'An idea must belongs to a area';
-        errorMessage += 'Creating an idea must explicitly be supplied with a valid "superSegmentId" or "segmentId" or "subSegmentId" field.';
-        errorStack += 'One of the area id must explicitly be supplied with a valid id found in the database. '
-      }
-
-
 
       // Parse data
       const geoData = JSON.parse(req.body.geo);
@@ -196,11 +132,21 @@ ideaRouter.post(
       }
       let notification_dismissed = false
       let quarantined_at = new Date()
+
+      const segments = { connect : [] }
+
+      if (segmentId) { 
+        segments.connect.push( { segId: parseInt(segmentId) } )
+      } 
+      if (superSegmentId) { 
+        segments.connect.push( { segId: parseInt(superSegmentId) } )
+      } 
+      if (subSegmentId) { 
+        segments.connect.push( { segId: parseInt(subSegmentId) } )
+      }
+
       const ideaData = {
         categoryId,
-        superSegmentId,
-        segmentId,
-        subSegmentId,
         authorId: id,
         imagePath: imagePath,
         title,
@@ -217,6 +163,7 @@ ideaRouter.post(
         state,
         notification_dismissed,
         quarantined_at,
+        segments: segments
       };
 
       // Create an idea and make the author JWT bearer
@@ -224,12 +171,13 @@ ideaRouter.post(
         data: {
           geo: { create: geoData },
           address: { create: addressData },
-          ...ideaData
+          ...ideaData,
         },
         include: {
           geo: true,
           address: true,
           category: true,
+          segments:true,
         }
       });
 
@@ -317,144 +265,172 @@ ideaRouter.post(
   }
 )
 
-ideaRouter.post(
-  '/getall/aggregations',
-  async (req, res, next) => {
+ideaRouter.post('/getall/aggregations', async (req, res, next) => {
+  try {
     let take = req.body.take;
     take = Number.isInteger(take) ? Number(take) : undefined;
-    let takeClause = '';
-    if (!!take) {
-      takeClause = `limit ${take}`;
-    }
 
-    try {
-      // TODO: if rating is adjusted raw query will break
-      console.log("The data:" + req.params.userId)
-      const rawData = await prisma.$queryRawUnsafe(`
-        select
-        i.id,
-        i.author_id as "authorId",
-        i.category_id as "categoryId",
-        i.title,
-        i.description,
-        i.proposal_role,
-        i.requirements,
-        i.proposal_benefits,
-        i.notification_dismissed,
-        i.quarantined_at,
-        i.segment_id as "segId",
-        i.sub_segment_id as "subSegId",
-        i.super_segment_id as "superSegId",
-        i.community_impact as "communityImpact",
-        i.nature_impact as "natureImpact",
-        i.energy_impact as "energyImpact",
-        i.manufacturing_impact as "manufacturingImpact",
-        i.arts_impact as "artsImpact",
-        coalesce(ic.total_comments + ir.total_ratings, 0) as engagements,
-        coalesce(ir.avg_rating, 0) as "ratingAvg",
-        coalesce(ic.total_comments, 0) as "commentCount",
-        coalesce(ir.total_ratings, 0) as "ratingCount",
-        coalesce(pr.pos_rating, 0) as "posRatings",
-        coalesce(nr.neg_rating, 0) as "negRatings",
-        coalesce(sn.segment_name, '') as "segmentName",
-        coalesce(sbn.sub_segment_name, '') as "subSegmentName",
-        coalesce(userfname.f_name, '') as "firstName",
-        coalesce(userStreetAddress.street_address, '') as "streetAddress",
-        i.state,
-        i.active,
-        i.banned,
-        i.reviewed,
-        i.updated_at as "updatedAt",
-        i.created_at as "createdAt"
-          from idea i
-          -- Aggregate total comments
-          left join (
-              select
-                idea_id,
-                count(id) as total_comments
-              from idea_comment
-              group by idea_comment.idea_id
-          ) ic on i.id = ic.idea_id
-          -- Aggregate total ratings and rating avg
-          left join (
-              select
-                idea_id,
-                count(id) as total_ratings,
-                avg(rating) as avg_rating
-              from idea_rating
-              group by idea_rating.idea_id
-          ) ir on	i.id = ir.idea_id
-          -- Aggregate total neg ratings
-          left join (
-              select
-                idea_id,
-                count(id) as neg_rating
-              from idea_rating
-              where rating < 0
-              group by idea_id
-          ) nr on	i.id = nr.idea_id
-          -- Aggregate total pos ratings
-          left join (
-              select
-                idea_id,
-                count(id) as pos_rating
-              from idea_rating
-              where rating > 0
-              group by idea_id
-          ) pr on	i.id = pr.idea_id
-          -- Aggregate idea segment name
-          left join (
-              select seg_id, segment_name
-              from segment
-              ) sn on i.segment_id = sn.seg_id
-          -- Aggregate idea sub segment name
-          left join (
-              select id, sub_segment_name
-              from sub_segment
-              ) sbn on i.sub_segment_id = sbn.id
-          -- Aggregate author's first name
-          left join  (
-              select id, f_name
-              from "user"
-              ) userfname on i.author_id = userfname.id
-          -- Aggregate author's address
-          left join (
-              select user_id, street_address
-              from user_address
-              ) userStreetAddress on i.author_id = userStreetAddress.user_id
-          order by
-            "ratingCount" desc,
-            "ratingAvg" desc,
-            updated_at desc,
-            engagements desc
-            ${takeClause}
-        
-      `);
-      const data = rawData.map((row) => {
-        const newRow = {};
-        for (const key in row) {
-          if (typeof row[key] === 'bigint') {
-            newRow[key] = String(row[key]);
-          } else {
-            newRow[key] = row[key];
+    const ideas = await prisma.idea.findMany({
+      take: take,
+      include: {
+        segments: {
+          include: {
+            parentSegment: true,
+            children: true,
           }
+        },
+        author: {
+          select: {
+            fname: true,
+          }
+        },
+        address: {
+          select: {
+            streetAddress: true,
+          }
+        },
+        category: true,
+        comments: {
+          select: {
+            id: true,
+          }
+        },
+        ratings: {
+          select: {
+            id: true,
+            rating: true,
+          }
+        },
+      },
+      orderBy: [
+        { updatedAt: 'desc' }
+      ]
+    });
+
+    // Process the results to match the expected format
+    const processedIdeas = ideas.map(idea => {
+      // Calculate ratings stats
+      const ratings = idea.ratings || [];
+      const comments = idea.comments || [];
+      const totalRatings = ratings.length;
+      const totalComments = comments.length;
+
+      const ratingsSum = ratings.reduce((sum, r) => sum + r.rating, 0);
+      const avgRating = totalRatings > 0 ? ratingsSum / totalRatings : 0;
+
+      const posRatings = ratings.filter(r => r.rating > 0).length;
+      const negRatings = ratings.filter(r => r.rating < 0).length;
+
+      const engagements = totalRatings + totalComments;
+
+      // Process segments
+      const segmentData = idea.segments.map(segment => ({
+        segId: segment.segId,
+        segmentName: segment.name,
+        parentSegmentName: segment.parentSegment?.name || null,
+        segmentType: segment.segmentType,
+      }));
+
+      // Find one segment of each type (if exists)
+      const superSegment = segmentData.find(s => s.segmentType === 'superSegment');
+      const mainSegment = segmentData.find(s => s.segmentType === 'segment');
+      const subSegment = segmentData.find(s => s.segmentType === 'subSegment');
+
+
+      return {
+        id: idea.id,
+        authorId: idea.authorId,
+        categoryId: idea.categoryId,
+        title: idea.title,
+        description: idea.description,
+        proposal_role: idea.proposal_role,
+        requirements: idea.requirements,
+        proposal_benefits: idea.proposal_benefits,
+        notification_dismissed: idea.notification_dismissed,
+        quarantined_at: idea.quarantined_at,
+
+        // Segment data
+        segId: mainSegment?.segId || null,
+        subSegId: subSegment?.segId || null,
+        superSegId: superSegment?.segId || null,
+        segmentName: mainSegment?.segmentName || null,
+        subSegmentName: subSegment?.segmentName || null,
+
+        // Impact data
+        communityImpact: idea.communityImpact,
+        natureImpact: idea.natureImpact,
+        energyImpact: idea.energyImpact,
+        manufacturingImpact: idea.manufacturingImpact,
+        artsImpact: idea.artsImpact,
+
+        // Engagement metrics
+        engagements: engagements,
+        ratingAvg: avgRating,
+        commentCount: totalComments,
+        ratingCount: totalRatings,
+        posRatings: posRatings,
+        negRatings: negRatings,
+
+        // User data
+        firstName: idea.author?.fname || '',
+        streetAddress: idea.address?.streetAddress || '',
+
+        // Status data
+        state: idea.state,
+        active: idea.active,
+        banned: idea.banned,
+        reviewed: idea.reviewed,
+        updatedAt: idea.updatedAt,
+        createdAt: idea.createdAt
+      };
+    });
+
+    // Sort the processed results to match the original ordering
+    const sortedResults = processedIdeas.sort((a, b) => {
+      // First by rating count, descending
+      if (b.ratingCount !== a.ratingCount) {
+        return b.ratingCount - a.ratingCount;
+      }
+      // Then by rating average, descending
+      if (b.ratingAvg !== a.ratingAvg) {
+        return b.ratingAvg - a.ratingAvg;
+      }
+      // Then by update date, descending
+      if (b.updatedAt !== a.updatedAt) {
+        return new Date(b.updatedAt) - new Date(a.updatedAt);
+      }
+      // Finally by engagements, descending
+      return b.engagements - a.engagements;
+    });
+
+    // Convert any BigInt to strings
+    const finalResults = sortedResults.map(row => {
+      const newRow = {};
+      for (const key in row) {
+        if (typeof row[key] === 'bigint') {
+          newRow[key] = String(row[key]);
+        } else {
+          newRow[key] = row[key];
         }
-        return newRow;
-      });
-      return res.status(200).json(data);
-    } catch (error) {
-      console.error(error);
-      return res.status(400).json({
-        message: "An error occurred while trying to fetch all ideas",
-        details: {
-          errorMessage: error.message,
-          errorStack: error.stack,
-        }
-      });
-    } finally {
-      await prisma.$disconnect();
-    }
-  });
+      }
+      return newRow;
+    });
+
+    return res.status(200).json(finalResults);
+
+  } catch (error) {
+    console.error(error);
+    return res.status(400).json({
+      message: "An error occurred while trying to fetch all ideas",
+      details: {
+        errorMessage: error.message,
+        errorStack: error.stack,
+      }
+    });
+  } finally {
+    await prisma.$disconnect();
+  }
+});
 
 ideaRouter.post(
   '/getall/by-segment',
@@ -533,10 +509,6 @@ ideaRouter.post(
             from segment
         ) sn on i.segment_id = sn.seg_id
         left join (
-            select id, sub_segment_name
-            from sub_segment
-        ) sbn on i.sub_segment_id = sbn.id
-        left join (
             select id, f_name
             from "user"
         ) userfname on i.author_id = userfname.id
@@ -580,7 +552,7 @@ ideaRouter.post(
     }
   }
 );
-  
+
 
 // Get all ideas from a specific author
 ideaRouter.get(
@@ -774,26 +746,15 @@ ideaRouter.get(
                   streetAddress: true,
                 }
               },
-              userSegments: {
-                select: {
-                  id: true,
-                  homeSegmentId: true,
-                  workSegmentId: true,
-                  schoolSegmentId: true,
-                  homeSubSegmentId: true,
-                  workSubSegmentId: true,
-                  schoolSubSegmentId: true,
-                  homeSegHandle: true,
-                  workSegHandle: true,
-                  schoolSegHandle: true,
+              userSegment: {
+                include: {
+                  segment: true,
                 }
-              }
+              },
+              userHandles: true,
             }
           },
-          segment: true,
-          subSegment: true,
-          superSegment: true,
-          supportedProposal: true
+          segments: true,
         }
       });
       if (!foundIdea) {

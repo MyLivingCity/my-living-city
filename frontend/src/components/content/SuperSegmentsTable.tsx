@@ -7,7 +7,7 @@ import {
     deleteSuperSegmentBySuperSegmentId,
     getAllSuperSegmentsByCountryProvince,
 } from '../../lib/api/segmentRoutes';
-import { ISegment, ISuperSegment } from '../../lib/types/data/segment.type';
+import { ISegment, ISuperSegment, SegmentType } from '../../lib/types/data/segment.type';
 import { IFetchError } from '../../lib/types/types';
 import { COUNTRIES, PROVINCES } from 'src/lib/constants';
 
@@ -51,9 +51,25 @@ const SuperSegmentTable: React.FC<SuperSegmentTableProps> = ({
         name: '',
         country: '',
         province: '',
-        superSegName: '',
+        parentSegment: {
+            name: '',
+            segId: 0,
+            parentId: 0,
+            country: '',
+            province: '',
+            lat: 0,
+            lon: 0,
+            radius: 0,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            segmentType: SegmentType.subSegment
+        },
         segId: 0,
-        superSegId: 0,
+        parentId: 0,
+        lat: 0,
+        lon: 0,
+        radius: 0,
+        segmentType: SegmentType.segment,
         createdAt: new Date(),
         updatedAt: new Date(),
     });
@@ -92,7 +108,7 @@ const SuperSegmentTable: React.FC<SuperSegmentTableProps> = ({
                 await updateSuperSegment(updateData, token);
                 setSegments((prevSegments) => {
                     const updatedSegments = prevSegments.map((segment) => {
-                        if (segment.superSegId === updateData.superSegId) {
+                        if (segment.parentId === updateData.superSegId) {
                             return {
                                 ...segment,
                                 superSegName: updateData.name,
@@ -132,7 +148,7 @@ const SuperSegmentTable: React.FC<SuperSegmentTableProps> = ({
   
     const handleDeleteSuperSegment = async (superSegId: number) => {
         // Check if it has any Segments
-        const hasSegments = segments!.find(segment => segment.superSegId === superSegId);
+        const hasSegments = segments!.find(segment => segment.parentId === superSegId);
         if (hasSegments) {
             setError({ message: 'Cannot delete a Super Segment with associated Segments' });
             return;

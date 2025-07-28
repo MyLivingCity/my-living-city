@@ -11,6 +11,202 @@ generator client {
   provider        = "prisma-client-js"
 }
 
+model User {
+  // Keys
+  id       String   @id @default(cuid())
+  //userRoleId Int?     @map("user_role_id")
+  userType UserType @default(RESIDENTIAL) @map("user_type")
+
+  // Fields
+  email            String   @unique
+  password         String
+  organizationName String?  @map("organization_name")
+  fname            String?  @map("f_name")
+  lname            String?  @map("l_name")
+  createdAt        DateTime @default(now()) @map(name: "created_at")
+  updatedAt        DateTime @default(now()) @updatedAt @map(name: "updated_at")
+  imagePath        String?
+  passCode         String?  @default(cuid())
+  banned           Boolean  @default(false)
+  reviewed         Boolean  @default(false)
+  totalFlagged     Int      @default(0) @map("total_flagged")
+  hasFlagged       Int      @default(0) @map("has_flagged")
+  verified         Boolean  @default(false)
+  verifiedToken    String?  @default(cuid())
+  displayFName      String?  @map("display_f_name")
+  displayLName      String?  @map("display_l_name")
+  adminmodEmail     String?  @map("adminmod_email")
+  status           Boolean  @default(true)
+
+
+
+  // Relationships
+  address             UserAddress?
+  geo                 UserGeo?
+  userReach           UserReach[]
+  userIdeaFollow      UserIdeaFollow[]
+  userIdeaEndorse     UserIdeaEndorse[]
+  userSegment         UserSegments[]
+  userHandles          UserHandle[]
+
+  //userRole        UserRole?    @relation(fields: [userRoleId], references: [id])
+  ideas               Idea[]                @relation("ideaAuthor")
+  ideaFlags           IdeaFlag[]
+  commentFlags        CommentFlag[]
+  championedIdeas     Idea[]                @relation("ideaChampion")
+  stripe              UserStripe?
+  userBans            UserBan[]
+  //championedIdeas     Idea[]                @relation("championedIdeas")
+  ideaRatings         IdeaRating[]
+  ideaComments        IdeaComment[]
+  ideaCommentLikes    UserCommentLikes[]
+  ideaCommentDislikes UserCommentDislikes[]
+  collaborators       Collaborator[]        @relation("ideaCollaborator")
+  volunteers          Volunteer[]           @relation("ideaVolunteer")
+  donors              Donor[]               @relation("ideaDonor")
+  feedbackratings     FeedbackRating[]
+
+  // Model overwrites
+  Advertisements                    Advertisements[]
+  //Not sure if this one stays
+  segmentRequest                    segmentRequest[]
+  Quarantine_Notifications          Quarantine_Notifications[]
+  Ban_History                       Ban_History[]
+  Public_Community_Business_Profile Public_Community_Business_Profile[]
+  Public_Municipal_Profile          Public_Municipal_Profile[]
+  False_Flagging_Behavior           False_Flagging_Behavior[]
+  Bad_Posting_Behavior              Bad_Posting_Behavior[]
+  School_Details                    School_Details[]
+  Work_Details                      Work_Details[]
+
+  @@map(name: "user")
+}
+
+model UserHandle {
+  id                  Int        @id @default(autoincrement())
+  userId              String        @map("user_id")
+  handle              String
+  userSegmentRelationship           UserSegmentRelationShipType @map("user_segment_relationship_type")
+
+  // Relationships
+  user                 User         @relation(fields: [userId], references: [id])
+
+  @@unique([userId, userSegmentRelationship])
+  @@map(name: "user_handle")
+}
+
+model UserSegments {
+  id                   Int        @id @default(autoincrement())
+  userId               String        @map("user_id")
+  userSegmentRelationship UserSegmentRelationShipType @map("user_segment_relationship_type")
+  IdeaComment          IdeaComment[]
+
+  // relationships 
+  segment Segments @relation(fields: [segmentId] , references: [segId])
+  segmentId Int 
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+enum UserSegmentRelationShipType {
+  HOME
+  WORK
+  SCHOOL
+
+  @@map(name: "user_segment_relationship_type")
+}
+
+model Segments {
+  segId        Int          @id @default(autoincrement()) @map("seg_id")
+  
+  parentSegment Segments? @relation("SegmentToSegment", fields: [parentId], references: [segId]) 
+  parentId     Int?
+
+  children Segments[] @relation("SegmentToSegment")
+
+  name         String       @map("segment_name")
+
+  country      String?
+  province     String?
+  lat          Decimal?
+  lon          Decimal?
+  radius       Decimal?
+
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime?    @default(now()) @updatedAt @map("update_at")
+
+  userReach      UserReach[]
+
+  @@map(name: "segment")
+
+  // relations 
+  userSegment   UserSegments[]
+  segmentType    SegmentType
+  ideas          Idea[]
+
+}
+
+enum SegmentType {
+segment
+superSegment
+subSegment
+}
+
+model Idea {
+  // Keys
+  id                   Int     @id @default(autoincrement())
+  authorId             String  @map("author_id")
+  supportingProposalId Int?    @map("supporting_proposal_id")
+  championId           String? @map("champion_id")
+  categoryId           Int     @map("category_id")
+
+  // Values
+  title                  String
+  description            String
+  proposal_role          String    @default("")
+  requirements           String    @default("")
+  proposal_benefits      String    @default("")
+  userType               String    @default("Resident")
+  communityImpact        String?   @map("community_impact")
+  natureImpact           String?   @map("nature_impact")
+  artsImpact             String?   @map("arts_impact")
+  energyImpact           String?   @map("energy_impact")
+  manufacturingImpact    String?   @map("manufacturing_impact")
+  state                  IdeaState @default(IDEA)
+  active                 Boolean   @default(true)
+  banned                 Boolean   @default(false)
+  reviewed               Boolean   @default(false)
+  imagePath              String?   @map("image_path")
+  createdAt              DateTime  @default(now()) @map(name: "created_at")
+  updatedAt              DateTime  @default(now()) @updatedAt @map(name: "updated_at")
+  notification_dismissed Boolean   @map("notification_dismissed")
+  quarantined_at         DateTime  @default(now()) @map(name: "quarantined_at")
+
+  // relations
+  comments        IdeaComment[]
+  ratings         IdeaRating[]
+  flags           IdeaFlag[]
+  PostBan         PostBan[]
+  proposalInfo    Proposal?         @relation("proposal")
+  projectInfo     Project?
+  address         IdeaAddress?
+  geo             IdeaGeo?
+  userIdeaFollow  UserIdeaFollow[]
+  userIdeaEndorse UserIdeaEndorse[]
+
+  // Multiple relationships pointing to same User Model
+  // https://github.com/prisma/prisma/discussions/2073
+  author                   User                       @relation("ideaAuthor", fields: [authorId], references: [id])
+  supportedProposal        Proposal?                  @relation("supportedProposal", fields: [supportingProposalId], references: [id])
+  champion                 User?                      @relation("ideaChampion", fields: [championId], references: [id])
+  category                 Category                   @relation(fields: [categoryId], references: [id])
+  segments                 Segments[]
+  Quarantine_Notifications Quarantine_Notifications[]
+
+  @@unique([id, title])
+  @@map(name: "idea")
+}
+
 // Report Entity
 model Report {
   id          Int      @id @default(autoincrement())
@@ -154,112 +350,8 @@ model CommentBan {
   @@map(name: "ban_comment")
 }
 
-model User {
-  // Keys
-  id       String   @id @default(cuid())
-  //userRoleId Int?     @map("user_role_id")
-  userType UserType @default(RESIDENTIAL) @map("user_type")
-
-  // Fields
-  email            String   @unique
-  password         String
-  organizationName String?  @map("organization_name")
-  fname            String?  @map("f_name")
-  lname            String?  @map("l_name")
-  createdAt        DateTime @default(now()) @map(name: "created_at")
-  updatedAt        DateTime @default(now()) @updatedAt @map(name: "updated_at")
-  imagePath        String?
-  passCode         String?  @default(cuid())
-  banned           Boolean  @default(false)
-  reviewed         Boolean  @default(false)
-  totalFlagged     Int      @default(0) @map("total_flagged")
-  hasFlagged       Int      @default(0) @map("has_flagged")
-  verified         Boolean  @default(false)
-  verifiedToken    String?  @default(cuid())
-  displayFName      String?  @map("display_f_name")
-  displayLName      String?  @map("display_l_name")
-  adminmodEmail     String?  @map("adminmod_email")
-  status           Boolean  @default(true)
-
-
-
-  // Relationships
-  address             UserAddress?
-  geo                 UserGeo?
-  userReach           UserReach[]
-  userIdeaFollow      UserIdeaFollow[]
-  userIdeaEndorse     UserIdeaEndorse[]
-  //userRole        UserRole?    @relation(fields: [userRoleId], references: [id])
-  ideas               Idea[]                @relation("ideaAuthor")
-  ideaFlags           IdeaFlag[]
-  commentFlags        CommentFlag[]
-  championedIdeas     Idea[]                @relation("ideaChampion")
-  stripe              UserStripe?
-  userBans            UserBan[]
-  //championedIdeas     Idea[]                @relation("championedIdeas")
-  ideaRatings         IdeaRating[]
-  ideaComments        IdeaComment[]
-  ideaCommentLikes    UserCommentLikes[]
-  ideaCommentDislikes UserCommentDislikes[]
-  collaborators       Collaborator[]        @relation("ideaCollaborator")
-  volunteers          Volunteer[]           @relation("ideaVolunteer")
-  donors              Donor[]               @relation("ideaDonor")
-  feedbackratings     FeedbackRating[]
-
-  // Model overwrites
-  Advertisements                    Advertisements[]
-  //Not sure if this one stays
-  segmentRequest                    segmentRequest[]
-  userSegments                      UserSegments?
-  Quarantine_Notifications          Quarantine_Notifications[]
-  Ban_History                       Ban_History[]
-  Public_Community_Business_Profile Public_Community_Business_Profile[]
-  Public_Municipal_Profile          Public_Municipal_Profile[]
-  False_Flagging_Behavior           False_Flagging_Behavior[]
-  Bad_Posting_Behavior              Bad_Posting_Behavior[]
-  School_Details                    School_Details[]
-  Work_Details                      Work_Details[]
-
-  @@map(name: "user")
-}
-
 // user segment entity
-model UserSegments {
-  id                   String        @id @default(cuid())
-  userId               String        @unique @map("user_id")
-  user                 User?         @relation(fields: [userId], references: [id])
-  homeSuperSegId       Int?          @map("home_super_segment_id")
-  homeSuperSegName     String?       @map("home_super_segment_name")
-  workSuperSegId       Int?          @map("work_super_segment_id")
-  workSuperSegName     String?       @map("work_super_segment_name")
-  schoolSuperSegId     Int?          @map("school_super_segment_id")
-  schoolSuperSegName   String?       @map("school_super_segment_name")
-  homeSegmentId        Int?          @map("home_segment_id")
-  homeSegmentName      String?       @map("home_segment_name")
-  workSegmentId        Int?          @map("work_segment_id")
-  workSegmentName      String?       @map("work_segment_name")
-  schoolSegmentId      Int?          @map("school_segment_id")
-  schoolSegmentName    String?       @map("school_segment_name")
-  homeSubSegmentId     Int?          @map("home_sub_segment")
-  homeSubSegmentName   String?       @map("home_sub_segment_name")
-  workSubSegmentId     Int?          @map("work_sub_segment")
-  workSubSegmentName   String?       @map("work_sub_segment_name")
-  schoolSubSegmentId   Int?          @map("school_sub_segment")
-  schoolSubSegmentName String?       @map("school_sub_segment_name")
-  homeSegHandle       String?       @map("home_seg_handle")
-  workSegHandle       String?       @map("work_seg_handle")
-  schoolSegHandle     String?       @map("school_seg_handle")
-  homeSuperSeg         SuperSegment? @relation("homeSuperSeg", fields: [homeSuperSegId], references: [superSegId])
-  workSuperSeg         SuperSegment? @relation("workSuperSeg", fields: [workSuperSegId], references: [superSegId])
-  schoolSuperSeg       SuperSegment? @relation("schoolSuperSeg", fields: [schoolSuperSegId], references: [superSegId])
-  homeSegment          Segments?     @relation("homeSegment", fields: [homeSegmentId], references: [segId])
-  workSegment          Segments?     @relation("workSegment", fields: [workSegmentId], references: [segId])
-  schoolSegment        Segments?     @relation("schoolSegment", fields: [schoolSegmentId], references: [segId])
-  homeSubSegment       SubSegments?  @relation("homeSubSegment", fields: [homeSubSegmentId], references: [id])
-  workSubSegment       SubSegments?  @relation("workSubSegment", fields: [workSubSegmentId], references: [id])
-  schoolSubSegment     SubSegments?  @relation("schoolSubSegment", fields: [schoolSubSegmentId], references: [id])
-  IdeaComment          IdeaComment[]
-}
+
 
 // Category entity
 model Category {
@@ -388,65 +480,6 @@ model Donor {
   @@map(name: "donors")
 }
 
-model Idea {
-  // Keys
-  id                   Int     @id @default(autoincrement())
-  authorId             String  @map("author_id")
-  supportingProposalId Int?    @map("supporting_proposal_id")
-  championId           String? @map("champion_id")
-  categoryId           Int     @map("category_id")
-  superSegmentId       Int     @map("super_segment_id")
-  segmentId            Int?    @map("segment_id")
-  subSegmentId         Int?    @map("sub_segment_id")
-
-  // Values
-  title                  String
-  description            String
-  proposal_role          String    @default("")
-  requirements           String    @default("")
-  proposal_benefits      String    @default("")
-  userType               String    @default("Resident")
-  communityImpact        String?   @map("community_impact")
-  natureImpact           String?   @map("nature_impact")
-  artsImpact             String?   @map("arts_impact")
-  energyImpact           String?   @map("energy_impact")
-  manufacturingImpact    String?   @map("manufacturing_impact")
-  state                  IdeaState @default(IDEA)
-  active                 Boolean   @default(true)
-  banned                 Boolean   @default(false)
-  reviewed               Boolean   @default(false)
-  imagePath              String?   @map("image_path")
-  createdAt              DateTime  @default(now()) @map(name: "created_at")
-  updatedAt              DateTime  @default(now()) @updatedAt @map(name: "updated_at")
-  notification_dismissed Boolean   @map("notification_dismissed")
-  quarantined_at         DateTime  @default(now()) @map(name: "quarantined_at")
-
-  // relations
-  comments        IdeaComment[]
-  ratings         IdeaRating[]
-  flags           IdeaFlag[]
-  PostBan         PostBan[]
-  proposalInfo    Proposal?         @relation("proposal")
-  projectInfo     Project?
-  address         IdeaAddress?
-  geo             IdeaGeo?
-  userIdeaFollow  UserIdeaFollow[]
-  userIdeaEndorse UserIdeaEndorse[]
-
-  // Multiple relationships pointing to same User Model
-  // https://github.com/prisma/prisma/discussions/2073
-  author                   User                       @relation("ideaAuthor", fields: [authorId], references: [id])
-  supportedProposal        Proposal?                  @relation("supportedProposal", fields: [supportingProposalId], references: [id])
-  champion                 User?                      @relation("ideaChampion", fields: [championId], references: [id])
-  category                 Category                   @relation(fields: [categoryId], references: [id])
-  superSegment             SuperSegment               @relation(fields: [superSegmentId], references: [superSegId])
-  segment                  Segments?                  @relation(fields: [segmentId], references: [segId])
-  subSegment               SubSegments?               @relation(fields: [subSegmentId], references: [id])
-  Quarantine_Notifications Quarantine_Notifications[]
-
-  @@unique([id, title])
-  @@map(name: "idea")
-}
 
 model IdeaFlag {
   id         Int     @id @default(autoincrement())
@@ -566,10 +599,7 @@ model IdeaComment {
   ideaId                 Int      @map("idea_id")
   // Fields
   authorId               String   @map("author_id")
-  userSegId              String   @map("user_segment_id")
-  superSegmentId         Int?     @map("super_segment_id")
-  segmentId              Int?     @map("segment_id")
-  subSegmentId           Int?     @map("sub_segment_id")
+  userSegId              Int      @map("user_segment_id")
   content                String
   active                 Boolean  @default(true)
   reviewed               Boolean  @default(false)
@@ -637,43 +667,7 @@ model Advertisements {
   @@map(name: "advertisement")
 }
 
-model SuperSegment {
-  superSegId Int       @id @default(autoincrement()) @map("super_seg_id")
-  name       String
-  country    String
-  province   String
-  createdAt  DateTime  @default(now()) @map("created_at")
-  updatedAt  DateTime? @default(now()) @updatedAt @map("updated_at")
 
-  Segments           Segments[]
-  Idea               Idea[]
-  homeUserSegments   UserSegments[] @relation("homeSuperSeg")
-  workUserSegments   UserSegments[] @relation("workSuperSeg")
-  schoolUserSegments UserSegments[] @relation("schoolSuperSeg")
-
-  @@map("super_segment")
-}
-
-model Segments {
-  segId        Int          @id @default(autoincrement()) @map("seg_id")
-  superSegId   Int
-  country      String
-  province     String
-  name         String       @map("segment_name")
-  superSegName String?      @map("super_segment_name")
-  createdAt    DateTime     @default(now()) @map("created_at")
-  updatedAt    DateTime?    @default(now()) @updatedAt @map("update_at")
-  superSegment SuperSegment @relation(references: [superSegId], fields: [superSegId])
-
-  SubSegments    SubSegments[]
-  homeSegments   UserSegments[] @relation("homeSegment")
-  workSegments   UserSegments[] @relation("workSegment")
-  schoolSegments UserSegments[] @relation("schoolSegment")
-  Idea           Idea[]
-  userReach      UserReach[]
-
-  @@map(name: "segment")
-}
 
 // UserReach
 model UserReach {
@@ -722,25 +716,6 @@ model UserIdeaEndorse {
   @@map(name: "user_idea_endorse")
 }
 
-model SubSegments {
-  id        Int       @id @default(autoincrement())
-  segId     Int       @map("seg_id")
-  name      String    @map("sub_segment_name")
-  lat       Decimal?
-  lon       Decimal?
-  radius    Decimal?
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime? @default(now()) @updatedAt @map("update_at")
-
-  segRef            Segments       @relation(fields: [segId], references: [segId])
-  homeSubSegments   UserSegments[] @relation("homeSubSegment")
-  workSubSegments   UserSegments[] @relation("workSubSegment")
-  schoolSubSegments UserSegments[] @relation("schoolSubSegment")
-
-  Idea Idea[]
-
-  @@map(name: "sub_segment")
-}
 
 model segmentRequest {
   id             Int      @id @default(autoincrement())

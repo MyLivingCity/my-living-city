@@ -17,7 +17,7 @@ import {
 import { postUserSegmentRequest } from 'src/lib/api/userSegmentRequestRoutes';
 import { API_BASE_URL, TEXT_INPUT_LIMIT, USER_TYPES } from 'src/lib/constants';
 import { IUser } from '../../lib/types/data/user.type';
-import { capitalizeString } from '../../lib/utilityFunctions';
+import { capitalizeString, getSegmentsFromUserSegments } from '../../lib/utilityFunctions';
 import { RequestSegmentModal } from '../partials/RequestSegmentModal';
 import StripeCheckoutButton from 'src/components/partials/StripeCheckoutButton';
 import {
@@ -51,7 +51,8 @@ import {
     getUserGeoData,
 } from 'src/lib/api/userRoutes';
 import { getAllSegments } from 'src/lib/api/segmentRoutes';
-import { patchUserSegment } from 'src/lib/api/userSegmentRoutes';
+import { patchUserHandle } from 'src/lib/api/userRoutes';
+import { SegmentType, UserSegmentRelationshipEnum } from 'src/lib/types/data/segment.type';
 
 interface ProfileContentProps {
     user: IUser;
@@ -90,9 +91,10 @@ const updateSchoolSegmentDetail = async (
         // Build segment handle for UserSegment table
         const segmentHandle = `${data.displayFName}@${data.displayLName}`;
 
-        // Update the userSegement work handle
-        await patchUserSegment(user, {
-            schoolSegHandle: segmentHandle
+        // Update the scho0ol userHandle
+        await patchUserHandle(user, {
+            handle: segmentHandle,
+            userSegmentRelationship: UserSegmentRelationshipEnum.SCHOOL
         });
 
         // Update the user details
@@ -107,9 +109,10 @@ const updateWorkSegmentDetail = async (user: string | undefined, data: any) => {
         // Build segment handle for UserSegment table
         const segmentHandle = `${data.displayFName}@${data.displayLName}`;
 
-        // Update the userSegement work handle
-        await patchUserSegment(user, {
-            workSegHandle: segmentHandle
+        // Update the "work" userHandle
+        await patchUserHandle(user, {
+            handle: segmentHandle,
+            userSegmentRelationship: UserSegmentRelationshipEnum.WORK
         });
 
         // Update the user details
@@ -123,10 +126,13 @@ const updateHomeSegmentDetail = async (user: string | undefined, data: any) => {
         // Build segment handle for UserSegment table
         const segmentHandle = `${data.displayFName}@${data.displayLName}`;
 
-        // Update the userSegement work handle
-        await patchUserSegment(user, {
-            homeSegHandle: segmentHandle
+        // Update the "home" userHandle
+        await patchUserHandle(user, {
+            handle: segmentHandle,
+            userSegmentRelationship: UserSegmentRelationshipEnum.HOME
         });
+
+        console.log('updateSegment data: ', data);
 
         // Update the user details
         await updateHomeSegmentDetails(user, data);
@@ -143,6 +149,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
         lname,
         address,
         userSegments,
+        userHandles,
         imagePath,
         displayFName,
         displayLName,
@@ -150,6 +157,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
     } = user;
 
     const { streetAddress, streetAddress2, city, postalCode, country } = address!;
+    const {homeSegments, workSegments, schoolSegments} = getSegmentsFromUserSegments(userSegments);
     const [show, setShow] = useState(false);
     const [stripeStatus, setStripeStatus] = useState('');
     const [segmentRequests, setSegmentRequests] = useState<any[]>([]);
@@ -166,11 +174,22 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
     const [segments, setSegments] = useState<any[]>([]);
     const [subSegments, setSubSegments] = useState<any[]>([]);
     const [editPersonalInfo, setEditPersonalInfo] = useState(false);
-    const [showWorkSegment, setShowWorkSegment] = useState(!!userSegments?.workSegHandle);
-    const [showSchoolSegment, setShowSchoolSegment] = useState(!!userSegments?.schoolSegHandle);
+    const [showWorkSegment, setShowWorkSegment] = useState(!!workSegments.segment);
+    const [showSchoolSegment, setShowSchoolSegment] = useState(!!schoolSegments.segment);
     const [editHomeSegment, setEditHomeSegment] = useState(false);
     const [editWorkSegment, setEditWorkSegment] = useState(false);
     const [editSchoolSegment, setEditSchoolSegment] = useState(false);
+
+    //both now have the handles
+    console.log('userHandles', userHandles);
+    console.log('User Segments:', userSegments);
+    console.log('Full user object in ProfileContent', user);
+    console.log('HOMESEGMENT: ', homeSegments);
+    console.log('CITY:',  homeSegments?.segment?.name);
+    console.log('NEIGHBOOURHOOD:',  homeSegments?.subSegment?.name);
+    console.log('SETSCHOOLSEGMENTS: ', showSchoolSegment);
+    console.log('SCHOOLSEGMENT: ', schoolSegments);
+    console.log('schoolData: ', schoolData);
 
     function handleEditPersonalInfo() {
         setEditPersonalInfo(!editPersonalInfo);
@@ -505,7 +524,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                 <ListGroup.Item>
                                     {city
                                         ? capitalizeString(city)
-                                        : capitalizeString(userSegments!.homeSegmentName)}
+                                        : capitalizeString(homeSegments?.segment?.name)}
                                 </ListGroup.Item>
                                 <ListGroup.Item>
                                     {postalCode ? postalCode.toUpperCase() : 'Unknown'}
@@ -845,8 +864,8 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                     <Col style={{ padding: '0' }}>
                                         <ListGroup variant='flush'>
                                             <ListGroupItem>
-                                                {userSegments?.homeSegmentName
-                                                    ? capitalizeString(userSegments?.homeSegmentName)
+                                                {homeSegments
+                                                    ? capitalizeString(homeSegments.segment?.name)
                                                     : 'Unknown'}
                                             </ListGroupItem>
                                             <ListGroupItem>
@@ -1204,8 +1223,8 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                     <Col style={{ padding: '0' }}>
                                         <ListGroup variant='flush'>
                                             <ListGroupItem>
-                                                {userSegments!.homeSegmentName
-                                                    ? capitalizeString(userSegments!.homeSegmentName)
+                                                {homeSegments
+                                                    ? capitalizeString(homeSegments.segment?.name)
                                                     : 'Unknown'}
                                             </ListGroupItem>
                                             <ListGroupItem>
@@ -1650,12 +1669,12 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                         title={'Residence Segment'}
                         type={'home'}
                         segmentData={{
-                            segmentId: userSegments?.homeSegmentId ? userSegments?.homeSegmentId : 0,
-                            segmentHandle: userSegments?.homeSegHandle ?? '',
+                            segmentId: homeSegments?.segment ? homeSegments.segment.segId : 0,
+                            segmentHandle: userHandles?.find(h => h.userSegmentRelationship === UserSegmentRelationshipEnum.HOME)?.handle ?? '',
                             street: streetAddress ? streetAddress : UNKNOWN,
-                            city: userSegments?.homeSegmentName ? userSegments?.homeSegmentName : NOT_SELECTED,
+                            city: homeSegments.segment ? homeSegments.segment.name : NOT_SELECTED,
                             postalCode: postalCode ? postalCode : UNKNOWN,
-                            neighborhood: userSegments?.homeSubSegmentName ? userSegments?.homeSubSegmentName : NOT_SELECTED,
+                            neighborhood: homeSegments.subSegment ? homeSegments.subSegment.name : NOT_SELECTED,
                         }}
                         geoData={{
                             lat: geoData!.lat ? geoData!.lat : 0,
@@ -1668,19 +1687,19 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                     ></SegmentInfo>
                 </Row>
                 <Row className='mt-3'>
-                    {showWorkSegment ? Object.keys(workData).length > 0 && (
+                    {showWorkSegment ? (
                         <SegmentInfo
                             user={user!}
                             token={token!}
                             title={'Business Segment'}
                             type={'work'}
                             segmentData={{
-                                segmentId: userSegments?.workSegmentId ? userSegments?.workSegmentId : 0,
-                                segmentHandle: userSegments?.workSegHandle ?? '',
+                                segmentId: workSegments?.segment ? workSegments.segment.segId : 0,
+                                segmentHandle: userHandles?.find(h => h.userSegmentRelationship === UserSegmentRelationshipEnum.WORK)?.handle ?? '',
                                 street: workData!.streetAddress ? workData!.streetAddress : UNKNOWN,
-                                city: userSegments?.workSegmentName ? userSegments?.workSegmentName : NOT_SELECTED,
+                                city: workSegments?.segment ? workSegments.segment.name : NOT_SELECTED,
                                 postalCode: workData!.postalCode ? workData!.postalCode : UNKNOWN,
-                                neighborhood: userSegments?.workSubSegmentName ? userSegments?.workSubSegmentName : NOT_SELECTED,
+                                neighborhood: workSegments.subSegment ? workSegments.subSegment.name : NOT_SELECTED,
                             }}
                             geoData={{
                                 lat: geoData!.work_lat ? geoData!.work_lat : 0,
@@ -1697,19 +1716,19 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                     )}
                 </Row>
                 <Row className='mt-3'>
-                    {showSchoolSegment ? Object.keys(schoolData).length > 0 && (
+                    {showSchoolSegment ? (
                         <SegmentInfo
                             user={user!}
                             token={token!}
                             title={'School Segment'}
                             type={'school'}
                             segmentData={{
-                                segmentId: userSegments?.schoolSegmentId ? userSegments?.schoolSegmentId : 0,
-                                segmentHandle: userSegments?.schoolSegHandle ?? '',
-                                street: schoolData!.streetAddress ? schoolData!.streetAddress : UNKNOWN,
-                                city: userSegments?.schoolSegmentName ? userSegments?.schoolSegmentName : NOT_SELECTED,
-                                postalCode: schoolData!.postalCode ? schoolData!.postalCode : UNKNOWN,
-                                neighborhood: userSegments?.schoolSubSegmentName ? userSegments?.schoolSubSegmentName : NOT_SELECTED,
+                                segmentId: schoolSegments?.segment ? schoolSegments.segment.segId : 0,
+                                segmentHandle: userHandles?.find(h => h.userSegmentRelationship === UserSegmentRelationshipEnum.SCHOOL)?.handle ?? '',
+                                street: schoolData?.streetAddress ?? UNKNOWN,
+                                city: schoolSegments?.segment ? schoolSegments.segment.name : NOT_SELECTED,
+                                postalCode: schoolData?.postalCode ?? UNKNOWN,
+                                neighborhood: schoolSegments.subSegment ? schoolSegments.subSegment.name : NOT_SELECTED,
                             }}
                             geoData={{
                                 lat: geoData!.school_lat ? geoData!.school_lat : 0,

@@ -100,12 +100,12 @@ export const RegisterPageContent: React.FC<RegisterPageContentProps> = ({}) => {
     const getReachData = async () => {
         let data: CheckBoxItem[] = [];
         let region: CheckBoxItem = {
-            label: segment?.superSegName,
+            label: segment?.parentSegment?.name,
             value: 'SuperSeg',
             children: [],
         };
 
-        const res = await getAllSegmentsWithSuperSegId(segment?.superSegId);
+        const res = await getAllSegmentsWithSuperSegId(segment?.parentSegment?.segId);
 
         res.forEach((segment) => {
             region.children?.push({

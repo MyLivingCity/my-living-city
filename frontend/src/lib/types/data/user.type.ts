@@ -4,6 +4,7 @@ import { IAddress } from './address.type';
 import { IComment } from './comment.type';
 import { USER_TYPES } from 'src/lib/constants';
 import { IUserSegment } from './segment.type';
+import { IUserHandle } from './userHandle.type';
 //'ADMIN' | 'MOD' | 'SEG_ADMIN' | 'SEG_MOD' | 'MUNICIPAL_SEG_ADMIN' | 'BUSINESS' | 'NORMAL';
 export interface IUser {
   id: string;
@@ -32,7 +33,8 @@ export interface IUser {
   school_geo?: IGeo;
   address?: IAddress;
   userRole?: IUserRole;
-  userSegments?: IUserSegment;
+  userSegments?: IUserSegment[];
+  userHandles?: IUserHandle[];
   IdeaComments?: IComment[];
   userReach?: {
     id?: string;

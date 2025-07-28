@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { ROUTES, USER_TYPES } from 'src/lib/constants';
 import PricingPlanSelector from '../../partials/PricingPlanSelector';
 import { Form} from 'formik';
-import { FormikStep } from '../RegisterPageContent4';
+import { FormikStep } from '../../content/RegisterPageContent4';
 import * as Yup from 'yup';
 import { Form as BForm, Card } from 'react-bootstrap';
 import { getUserWithEmail, postRegisterUser } from 'src/lib/api/userRoutes';
@@ -15,7 +15,7 @@ import {
 } from 'src/lib/utilityFunctions';
 import { ISegment, ISubSegment } from 'src/lib/types/data/segment.type';
 import { IFetchError } from 'src/lib/types/types';
-import { CheckBoxItem, RegisterPageContentReach } from '../RegisterPageContentReach';
+import { CheckBoxItem, RegisterPageContentReach } from '../../content/RegisterPageContentReach';
 import {
   findSubsegmentsBySegmentId,
   getAllSegments,

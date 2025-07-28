@@ -1,7 +1,7 @@
 /* eslint-disable */
 
 import { Alert } from 'react-bootstrap';
-import { FormikStep } from '../RegisterPageContent4';
+import { FormikStep } from '../../content/RegisterPageContent4';
 
 
 function SubmitForm({ submitError }: { submitError: any }) {

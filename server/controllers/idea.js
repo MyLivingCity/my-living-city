@@ -564,7 +564,6 @@ ideaRouter.get(
     if (!!take) {
       takeClause = `limit ${take}`;
     }
-
     try {
       // TODO: if rating is adjusted raw query will break
       console.log("The data:" + req.params.userId)
@@ -580,9 +579,11 @@ ideaRouter.get(
         i.proposal_benefits,
         i.notification_dismissed,
         i.quarantined_at,
-        i.segment_id as "segId",
-        i.sub_segment_id as "subSegId",
-        i.super_segment_id as "superSegId",
+        seg.seg_id as "segId",
+        seg.segment_name as "segmentName",
+        subseg.seg_id as "subSegId",
+        subseg.segment_name as "subSegmentName",
+        superseg.seg_id as "superSegId",
         i.community_impact as "communityImpact",
         i.nature_impact as "natureImpact",
         i.energy_impact as "energyImpact",
@@ -594,8 +595,6 @@ ideaRouter.get(
         coalesce(ir.total_ratings, 0) as "ratingCount",
         coalesce(pr.pos_rating, 0) as "posRatings",
         coalesce(nr.neg_rating, 0) as "negRatings",
-        coalesce(sn.segment_name, '') as "segmentName",
-        coalesce(sbn.sub_segment_name, '') as "subSegmentName",
         coalesce(userfname.f_name, '') as "firstName",
         coalesce(userStreetAddress.street_address, '') as "streetAddress",
         i.state,
@@ -605,6 +604,7 @@ ideaRouter.get(
         i.updated_at as "updatedAt",
         i.created_at as "createdAt"
           from idea i
+
           -- Aggregate total comments
           left join (
               select
@@ -613,6 +613,7 @@ ideaRouter.get(
               from idea_comment
               group by idea_comment.idea_id
           ) ic on i.id = ic.idea_id
+
           -- Aggregate total ratings and rating avg
           left join (
               select
@@ -622,6 +623,7 @@ ideaRouter.get(
               from idea_rating
               group by idea_rating.idea_id
           ) ir on	i.id = ir.idea_id
+
           -- Aggregate total neg ratings
           left join (
               select
@@ -631,6 +633,7 @@ ideaRouter.get(
               where rating < 0
               group by idea_id
           ) nr on	i.id = nr.idea_id
+           
           -- Aggregate total pos ratings
           left join (
               select
@@ -640,21 +643,37 @@ ideaRouter.get(
               where rating > 0
               group by idea_id
           ) pr on	i.id = pr.idea_id
-          -- Aggregate idea segment name
+
+          -- Join for segment type (required)
           left join (
-              select seg_id, segment_name
-              from segment
-              ) sn on i.segment_id = sn.seg_id
-          -- Aggregate idea sub segment name
+            select s.*, iseg."A" as idea_id
+            from "_IdeaToSegments" iseg
+            join segment s on s.seg_id = iseg."B"
+            where s."segmentType" = 'segment'
+          ) seg on seg.idea_id = i.id
+
+          -- Join for subSegment type (optional)
           left join (
-              select id, sub_segment_name
-              from sub_segment
-              ) sbn on i.sub_segment_id = sbn.id
+            select s.*, iseg."A" as idea_id
+            from "_IdeaToSegments" iseg
+            join segment s on s.seg_id = iseg."B"
+            where s."segmentType" = 'subSegment'
+          ) subseg on subseg.idea_id = i.id
+
+          -- Join for superSegment type (optional)
+          left join (
+            select s.*, iseg."A" as idea_id
+            from "_IdeaToSegments" iseg
+            join segment s on s.seg_id = iseg."B"
+            where s."segmentType" = 'superSegment'
+          ) superseg on superseg.idea_id = i.id
+
           -- Aggregate author's first name
           left join  (
               select id, f_name
               from "user"
               ) userfname on i.author_id = userfname.id
+
           -- Aggregate author's address
           left join (
               select user_id, street_address

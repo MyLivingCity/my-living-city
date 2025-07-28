@@ -220,7 +220,7 @@ export const SegmentInfo: React.FC<SegmentInfoProps> = ({
             return;
         }
 
-        updateFunction && await updateFunction(user.id, data);
+        updateFunction && await updateFunction(user.id, data, type);
         
         // Reimplement this later
         // const newData = {

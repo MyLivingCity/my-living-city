@@ -1,7 +1,7 @@
 /* eslint-disable */
 
 import {Form as BForm} from 'react-bootstrap';
-import { FormikStep } from '../RegisterPageContent4';
+import { FormikStep } from '../../content/RegisterPageContent4';
 import { ROUTES } from 'src/lib/constants';
 
 function SetUpAd() {

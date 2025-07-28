@@ -8,7 +8,7 @@ import {
     deleteSegmentBySegmentId,
     getAllSuperSegmentsByCountryProvince,
 } from '../../lib/api/segmentRoutes';
-import { ISegment, ISuperSegment, ISegmentRequest } from '../../lib/types/data/segment.type';
+import { ISegment, ISuperSegment, ISegmentRequest, SegmentType } from '../../lib/types/data/segment.type';
 import { IFetchError } from '../../lib/types/types';
 import { UserSegmentRequestCard } from '../partials/UserSegmentRequestCard';
 import { ShowSubSegmentsPage } from 'src/pages/ShowSubSegmentsPage';
@@ -42,11 +42,15 @@ const SegmentTable: React.FC<SegmentTableProps> = ({
         name: '',
         country: '',
         province: '',
-        superSegName: '',
+        parentSegment: undefined,
         segId: 0,
-        superSegId: 0,
+        parentId: 0,
+        lat: 0,
+        lon: 0,
+        radius: 0,
         createdAt: new Date(),
         updatedAt: new Date(),
+        segmentType: SegmentType.segment,
     });
     const filteredSegments = segments!.filter(
         (segment) =>
@@ -162,9 +166,9 @@ const SegmentTable: React.FC<SegmentTableProps> = ({
                                                         : ''}
                                                 </td>
                                                 <td>
-                                                    {segment.superSegName
+                                                    {segment.parentSegment?.name
                                                         ? capitalizeFirstLetterEachWord(
-                                                            segment.superSegName.toLowerCase()
+                                                            segment.parentSegment.name.toLowerCase()
                                                         )
                                                         : ''}
                                                 </td>
@@ -232,9 +236,9 @@ const SegmentTable: React.FC<SegmentTableProps> = ({
                                                 <td>
                                                     <Form.Control
                                                         as='select'
-                                                        defaultValue={segment.superSegName}
+                                                        defaultValue={segment.parentId}
                                                         onChange={(e) => {
-                                                            segment.superSegName = e.target.value.toLowerCase();
+                                                            segment.parentId = parseInt(e.target.value, 10);
                                                         }}
                                                     >
                                                         {(superSegments).map((superSegment) => (

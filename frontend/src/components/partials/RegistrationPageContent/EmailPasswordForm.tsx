@@ -2,7 +2,7 @@
 
 import { ErrorMessage, Field, useFormikContext,} from 'formik';
 import { Form as BForm} from 'react-bootstrap';
-import { FormikStep } from '../RegisterPageContent4';
+import { FormikStep } from '../../content/RegisterPageContent4';
 import { getUserWithEmail } from 'src/lib/api/userRoutes';
 import * as Yup from 'yup';
 import businessCommunityRegistration from './BusinessCommunityRegistration';

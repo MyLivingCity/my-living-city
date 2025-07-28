@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { Field, useFormikContext } from 'formik';
-import { FormikStep } from '../RegisterPageContent4';
+import { FormikStep } from '../../content/RegisterPageContent4';
 import * as Yup from 'yup';
 import { Form as BForm, Button } from 'react-bootstrap';
 import { getAllSegments, findSubsegmentsBySegmentId } from 'src/lib/api/segmentRoutes';

@@ -1,4 +1,5 @@
 import { IUser } from "./user.type";
+import { ISegment } from './segment.type';
 
 export interface ISubGroup {
 	id: string;
@@ -12,9 +13,9 @@ export interface ISubGroup {
 	createdAt: string;
 	updatedAt: string;
 
-	regionId: string;
-	segmentId?: string;
-	subSegmentId?: string;
+	region?: ISegment;
+	segment?: ISegment;
+	subSegment?: ISegment;
 
 	managerId: string;
 };

@@ -14,6 +14,11 @@ subGroupManagerRouter.get(
 			const managedSubgroups = await prisma.subGroup.findMany({
 				where: { managerId: userId },
 				orderBy: { name: 'asc' },
+				include: {
+					region: { select: {name: true} },
+					segment: { select: {name: true} },
+					subSegment: { select: {name: true} },
+				}
 			});
 
 			if (!managedSubgroups || managedSubgroups.length === 0) {

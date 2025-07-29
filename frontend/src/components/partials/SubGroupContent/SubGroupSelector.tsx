@@ -27,6 +27,7 @@ export const SubGroupSelector: React.FC<SubGroupSelectorProps> = ({
     subGroups,
     setSubGroupName,
 }) => {
+
     // Define fields to display in the subgroup details
     const fields = selectedSubGroup
         ? [
@@ -34,7 +35,12 @@ export const SubGroupSelector: React.FC<SubGroupSelectorProps> = ({
             { label: 'Created At', value: formatDateString(selectedSubGroup.createdAt) },
             { label: 'Visibility', value: selectedSubGroup.privacyField },
             { label: 'Group Type', value: selectedSubGroup.isVirtual ? 'Virtual' : 'Nested' },
-            { label: 'Nested Under', value: selectedSubGroup.regionId || 'None' },
+            { 
+                label: 'Nested Under', 
+                value: selectedSubGroup.isVirtual
+                    ? 'None | Nested Group'
+                    : selectedSubGroup.subSegment?.name || selectedSubGroup.segment?.name || selectedSubGroup.region?.name || 'Unknown'
+            },
         ]
         : [];
 

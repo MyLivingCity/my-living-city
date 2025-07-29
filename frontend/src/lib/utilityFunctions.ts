@@ -482,7 +482,7 @@ export function getSegmentsFromUserSegments(userSegments: IUserSegment[]| undefi
 /** 
  * Get a date string and format it to a more readable format
  * @param dateString A date string in ISO format
- * @param isLongFormat If true, returns long format (e.g. July 14, 2025, 11:04 AM). If false, returns short format (e.g. 07/14/2025).
+ * @param isLongFormat If true, returns long format (e.g. July 14, 2025, 11:04 AM). If false, returns short format (e.g. 07/14/2025 11:04 AM).
  * @returns A formatted date string
  */
 export const formatDateString = (dateString: string, isLongFormat = true): string => {

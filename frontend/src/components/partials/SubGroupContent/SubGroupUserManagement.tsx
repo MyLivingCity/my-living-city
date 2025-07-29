@@ -85,7 +85,7 @@ const SubGroupManagementContent: React.FC<SubGroupManagementContentProps> = ({
                     className='float-right'
                     size='sm'
                 >
-                    {showReq ? 'Hide Requests' : 'View Requests'}
+                    {showReq ? 'Hide Users' : 'View Users'}
                 </Button>
             </Card.Header> 
 

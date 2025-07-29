@@ -48,6 +48,8 @@ model User {
   userIdeaEndorse     UserIdeaEndorse[]
   userSegment         UserSegments[]
   userHandles          UserHandle[]
+  subGroupsManaged    SubGroup[]            @relation("ManagedSubGroups")
+  subGroupsJoined     SubGroupMember[]      @relation("JoinedSubGroups") 
 
   //userRole        UserRole?    @relation(fields: [userRoleId], references: [id])
   ideas               Idea[]                @relation("ideaAuthor")
@@ -143,6 +145,9 @@ model Segments {
   userSegment   UserSegments[]
   segmentType    SegmentType
   ideas          Idea[]
+  regionSubGroups     SubGroup[] @relation("SuperSegmentRelation")
+  segmentSubGroups    SubGroup[] @relation("SegmentRelation")
+  subSegmentSubGroups SubGroup[] @relation("SubSegmentRelation")
 
 }
 
@@ -906,4 +911,64 @@ model Feature_Toggle {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@map(name: "feature_toggle")
+}
+
+// SubGroup Functionality
+model SubGroup {
+  id           String       @id @default(cuid())
+  name         String
+  description  String?
+
+  isVirtual    Boolean      @map("is_virtual")
+  isPrivate    Boolean      @map("is_private")
+  privacyField PrivacyField @map("privacy_field") @default(PRIVATE)
+
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @default(now()) @updatedAt @map("updated_at")
+
+  // Nesting Relationships
+  regionId     Int?       @map("region_id")
+  segmentId    Int?       @map("segment_id")
+  subSegmentId Int?       @map("sub_segment_id")
+
+  // Relations
+  managerId    String       @map("manager_id")
+  manager      User         @relation("ManagedSubGroups", fields: [managerId], references: [id])
+
+  region     Segments?  @relation("SuperSegmentRelation", fields: [regionId], references: [segId])
+  segment    Segments? @relation("SegmentRelation", fields: [segmentId], references: [segId])
+  subSegment Segments? @relation("SubSegmentRelation", fields: [subSegmentId], references: [segId])
+
+  members      SubGroupMember[]
+
+  @@map("subgroup")
+}
+
+model SubGroupMember {
+  id          String           @id @default(cuid())
+  userId      String           @map("user_id")
+  subGroupId  String           @map("sub_group_id")
+
+  // Possible status: pending, approved, rejected
+  status      MembershipStatus @default(PENDING)
+  joinedAt    DateTime         @default(now()) @map("joined_at")
+  updatedAt   DateTime         @default(now()) @updatedAt @map("updated_at")
+  
+  user        User             @relation("JoinedSubGroups", fields: [userId], references: [id])
+  subGroup    SubGroup         @relation(fields: [subGroupId], references: [id])
+
+  @@unique([userId, subGroupId])
+  @@map("subgroup_member")
+}
+
+enum MembershipStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum PrivacyField {
+  PUBLIC
+  PRIVATE
+  TEST
 }

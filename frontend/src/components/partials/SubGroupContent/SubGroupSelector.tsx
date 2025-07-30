@@ -38,7 +38,7 @@ export const SubGroupSelector: React.FC<SubGroupSelectorProps> = ({
             { 
                 label: 'Nested Under', 
                 value: selectedSubGroup.isVirtual
-                    ? 'None | Nested Group'
+                    ? 'None | Virtual Group'
                     : selectedSubGroup.subSegment?.name || selectedSubGroup.segment?.name || selectedSubGroup.region?.name || 'Unknown'
             },
         ]

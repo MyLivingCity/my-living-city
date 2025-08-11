@@ -3,6 +3,35 @@ const express = require('express');
 const subGroupManagerRouter = express.Router();
 const prisma = require('../lib/prismaClient');
 
+// Get if the user is a subgroup manager
+subGroupManagerRouter.get(
+	'/isSubGroupManager',
+	passport.authenticate('jwt', { session: false }), 
+	async (req, res) => {
+		try {
+			const {id: userId} = req.user;
+
+			const managedSubgroups = await prisma.subGroup.findMany({
+				where: { managerId: userId },
+				select: { id: true },
+			});
+
+			res.json({ isSubGroupManager: managedSubgroups.length > 0 });
+		} catch (error) {
+			console.error("Error checking subgroup manager status:", error);
+			res.status(500).json({
+				message: 'Error checking subgroup manager status',
+				details: {
+					error: error.message,
+					errorStack: error.stack
+				}
+			});
+		} finally {
+			await prisma.$disconnect();
+		}
+	}	
+)
+
 // GET Subgroups managed by the user
 subGroupManagerRouter.get(
 	'/',

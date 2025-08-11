@@ -9,6 +9,16 @@ import { IUser } from '../types/data/user.type';
 import { ISubGroup, ISubGroupMember } from '../types/data/subGroup.type';
 
 /**
+ * Checks if the user is a subgroup manager.
+ * @param token token JWT for authentication
+ * @returns An object with `isSubGroupManager` boolean
+ */
+export const getIsSubGroupManager = async (token: string | null): Promise<{ isSubGroupManager: boolean }> => {
+    const res = await axios.get(`${API_BASE_URL}/subGroups/isSubGroupManager`, getAxiosJwtRequestOption(token!));
+    return res.data;
+};
+
+/**
  * Gets the subgroups managed by the user.
  * @param token token JWT for authentication
  * @returns The list of subgroups managed by the user.

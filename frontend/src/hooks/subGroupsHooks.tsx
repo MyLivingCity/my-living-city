@@ -2,7 +2,7 @@ import { useQuery } from 'react-query';
 import { IFetchError } from '../lib/types/types';
 import { ISubGroup, ISubGroupMember } from '../lib/types/data/subGroup.type';
 import { IUser } from 'src/lib/types/data/user.type';
-import { getSubGroupsManaged, getUserNotInSubGroup, getUserInSubGroup } from '../lib/api/subGroupRoutes';
+import { getSubGroupsManaged, getUserNotInSubGroup, getUserInSubGroup, getIsSubGroupManager } from '../lib/api/subGroupRoutes';
 
 export const useGetSubGroupsManaged = (token: string | null) => {
     return useQuery<ISubGroup[], IFetchError>(`managedSubGroups`, () => getSubGroupsManaged(token));
@@ -22,4 +22,10 @@ export const useGetUserInSubGroup = (token: string | null, subGroupId: string) =
             enabled: !!token && !!subGroupId,
         }
     );
+};
+
+export const useIsSubGroupManager = (token: string | null) => {
+    return useQuery< {isSubGroupManager: boolean}, IFetchError>('isSubGroupManager', () => getIsSubGroupManager(token), {
+        enabled: !!token,
+    }); 
 };

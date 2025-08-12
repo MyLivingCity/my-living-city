@@ -6,7 +6,8 @@ const { JWT_SECRET, JWT_EXPIRY } = require('../lib/constants');
 const { argon2ConfirmHash, argon2Hash, imagePathsToS3Url } = require('../lib/utilityFunctions');
 const prisma = require('../lib/prismaClient');
 const { authenticate } = require('passport');
-const { checkUserCreationAuthorization } = require('../helpers/userHelpers');
+const { checkUserCreationAuthorization, upsertUserSegment } = require('../helpers/userHelpers');
+
 
 /**
  * @swagger
@@ -109,7 +110,7 @@ userRouter.get(
  *          application/json:
  *            schema:
  *              $ref: '#/components/schemas/User'
- *      400:
+ * 			400:
  *        description: The user logged in with JWT
 */
 userRouter.get(
@@ -221,19 +222,24 @@ userRouter.get(
 )
 
 userRouter.get(
-    '/me-verbose',
-    passport.authenticate('jwt', { session: false }),
-    async (req, res, next) => {
-        try {
-            const { id, email } = req.user;
-            const foundUser = await prisma.user.findUnique({
-                where: { id },
-                include: {
-                    address: true,
-                    geo: true,
-                    userSegments: true
-                }
-            });
+	'/me-verbose',
+	passport.authenticate('jwt', { session: false }),
+	async (req, res, next) => {
+		try {
+			const { id, email } = req.user;
+			const foundUser = await prisma.user.findUnique({
+				where: { id },
+				include: {
+					address: true,
+					geo: true,
+					userHandles: true,
+					userSegment: {
+                        include: {
+                            segment: true
+                        }
+                    },
+				}
+			});
 
             if (!foundUser) {
                 return res.status(400).json({
@@ -241,11 +247,13 @@ userRouter.get(
                 })
             }
 
-            await imagePathsToS3Url([foundUser], "avatar");
-            const parsedUser = {
-                ...foundUser,
-                password: null,
-            }
+			await imagePathsToS3Url([foundUser], "avatar");
+			const parsedUser = {
+				...foundUser,
+				password: null,
+				userSegments: foundUser.userSegment,
+			}
+			delete parsedUser.userSegment;
 
             res.status(200);
             res.json({
@@ -265,6 +273,7 @@ userRouter.get(
         }
     }
 )
+
 userRouter.delete(
     '/:userId',
     async (req, res, next) => {
@@ -460,7 +469,7 @@ userRouter.post("/signup",
  *                  $ref: '#/components/schemas/User'
  *                token:
  *                  type: string
- *      400:
+ * 			400:
  *        description: The user could not be logged in
 */
 userRouter.post("/login", async (req, res, next) => {
@@ -577,7 +586,7 @@ userRouter.post(
  *              type: array
  *              items:
  *                $ref: '#/components/schemas/User'
- *      400:
+ * 			400:
  *        description: A set of users could not be fetched properly
 */
 userRouter.get(
@@ -593,14 +602,18 @@ userRouter.get(
                 }
             );
 
-            if (theUser.userType === 'SUPER_ADMIN' || theUser.userType === 'ADMIN' || theUser.userType === 'MOD' || theUser.userType === 'MUNICIPAL_SEG_ADMIN' || theUser.userType === 'SEG_ADMIN') {
-                const allUsers = await prisma.user.findMany({
-                    include: {
-                        userSegments: true,
-                        userReach: true,
-                    }
-                }
-                );
+			if (theUser.userType === 'SUPER_ADMIN' || theUser.userType === 'ADMIN' || theUser.userType === 'MOD' || theUser.userType === 'MUNICIPAL_SEG_ADMIN' || theUser.userType === 'SEG_ADMIN') {
+				const allUsers = await prisma.user.findMany({
+					include: {
+						userSegment: {
+							include: {
+								segment: true
+							}
+						},
+						userReach: true,
+					}
+				}
+				);
 
                 res.json(allUsers);
             } else {
@@ -633,24 +646,28 @@ userRouter.get(
                 }
             );
 
-            if (theUser.userType === 'SUPER_ADMIN' || theUser.userType === 'ADMIN' || theUser.userType === 'MOD' || theUser.userType === 'MUNICIPAL_SEG_ADMIN') {
-                const allUsers = await prisma.user.findMany({
-                    where: {
-                        NOT: {
-                            OR: [
-                                { userType: 'SUPER_ADMIN' },
-                                { userType: 'ADMIN' },
-                                { userType: 'MOD' },
-                                { userType: 'MUNICIPAL_SEG_ADMIN' },
-                                { userType: 'SEG_ADMIN' },
-                            ]
-                        }
-                    },
-                    include: {
-                        userSegments: true,
-                    }
-                }
-                );
+			if (theUser.userType === 'SUPER_ADMIN' || theUser.userType === 'ADMIN' || theUser.userType === 'MOD' || theUser.userType === 'MUNICIPAL_SEG_ADMIN') {
+				const allUsers = await prisma.user.findMany({
+					where: {
+						NOT: {
+							OR: [
+								{ userType: 'SUPER_ADMIN' },
+								{ userType: 'ADMIN' },
+								{ userType: 'MOD' },
+								{ userType: 'MUNICIPAL_SEG_ADMIN' },
+								{ userType: 'SEG_ADMIN' },
+							]
+						}
+					},
+					include: {
+						userSegment: {
+							include: {
+								segment: true
+							}
+						},
+					}
+				}
+				);
 
                 res.json(allUsers);
             } else {
@@ -707,7 +724,7 @@ userRouter.get(
  *                  $ref: '#/components/schemas/User'
  *                validPassword:
  *                  type: boolean
- *      400:
+ * 			400:
  *        description: The user's password failed to update
 */
 userRouter.put(
@@ -1390,23 +1407,24 @@ userRouter.patch(
                 where: { id: req.params.id },
             });
 
-            if (user) {
-                await prisma.user.update({
-                    where: { id: user.id },
-                    data: {
-                        displayFName: req.body.displayFName,
-                        displayLName: req.body.displayLName,
-                    }
-                });
-            }
-            const userDetails = await prisma.userSegments.update({
-                where: {
-                    userId: user.id,
-                },
-                data: {
-                    homeSegHandle: req.body.displayFName + "@" + req.body.displayLName,
-                },
-            })
+			if (user) {
+				await prisma.user.update({
+					where: { id: user.id },
+					data: {
+						displayFName: req.body.displayFName,
+						displayLName: req.body.displayLName,
+					}
+				});
+			}
+			const userDetails = await prisma.userHandle.update({
+				where: {
+					userId: user.id,
+					userSegmentRelationship: "HOME"
+				},
+				data: {
+					handle: req.body.displayFName + "@" + req.body.displayLName,
+				},
+			})
 
             res.status(200).json({
                 message: "Display name successfully updated"
@@ -1465,72 +1483,59 @@ userRouter.patch(
 )
 
 userRouter.patch(
-    '/updateCityNeighbourhood/:id',
-    async (req, res, next) => {
-        try {
-            if (req.body.neighbourhood === '' || req.body.neighbourhood === null || req.body.neighbourhood === undefined) {
-                const city = await prisma.segments.findFirst({
-                    where: { name: { equals: req.body.city, mode: 'insensitive' } },
-                });
+	'/updateCityNeighbourhood/:id',
+	async (req, res, next) => {
+		try {
 
-                const result = await prisma.userSegments.update({
-                    where: {
-                        userId: req.params.id,
-                    },
-                    data: {
-                        homeSubSegmentId: null,
-                        homeSubSegmentName: "",
-                        homeSegmentId: city.segId || null,
-                        homeSegmentName: req.body.city || "",
-                    },
-                });
+			const userId = req.params.id;
+			console.log('CITY: ', req.body.city);
+			console.log('NEIGHBOURHOOD: ', req.body.neighbourhood);
 
-                res.status(200).json({
-                    message: 'City and neighbourhood updated successfully',
-                    result,
-                });
+			const city = await prisma.segments.findFirst({
+				where: { name: { equals: req.body.city, mode: "insensitive" } },
+			});
 
-                return;
+			const neighbourhood = await prisma.segments.findFirst({
+				where: { name: { equals: req.body.neighbourhood, mode: "insensitive"} }
+			})
+
+			if (!neighbourhood) {
+                return res.status(400).json({
+                    message: "Error: A neighbourhood is required.",
+                });
             }
-            const user = await prisma.user.findUnique({
-                where: { id: req.params.id },
-            });
 
-            // get the id of the city from the segment table
-            // ignore case
-            console.log("user", req.params.id)
-            const city = await prisma.segments.findFirst({
-                where: { name: { equals: req.body.city, mode: "insensitive" } },
-            });
+			const segmentId = city ? city.segId : null;
+            const subSegmentId = neighbourhood.segId;
 
-            console.log("city", city)
-            // get the id of the neighbourhood from the subsegment table
-            // ignore case
-            const neighbourhood = await prisma.subSegments.findFirst({
-                where: { name: { equals: req.body.neighbourhood, mode: "insensitive" } },
-            });
+			console.log('segmentID: ', segmentId);
+			console.log('subSegmentId: ', subSegmentId);
 
-            console.log("neighbourhood", neighbourhood)
+			const userCitySegment = await prisma.userSegments.findFirst({
+				where: {
+					userId,
+					userSegmentRelationship: "HOME",
+					segment: {
+						segmentType: 'segment'
+					}
+				}
+			});
 
-            // if all three are found, update the user's city and neighbourhood
-            // in the UserSegment table
-            if (user && city && neighbourhood) {
-                const res = await prisma.userSegments.update({
-                    where: { userId: req.params.id },
-                    data: {
-                        homeSegmentId: city.segId,
-                        homeSubSegmentId: neighbourhood.id,
-                        homeSegmentName: req.body.city,
-                        homeSubSegmentName: req.body.neighbourhood,
-                    }
-                });
-            } else {
-                console.log("Error: user, city, or neighbourhood not found")
-                res.status(400).json({
-                    message: `Error: user, city, or neighbourhood not found`,
-                });
-                return;
-            }
+			const userNeighbourhoodSegment = await prisma.userSegments.findFirst({
+				where: {
+					userId,
+					userSegmentRelationship: "HOME",
+					segment: {
+						segmentType: 'subSegment'
+					}
+				}
+			});
+
+			console.log('userCitySegment: ', userCitySegment);
+			console.log('userNeighbourhoodSegment: ', userNeighbourhoodSegment);
+
+			await upsertUserSegment(userCitySegment, userId, segmentId, 'HOME');
+			await upsertUserSegment(userNeighbourhoodSegment, userId, subSegmentId, 'HOME');
 
             res.status(200).json({
                 message: "City and neighbourhood successfully updated"
@@ -1549,9 +1554,6 @@ userRouter.patch(
         }
     }
 )
-
-
-
 
 
 userRouter.get(
@@ -1594,5 +1596,42 @@ userRouter.get(
     }
 )
 
+userRouter.patch('/:userId/patchHandle', async (req, res) => {
+    const { userId } = req.params;
+    const {userSegmentRelationship, ...updates} = req.body;
+
+    if (!userSegmentRelationship || Object.keys(updates).length === 0) {
+        return res.status(400).json({
+            message: 'Missing required key (userSegmentRelationship) or no update fields provided'
+        });
+    }
+
+    try {
+        const updatedUserHandle = await prisma.userHandle.update({
+            where: {
+				userId_userSegmentRelationship: {
+					userId,
+					userSegmentRelationship
+				} 
+			},
+            data: updates
+        });
+
+        return res.status(200).json({
+            message: 'UserHandle updated successfully',
+            userHandle: updatedUserHandle
+        });
+    } catch (error) {
+        res.status(400).json({
+            message: "An error occured while trying to update a user segment.",
+            details: {
+                errorMessage: error.message,
+                errorStack: error.stack,
+            }
+        });
+    } finally {
+        await prisma.$disconnect();
+    }
+})
 
 module.exports = userRouter;

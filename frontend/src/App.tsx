@@ -36,6 +36,9 @@ import MunicipalDashboardPage from './pages/MunicipalDashboardPage';
 import CheckEmailPage from './pages/CheckEmailPage';
 import { SegmentPage } from './pages/SegmentPage';
 
+//* Added for SubGroup Management Page
+import SubGroupManagementPage from './pages/SubGroupManagementPage';
+
 function App() {
     return (
         <div className='App'>
@@ -43,6 +46,10 @@ function App() {
             <Header />
             <div className='main-content'>
                 <Switch>
+                    
+                    //* This is the route for the SubGroupManagerPage
+                    <PrivateRoute path={ROUTES.SUBGROUP_MANAGEMENT} component={SubGroupManagementPage} />
+
                     <Route path={ROUTES.LANDING} component={LandingPage} exact />
                     <Route
                         path={ROUTES.CONVERSATIONS}

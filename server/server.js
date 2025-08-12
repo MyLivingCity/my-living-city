@@ -78,6 +78,7 @@ const main = async () => {
 	const workDetailsRouter = require('./controllers/workDetails.js');
 	const emailVerificationRouter = require('./controllers/emailVerification.js');
 	const oauthRouter = require('./controllers/oauth');
+	const subGroupManagerRouter = require('./controllers/subgroups');
 
 	const apiRouter = express.Router();
 	app.use('/', apiRouter);
@@ -122,6 +123,7 @@ const main = async () => {
 	apiRouter.use('/workDetails', workDetailsRouter);
 	apiRouter.use('/emailVerification', emailVerificationRouter);
 	apiRouter.use('/auth', oauthRouter);
+	apiRouter.use('/subGroups', subGroupManagerRouter);
 
 
 	// Listen to server

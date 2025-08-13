@@ -626,28 +626,36 @@ advertisementRouter.get(
     async (req, res) => {
         try {
             const segmentUserCounts = await prisma.userSegments.groupBy({
-                by: ['homeSegmentId'],
+                by: ['segmentId'],
+                where: {
+                    userSegmentRelationship: 'HOME'
+                },
+
                 _count: {
                     userId: true
                 },
                 orderBy: {
-                    homeSegmentId: "asc"
+                    segmentId: "asc"
                 }
             });
-
+            const segmentIds = segmentUserCounts.map(s => s.segmentId);
             const segments = await prisma.segments.findMany({
-                distinct: ['segId'],
+                where: {
+                    segId: { in: segmentIds },
+                    segmentType: 'segment'
+                },
                 orderBy: {
                     segId: "asc"
                 }
             });
 
             const mapped = segmentUserCounts.map((segmentUserCount) => {
+                const segment = segments.find(s => s.segId === segmentUserCount.segmentId);
                 return {
-                    name: segments[segmentUserCount.homeSegmentId - 1].name,
-                    segId: segments[segmentUserCount.homeSegmentId - 1].segId,
+                    name: segment ? segment.name : "Unknown",
+                    segId: segment ? segment.segId : segmentUserCount.segmentId,
                     count: segmentUserCount._count.userId
-                }
+                };
             });
 
             res.status(200).json(mapped)

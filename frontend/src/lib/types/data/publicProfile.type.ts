@@ -44,3 +44,24 @@ export interface PublicMunicipalProfile {
     contactEmail: string;
     contactPhone: string;
 }
+
+export interface PublicSubGroup {
+    subgroupId: string;
+    subgroupName: string;
+    region: string;
+    municipality?: string | null;
+    neighborhood?: string | null;
+    description: string;
+}
+
+export interface JoinRequest {
+    requestId: string;
+    subGroupName: string;
+    status: 'PENDING' | 'APPROVED' | 'REJECTED';
+    joinAt: string;
+}
+
+export interface JoinRequestResponse {
+    userId: string;
+    subgroupId: string;
+}

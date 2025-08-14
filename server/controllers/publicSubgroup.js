@@ -3,7 +3,7 @@ const publicSubgroupRouter = express.Router();
 const prisma = require('../lib/prismaClient');
 
 publicSubgroupRouter.get(
-    '/public/:userId',
+    '/:userId',
     async (req, res) => {
         try {
             const userId = req.params.userId;

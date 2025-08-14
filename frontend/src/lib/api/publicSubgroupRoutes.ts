@@ -13,7 +13,7 @@ export const getPublicSubGroups = async (
         'Access-Control-Allow-Origin': '*',
     };
     const res = await axios.get<PublicSubGroup[]>(
-        `${API_BASE_URL}/subgroups/public/${userId}`,
+        `${API_BASE_URL}/publicSubgroup/${userId}`,
         { headers }
 
     );

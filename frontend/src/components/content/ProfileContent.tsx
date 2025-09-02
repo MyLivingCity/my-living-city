@@ -13,6 +13,8 @@ import {
     NavDropdown,
     Dropdown,
     Alert,
+    Collapse,
+    Badge,
 } from 'react-bootstrap';
 import { postUserSegmentRequest } from 'src/lib/api/userSegmentRequestRoutes';
 import { API_BASE_URL, TEXT_INPUT_LIMIT, USER_TYPES } from 'src/lib/constants';
@@ -30,6 +32,9 @@ import {
     PublicStandardProfile,
     PublicCommunityBusinessProfile,
     PublicMunicipalProfile,
+    PublicSubGroup,
+    JoinRequest,
+    JoinRequestResponse
 } from 'src/lib/types/data/publicProfile.type';
 import {
     getCommunityBusinessProfile,
@@ -52,7 +57,11 @@ import {
 } from 'src/lib/api/userRoutes';
 import { getAllSegments } from 'src/lib/api/segmentRoutes';
 import { patchUserHandle } from 'src/lib/api/userRoutes';
+import { getPublicSubGroups } from 'src/lib/api/publicSubgroupRoutes';
+import { getAllSubGroupRequests, createJoinRequest } from 'src/lib/api/subgroupRequestRoutes';
 import { SegmentType, UserSegmentRelationshipEnum } from 'src/lib/types/data/segment.type';
+import { join } from 'path';
+import { Prev } from 'react-bootstrap/lib/Pagination';
 
 interface ProfileContentProps {
     user: IUser;
@@ -65,6 +74,8 @@ const NOT_SELECTED = 'Not Selected';
 const LinkTypes = Object.keys(LinkType).filter((item) => {
     return isNaN(Number(item));
 });
+
+const FILTER_OPTIONS = ['name', 'region', 'municipality', 'neighborhood'];
 
 const deleteSchoolSegmentDetail = async (user: string | undefined) => {
     if (user === undefined) {
@@ -157,7 +168,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
     } = user;
 
     const { streetAddress, streetAddress2, city, postalCode, country } = address!;
-    const {homeSegments, workSegments, schoolSegments} = getSegmentsFromUserSegments(userSegments);
+    const { homeSegments, workSegments, schoolSegments } = getSegmentsFromUserSegments(userSegments);
     const [show, setShow] = useState(false);
     const [stripeStatus, setStripeStatus] = useState('');
     const [segmentRequests, setSegmentRequests] = useState<any[]>([]);
@@ -180,13 +191,23 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
     const [editWorkSegment, setEditWorkSegment] = useState(false);
     const [editSchoolSegment, setEditSchoolSegment] = useState(false);
 
+    //find and join public subgroups
+    const [publicSubgroupData, setPublicSubgroupData] = useState<PublicSubGroup[]>([]);
+    const [searchKeyword, setSearchKeyword] = useState('');
+    const [searchResults, setSearchResults] = useState<PublicSubGroup[]>([]);
+    const [selectedFilters, setSelectedFilters] = useState<Set<string>>(new Set());
+    const [showFilterOptions, setShowFilterOptions] = useState(false);
+
+    const [joinRequests, setJoinRequests] = useState<JoinRequest[]>([]);
+    const [joinRequestStatus, setJoinRequestsStatus] = useState<{ success: boolean; sendRequestMessage: string } | null>(null);
+
     //both now have the handles
     console.log('userHandles', userHandles);
     console.log('User Segments:', userSegments);
     console.log('Full user object in ProfileContent', user);
     console.log('HOMESEGMENT: ', homeSegments);
-    console.log('CITY:',  homeSegments?.segment?.name);
-    console.log('NEIGHBOOURHOOD:',  homeSegments?.subSegment?.name);
+    console.log('CITY:', homeSegments?.segment?.name);
+    console.log('NEIGHBOOURHOOD:', homeSegments?.subSegment?.name);
     console.log('SETSCHOOLSEGMENTS: ', showSchoolSegment);
     console.log('SCHOOLSEGMENT: ', schoolSegments);
     console.log('schoolData: ', schoolData);
@@ -270,6 +291,45 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
             .then((e) => setSegments(e))
             .catch((e) => console.log(e));
     }, []);
+
+    const formatPublicSubGroup = (subgroups: any[]): PublicSubGroup[] => {
+        return subgroups.map((s) => ({
+            subgroupId: s.id,
+            subgroupName: s.name,
+            region: s.region.name,
+            municipality: s.segment?.name || '',
+            neighborhood: s.subSegment?.name || '',
+            description: s.description || '',
+
+        }));
+    };
+    useEffect(() => {
+        getPublicSubGroups(user.id, token)
+            .then((subgroups: any[]) => {
+                setPublicSubgroupData(formatPublicSubGroup(subgroups));
+            })
+            .catch((e) => console.error(e));
+    }, []);
+
+    const formatJoinRequests = (requests: any[]): JoinRequest[] => {
+        return requests.map((re) => ({
+            requestId: re.id,
+            subGroupName: re.subGroup.name,
+            status: re.status,
+            joinAt: re.joinAt
+
+        }));
+    };
+
+    useEffect(() => {
+        getAllSubGroupRequests(user.id, token)
+            .then((requests: any[]) => {
+                setJoinRequests(formatJoinRequests(requests));
+            })
+            .catch((e) => console.log(e));
+    }, []);
+
+
 
     const updateLink = (linkValue: string, link: any) => {
         const linksCopy = [...links];
@@ -437,6 +497,131 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
         };
     };
 
+    // Find and join public SubGroups 
+    //Handle Filters
+    const switchFilter = (filter: string) => {
+        setSelectedFilters((curr) => {
+            const newSet = new Set(curr);
+            if (newSet.has(filter)) {
+                newSet.delete(filter);
+            } else {
+                newSet.add(filter);
+            }
+            return newSet;
+        });
+    };
+
+    const getFilterOption = (selectedFilters: Set<string>, FILTER_OPTIONS: string[]) => {
+        if (selectedFilters.size === 0) {
+            return [...FILTER_OPTIONS];
+        } else {
+            return Array.from(selectedFilters);
+        }
+    };
+
+    //Handle search 
+    const matchPublicSubGroup = (subGroup: PublicSubGroup, filtersSearchOption: string[], keyword: string | undefined | null) => {
+        let matchResult = filtersSearchOption.some((option) => {
+            const lowerCaseKeyword = (keyword ?? '').toLowerCase();
+            let value = '';
+            switch (option) {
+                case 'name':
+                    value = subGroup.subgroupName;
+                    break;
+                case 'region':
+                    value = subGroup.region;
+                    break;
+                case 'municipality':
+                    value = subGroup.municipality || '';
+                    break;
+                case 'neighborhood':
+                    value = subGroup.neighborhood || '';
+                    break;
+            }
+            return value.toLowerCase().includes(lowerCaseKeyword);
+        });
+        return matchResult;
+    };
+
+    const handleSearch = (keyword: string) => {
+        if (!keyword) {
+            setSearchResults([]);
+            return;
+        }
+        if (keyword.trim() === '') {
+            setSearchResults(publicSubgroupData);
+            return;
+        }
+
+        let filtersSearchOption = getFilterOption(selectedFilters, FILTER_OPTIONS);
+
+        const searchResult = publicSubgroupData.filter(subGroup =>
+            matchPublicSubGroup(subGroup, filtersSearchOption, keyword));
+
+        setSearchResults(searchResult);
+    };
+
+
+    const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setSearchKeyword(value);
+        handleSearch(value);
+    };
+
+    //Handle Join Request
+    const handleJoinRequest = async (
+        userId: string | undefined,
+        subgroupId: string,
+        token: string | undefined
+    ) => {
+        if (userId === undefined || token == undefined) {
+            return;
+        } else {
+            try {
+                const joinRequestsData: JoinRequestResponse = {
+                    userId,
+                    subgroupId
+                };
+
+                const res = await createJoinRequest(joinRequestsData, token);
+
+                if (res.status === 200) {
+                    setJoinRequestsStatus({ success: true, sendRequestMessage: 'Join request sent successfully!' });
+                    
+                    const updatedRequests = await getAllSubGroupRequests(userId, token);
+                    setJoinRequests(formatJoinRequests(updatedRequests));
+                    
+                    const updatedPublicSubgroups = await getPublicSubGroups(userId, token);
+                    setPublicSubgroupData(formatPublicSubGroup(updatedPublicSubgroups));
+
+                    setSearchResults(prevSearchResults => prevSearchResults.filter(sub => sub.subgroupId !== subgroupId));
+                }
+                else if (res.status === 409) {
+                    setJoinRequestsStatus({ success: false, sendRequestMessage: 'Request already exists.' });
+                }
+                else {
+                    setJoinRequestsStatus({ success: false, sendRequestMessage: 'Failed to send the join request.' });
+                }
+
+            } catch (error) {
+                setJoinRequestsStatus({ success: false, sendRequestMessage: 'Failed to send the join request.' });
+            }
+        }
+
+    };
+
+    const renderStatusBadge = (status: JoinRequest['status']) => {
+        switch (status) {
+            case 'APPROVED':
+                return <Badge variant='success'>APPROVED</Badge>;
+            case 'REJECTED':
+                return <Badge variant='danger'>REJECTED</Badge>;
+            default:
+                return <Badge variant='warning'>PENDING</Badge>;
+        }
+    };
+
+    console.log(joinRequests);
     if (userType === USER_TYPES.BUSINESS || userType === USER_TYPES.COMMUNITY) {
         return (
             <Container className='user-profile-content w-100'>
@@ -715,6 +900,116 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                         </Card.Body>
                     </Card>
                 </Row>
+
+                <h2 className='mt-4'>Find and Join SubGroups</h2>
+                <Form className='mb-3'>
+                    <Row className='align-items-start position-relative'>
+                        <Col xs={8} md={6}>
+                            <Form.Control
+                                type='text'
+                                placeholder='Type keywords to search...'
+                                value={searchKeyword}
+                                onChange={onSearchChange}
+                            />
+                        </Col>
+
+                        <Col xs='auto' className='position-relative'>
+                            <Button
+                                variant='primary'
+                                onClick={() => setShowFilterOptions((show) => !show)}
+                                aria-controls='filter-collapse'
+                                aria-expanded={showFilterOptions}
+                            >
+                                Filters
+                            </Button>
+                        </Col>
+                    </Row>
+
+                    <Collapse in={showFilterOptions}>
+                        <div className='mt-2' id='filter-collapse'>
+                            <Form.Label>
+                                <strong>Select Filters:</strong>
+                            </Form.Label>
+                            <div>
+                                {FILTER_OPTIONS.map((filter) => (
+                                    <Form.Check
+                                        inline
+                                        key={filter}
+                                        type='checkbox'
+                                        label={filter.charAt(0).toUpperCase() + filter.slice(1)}
+                                        id={`filter-${filter}`}
+                                        checked={selectedFilters.has(filter)}
+                                        onChange={() => switchFilter(filter)}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    </Collapse>
+                </Form>
+
+                {joinRequestStatus && (
+                    <Alert
+                        variant={joinRequestStatus.success ? 'success' : 'danger'}
+                        dismissible
+                        onClose={() => setJoinRequestsStatus(null)}
+                    >
+                        {joinRequestStatus.sendRequestMessage}
+                    </Alert>
+                )}
+                <div className='border' style={{ maxHeight: '500px', overflowY: 'auto' }}>
+                    {searchResults.length === 0 && searchKeyword.trim() !== '' && <p>No matching subgroups found.</p>}
+                    {searchResults.map((subGroup: PublicSubGroup) => (
+                        <Card key={subGroup.subgroupId} className='mb-3 mx-2'>
+                            <Card.Body>
+                                <Card.Title>{subGroup.subgroupName}</Card.Title>
+                                <Card.Subtitle className='mb-2 text-muted'>
+                                    {subGroup.region || 'No Region'} / {subGroup.municipality || 'No Municipality'} / {subGroup.neighborhood || 'No Neighborhood'}
+                                </Card.Subtitle>
+                                <Card.Text>{subGroup.description}</Card.Text>
+                                <Button variant='primary' onClick={() => handleJoinRequest(user.id, subGroup.subgroupId, token)}>
+                                    Requset to Join
+                                </Button>
+                            </Card.Body>
+                        </Card>
+                    ))}
+                </div>
+
+                <div className='mt-4 justify-content-center'>
+                    <h2>Your Join Requests</h2>
+                    {joinRequests.length === 0 ? (<Table striped bordered hover>
+                        <thead>
+                            <tr>
+                                <th>SubGroup Name</th>
+                                <th>Request ID</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <td>N/A</td>
+                            <td>N/A</td>
+                            <td>N/A</td>
+                        </tbody>
+                    </Table>) : (
+                        <Table striped bordered hover>
+                            <thead>
+                                <tr>
+                                    <th>SubGroup Name</th>
+                                    <th>Request ID</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {joinRequests.map(({ requestId, subGroupName, status, joinAt }) => (
+                                    <tr key={requestId}>
+                                        <td>{subGroupName}</td>
+                                        <td>{requestId}</td>
+                                        <td>{renderStatusBadge(status)}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </Table>
+                    )}
+                </div>
             </Container>
         );
     } else if (userType === USER_TYPES.MUNICIPAL_SEG_ADMIN) {
@@ -1067,6 +1362,116 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                         </Card.Body>
                     </Card>
                 </Row>
+
+                <h2 className='mt-4'>Find and Join SubGroups</h2>
+                <Form className='mb-3'>
+                    <Row className='align-items-start position-relative'>
+                        <Col xs={8} md={6}>
+                            <Form.Control
+                                type='text'
+                                placeholder='Type keywords to search...'
+                                value={searchKeyword}
+                                onChange={onSearchChange}
+                            />
+                        </Col>
+
+                        <Col xs='auto' className='position-relative'>
+                            <Button
+                                variant='primary'
+                                onClick={() => setShowFilterOptions((show) => !show)}
+                                aria-controls='filter-collapse'
+                                aria-expanded={showFilterOptions}
+                            >
+                                Filters
+                            </Button>
+                        </Col>
+                    </Row>
+
+                    <Collapse in={showFilterOptions}>
+                        <div className='mt-2' id='filter-collapse'>
+                            <Form.Label>
+                                <strong>Select Filters:</strong>
+                            </Form.Label>
+                            <div>
+                                {FILTER_OPTIONS.map((filter) => (
+                                    <Form.Check
+                                        inline
+                                        key={filter}
+                                        type='checkbox'
+                                        label={filter.charAt(0).toUpperCase() + filter.slice(1)}
+                                        id={`filter-${filter}`}
+                                        checked={selectedFilters.has(filter)}
+                                        onChange={() => switchFilter(filter)}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    </Collapse>
+                </Form>
+
+                {joinRequestStatus && (
+                    <Alert
+                        variant={joinRequestStatus.success ? 'success' : 'danger'}
+                        dismissible
+                        onClose={() => setJoinRequestsStatus(null)}
+                    >
+                        {joinRequestStatus.sendRequestMessage}
+                    </Alert>
+                )}
+                <div className='border' style={{ maxHeight: '500px', overflowY: 'auto' }}>
+                    {searchResults.length === 0 && searchKeyword.trim() !== '' && <p>No matching subgroups found.</p>}
+                    {searchResults.map((subGroup: PublicSubGroup) => (
+                        <Card key={subGroup.subgroupId} className='mb-3 mx-2'>
+                            <Card.Body>
+                                <Card.Title>{subGroup.subgroupName}</Card.Title>
+                                <Card.Subtitle className='mb-2 text-muted'>
+                                    {subGroup.region || 'No Region'} / {subGroup.municipality || 'No Municipality'} / {subGroup.neighborhood || 'No Neighborhood'}
+                                </Card.Subtitle>
+                                <Card.Text>{subGroup.description}</Card.Text>
+                                <Button variant='primary' onClick={() => handleJoinRequest(user.id, subGroup.subgroupId, token)}>
+                                    Requset to Join
+                                </Button>
+                            </Card.Body>
+                        </Card>
+                    ))}
+                </div>
+
+                <div className='mt-4 justify-content-center'>
+                    <h2>Your Join Requests</h2>
+                    {joinRequests.length === 0 ? (<Table striped bordered hover>
+                        <thead>
+                            <tr>
+                                <th>SubGroup Name</th>
+                                <th>Request ID</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <td>N/A</td>
+                            <td>N/A</td>
+                            <td>N/A</td>
+                        </tbody>
+                    </Table>) : (
+                        <Table striped bordered hover>
+                            <thead>
+                                <tr>
+                                    <th>SubGroup Name</th>
+                                    <th>Request ID</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {joinRequests.map(({ requestId, subGroupName, status, joinAt }) => (
+                                    <tr key={requestId}>
+                                        <td>{subGroupName}</td>
+                                        <td>{requestId}</td>
+                                        <td>{renderStatusBadge(status)}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </Table>
+                    )}
+                </div>
             </Container>
         );
     } else if (userType === USER_TYPES.MUNICIPAL) {
@@ -1255,6 +1660,116 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                         />
                     </Card>
                 </Row>
+
+                <h2 className='mt-4'>Find and Join SubGroups</h2>
+                <Form className='mb-3'>
+                    <Row className='align-items-start position-relative'>
+                        <Col xs={8} md={6}>
+                            <Form.Control
+                                type='text'
+                                placeholder='Type keywords to search...'
+                                value={searchKeyword}
+                                onChange={onSearchChange}
+                            />
+                        </Col>
+
+                        <Col xs='auto' className='position-relative'>
+                            <Button
+                                variant='primary'
+                                onClick={() => setShowFilterOptions((show) => !show)}
+                                aria-controls='filter-collapse'
+                                aria-expanded={showFilterOptions}
+                            >
+                                Filters
+                            </Button>
+                        </Col>
+                    </Row>
+
+                    <Collapse in={showFilterOptions}>
+                        <div className='mt-2' id='filter-collapse'>
+                            <Form.Label>
+                                <strong>Select Filters:</strong>
+                            </Form.Label>
+                            <div>
+                                {FILTER_OPTIONS.map((filter) => (
+                                    <Form.Check
+                                        inline
+                                        key={filter}
+                                        type='checkbox'
+                                        label={filter.charAt(0).toUpperCase() + filter.slice(1)}
+                                        id={`filter-${filter}`}
+                                        checked={selectedFilters.has(filter)}
+                                        onChange={() => switchFilter(filter)}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    </Collapse>
+                </Form>
+
+                {joinRequestStatus && (
+                    <Alert
+                        variant={joinRequestStatus.success ? 'success' : 'danger'}
+                        dismissible
+                        onClose={() => setJoinRequestsStatus(null)}
+                    >
+                        {joinRequestStatus.sendRequestMessage}
+                    </Alert>
+                )}
+                <div className='border' style={{ maxHeight: '500px', overflowY: 'auto' }}>
+                    {searchResults.length === 0 && searchKeyword.trim() !== '' && <p>No matching subgroups found.</p>}
+                    {searchResults.map((subGroup: PublicSubGroup) => (
+                        <Card key={subGroup.subgroupId} className='mb-3 mx-2'>
+                            <Card.Body>
+                                <Card.Title>{subGroup.subgroupName}</Card.Title>
+                                <Card.Subtitle className='mb-2 text-muted'>
+                                    {subGroup.region || 'No Region'} / {subGroup.municipality || 'No Municipality'} / {subGroup.neighborhood || 'No Neighborhood'}
+                                </Card.Subtitle>
+                                <Card.Text>{subGroup.description}</Card.Text>
+                                <Button variant='primary' onClick={() => handleJoinRequest(user.id, subGroup.subgroupId, token)}>
+                                    Requset to Join
+                                </Button>
+                            </Card.Body>
+                        </Card>
+                    ))}
+                </div>
+
+                <div className='mt-4 justify-content-center'>
+                    <h2>Your Join Requests</h2>
+                    {joinRequests.length === 0 ? (<Table striped bordered hover>
+                        <thead>
+                            <tr>
+                                <th>SubGroup Name</th>
+                                <th>Request ID</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <td>N/A</td>
+                            <td>N/A</td>
+                            <td>N/A</td>
+                        </tbody>
+                    </Table>) : (
+                        <Table striped bordered hover>
+                            <thead>
+                                <tr>
+                                    <th>SubGroup Name</th>
+                                    <th>Request ID</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {joinRequests.map(({ requestId, subGroupName, status, joinAt }) => (
+                                    <tr key={requestId}>
+                                        <td>{subGroupName}</td>
+                                        <td>{requestId}</td>
+                                        <td>{renderStatusBadge(status)}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </Table>
+                    )}
+                </div>
             </Container>
         );
     } else if (
@@ -1461,6 +1976,116 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                         />
                     </Card>
                 </Row>
+                
+                <h2 className='mt-4'>Find and Join SubGroups</h2>
+                <Form className='mb-3'>
+                    <Row className='align-items-start position-relative'>
+                        <Col xs={8} md={6}>
+                            <Form.Control
+                                type='text'
+                                placeholder='Type keywords to search...'
+                                value={searchKeyword}
+                                onChange={onSearchChange}
+                            />
+                        </Col>
+
+                        <Col xs='auto' className='position-relative'>
+                            <Button
+                                variant='primary'
+                                onClick={() => setShowFilterOptions((show) => !show)}
+                                aria-controls='filter-collapse'
+                                aria-expanded={showFilterOptions}
+                            >
+                                Filters
+                            </Button>
+                        </Col>
+                    </Row>
+
+                    <Collapse in={showFilterOptions}>
+                        <div className='mt-2' id='filter-collapse'>
+                            <Form.Label>
+                                <strong>Select Filters:</strong>
+                            </Form.Label>
+                            <div>
+                                {FILTER_OPTIONS.map((filter) => (
+                                    <Form.Check
+                                        inline
+                                        key={filter}
+                                        type='checkbox'
+                                        label={filter.charAt(0).toUpperCase() + filter.slice(1)}
+                                        id={`filter-${filter}`}
+                                        checked={selectedFilters.has(filter)}
+                                        onChange={() => switchFilter(filter)}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    </Collapse>
+                </Form>
+
+                {joinRequestStatus && (
+                    <Alert
+                        variant={joinRequestStatus.success ? 'success' : 'danger'}
+                        dismissible
+                        onClose={() => setJoinRequestsStatus(null)}
+                    >
+                        {joinRequestStatus.sendRequestMessage}
+                    </Alert>
+                )}
+                <div className='border' style={{ maxHeight: '500px', overflowY: 'auto' }}>
+                    {searchResults.length === 0 && searchKeyword.trim() !== '' && <p>No matching subgroups found.</p>}
+                    {searchResults.map((subGroup: PublicSubGroup) => (
+                        <Card key={subGroup.subgroupId} className='mb-3 mx-2'>
+                            <Card.Body>
+                                <Card.Title>{subGroup.subgroupName}</Card.Title>
+                                <Card.Subtitle className='mb-2 text-muted'>
+                                    {subGroup.region || 'No Region'} / {subGroup.municipality || 'No Municipality'} / {subGroup.neighborhood || 'No Neighborhood'}
+                                </Card.Subtitle>
+                                <Card.Text>{subGroup.description}</Card.Text>
+                                <Button variant='primary' onClick={() => handleJoinRequest(user.id, subGroup.subgroupId, token)}>
+                                    Requset to Join
+                                </Button>
+                            </Card.Body>
+                        </Card>
+                    ))}
+                </div>
+
+                <div className='mt-4 justify-content-center'>
+                    <h2>Your Join Requests</h2>
+                    {joinRequests.length === 0 ? (<Table striped bordered hover>
+                        <thead>
+                            <tr>
+                                <th>SubGroup Name</th>
+                                <th>Request ID</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <td>N/A</td>
+                            <td>N/A</td>
+                            <td>N/A</td>
+                        </tbody>
+                    </Table>) : (
+                        <Table striped bordered hover>
+                            <thead>
+                                <tr>
+                                    <th>SubGroup Name</th>
+                                    <th>Request ID</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {joinRequests.map(({ requestId, subGroupName, status, joinAt }) => (
+                                    <tr key={requestId}>
+                                        <td>{subGroupName}</td>
+                                        <td>{requestId}</td>
+                                        <td>{renderStatusBadge(status)}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </Table>
+                    )}
+                </div>
             </Container>
         );
     } else {
@@ -1744,9 +2369,121 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                         <Button variant='primary' onClick={() => { setShowSchoolSegment(true); setEditSchoolSegment(true); }}>Add School Segment</Button>
                     )}
                 </Row>
+
+                <h2 className='mt-4'>Find and Join SubGroups</h2>
+                <Form className='mb-3'>
+                    <Row className='align-items-start position-relative'>
+                        <Col xs={8} md={6}>
+                            <Form.Control
+                                type='text'
+                                placeholder='Type keywords to search...'
+                                value={searchKeyword}
+                                onChange={onSearchChange}
+                            />
+                        </Col>
+
+                        <Col xs='auto' className='position-relative'>
+                            <Button
+                                variant='primary'
+                                onClick={() => setShowFilterOptions((show) => !show)}
+                                aria-controls='filter-collapse'
+                                aria-expanded={showFilterOptions}
+                            >
+                                Filters
+                            </Button>
+                        </Col>
+                    </Row>
+
+                    <Collapse in={showFilterOptions}>
+                        <div className='mt-2' id='filter-collapse'>
+                            <Form.Label>
+                                <strong>Select Filters:</strong>
+                            </Form.Label>
+                            <div>
+                                {FILTER_OPTIONS.map((filter) => (
+                                    <Form.Check
+                                        inline
+                                        key={filter}
+                                        type='checkbox'
+                                        label={filter.charAt(0).toUpperCase() + filter.slice(1)}
+                                        id={`filter-${filter}`}
+                                        checked={selectedFilters.has(filter)}
+                                        onChange={() => switchFilter(filter)}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    </Collapse>
+                </Form>
+
+                {joinRequestStatus && (
+                    <Alert
+                        variant={joinRequestStatus.success ? 'success' : 'danger'}
+                        dismissible
+                        onClose={() => setJoinRequestsStatus(null)}
+                    >
+                        {joinRequestStatus.sendRequestMessage}
+                    </Alert>
+                )}
+                <div className='border' style={{ maxHeight: '500px', overflowY: 'auto' }}>
+                    {searchResults.length === 0 && searchKeyword.trim() !== '' && <p>No matching subgroups found.</p>}
+                    {searchResults.map((subGroup: PublicSubGroup) => (
+                        <Card key={subGroup.subgroupId} className='mb-3 mx-2'>
+                            <Card.Body>
+                                <Card.Title>{subGroup.subgroupName}</Card.Title>
+                                <Card.Subtitle className='mb-2 text-muted'>
+                                    {subGroup.region || 'No Region'} / {subGroup.municipality || 'No Municipality'} / {subGroup.neighborhood || 'No Neighborhood'}
+                                </Card.Subtitle>
+                                <Card.Text>{subGroup.description}</Card.Text>
+                                <Button variant='primary' onClick={() => handleJoinRequest(user.id, subGroup.subgroupId, token)}>
+                                    Requset to Join
+                                </Button>
+                            </Card.Body>
+                        </Card>
+                    ))}
+                </div>
+
+                <div className='mt-4 justify-content-center'>
+                    <h2>Your Join Requests</h2>
+                    {joinRequests.length === 0 ? (<Table striped bordered hover>
+                        <thead>
+                            <tr>
+                                <th>SubGroup Name</th>
+                                <th>Request ID</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <td>N/A</td>
+                            <td>N/A</td>
+                            <td>N/A</td>
+                        </tbody>
+                    </Table>) : (
+                        <Table striped bordered hover>
+                            <thead>
+                                <tr>
+                                    <th>SubGroup Name</th>
+                                    <th>Request ID</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {joinRequests.map(({ requestId, subGroupName, status, joinAt }) => (
+                                    <tr key={requestId}>
+                                        <td>{subGroupName}</td>
+                                        <td>{requestId}</td>
+                                        <td>{renderStatusBadge(status)}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </Table>
+                    )}
+                </div>
             </Container>
         );
     }
 };
+
+
 
 export default ProfileContent;

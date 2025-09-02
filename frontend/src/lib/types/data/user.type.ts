@@ -26,6 +26,7 @@ export interface IUser {
   displayLName?: string;
   adminmodEmail?: string;
   status?: boolean;
+  isSubGroupManager?: boolean;
 
   // Relationships can be nullable
   geo?: IGeo;

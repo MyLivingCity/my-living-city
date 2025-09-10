@@ -14,6 +14,8 @@ import { FindBadPostingBehaviorDetails } from 'src/hooks/badPostingBehaviorHooks
 import { WarningMessageModal } from '../modal/WarningMessageModal';
 import { useBadPostingThreshhold } from 'src/hooks/threshholdHooks';
 import { useAllUserSegments } from 'src/hooks/userSegmentHooks';
+import { NavLink } from 'react-router-dom';
+import { useIsSubGroupManager } from 'src/hooks/subGroupsHooks';
 
 function Header() {
     const [stripeStatus, setStripeStatus] = useState('');
@@ -29,6 +31,10 @@ function Header() {
     const { data: badPostingBehaviorData, isLoading: badPostLoading } = FindBadPostingBehaviorDetails(token);
     const { data: badPostingThreshholdData, isLoading: badPostingThreshholdLoading } = useBadPostingThreshhold(token);
     const { data: userSegmentData, isLoading: userSegementLoading } = useAllUserSegments(token, user?.id || null);
+
+    //* Check if the user is subgroup manager
+    const { data: subGroupManagerData, isLoading: isSubGroupLoading, error: subGroupError } = useIsSubGroupManager(token);
+    const isSubGroupManager = subGroupManagerData?.isSubGroupManager ?? false;
 
 
     // const segData = useSingleSegmentByName({
@@ -195,12 +201,20 @@ function Header() {
 
                                 <Nav.Link href='/profile'>Profile</Nav.Link>
 
-                                {(user.userType === 'SUPER_ADMIN' || user.userType === 'ADMIN') && (
+                                {(user.userType === 'SUPER_ADMIN' || user.userType === 'ADMIN' || isSubGroupManager) && (
                                     <NavDropdown title='Admin Tools' id='nav-dropdown'>
-                                        <Nav.Link href='/advertisement/all'>Ad Manager</Nav.Link>
-                                        <Nav.Link href='/segment/management/all'>Segments</Nav.Link>
-                                        <Nav.Link href='/user/management'>User Manager</Nav.Link>
-                                        <Nav.Link href='/admin/management'>Admin Manager</Nav.Link>
+                                        {(user.userType === 'SUPER_ADMIN' || user.userType === 'ADMIN') && (
+                                            <>
+                                                <Nav.Link href='/advertisement/all'>Ad Manager</Nav.Link>
+                                                <Nav.Link href='/segment/management/all'>Segments</Nav.Link>
+                                                <Nav.Link href='/user/management'>User Manager</Nav.Link>
+                                                <Nav.Link href='/admin/management'>Admin Manager</Nav.Link>
+                                            </>
+                                        )}
+                                        {/*//TODO: This link should be shown if the user is a subGroup Manager */}
+                                        { isSubGroupManager && (
+                                            <Nav.Link href='/subgroup-management'>SubGroup Manager</Nav.Link>
+                                        )}
                                     </NavDropdown>
                                 )}
 

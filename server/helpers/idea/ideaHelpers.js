@@ -11,9 +11,7 @@ function loadIdeaErrors() {
 
 async function validateIdeaPostingAccess({
   userId,
-  subSegmentId,
   segmentId,
-  superSegmentId,
   categoryId,
   banned,
   userSegments
@@ -61,11 +59,6 @@ async function validateIdeaPostingAccess({
       errorStack += ideaErrors.missingCategoryId.errorStack 
     }
   }
-
-
-
-
-
   return { error, errorMessage, errorStack };
 }
 

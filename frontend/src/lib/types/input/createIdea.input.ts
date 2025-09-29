@@ -17,8 +17,6 @@ export interface ICreateIdeaInput {
   address?: IAddressInput;
   geo?: IGeoInput;
   segmentId?: number;
-  subSegmentId?: number;
-  superSegmentId?: number;
   imagePath?: any;
   supportingProposalId?: number;
   active?: boolean

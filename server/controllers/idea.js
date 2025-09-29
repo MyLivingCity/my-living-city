@@ -58,9 +58,7 @@ ideaRouter.post(
 
       let {
         categoryId,
-        superSegmentId,
         segmentId,
-        subSegmentId,
         banned,
         title,
         description,
@@ -79,28 +77,29 @@ ideaRouter.post(
       // passport middleware provides this based on JWT
       const { email } = req.user;
 
-      const theUserSegment = await prisma.userSegments.findMany({ where: { userId: id }, include: { segment: true } });
-      const userSegments = []
+      // This is validation for userSegments, in particular that the segment we are adding is correct, this may not even be necessary, depening on 
+      // where this endpoint is called
+      
+      // const theUserSegment = await prisma.userSegments.findMany({ where: { userId: id }, include: { segment: true } });
+      // const userSegments = []
 
-      const { homeSuperSegId, workSuperSegId, schoolSuperSegId, homeSegmentId, workSegmentId, schoolSegmentId, homeSubSegmentId, workSubSegmentId, schoolSubSegmentId } = theUserSegment;
+      // const { homeSuperSegId, workSuperSegId, schoolSuperSegId, homeSegmentId, workSegmentId, schoolSegmentId, homeSubSegmentId, workSubSegmentId, schoolSubSegmentId } = theUserSegment;
 
       if (!isInteger(categoryId)) {
         categoryId = parseInt(categoryId)
       }
 
-      const validationResult = await validateIdeaPostingAccess({
-        userId: id,
-        subSegmentId,
-        segmentId,
-        superSegmentId,
-        categoryId,
-        banned,
-        userSegments
-      });
+      // const validationResult = await validateIdeaPostingAccess({
+      //   userId: id,
+      //   segmentId,
+      //   categoryId,
+      //   banned,
+      //   userSegments
+      // });
 
-      if (validationResult.error) {
-        return res.status(400).json(validationResult);
-      }
+      // if (validationResult.error) {
+      //   return res.status(400).json(validationResult);
+      // }
 
       // Parse data
       const geoData = JSON.parse(req.body.geo);
@@ -138,12 +137,6 @@ ideaRouter.post(
       if (segmentId) { 
         segments.connect.push( { segId: parseInt(segmentId) } )
       } 
-      if (superSegmentId) { 
-        segments.connect.push( { segId: parseInt(superSegmentId) } )
-      } 
-      if (subSegmentId) { 
-        segments.connect.push( { segId: parseInt(subSegmentId) } )
-      }
 
       const ideaData = {
         categoryId,

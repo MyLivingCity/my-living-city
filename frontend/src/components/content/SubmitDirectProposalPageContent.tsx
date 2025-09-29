@@ -209,8 +209,6 @@ const SubmitDirectProposalPageContent: React.FC<
                         lon: values.geo!.lon,
                     },
                     segmentId: values.segmentId,
-                    subSegmentId: values.subSegmentId,
-                    superSegmentId: values.superSegmentId,
                     state: 'PROPOSAL',
                     imagePath: values.imagePath,
                 };
@@ -298,8 +296,6 @@ const SubmitDirectProposalPageContent: React.FC<
                 lon: undefined,
             },
             segmentId: undefined,
-            subSegmentId: undefined,
-            superSegmentId: undefined,
             needCollaborators: false,
             needVolunteers: false,
             needDonations: false,

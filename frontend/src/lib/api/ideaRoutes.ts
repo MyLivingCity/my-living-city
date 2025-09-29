@@ -92,9 +92,7 @@ export const postCreateIdea = async (
         proposal_role,
         requirements,
         proposal_benefits,
-        superSegmentId,
         segmentId,
-        subSegmentId,
         communityImpact,
         natureImpact,
         artsImpact,
@@ -113,8 +111,8 @@ export const postCreateIdea = async (
         );
     }
 
-    if (!segmentId && !subSegmentId && !superSegmentId) {
-        throw new Error('You must provide a segmentId or subSegmentId. ');
+    if (!segmentId) {
+        throw new Error('You must provide a segmentId. ');
     }
 
     if (!token) {
@@ -136,15 +134,17 @@ export const postCreateIdea = async (
     formBody.append('proposal_benefits', proposal_benefits);
     formBody.append('description', description);
 
+    // prev version, may need to change this
+    // if (segmentId) {
+    //     formBody.append('segmentId', segmentId.toString());
+    // }
+    // if (subSegmentId) {
+    //     formBody.append('subSegmentId', subSegmentId.toString());
+    // }
     if (segmentId) {
         formBody.append('segmentId', segmentId.toString());
     }
-    if (superSegmentId) {
-        formBody.append('superSegmentId', superSegmentId.toString());
-    }
-    if (subSegmentId) {
-        formBody.append('subSegmentId', subSegmentId.toString());
-    }
+
 
     if (communityImpact) {
         formBody.append('communityImpact', communityImpact);

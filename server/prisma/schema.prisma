@@ -79,6 +79,9 @@ model User {
   School_Details                    School_Details[]
   Work_Details                      Work_Details[]
 
+  //Model Subgroup
+  managedSubGroups SubGroup[] @relation("ManagedSubGroups")
+  joinedSubGroups SubGroupMember[] @relation("JoinedSubGroups")
   @@map(name: "user")
 }
 
@@ -143,6 +146,11 @@ model Segments {
   userSegment   UserSegments[]
   segmentType    SegmentType
   ideas          Idea[]
+
+  //Model Subgroup
+  superSegments SubGroup[] @relation("SuperSegmentRelation")
+  segments      SubGroup[] @relation("SegmentRelation")
+  subSegments   SubGroup[] @relation("SubSegmentRelation")
 
 }
 
@@ -906,4 +914,68 @@ model Feature_Toggle {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@map(name: "feature_toggle")
+}
+
+// SubGroup Functionality
+model SubGroup {
+  id          String  @id @default(cuid())
+  name        String
+  description String?
+
+  typeField    TypeField    @default(VIRTUAL) @map("type_field")
+  privacyField PrivacyField @default(PRIVATE) @map("privacy_field")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  // Nesting Relationships
+  regionId     Int?  @map("region_id")
+  segmentId    Int? @map("segment_id")
+  subSegmentId Int? @map("sub_segment_id")
+
+  // Relations
+  managerId String @map("manager_id")
+  manager   User   @relation("ManagedSubGroups", fields: [managerId], references: [id])
+
+  region     Segments?  @relation("SuperSegmentRelation", fields: [regionId], references: [segId])
+  segment    Segments? @relation("SegmentRelation", fields: [segmentId], references: [segId])
+  subSegment Segments? @relation("SubSegmentRelation", fields: [subSegmentId], references: [segId])
+
+  members SubGroupMember[]
+
+  @@map("subgroup")
+}
+
+model SubGroupMember {
+  id         String @id @default(cuid())
+  userId     String @map("user_id")
+  subGroupId String @map("sub_group_id")
+
+  // Possible status: pending, approved, rejected
+  status    MembershipStatus @default(PENDING)
+  joinedAt  DateTime         @default(now()) @map("joined_at")
+  updatedAt DateTime         @default(now()) @updatedAt @map("updated_at")
+
+  user     User     @relation("JoinedSubGroups", fields: [userId], references: [id])
+  subGroup SubGroup @relation(fields: [subGroupId], references: [id])
+
+  @@unique([userId, subGroupId])
+  @@map("subgroup_member")
+}
+
+enum MembershipStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum PrivacyField {
+  PUBLIC
+  PRIVATE
+  TEST
+}
+
+enum TypeField {
+  VIRTUAL
+  NESTED
 }

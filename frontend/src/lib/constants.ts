@@ -83,6 +83,7 @@ export const ROUTES = {
     COMMUNITY_DASHBOARD: '/community-dashboard/:segId',
     MUNICIPAL_DASHBOARD: '/municipal-dashboard/:segId',
     MOD_MANAGEMENT: '/mod/management',
+    SUBGROUP_MANAGEMENT: '/subgroup/management',
 };
 
 export enum BAN_USER_TYPES {
@@ -114,3 +115,27 @@ export const TEXT_INPUT_LIMIT = {
     NAME: 50,
     STREET_NAME: 28,
 };
+
+//export const SUBGROUP_PRIVACY = [
+//    'Public',
+//    'Private',
+//    'Test',
+//;
+
+export enum PrivacyField {
+  PUBLIC = 'PUBLIC',
+  PRIVATE = 'PRIVATE',
+  TEST = 'TEST',
+};
+
+export enum MembershipStatus {
+  PENDING = 'PENDING',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+}
+
+export enum TypeField {
+  VIRTUAL = 'VIRTUAL',
+  NESTED = 'NESTED'
+}
+

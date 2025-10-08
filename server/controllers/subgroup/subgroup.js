@@ -6,42 +6,41 @@ const prisma = require('../../lib/prismaClient');
 const { isEmpty, isInteger, isString } = require('lodash');
 const { UserType } = require('@prisma/client');
 
-subgroupRouter.get(
-  '/getAll',
-  async (req, res) => {
-    try {
-      const result = await prisma.subGroup.findMany({
-        include: {
-          region: {
-            select: { name: true },
-          },
-          segment: {
-            select: { name: true },
-          },
-          subSegment: {
-            select: { name: true },
-          },
-          manager: {
-            select: { adminmodEmail: true }
-          }
-        },
-      });
 
-      res.status(200).send(result);
+
+subgroupRouter.get('/getAll', async (req, res) => {
+    try {
+        const result = await prisma.subGroup.findMany({
+            include: {
+                region: { select: { name: true } },
+                segment: { select: { name: true } },
+                subSegment: { select: { name: true } },
+                manager: {
+                    select: {
+                        id: true,
+                        email: true,
+                        adminmodEmail: true,
+                        fname: true,
+                        lname: true,
+                    },
+                },
+            },
+        });
+
+        res.status(200).send(result);
     } catch (error) {
-      console.error(error);
-      res.status(400).json({
-        message: 'An error occurred while trying to retrieve Subgroups.',
-        details: {
-          errorMessage: error.message,
-          errorStack: error.stack,
-        },
-      });
+        console.error(error);
+        res.status(400).json({
+            message: 'An error occurred while trying to retrieve Subgroups.',
+            details: {
+                errorMessage: error.message,
+                errorStack: error.stack,
+            },
+        });
     } finally {
-      await prisma.$disconnect();
+        await prisma.$disconnect();
     }
-  }
-);
+});
 
 
 
@@ -118,7 +117,7 @@ subgroupRouter.post(
                 segmentId,
                 subSegmentId,
                 managerId,
-      } = req.body;
+            } = req.body;
 
             // Create the subgroup
             const newSubGroup = await prisma.subGroup.create({
@@ -130,7 +129,7 @@ subgroupRouter.post(
                     regionId,
                     segmentId,
                     subSegmentId,
-                    managerId,
+                    manager: { connect: { id: managerId } },
                 },
                 include: {
                     manager: true,
@@ -196,7 +195,7 @@ subgroupRouter.delete(
                 where: { id: subGroupId }
             });
 
-            res.sendStatus(204); 
+            res.sendStatus(204);
         } catch (error) {
             console.error(error);
             res.status(400).json({
@@ -277,7 +276,15 @@ subgroupRouter.patch(
                     region: { select: { name: true } },
                     segment: { select: { name: true } },
                     subSegment: { select: { name: true } },
-                    manager: { select: { adminmodEmail: true } },
+                    manager: {
+                        select: {
+                            id: true,
+                            email: true,
+                            adminmodEmail: true,
+                            fname: true,
+                            lname: true,
+                        },
+                    },
                 }
             });
 
@@ -299,26 +306,24 @@ subgroupRouter.patch(
 
 
 subgroupRouter.get('/eligibleManagers', async (req, res) => {
-  try {
-    const managers = await prisma.user.findMany({
-      where: {
-        userType: {
-          in: ['ADMIN', 'SUPER_ADMIN', 'MOD'], // adjust as needed
-        },
-      },
-      select: {
-        id: true,
-        adminmodEmail: true,  // or display name fields
-      },
-    });
+    try {
+        const managers = await prisma.user.findMany({
+            select: {
+                id: true,
+                email: true,
+                adminmodEmail: true,
+                fname: true,
+                lname: true,
+            }
+        });
 
-    res.status(200).json(managers);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error fetching managers', details: error.message });
-  } finally {
-    await prisma.$disconnect();
-  }
+        res.status(200).json(managers);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error fetching managers', details: error.message });
+    } finally {
+        await prisma.$disconnect();
+    }
 });
 
 

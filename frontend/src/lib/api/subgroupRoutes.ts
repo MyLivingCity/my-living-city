@@ -30,7 +30,7 @@ export const createSubgroup = async (subgroupData: any, token: any) => {
         url: `${API_BASE_URL}/subgroup/create`,
         data: parsedPayload,
         headers: { 
-            'Authorization': `Bearer ${token}`, // use Bearer token for JWT
+            'Authorization': `Bearer ${token}`,
             'Access-Control-Allow-Origin': '*'
         },
         withCredentials: true
@@ -65,32 +65,6 @@ export const deleteSubgroupById = async (subgroupId: string, token: string) => {
         throw error;
     }
 };
-
-/*
-export const updateSubGroup = async (subgroupData: any, token: string) => {
-    const { id: subgroupId } = subgroupData; // assuming `id` is the subgroup ID
-    const parsedPayload = { ...subgroupData };
-
-    const res = await axios({
-        method: 'post',
-        url: `${API_BASE_URL}/subgroup/update/${subgroupId}`,
-        data: parsedPayload,
-        headers: { 
-            'Authorization': `Bearer ${token}`, 
-            'Access-Control-Allow-Origin': '*'
-        },
-        withCredentials: true
-    });
-
-    // If request fails, throw an error
-    if (!(res.status === 201 || res.status === 200)) {
-        throw new Error(res.data);
-    }
-
-    return res.data;
-};
-
-*/
 
 export const updateSubGroup = async (subgroupId: string, fields: any, token: string) => {
     const res = await axios.patch(`${API_BASE_URL}/subgroup/update/${subgroupId}`, fields, getAxiosJwtRequestOption(token!));

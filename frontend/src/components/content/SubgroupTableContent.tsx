@@ -193,7 +193,12 @@ const SubgroupTableContent: React.FC<SubgroupTableContentProps> = ({
                                 <td className='text-center align-middle'>{sg.region?.name ?? 'NA'}</td>
                                 <td className='text-center align-middle'>{sg.segmentId ?? 'NA'}</td>
                                 <td className='text-center align-middle'>{sg.subSegmentId ?? 'NA'}</td>
-                                <td className='text-center align-middle'>{sg.manager?.adminmodEmail}</td>
+                                <td className='text-center align-middle'>{sg.manager
+                                    ? sg.manager.adminmodEmail ||
+                                    sg.manager.email ||
+                                    `${sg.manager.fname ?? ''} ${sg.manager.lname ?? ''}`.trim() ||
+                                    'N/A'
+                                    : 'N/A'}</td>
                                 <td>
                                     <NavDropdown title='Controls' id={`nav-dropdown-${sg.id}`}>
                                         <Dropdown.Item onClick={() => handleEditClick(sg)} className='text-warning'>

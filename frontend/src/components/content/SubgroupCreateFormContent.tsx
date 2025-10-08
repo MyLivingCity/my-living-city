@@ -3,17 +3,18 @@ import { Button, Row, Col, Card, Form } from 'react-bootstrap';
 import SubgroupLocationSelector from './SubgroupLocationSelector';
 import { PrivacyField, TypeField } from 'src/lib/constants';
 import { ISegment } from '../../lib/types/data/segment.type';
-import { createSubgroup, getEligibleManagers } from 'src/lib/api/subgroupRoutes';
+import { createSubgroup } from 'src/lib/api/subgroupRoutes';
+import { getAllUsers } from 'src/lib/api/userRoutes'; // ✅ use your /user/getAll API
 
 interface CreateSubgroupFormContentProps {
-  segments: ISegment[] | undefined;
-  token: string;
-  countryName: string;
-  provName: string;
-  setCountryName: React.Dispatch<React.SetStateAction<string>>;
-  setProvName: React.Dispatch<React.SetStateAction<string>>;
-  onCancel: () => void;
-  onCreated: (subgroup: any) => void
+    segments: ISegment[] | undefined;
+    token: string;
+    countryName: string;
+    provName: string;
+    setCountryName: React.Dispatch<React.SetStateAction<string>>;
+    setProvName: React.Dispatch<React.SetStateAction<string>>;
+    onCancel: () => void;
+    onCreated: (subgroup: any) => void;
 }
 
 const SubgroupCreateFormContent: React.FC<CreateSubgroupFormContentProps> = ({
@@ -22,7 +23,6 @@ const SubgroupCreateFormContent: React.FC<CreateSubgroupFormContentProps> = ({
     onCancel,
     onCreated,
 }) => {
-
     const [segments, setSegments] = useState<ISegment[]>(segs || []);
     const [countryName, setCountryName] = useState('');
     const [provName, setProvName] = useState('');
@@ -32,7 +32,9 @@ const SubgroupCreateFormContent: React.FC<CreateSubgroupFormContentProps> = ({
     const [privacyField, setPrivacyField] = useState('');
     const [typeField, setTypeField] = useState('');
     const [managerId, setManagerId] = useState('');
-    const [managers, setManagers] = useState<{ id: string; adminmodEmail: string }[]>([]);
+
+    // ✅ use email instead of adminmodEmail
+    const [users, setUsers] = useState<{ id: string; email: string }[] | undefined>(undefined);
 
     useEffect(() => {
         if (segments.length > 0) {
@@ -41,16 +43,21 @@ const SubgroupCreateFormContent: React.FC<CreateSubgroupFormContentProps> = ({
         }
     }, [segments]);
 
+    // ✅ Fetch all users from /user/getAll
     useEffect(() => {
-        const fetchManagers = async () => {
+        const fetchUsers = async () => {
             try {
-                const data = await getEligibleManagers(token);
-                setManagers(data);
+                const data = await getAllUsers(token);
+                const userList = data.map((u: any) => ({
+                    id: u.id,
+                    email: u.email,
+                }));
+                setUsers(userList);
             } catch (err) {
-                console.error('Failed to load managers', err);
+                console.error('Failed to load users', err);
             }
         };
-        fetchManagers();
+        fetchUsers();
     }, [token]);
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -70,18 +77,20 @@ const SubgroupCreateFormContent: React.FC<CreateSubgroupFormContentProps> = ({
 
             console.log('Created subgroup:', newSubgroup);
 
+            // Reset form
             setName('');
             setDescription('');
             setPrivacyField('');
             setTypeField('');
             setManagerId('');
+
             onCreated(newSubgroup);
             onCancel();
-
         } catch (err) {
             console.error('Failed to create subgroup:', err);
         }
     };
+
     return (
         <Form onSubmit={handleSubmit}>
             <Row>
@@ -92,7 +101,7 @@ const SubgroupCreateFormContent: React.FC<CreateSubgroupFormContentProps> = ({
                             <Row>
                                 <Col>
                                     <Form.Label>Name</Form.Label>
-                                    < Form.Control
+                                    <Form.Control
                                         type='text'
                                         placeholder='Subgroup Name'
                                         size='sm'
@@ -100,6 +109,7 @@ const SubgroupCreateFormContent: React.FC<CreateSubgroupFormContentProps> = ({
                                         onChange={(e) => setName(e.target.value)}
                                     />
                                 </Col>
+
                                 <Col>
                                     <Form.Label>Description</Form.Label>
                                     <Form.Control
@@ -110,7 +120,7 @@ const SubgroupCreateFormContent: React.FC<CreateSubgroupFormContentProps> = ({
                                         onChange={(e) => setDescription(e.target.value)}
                                     />
                                 </Col>
-                                
+
                                 <Col>
                                     <Form.Label>Subgroup Type</Form.Label>
                                     <Form.Control
@@ -127,6 +137,7 @@ const SubgroupCreateFormContent: React.FC<CreateSubgroupFormContentProps> = ({
                                         ))}
                                     </Form.Control>
                                 </Col>
+
                                 <Col>
                                     <Form.Label>Subgroup Visibility</Form.Label>
                                     <Form.Control
@@ -143,6 +154,8 @@ const SubgroupCreateFormContent: React.FC<CreateSubgroupFormContentProps> = ({
                                         ))}
                                     </Form.Control>
                                 </Col>
+
+                                {/* ✅ Manager dropdown using fetched users */}
                                 <Col>
                                     <Form.Label>Subgroup Manager</Form.Label>
                                     <Form.Control
@@ -152,57 +165,50 @@ const SubgroupCreateFormContent: React.FC<CreateSubgroupFormContentProps> = ({
                                         onChange={(e) => setManagerId(e.target.value)}
                                     >
                                         <option value=''>Select Manager</option>
-                                        {managers.map((m) => (
-                                            <option key={m.id} value={m.id}>
-                                                {m.adminmodEmail}
+                                        {users?.map((u) => (
+                                            <option key={u.id} value={u.id}>
+                                                {u.email}
                                             </option>
                                         ))}
                                     </Form.Control>
                                 </Col>
+                            </Row>
+
+                            {typeField === 'NESTED' && (
                                 <Row className='mt-3'>
                                     <Col>
-                                        {typeField === 'NESTED' && (
-                                            <SubgroupLocationSelector
-                                                segments={segments}
-                                                countryName={countryName}
-                                                provName={provName}
-                                                setCountryName={setCountryName}
-                                                setProvName={setProvName}
-                                            />
-                                        )}
+                                        <SubgroupLocationSelector
+                                            segments={segments}
+                                            countryName={countryName}
+                                            provName={provName}
+                                            setCountryName={setCountryName}
+                                            setProvName={setProvName}
+                                        />
                                     </Col>
                                 </Row>
-                            </Row>
-                            
+                            )}
+
                             <Row className='mt-3'>
                                 <Col className='d-flex justify-content-end gap-2'>
-
-                                    <Button 
-                                        variant='primary'
-                                        type='submit'
-                                    >
+                                    <Button variant='primary' type='submit'>
                                         Submit
                                     </Button>
+                                    <Button
+                                        variant='danger'
+                                        type='button'
+                                        onClick={() => {
+                                            setName('');
+                                            setDescription('');
+                                            setPrivacyField('');
+                                            setTypeField('');
+                                            setManagerId('');
+                                            onCancel();
+                                        }}
+                                    >
+                                        Cancel
+                                    </Button>
                                 </Col>
-
-                            
-                               
-                                <Button 
-                                    variant='danger'
-                                    type='button'
-                                    onClick={() => {
-                                        setName('');
-                                        setDescription('');
-                                        setPrivacyField('');
-                                        setTypeField('');
-                                        setManagerId('');
-                                        onCancel();
-                                    }}
-                                >
-                                    Cancel
-                                </Button>
                             </Row>
-                           
                         </Card.Body>
                     </Card>
                 </Col>

@@ -32,8 +32,6 @@ const SubgroupCreateFormContent: React.FC<CreateSubgroupFormContentProps> = ({
     const [privacyField, setPrivacyField] = useState('');
     const [typeField, setTypeField] = useState('');
     const [managerId, setManagerId] = useState('');
-
-    // ✅ use email instead of adminmodEmail
     const [users, setUsers] = useState<{ id: string; email: string }[] | undefined>(undefined);
 
     useEffect(() => {
@@ -43,7 +41,6 @@ const SubgroupCreateFormContent: React.FC<CreateSubgroupFormContentProps> = ({
         }
     }, [segments]);
 
-    // ✅ Fetch all users from /user/getAll
     useEffect(() => {
         const fetchUsers = async () => {
             try {
@@ -77,7 +74,6 @@ const SubgroupCreateFormContent: React.FC<CreateSubgroupFormContentProps> = ({
 
             console.log('Created subgroup:', newSubgroup);
 
-            // Reset form
             setName('');
             setDescription('');
             setPrivacyField('');
@@ -155,7 +151,7 @@ const SubgroupCreateFormContent: React.FC<CreateSubgroupFormContentProps> = ({
                                     </Form.Control>
                                 </Col>
 
-                                {/* ✅ Manager dropdown using fetched users */}
+                                {/* Manager dropdown using fetched users */}
                                 <Col>
                                     <Form.Label>Subgroup Manager</Form.Label>
                                     <Form.Control

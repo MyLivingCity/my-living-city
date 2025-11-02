@@ -100,18 +100,18 @@ commentRouter.get(
               lname: true,
               organizationName: true,
               userType: true,
-              userSegments: {
+              userSegment: {
                 select: {
                   id: true,
-                  homeSegmentId: true,
-                  workSegmentId: true,
-                  schoolSegmentId: true,
-                  homeSubSegmentId: true,
-                  workSubSegmentId: true,
-                  schoolSubSegmentId: true,
-                  homeSegHandle: true,
-                  workSegHandle: true,
-                  schoolSegHandle: true,
+                  // homeSegmentId: true,
+                  // workSegmentId: true,
+                  // schoolSegmentId: true,
+                  // homeSubSegmentId: true,
+                  // workSubSegmentId: true,
+                  // schoolSubSegmentId: true,
+                  // homeSegHandle: true,
+                  // workSegHandle: true,
+                  // schoolSegHandle: true,
                 }
               },
               address: {

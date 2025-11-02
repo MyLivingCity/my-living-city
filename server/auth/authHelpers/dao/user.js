@@ -30,10 +30,9 @@ const createUser = async (userData) => {
         address: {
           create: address
         },
-        // User segment data - modified according to new schema
+        // User segment data - modified according to schema
         userSegment: {
           create: userSegment.map(segment => ({
-            segmentHandle: segment.segmentHandle || "",
             userSegmentRelationship: segment.userSegmentRelationship,
             segment: {
               connect: {

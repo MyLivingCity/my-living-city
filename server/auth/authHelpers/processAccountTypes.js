@@ -1,6 +1,22 @@
 const ADMIN_ROLES = require("../../constants/AdminRoles");
+const prisma = require("../../lib/prismaClient");
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
-const generateAdminEmail = async () => {
+// Custom error class for date validation
+class DateValidationError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'DateValidationError';
+  }
+}
+
+// Validate user reach function
+const validateUserReach = async (userReach) => {
+  // Add validation logic here if needed
+  return userReach;
+};
+
+const generateAdminEmail = async (userData) => {
   try {
     let uniqueEmailGenerated = false;
     while (!uniqueEmailGenerated) {
@@ -8,7 +24,7 @@ const generateAdminEmail = async () => {
         .toString()
         .padStart(1, "0");
       const randomChars = Math.random().toString(35).substring(2, 4).toLowerCase();
-      const adminmodEmail = `${parsedMainData.userType}${randomDigits}${randomChars}@mylivingcity.org`.toLowerCase();
+      const adminmodEmail = `${userData.userType}${randomDigits}${randomChars}@mylivingcity.org`.toLowerCase();
 
       const adminmodUser = await prisma.user.findFirst({
         where: { email: adminmodEmail },
@@ -26,7 +42,7 @@ const generateAdminEmail = async () => {
 const processAdminAccount = async (userData) => {
   try {
     if (ADMIN_ROLES.includes(userData.userType)) {
-      const adminEmail = await generateAdminEmail();
+      const adminEmail = await generateAdminEmail(userData);
       return {
         ...userData,
         adminmodEmail: userData.email.toLowerCase(),
@@ -122,7 +138,6 @@ const processUserSegments = (userData) => {
   // Process home segment if exists
   if (userSegment.homeSegmentId) {
     processedSegments.push({
-      segmentHandle: 'HOME',
       userSegmentRelationship: 'HOME',
       segmentId: userSegment.homeSegmentId
     });
@@ -131,7 +146,6 @@ const processUserSegments = (userData) => {
   // Process work segment if exists
   if (userSegment.workSegmentId) {
     processedSegments.push({
-      segmentHandle: 'WORK',
       userSegmentRelationship: 'WORK',
       segmentId: userSegment.workSegmentId
     });
@@ -140,33 +154,29 @@ const processUserSegments = (userData) => {
   // Process school segment if exists
   if (userSegment.schoolSegmentId) {
     processedSegments.push({
-      segmentHandle: 'SCHOOL',
       userSegmentRelationship: 'SCHOOL',
       segmentId: userSegment.schoolSegmentId
     });
   }
 
-  // Add sub-segments if they exist
+  // Add sub-segments if they exist - they use the same relationship types
   if (userSegment.homeSubSegmentId) {
     processedSegments.push({
-      segmentHandle: 'HOME_SUB',
-      userSegmentRelationship: 'HOME_SUB',
+      userSegmentRelationship: 'HOME',
       segmentId: userSegment.homeSubSegmentId
     });
   }
 
   if (userSegment.workSubSegmentId) {
     processedSegments.push({
-      segmentHandle: 'WORK_SUB',
-      userSegmentRelationship: 'WORK_SUB',
+      userSegmentRelationship: 'WORK',
       segmentId: userSegment.workSubSegmentId
     });
   }
 
   if (userSegment.schoolSubSegmentId) {
     processedSegments.push({
-      segmentHandle: 'SCHOOL_SUB',
-      userSegmentRelationship: 'SCHOOL_SUB',
+      userSegmentRelationship: 'SCHOOL',
       segmentId: userSegment.schoolSubSegmentId
     });
   }

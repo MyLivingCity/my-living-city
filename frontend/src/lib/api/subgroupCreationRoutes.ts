@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { getAxiosJwtRequestOption } from './axiosRequestOptions';
 import { API_BASE_URL } from '../constants';
-import { ISubGroup } from '../types/data/subgroup.type';
+import { ISubGroup } from '../types/data/subgroupCreation.type';
 
 export const getAllSubgroups = async (token: string | null) => {
     const res = await axios.get<ISubGroup[]>(

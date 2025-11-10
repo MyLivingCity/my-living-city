@@ -4,8 +4,8 @@ import { Container, Button, Modal } from 'react-bootstrap';
 import SubgroupCreateFormContent from './SubgroupCreateFormContent';
 import SubgroupFilterFormContent from './SubgroupFilterFormContent';
 import SubgroupTableContent from './SubgroupTableContent';
-import { ISubGroup } from 'src/lib/types/data/subgroup.type';
-import { getAllSubgroups } from 'src/lib/api/subgroupRoutes';
+import { ISubGroup } from 'src/lib/types/data/subgroupCreation.type';
+import { getAllSubgroups } from 'src/lib/api/subgroupCreationRoutes';
 
 interface SubgroupManagementContentProps {
     segments: ISegment[] | undefined;

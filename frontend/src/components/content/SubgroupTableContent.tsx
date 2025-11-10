@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Table, NavDropdown, Dropdown, Button, Form, Modal } from 'react-bootstrap';
-import { ISubGroup } from 'src/lib/types/data/subgroup.type';
-import { updateSubGroup, deleteSubgroupById } from 'src/lib/api/subgroupRoutes';
+import { ISubGroup } from 'src/lib/types/data/subgroupCreation.type';
+import { updateSubGroup, deleteSubgroupById } from 'src/lib/api/subgroupCreationRoutes';
 import { PrivacyField, TypeField } from 'src/lib/constants';
 
 interface SubgroupTableContentProps {

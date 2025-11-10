@@ -3,7 +3,7 @@ import { Button, Row, Col, Card, Form } from 'react-bootstrap';
 import SubgroupLocationSelector from './SubgroupLocationSelector';
 import { PrivacyField, TypeField } from 'src/lib/constants';
 import { ISegment } from '../../lib/types/data/segment.type';
-import { createSubgroup } from 'src/lib/api/subgroupRoutes';
+import { createSubgroup } from 'src/lib/api/subgroupCreationRoutes';
 import { getAllUsers } from 'src/lib/api/userRoutes'; // ✅ use your /user/getAll API
 
 interface CreateSubgroupFormContentProps {

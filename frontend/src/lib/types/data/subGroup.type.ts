@@ -1,4 +1,4 @@
-import { IUser } from "./user.type";
+import { IUser } from './user.type';
 import { ISegment } from './segment.type';
 
 export interface ISubGroup {

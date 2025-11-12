@@ -17,6 +17,7 @@ import LoginPage from './pages/LoginPage';
 import PrivateRoute from './components/utility/PrivateRoute';
 import PublicRoute from './components/utility/PublicRoute';
 import SubmitAdvertisementPage from './pages/SubmitAdvertisementPage';
+import SubmitAdvertisementComplimentaryPage from './pages/SubmitAdvertisementComplimentaryPage';
 import ResetPasswordContent from './pages/ResetPasswordPage';
 import SegmentManagementPage from './pages/SegmentManagementPage';
 import AdminEmailGeneratePage from './pages/AdminEmailGeneratePage';
@@ -88,6 +89,16 @@ function App() {
                     <CustomRoute
                         path={ROUTES.SUBMIT_ADVERTISEMENT}
                         component={SubmitAdvertisementPage}
+                        userTypes={[
+                            USER_TYPES.BUSINESS,
+                            USER_TYPES.COMMUNITY,
+                            USER_TYPES.SUPER_ADMIN,
+                            USER_TYPES.ADMIN,
+                        ]}
+                    />
+                    <CustomRoute
+                        path={ROUTES.SUBMIT_ADVERTISEMENT_COMPLIMENTARY}
+                        component={SubmitAdvertisementComplimentaryPage}
                         userTypes={[
                             USER_TYPES.BUSINESS,
                             USER_TYPES.COMMUNITY,

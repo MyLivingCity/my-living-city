@@ -18,7 +18,7 @@ interface EditAdsPageContentProps {
 };
 //formik form input validation schema
 const schema = Yup.object().shape({
-    adType: Yup.string().required().oneOf(['BASIC','EXTRA']),
+    adType: Yup.string().required().oneOf(['PAID','COMPLIMENTARY']),
     adTitle: Yup.string().min(2,'title is too short!').max(50,'title is too long!').required('title is needed!'),
     adPosition: Yup.string().min(1,'position name can\'t be that short!').max(85,'position name is too long!').required('target position is needed!'),
     duration: Yup.number().min(1,'duration can\' be short than 1 day!').required('duration is needed!'),
@@ -72,7 +72,7 @@ const EditAdsPageContent: React.FC<EditAdsPageContentProps> = ({adsData}) => {
     };
     //initial values for form
     const initialValues: CreateAdvertisementInput ={
-        adType: 'BASIC',
+        adType: 'PAID',
         adTitle: '',
         adPosition: '',
         duration: 0,
@@ -95,7 +95,7 @@ const EditAdsPageContent: React.FC<EditAdsPageContentProps> = ({adsData}) => {
                             actions.setSubmitting(false);
                             actions.resetForm({
                                 values:{
-                                    adType: 'BASIC',
+                                    adType: 'PAID',
                                     adTitle: '',
                                     adPosition: '',
                                     duration: 0,
@@ -110,8 +110,8 @@ const EditAdsPageContent: React.FC<EditAdsPageContentProps> = ({adsData}) => {
                                 <Form.Group controlId='submitAdvertisementType'>
                                     <Form.Label>Select Advertisement Type</Form.Label>
                                     <Form.Control as='select' name='adType' onChange={handleChange} value={values.adType} isValid={touched.adType && !errors.adType}>
-                                        <option key='0' value='BASIC'>BASIC</option>
-                                        <option key='1' value='EXTRA'>EXTRA</option>
+                                        <option key='0' value='PAID'>PAID</option>
+                                        <option key='1' value='COMPLIMENTARY'>COMPLIMENTARY</option>
                                     </Form.Control>
                                 </Form.Group>
                                 <Form.Group controlId='validateAdTitle'>

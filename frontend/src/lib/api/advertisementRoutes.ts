@@ -11,7 +11,7 @@ export const postCreateAdvertisement = async (advertisementData:CreateAdvertisem
 
    
     //if adType is not predifined value or missing 
-    if(!adType||!(adType==='BASIC'||adType==='EXTRA')){
+    if(!adType||!(adType==='PAID'||adType==='COMPLIMENTARY')){
         throw new Error('You must choose a advertisement type, or something is wrong when accepting adType data.');
     }
     //if daTitle size is not correct or missing

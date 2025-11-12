@@ -54,12 +54,12 @@ advertisementRouter.post(
                 //decompose necessary fields from request body
                 const { adType, adTitle, adDuration, adPosition, externalLink, published } = req.body;
 
-                if (adType === 'BASIC') {
-                    const theBasicAd = await prisma.advertisements.findFirst({ where: { ownerId: id, adType: 'BASIC' } });
+                if (adType === 'COMPLIMENTARY') {
+                    const theComplimentaryAd = await prisma.advertisements.findFirst({ where: { ownerId: id, adType: 'COMPLIMENTARY' } });
 
-                    if (theBasicAd) {
+                    if (theComplimentaryAd) {
                         await deleteImage("advertisement", imagePath);
-                        return res.status(400).json({ message: `You already created a basic advertisement, if you want to create more, please select type "EXTRA"; you can edit or delete the current basic advertisement.` });
+                        return res.status(400).json({ message: `You already created a complimentary advertisement, if you want to create more, please select type "PAID"; you can edit or delete the current complimentary advertisement.` });
                     }
                 }
 
@@ -71,7 +71,7 @@ advertisementRouter.post(
                 }
 
                 //if adType is not valid
-                if (adType && !(adType == "BASIC" || adType == "EXTRA")) {
+                if (adType && !(adType == "PAID" || adType == "COMPLIMENTARY")) {
                     error += 'adType is invalid. ';
                     errorMessage += 'adType must be predefined value. ';
                     errorStack += 'adType must be assigned with predfined value. ';
@@ -116,7 +116,7 @@ advertisementRouter.post(
                 }
 
                 //if there's no adDuration field in the request body
-                if ((!adDuration && adType == 'EXTRA') || (parseInt(adDuration) <= 0 && adType == 'EXTRA')) {
+                if ((!adDuration && adType == 'PAID') || (parseInt(adDuration) <= 0 && adType == 'PAID')) {
                     error += 'adDuration must be provided. ';
                     errorMessage += 'adDuration must be provided in the body with a valid length. ';
                     errorStack += 'adDuration must be provided in the body with a valid length. ';
@@ -158,12 +158,12 @@ advertisementRouter.post(
 
                 let createAnAdvertisement;
 
-                //if advertisement type is extra, create one with duration date; if not, create one without duration.
-                if (adType == 'EXTRA') {
+                //if advertisement type is paid, create one with duration date; if not, create one without duration.
+                if (adType == 'PAID') {
                     //Calculate the ending date of advertisement based on duration field.
                     let theDate = new Date();
                     let endDate = new Date();
-                    endDate.setDate(theDate.getDate() + parseInt(adDuration));
+                    endDate.setDate(theDate.getDate() + parseInt(adDuration) * 7); // 7 converts value to weeks
 
                     //create an advertisement object
                     createAnAdvertisement = await prisma.advertisements.create({
@@ -253,7 +253,7 @@ advertisementRouter.get(
             const allAd = await prisma.advertisements.findMany({
                 where: {
                     OR: [{
-                        adType: "BASIC",
+                        adType: "COMPLIMENTARY",
                     },
                     {
                         published: true,
@@ -431,7 +431,7 @@ advertisementRouter.put(
                 };
 
                 //if adType is not valid
-                if (adType && !(adType == "BASIC" || adType == "EXTRA")) {
+                if (adType && !(adType == "COMPLIMENTARY" || adType == "PAID")) {
                     error += 'adType is invalid. ';
                     errorMessage += 'adType must be predefined value. ';
                     errorStack += 'adType must be assigned with predfined value. ';
@@ -446,13 +446,13 @@ advertisementRouter.put(
                     }
                 };
 
-                if (theAdvertisement.duration == null && !adDuration && adType == 'EXTRA') {
+                if (theAdvertisement.duration == null && !adDuration && adType == 'PAID') {
                     error += 'adDuration must be provided. ';
                     errorMessage += 'adDuration must be provided in the body with a valid length if there\'s no exisintg duration. ';
                     errorStack += 'adDuration must be provided in the body with a valid lenght. ';
                 }
 
-                if (adDuration && theAdvertisement.adType == 'EXTRA') {
+                if (adDuration && theAdvertisement.adType == 'PAID') {
                     if (parseInt(adDuration) <= 0) {
                         error += 'adDuration must be provided. ';
                         errorMessage += 'adDuration must be provided in the body with a valid length. ';
@@ -516,7 +516,7 @@ advertisementRouter.put(
                     data: {
                         adType: adType,
                         adTitle: adTitle,
-                        duration: adType == 'BASIC' ? null : endDate,
+                        duration: adType == 'COMPLIMENTARY' ? null : endDate,
                         imagePath: newImagePath,
                         externalLink: externalLink,
                         published: published

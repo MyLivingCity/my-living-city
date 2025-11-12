@@ -90,10 +90,10 @@ const SubmitAdvertisementPageContent: React.FC<
     };
     //initial values for form
     const initialValues: CreateAdvertisementInput = {
-        adType: 'PAID',
+        adType: 'COMPLIMENTARY',
         adTitle: '',
         adPosition: '',
-        duration: 1,
+        duration: 0,
         published: false,
         externalLink: '',
         imagePath: '',
@@ -102,7 +102,7 @@ const SubmitAdvertisementPageContent: React.FC<
     return (
         <Container className='submit-advertisement-page-content'>
             <Row className='mb-4 mt-4 justify-content-center'>
-                <h2 className='pb-2 pt-2 display-6'>Create Advertisement</h2>
+                <h2 className='pb-2 pt-2 display-6'>Create Complimentary Advertisement</h2>
             </Row>
             <Row className='submit-advertisement-form-group justify-content-center'>
                 <Col lg={10}>
@@ -114,10 +114,10 @@ const SubmitAdvertisementPageContent: React.FC<
                                 actions.setSubmitting(false);
                                 actions.resetForm({
                                     values: {
-                                        adType: 'PAID',
+                                        adType: 'COMPLIMENTARY',
                                         adTitle: '',
                                         adPosition: '',
-                                        duration: 1,
+                                        duration: 0,
                                         published: false,
                                         externalLink: '',
                                         imagePath: '',
@@ -152,31 +152,6 @@ const SubmitAdvertisementPageContent: React.FC<
                                     </p>
                                     <Form.Control.Feedback type='invalid'>
                                         {errors.adTitle}
-                                    </Form.Control.Feedback>
-                                </Form.Group>
-
-                                <Form.Group controlId='validateDuration'>
-                                    <Form.Label>Length of Post</Form.Label>
-                                    <Form.Control
-                                        as='select'
-                                        name='duration'
-                                        size='sm'
-                                        onChange={handleChange}
-                                        value={values.duration}
-                                        placeholder='Your advertisement duration'
-                                        isInvalid={!!errors.duration}
-                                    >
-                                        {[...Array(12)].map((_, i) => {
-                                            const week = i + 1;
-                                            return (
-                                                <option key={week} value={week}>
-                                                    {week} {week === 1 ? 'week' : 'weeks'}
-                                                </option>
-                                            );
-                                        })}
-                                    </Form.Control>
-                                    <Form.Control.Feedback type='invalid'>
-                                        {errors.duration}
                                     </Form.Control.Feedback>
                                 </Form.Group>
 

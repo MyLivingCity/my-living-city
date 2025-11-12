@@ -67,6 +67,7 @@ export const ROUTES = {
     TEAM404: '/*',
     ADMIN_MOD_EMAIL_GENERATE: '/adminmod-email-generate',
     SUBMIT_ADVERTISEMENT: '/advertisement/submit',
+    SUBMIT_ADVERTISEMENT_COMPLIMENTARY: '/advertisement/complimentary',
     ALL_ADVERTISEMENT: '/advertisement/all',
     USER_ADVERTISEMENTS: '/advertisement/user',
     EDIT_ADVERTISEMENT: '/advertisement/edit',

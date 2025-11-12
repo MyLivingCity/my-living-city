@@ -1,6 +1,6 @@
 
 
-export type AdvertisementType = 'BASIC' | 'EXTRA';
+export type AdvertisementType = 'PAID' | 'COMPLIMENTARY';
 
 
 export interface IAdvertisement {

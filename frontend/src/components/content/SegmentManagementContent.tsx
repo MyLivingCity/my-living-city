@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container } from 'react-bootstrap';
-import { ISegment, ISegmentRequest, ISuperSegment } from '../../lib/types/data/segment.type';
+import { ISegment, ISegmentRequest, ISuperSegment, SegmentType } from '../../lib/types/data/segment.type';
 import ShowSubSegments from './ShowSubSegments';
 import SegmentTable from './SegmentTable';
 import LocationSelector from './LocationSelector';
@@ -17,16 +17,22 @@ const SegmentManagementContent: React.FC<SegmentPageContentProps> = ({
     token,
     segReq,
 }) => {
-    const [segments, setSegments] = useState<ISegment[]>(segs || []);
+    const [segments, setSegments] = useState<ISegment[]>((segs || []).filter(s => s.segmentType === SegmentType.segment));
     const [superSegments, setSuperSegments] = useState<ISuperSegment[]>([]);
     const [countryName, setCountryName] = useState<string>('');
     const [provName, setProvName] = useState<string>('');
     useEffect(() => {
-        if (segments.length > 0) {
-            setCountryName(segments[0].country);
-            setProvName(segments[0].province);
+        const filtered = (segs || []).filter(s => s.segmentType === SegmentType.segment);
+        if (filtered.length > 0) {
+            setSegments(filtered);
+            setCountryName(filtered[0].country);
+            setProvName(filtered[0].province);
+        } else {
+            setSegments([]);
         }
-    }, [segments]);
+        // We intentionally depend on segs to react to data reloads
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [segs]);
 
     return (
         <Container className='mb-4 mt-4'>

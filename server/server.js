@@ -80,7 +80,8 @@ const main = async () => {
 	const oauthRouter = require('./controllers/oauth');
 	const subGroupManagerRouter = require('./controllers/subgroups');
 	const subGroupRequestRouter = require('./controllers/subgroupRequest.js');
-	const publicSubgroupRouter = require('./controllers/publicSubgroup.js')
+	const publicSubgroupRouter = require('./controllers/publicSubgroup.js');
+	const subgroupRouter = require('./controllers/subgroup/subgroup.js');
 
 	const apiRouter = express.Router();
 	app.use('/', apiRouter);
@@ -128,7 +129,7 @@ const main = async () => {
 	apiRouter.use('/subGroups', subGroupManagerRouter);
 	apiRouter.use('/publicSubgroup', publicSubgroupRouter);
 	apiRouter.use('/subgroupRequest', subGroupRequestRouter);
-
+	apiRouter.use('/subgroup', subgroupRouter);
 
 	// Listen to server
 	app.listen(PORT, console.log(`Server running on PORT:${PORT}\n\n`));

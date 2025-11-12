@@ -81,6 +81,9 @@ model User {
   School_Details                    School_Details[]
   Work_Details                      Work_Details[]
 
+  //Model Subgroup
+  managedSubGroups SubGroup[] @relation("ManagedSubGroups")
+  joinedSubGroups SubGroupMember[] @relation("JoinedSubGroups")
   @@map(name: "user")
 }
 
@@ -148,7 +151,6 @@ model Segments {
   regionSubGroups     SubGroup[] @relation("SuperSegmentRelation")
   segmentSubGroups    SubGroup[] @relation("SegmentRelation")
   subSegmentSubGroups SubGroup[] @relation("SubSegmentRelation")
-
 }
 
 enum SegmentType {

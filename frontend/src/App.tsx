@@ -35,6 +35,7 @@ import ModManagementPage from './pages/ModManagementPage';
 import MunicipalDashboardPage from './pages/MunicipalDashboardPage';
 import CheckEmailPage from './pages/CheckEmailPage';
 import { SegmentPage } from './pages/SegmentPage';
+import SubGroupCreationPage from './pages/SubGroupCreationPage';
 
 //* Added for SubGroup Management Page
 import SubGroupManagementPage from './pages/SubGroupManagementPage';
@@ -119,6 +120,11 @@ function App() {
                     <AdminRoute
                         path={ROUTES.SEGMENT_MANAGEMENT_OVERVIEW}
                         component={SegmentManagementPage}
+                    />
+                    
+                    <AdminRoute
+                        path={ROUTES.SUBGROUP_MANAGEMENT_CREATION}
+                        component={SubGroupCreationPage}
                     />
 
                     <CustomRoute

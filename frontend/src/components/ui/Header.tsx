@@ -197,9 +197,10 @@ function Header() {
                                     </NavDropdown>
                                 )}
 
-
-
-                                <Nav.Link href='/profile'>Profile</Nav.Link>
+                                <NavDropdown title='Profile' id='profile-dropdown'>
+                                    <Nav.Link href='/profile'>User Profile</Nav.Link>
+                                    <Nav.Link href='/public-profiles'>Public Profiles</Nav.Link>
+                                </NavDropdown>
 
                                 {(user.userType === 'SUPER_ADMIN' || user.userType === 'ADMIN' || isSubGroupManager) && (
                                     <NavDropdown title='Admin Tools' id='nav-dropdown'>

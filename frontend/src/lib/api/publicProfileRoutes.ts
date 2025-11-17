@@ -4,6 +4,21 @@ import { IUser } from '../types/data/user.type';
 import { PublicCommunityBusinessProfile, PublicMunicipalProfile, PublicStandardProfile } from '../types/data/publicProfile.type';
 import { getAxiosJwtRequestOption } from './axiosRequestOptions';
 
+// Extended type for profiles with stats
+export interface PublicProfileWithStats {
+    id: string;
+    userId: string;
+    fname: string;
+    lname: string;
+    avatar?: string;
+    profileType: 'community' | 'municipal';
+    location?: string;
+    endorsements?: number;
+    postsCount?: number;
+    businessName?: string;
+    municipalityName?: string;
+}
+
 
 export const getCommunityBusinessProfile = async (
     userId: string | undefined,
@@ -140,6 +155,34 @@ export const updateStandardProfile = async (
             'Access-Control-Allow-Origin': '*',
         },
         withCredentials: true
+    });
+
+    return res.data;
+};
+
+export const getAllPublicProfiles = async (
+    search?: string,
+    profileType?: 'all' | 'community' | 'municipal',
+    location?: string,
+    token?: string | null
+): Promise<{
+    profiles: PublicProfileWithStats[];
+    totalCount: number;
+}> => {
+    const params = new URLSearchParams();
+
+    if (search) params.append('search', search);
+    if (profileType && profileType !== 'all') params.append('profileType', profileType);
+    if (location) params.append('location', location);
+
+    const res = await axios({
+        method: 'get',
+        url: `${API_BASE_URL}/publicProfile/all?${params.toString()}`,
+        headers: {
+            'Content-Type': 'application/json',
+            ...(token && { 'x-auth-token': token }),
+            'Access-Control-Allow-Origin': '*',
+        },
     });
 
     return res.data;

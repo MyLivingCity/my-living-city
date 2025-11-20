@@ -48,8 +48,8 @@ model User {
   userIdeaEndorse     UserIdeaEndorse[]
   userSegment         UserSegments[]
   userHandles          UserHandle[]
-  subGroupsManaged    SubGroup[]            @relation("ManagedSubGroups")
-  subGroupsJoined     SubGroupMember[]      @relation("JoinedSubGroups") 
+  //subGroupsManaged    SubGroup[]            @relation("ManagedSubGroups")
+  //subGroupsJoined     SubGroupMember[]      @relation("JoinedSubGroups") 
 
   //userRole        UserRole?    @relation(fields: [userRoleId], references: [id])
   ideas               Idea[]                @relation("ideaAuthor")

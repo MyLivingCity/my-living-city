@@ -39,15 +39,15 @@ model User {
   status           Boolean  @default(true)
 
   // Relationships
-  address          UserAddress?
-  geo              UserGeo?
-  userReach        UserReach[]
-  userIdeaFollow   UserIdeaFollow[]
-  userIdeaEndorse  UserIdeaEndorse[]
-  userSegment      UserSegments[]
-  userHandles      UserHandle[]
-  subGroupsManaged SubGroup[]        @relation("ManagedSubGroups")
-  subGroupsJoined  SubGroupMember[]  @relation("JoinedSubGroups")
+  address             UserAddress?
+  geo                 UserGeo?
+  userReach           UserReach[]
+  userIdeaFollow      UserIdeaFollow[]
+  userIdeaEndorse     UserIdeaEndorse[]
+  userSegment         UserSegments[]
+  userHandles          UserHandle[]
+  //subGroupsManaged    SubGroup[]            @relation("ManagedSubGroups")
+  //subGroupsJoined     SubGroupMember[]      @relation("JoinedSubGroups") 
 
   //userRole        UserRole?    @relation(fields: [userRoleId], references: [id])
   ideas               Idea[]                @relation("ideaAuthor")

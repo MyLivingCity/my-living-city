@@ -13,6 +13,7 @@ import { useAllSuperSegments, useAllSegments } from './../../../hooks/segmentHoo
 import ProposalTile from '../../tiles/ProposalTile';
 import LoadingSpinner from 'src/components/ui/LoadingSpinner';
 import ErrorMessage from 'src/components/ui/ErrorMessage';
+import { config } from 'process';
 
 interface IIdeaWithAggregationsWithNew extends IIdeaWithAggregations {
     isNew?: boolean;
@@ -37,6 +38,7 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
 }) => {
     const [showModal, setShowModal] = useState<boolean>(false);
     const [filterConfig, setFilterConfig] = useState<any>({
+        endorsementFilter: '',
         category: [],
         impactArea: [],
         superSeg: [],
@@ -49,11 +51,12 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
         topIdeasPages = Math.ceil(topIdeas!.length / 3);
     }
 
-    const [isCategoriesOpen, setCategoriesOpen] = useState<boolean>(true);
+    const [isCategoriesOpen, setCategoriesOpen] = useState<boolean>(false);
     const [isImpactOpen, setImpactOpen] = useState<boolean>(false);
     const [isSuperSegOpen, setSuperSegOpen] = useState<boolean>(false);
     const [isSegOpen, setSegOpen] = useState<boolean>(false);
     const [isPostStatusOpen, setPostStatusOpen] = useState<boolean>(false);
+    const [isFilterOpen, setFilterOpen] = useState<boolean>(true);
 
     const handleModalCancel = () => {
         setShowModal(false);
@@ -63,6 +66,25 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
     const { data: allSuperSegments } = useAllSuperSegments();
     const { data: allProposals } = useAllProposals();
     const postStatuses = ['IDEA', 'PROPOSAL', 'PROJECT'];
+
+
+    const handleEndorsementFilter = (e: any, value: any) => {
+        let configCopy = { ...filterConfig };
+        configCopy.endorsementFilter = '';
+        if (value === 'ratingFilter') {
+            configCopy.endorsementFilter = 'ratingFilter';
+        }
+        if (value === 'viewsFilter') {
+            configCopy.endorsementFilter = 'viewsFilter';
+        }
+        if (value === 'likesFilter') {
+            configCopy.endorsementFilter = 'likesFilter';
+        }
+        if (value === 'noFilter') {
+            configCopy.endorsementFilter = '';
+        }
+        setFilterConfig(configCopy);
+    };
 
     const handleCategory = (e: any, value: any) => {
         let configCopy = { ...filterConfig };
@@ -263,6 +285,30 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
             return dateB - dateA;
         }
     });
+
+    console.log('filter config endorsement', filterConfig.endorsementFilter);
+    if (filterConfig.endorsementFilter !== '') {
+        if (filterConfig.endorsementFilter === 'ratingFilter') {
+            console.log('Rating Filter Applied');
+            sortedIdeas.sort((a,b) => {
+                return b.ratingAvg - a.ratingAvg;
+            });
+        }
+        if (filterConfig.endorsementFilter === 'viewsFilter') {
+            console.log('Views Filter Applied');
+            sortedIdeas.sort((a,b) => {
+                return b.engagements - a.engagements;
+            });
+        }
+        if (filterConfig.endorsementFilter === 'likesFilter') {
+            console.log('Likes Filter Applied');
+            sortedIdeas.sort((a,b) => {
+                const firstLikeRatio = a.posRatings / (a.posRatings + a.negRatings);
+                const secondLikeRatio = b.posRatings / (b.posRatings + b.negRatings);
+                return secondLikeRatio - firstLikeRatio;
+            });
+        }
+    }
     const itemsPerPage = 6;
     const filteredIdeas = sortedIdeas.filter(doesIdeaPassFilter);
     const totalFilteredPages = Math.ceil(filteredIdeas.length / itemsPerPage);
@@ -410,6 +456,111 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
                             <Modal.Title>Customize New and Trending</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
+
+                            {/* <h5 onClick={() => {setImpactOpen(!isImpactOpen)}} onMouseOver={mouseHoverPointer}>Impact Areas</h5> */}
+                            <div
+                                onClick={() => {
+                                    setFilterOpen(!isFilterOpen);
+                                }}
+                                onMouseOver={mouseHoverPointer}
+                            >
+                                <h5 style={modalSectionTitle}>Filter</h5>
+                                <div style={modalSectionIcon}>
+                                    {isFilterOpen ? <IoIosArrowDown /> : <IoIosArrowUp />}
+                                </div>
+                            </div>
+                            <hr />
+                            <Collapse in={isFilterOpen}>
+                                <div>
+                                    <div>
+                                        <input
+                                            defaultChecked={filterConfig.impactArea.includes(
+                                                'noFilter'
+                                            )}
+                                            type='radio'
+                                            id='endorsementFilter'
+                                            name='endorsementFilter'
+                                            value='noFilter'
+                                            checked={filterConfig.endorsementFilter === ''}
+                                            onClick={(e) =>
+                                                handleEndorsementFilter(e, 'noFilter')
+                                            }
+                                        />
+                                        <label
+                                            style={{ paddingLeft: '10px' }}
+                                            htmlFor='endorsementFilter'
+                                        >
+                                            No Filter
+                                        </label>
+                                    </div>
+                                    <div>
+                                        <input
+                                            defaultChecked={filterConfig.impactArea.includes(
+                                                'ratingFilter'
+                                            )}
+                                            type='radio'
+                                            id='endorsementFilter'
+                                            name='endorsementFilter'
+                                            value='ratingFilter'
+                                            checked={filterConfig.endorsementFilter === 'ratingFilter'}
+                                            onClick={(e) =>
+                                                handleEndorsementFilter(e, 'ratingFilter')
+                                            }
+                                        />
+                                        <label
+                                            style={{ paddingLeft: '10px' }}
+                                            htmlFor='endorsementFilter'
+                                        >
+                                            By Star Rating
+                                        </label>
+                                    </div>
+                                    <div>
+                                        <input
+                                            defaultChecked={filterConfig.impactArea.includes(
+                                                'viewsFilter'
+                                            )}
+                                            type='radio'
+                                            id='endorsementFilter'
+                                            name='endorsementFilter'
+                                            value='viewsFilter'
+                                            checked={filterConfig.endorsementFilter === 'viewsFilter'}
+                                            onClick={(e) =>
+                                                handleEndorsementFilter(e, 'viewsFilter')
+                                            }
+                                        />
+                                        <label
+                                            style={{ paddingLeft: '10px' }}
+                                            htmlFor='endorsementFilter'
+                                        >
+                                            By Views
+                                        </label>
+                                    </div>
+                                    <div>
+                                        <input
+                                            defaultChecked={filterConfig.impactArea.includes(
+                                                'likesFilter'
+                                            )}
+                                            type='radio'
+                                            id='endorsementFilter'
+                                            name='endorsementFilter'
+                                            value='likesFilter'
+                                            checked={filterConfig.endorsementFilter === 'likesFilter'}
+                                            onClick={(e) =>
+                                                handleEndorsementFilter(e, 'likesFilter')
+                                            }
+                                        />
+                                        <label
+                                            style={{ paddingLeft: '10px' }}
+                                            htmlFor='endorsementFilter'
+                                        >
+                                            By Like:Dislike Ratio
+                                        </label>
+                                    </div>
+                                </div>
+                            </Collapse>
+                            <br />
+
+
                             <div
                                 onClick={() => {
                                     setCategoriesOpen(!isCategoriesOpen);
@@ -421,7 +572,7 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
                                     {isCategoriesOpen ? <IoIosArrowDown /> : <IoIosArrowUp />}
                                 </div>
                             </div>
-                            <hr />
+                            <hr />                            
                             <Collapse in={isCategoriesOpen}>
                                 <div>
                                     {categories &&
@@ -454,6 +605,7 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
                                 </div>
                             </Collapse>
                             <br />
+
                             {/* <h5 onClick={() => {setImpactOpen(!isImpactOpen)}} onMouseOver={mouseHoverPointer}>Impact Areas</h5> */}
                             <div
                                 onClick={() => {

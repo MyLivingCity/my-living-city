@@ -61,12 +61,14 @@ const IdeaCommentTile = ({ commentData }: IdeaCommentTileProps) => {
         }
     } = commentData;
 
-    const { email, fname, lname, organizationName, address, userSegments, userType} = commentData?.author;
+    const { email, fname, lname, organizationName, address, userType} = commentData?.author;
+    const userSegments = commentData?.author.userSegment;
     const { segmentId, subSegmentId, superSegmentId } = commentData as any;
+    console.log('USER SEGMENTS : \n' + JSON.stringify(userSegments, null, 2));
     const { homeSegmentId, workSegmentId, schoolSegmentId,
         homeSubSegmentId, workSubSegmentId, schoolSubSegmentId,
         homeSuperSegmentId, workSuperSegmentId, schoolSuperSegmentId,
-    } = userSegments;
+    } = userSegments as any;
 
     const colouredUserNameHandle = (segmentId: number, homeId?: number, workId?: number, schoolId?: number) => {
         console.log(commentData);

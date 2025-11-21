@@ -117,7 +117,7 @@ export const useCreateCommentMutation = (
                                         postalCode: address?.postalCode ?? '',
                                         streetAddress: address?.streetAddress ?? '',
                                     },
-                                    userSegments:{
+                                    userSegment:{
                                         homeSegmentId: getSegmentId(userSegments, UserSegmentRelationshipEnum.HOME, SegmentType.segment),
                                         homeSubSegmentId: getSegmentId(userSegments, UserSegmentRelationshipEnum.HOME, SegmentType.subSegment),
                                         homeSuperSegmentId: getSegmentId(userSegments, UserSegmentRelationshipEnum.HOME, SegmentType.superSegment),

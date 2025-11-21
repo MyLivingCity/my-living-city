@@ -85,6 +85,7 @@ export const ROUTES = {
     MOD_MANAGEMENT: '/mod/management',
     //* This is the route for the SubGroupManagerPage
     SUBGROUP_MANAGEMENT: '/subgroup-management',
+    PUBLIC_PROFILES: '/public-profiles',
     SUBGROUP_MANAGEMENT_CREATION: '/subgroup/management',
 };
 

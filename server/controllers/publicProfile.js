@@ -402,10 +402,153 @@ publicProfileRouter.get(
     }
 );
 
+// Get all public profiles with filtering
+publicProfileRouter.get('/all', async (req, res) => {
+    try {
+        const { 
+            search = '', 
+            profileType, 
+            location 
+        } = req.query;
 
+        // Build user type filters based on profile type
+        let userTypeFilter = [];
+        if (!profileType || profileType === 'all') {
+            userTypeFilter = ['MUNICIPAL', 'BUSINESS', 'COMMUNITY'];
+        } else if (profileType === 'municipal') {
+            userTypeFilter = ['MUNICIPAL'];
+        } else if (profileType === 'community') {
+            userTypeFilter = ['BUSINESS', 'COMMUNITY'];
+        }
 
+        // Build search conditions
+        const searchWhere = {
+            userType: { in: userTypeFilter },
+            status: true, // Only active users
+            ...(search && {
+                OR: [
+                    { fname: { contains: search, mode: 'insensitive' } },
+                    { lname: { contains: search, mode: 'insensitive' } },
+                    { organizationName: { contains: search, mode: 'insensitive' } }
+                ]
+            })
+        };
 
+        // Add location filter if provided
+        if (location) {
+            searchWhere.address = {
+                streetAddress: { contains: location, mode: 'insensitive' }
+            };
+        }
 
+        // Fetch users with their related data
+        const users = await prisma.user.findMany({
+            where: searchWhere,
+            include: {
+                address: true,
+                userReach: {
+                    include: {
+                        segment: true
+                    }
+                },
+                ideas: {
+                    where: { active: true },
+                    select: { id: true, authorId: true }
+                }
+            },
+            orderBy: [
+                { createdAt: 'desc' }
+            ]
+        });
 
+        // Get total count
+        const totalCount = users.length;
+
+        // Collect all idea IDs from all users for efficient endorsement query
+        const allIdeaIds = users.flatMap(user => user.ideas.map(idea => idea.id));
+
+        // Single aggregated query to get all endorsements (ratings) for all ideas
+        let endorsementsByIdea = {};
+        if (allIdeaIds.length > 0) {
+            const ratings = await prisma.ideaRating.groupBy({
+                by: ['ideaId'],
+                where: {
+                    ideaId: { in: allIdeaIds },
+                    rating: { gt: 0 } // Only positive ratings (endorsements)
+                },
+                _count: {
+                    id: true
+                }
+            });
+
+            // Create a map of ideaId -> endorsement count
+            endorsementsByIdea = ratings.reduce((acc, rating) => {
+                acc[rating.ideaId] = rating._count.id;
+                return acc;
+            }, {});
+        }
+
+        // Create a map of userId -> total endorsements received
+        const endorsementsByUser = {};
+        users.forEach(user => {
+            let totalEndorsements = 0;
+            user.ideas.forEach(idea => {
+                totalEndorsements += endorsementsByIdea[idea.id] || 0;
+            });
+            endorsementsByUser[user.id] = totalEndorsements;
+        });
+
+        // Transform users into profile format
+        const profiles = users.map(user => {
+            // Determine profile type based on user type
+            let profileType = 'community';
+            if (user.userType === 'MUNICIPAL') {
+                profileType = 'municipal';
+            }
+
+            // Get location from user address
+            let location = '';
+            if (user.address) {
+                const addressParts = [
+                    user.address.streetAddress,
+                    user.address.city
+                ].filter(Boolean);
+                location = addressParts.join(', ');
+            }
+
+            // Get primary segment/region from userReach
+            const primarySegment = user.userReach?.[0]?.segment?.name || '';
+
+            return {
+                id: user.id,
+                userId: user.id,
+                fname: user.fname,
+                lname: user.lname,
+                avatar: user.imagePath,
+                profileType,
+                location: location || primarySegment,
+                endorsements: endorsementsByUser[user.id] || 0, // Real endorsements RECEIVED
+                postsCount: user.ideas?.length || 0, // Real post count, no random fallback
+                businessName: user.userType === 'BUSINESS' || user.userType === 'COMMUNITY' ? user.organizationName : null,
+                municipalityName: user.userType === 'MUNICIPAL' ? user.organizationName : null,
+                userType: user.userType
+            };
+        });
+
+        res.status(200).json({
+            profiles,
+            totalCount
+        });
+
+    } catch (error) {
+        console.error('Error fetching public profiles:', error);
+        res.status(500).json({ 
+            message: 'Internal server error',
+            error: error.message 
+        });
+    } finally {
+        await prisma.$disconnect();
+    }
+});
 
 module.exports = publicProfileRouter;

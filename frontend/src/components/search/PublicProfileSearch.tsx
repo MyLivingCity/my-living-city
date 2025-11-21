@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { Row, Col, Form, Button, Card, Collapse } from 'react-bootstrap';
 
+
+// Work in progress, should be functional but should be adjusted and expanded 
+// after adding more accounts and different account types to the database.
 interface SearchFilters {
     profileType?: 'MUNICIPAL' | 'BUSINESS' | '';
     location?: string;

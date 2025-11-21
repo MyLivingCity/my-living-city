@@ -4,9 +4,6 @@ import { useHistory } from 'react-router-dom';
 import PublicProfileCard from '../components/tiles/PublicProfileCard';
 import PublicProfileSearch from '../components/search/PublicProfileSearch';
 import { getAllPublicProfiles, PublicProfileWithStats } from '../lib/api/publicProfileRoutes';
-import { PublicCommunityBusinessProfile, PublicMunicipalProfile } from '../lib/types/data/publicProfile.type';
-
-// Remove local type definition since we're importing it
 
 interface SearchFilters {
     profileType?: 'MUNICIPAL' | 'BUSINESS' | '';
@@ -66,7 +63,8 @@ const PublicProfilesPage: React.FC = () => {
 
     const handleProfileClick = (profile: PublicProfileWithStats) => {
         // Transform PublicProfileWithStats to a basic format for ProfileCardDisplayPage
-        // Note: Some fields will be empty as they're not provided by the summary API
+        // Note: Some fields will be empty as they're not provided by the summary API, 
+        // Will need to fetch the PublicProfile information when it exists.
         const transformedProfile = {
             statement: '', // Not available in summary data
             contactEmail: '', // Not available in summary data

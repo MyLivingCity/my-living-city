@@ -1,8 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import { API_BASE_URL, USER_TYPES } from '../constants';
-import { IUser } from '../types/data/user.type';
 import { PublicCommunityBusinessProfile, PublicMunicipalProfile, PublicStandardProfile } from '../types/data/publicProfile.type';
-import { getAxiosJwtRequestOption } from './axiosRequestOptions';
 
 // Extended type for profiles with stats
 export interface PublicProfileWithStats {

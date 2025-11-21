@@ -453,10 +453,7 @@ publicProfileRouter.get('/all', async (req, res) => {
                 },
                 ideas: {
                     where: { active: true },
-                    select: { id: true }
-                },
-                userIdeaEndorse: {
-                    select: { id: true }
+                    select: { id: true, authorId: true }
                 }
             },
             orderBy: [
@@ -466,6 +463,40 @@ publicProfileRouter.get('/all', async (req, res) => {
 
         // Get total count
         const totalCount = users.length;
+
+        // Collect all idea IDs from all users for efficient endorsement query
+        const allIdeaIds = users.flatMap(user => user.ideas.map(idea => idea.id));
+
+        // Single aggregated query to get all endorsements (ratings) for all ideas
+        let endorsementsByIdea = {};
+        if (allIdeaIds.length > 0) {
+            const ratings = await prisma.ideaRating.groupBy({
+                by: ['ideaId'],
+                where: {
+                    ideaId: { in: allIdeaIds },
+                    rating: { gt: 0 } // Only positive ratings (endorsements)
+                },
+                _count: {
+                    id: true
+                }
+            });
+
+            // Create a map of ideaId -> endorsement count
+            endorsementsByIdea = ratings.reduce((acc, rating) => {
+                acc[rating.ideaId] = rating._count.id;
+                return acc;
+            }, {});
+        }
+
+        // Create a map of userId -> total endorsements received
+        const endorsementsByUser = {};
+        users.forEach(user => {
+            let totalEndorsements = 0;
+            user.ideas.forEach(idea => {
+                totalEndorsements += endorsementsByIdea[idea.id] || 0;
+            });
+            endorsementsByUser[user.id] = totalEndorsements;
+        });
 
         // Transform users into profile format
         const profiles = users.map(user => {
@@ -496,8 +527,8 @@ publicProfileRouter.get('/all', async (req, res) => {
                 avatar: user.imagePath,
                 profileType,
                 location: location || primarySegment,
-                endorsements: user.userIdeaEndorse?.length || Math.floor(Math.random() * 50),
-                postsCount: user.ideas?.length || Math.floor(Math.random() * 20),
+                endorsements: endorsementsByUser[user.id] || 0, // Real endorsements RECEIVED
+                postsCount: user.ideas?.length || 0, // Real post count, no random fallback
                 businessName: user.userType === 'BUSINESS' || user.userType === 'COMMUNITY' ? user.organizationName : null,
                 municipalityName: user.userType === 'MUNICIPAL' ? user.organizationName : null,
                 userType: user.userType

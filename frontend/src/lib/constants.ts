@@ -86,6 +86,7 @@ export const ROUTES = {
     //* This is the route for the SubGroupManagerPage
     SUBGROUP_MANAGEMENT: '/subgroup-management',
     PUBLIC_PROFILES: '/public-profiles',
+    SUBGROUP_MANAGEMENT_CREATION: '/subgroup/management',
 };
 
 export enum BAN_USER_TYPES {
@@ -117,3 +118,27 @@ export const TEXT_INPUT_LIMIT = {
     NAME: 50,
     STREET_NAME: 28,
 };
+
+//export const SUBGROUP_PRIVACY = [
+//    'Public',
+//    'Private',
+//    'Test',
+//;
+
+export enum PrivacyField {
+  PUBLIC = 'PUBLIC',
+  PRIVATE = 'PRIVATE',
+  TEST = 'TEST',
+};
+
+export enum MembershipStatus {
+  PENDING = 'PENDING',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+}
+
+export enum TypeField {
+  VIRTUAL = 'VIRTUAL',
+  NESTED = 'NESTED'
+}
+

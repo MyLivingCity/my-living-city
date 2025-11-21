@@ -48,8 +48,8 @@ model User {
   userIdeaEndorse     UserIdeaEndorse[]
   userSegment         UserSegments[]
   userHandles          UserHandle[]
-  subGroupsManaged    SubGroup[]            @relation("ManagedSubGroups")
-  subGroupsJoined     SubGroupMember[]      @relation("JoinedSubGroups") 
+  //subGroupsManaged    SubGroup[]            @relation("ManagedSubGroups")
+  //subGroupsJoined     SubGroupMember[]      @relation("JoinedSubGroups") 
 
   //userRole        UserRole?    @relation(fields: [userRoleId], references: [id])
   ideas               Idea[]                @relation("ideaAuthor")
@@ -81,6 +81,9 @@ model User {
   School_Details                    School_Details[]
   Work_Details                      Work_Details[]
 
+  //Model Subgroup
+  managedSubGroups SubGroup[] @relation("ManagedSubGroups")
+  joinedSubGroups SubGroupMember[] @relation("JoinedSubGroups")
   @@map(name: "user")
 }
 
@@ -148,7 +151,6 @@ model Segments {
   regionSubGroups     SubGroup[] @relation("SuperSegmentRelation")
   segmentSubGroups    SubGroup[] @relation("SegmentRelation")
   subSegmentSubGroups SubGroup[] @relation("SubSegmentRelation")
-
 }
 
 enum SegmentType {

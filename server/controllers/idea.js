@@ -133,16 +133,16 @@ ideaRouter.post(
       let notification_dismissed = false
       let quarantined_at = new Date()
 
-      const segments = { connect : [] }
+      const segments = { connect: [] }
 
-      if (segmentId) { 
-        segments.connect.push( { segId: parseInt(segmentId) } )
-      } 
-      if (superSegmentId) { 
-        segments.connect.push( { segId: parseInt(superSegmentId) } )
-      } 
-      if (subSegmentId) { 
-        segments.connect.push( { segId: parseInt(subSegmentId) } )
+      if (segmentId) {
+        segments.connect.push({ segId: parseInt(segmentId) })
+      }
+      if (superSegmentId) {
+        segments.connect.push({ segId: parseInt(superSegmentId) })
+      }
+      if (subSegmentId) {
+        segments.connect.push({ segId: parseInt(subSegmentId) })
       }
 
       const ideaData = {
@@ -177,7 +177,7 @@ ideaRouter.post(
           geo: true,
           address: true,
           category: true,
-          segments:true,
+          segments: true,
         }
       });
 
@@ -442,90 +442,109 @@ ideaRouter.post(
     }
 
     take = Number.isInteger(take) ? Number(take) : undefined;
-    const takeClause = take ? `limit ${take}` : '';
 
     try {
-      const rawData = await prisma.$queryRawUnsafe(`
-        select
-          i.id,
-          i.author_id as "authorId",
-          i.category_id as "categoryId",
-          i.title,
-          i.description,
-          i.proposal_role,
-          i.requirements,
-          i.proposal_benefits,
-          i.notification_dismissed,
-          i.quarantined_at,
-          i.segment_id as "segId",
-          i.sub_segment_id as "subSegId",
-          i.super_segment_id as "superSegId",
-          i.community_impact as "communityImpact",
-          i.nature_impact as "natureImpact",
-          i.energy_impact as "energyImpact",
-          i.manufacturing_impact as "manufacturingImpact",
-          i.arts_impact as "artsImpact",
-          coalesce(ic.total_comments + ir.total_ratings, 0) as engagements,
-          coalesce(ir.avg_rating, 0) as "ratingAvg",
-          coalesce(ic.total_comments, 0) as "commentCount",
-          coalesce(ir.total_ratings, 0) as "ratingCount",
-          coalesce(pr.pos_rating, 0) as "posRatings",
-          coalesce(nr.neg_rating, 0) as "negRatings",
-          coalesce(sn.segment_name, '') as "segmentName",
-          coalesce(sbn.sub_segment_name, '') as "subSegmentName",
-          coalesce(userfname.f_name, '') as "firstName",
-          coalesce(userStreetAddress.street_address, '') as "streetAddress",
-          i.state,
-          i.active,
-          i.banned,
-          i.reviewed,
-          i.updated_at as "updatedAt",
-          i.created_at as "createdAt"
-        from idea i
-        left join (
-            select idea_id, count(id) as total_comments
-            from idea_comment
-            group by idea_comment.idea_id
-        ) ic on i.id = ic.idea_id
-        left join (
-            select idea_id, count(id) as total_ratings, avg(rating) as avg_rating
-            from idea_rating
-            group by idea_rating.idea_id
-        ) ir on i.id = ir.idea_id
-        left join (
-            select idea_id, count(id) as neg_rating
-            from idea_rating
-            where rating < 0
-            group by idea_id
-        ) nr on i.id = nr.idea_id
-        left join (
-            select idea_id, count(id) as pos_rating
-            from idea_rating
-            where rating > 0
-            group by idea_id
-        ) pr on i.id = pr.idea_id
-        left join (
-            select seg_id, segment_name
-            from segment
-        ) sn on i.segment_id = sn.seg_id
-        left join (
-            select id, f_name
-            from "user"
-        ) userfname on i.author_id = userfname.id
-        left join (
-            select user_id, street_address
-            from user_address
-        ) userStreetAddress on i.author_id = userStreetAddress.user_id
-        where i.segment_id = ${segmentId}
-        order by
-          "ratingCount" desc,
-          "ratingAvg" desc,
-          i.updated_at desc,
-          engagements desc
-        ${takeClause}
-      `);
+      // Use Prisma relations to find ideas related to the provided segmentId
+      const ideas = await prisma.idea.findMany({
+        where: {
+          segments: {
+            some: {
+              segId: Number(segmentId),
+            },
+          },
+        },
+        take,
+        include: {
+          segments: {
+            include: {
+              parentSegment: true,
+            },
+          },
+          author: { select: { fname: true } },
+          address: { select: { streetAddress: true } },
+          category: true,
+          comments: { select: { id: true } },
+          ratings: { select: { id: true, rating: true } },
+        },
+        orderBy: { updatedAt: 'desc' },
+      });
 
-      const data = rawData.map((row) => {
+      // Compute the aggregated fields in JS to match previous response shape
+      const processed = ideas.map((idea) => {
+        const ratings = idea.ratings || [];
+        const comments = idea.comments || [];
+        const totalRatings = ratings.length;
+        const totalComments = comments.length;
+        const ratingsSum = ratings.reduce((sum, r) => sum + (r.rating || 0), 0);
+        const avgRating = totalRatings > 0 ? ratingsSum / totalRatings : 0;
+        const posRatings = ratings.filter((r) => r.rating > 0).length;
+        const negRatings = ratings.filter((r) => r.rating < 0).length;
+        const engagements = totalRatings + totalComments;
+
+        const segmentData = (idea.segments || []).map((segment) => ({
+          segId: segment.segId,
+          segmentName: segment.name,
+          parentSegmentName: segment.parentSegment?.name || null,
+          segmentType: segment.segmentType,
+        }));
+
+        const superSegment = segmentData.find((s) => s.segmentType === 'superSegment');
+        const mainSegment = segmentData.find((s) => s.segmentType === 'segment');
+        const subSegment = segmentData.find((s) => s.segmentType === 'subSegment');
+
+        return {
+          id: idea.id,
+          authorId: idea.authorId,
+          categoryId: idea.categoryId,
+          title: idea.title,
+          description: idea.description,
+          proposal_role: idea.proposal_role,
+          requirements: idea.requirements,
+          proposal_benefits: idea.proposal_benefits,
+          notification_dismissed: idea.notification_dismissed,
+          quarantined_at: idea.quarantined_at,
+
+          segId: mainSegment?.segId || null,
+          subSegId: subSegment?.segId || null,
+          superSegId: superSegment?.segId || null,
+          segmentName: mainSegment?.segmentName || null,
+          subSegmentName: subSegment?.segmentName || null,
+
+          communityImpact: idea.communityImpact,
+          natureImpact: idea.natureImpact,
+          energyImpact: idea.energyImpact,
+          manufacturingImpact: idea.manufacturingImpact,
+          artsImpact: idea.artsImpact,
+
+          engagements: engagements,
+          ratingAvg: avgRating,
+          commentCount: totalComments,
+          ratingCount: totalRatings,
+          posRatings: posRatings,
+          negRatings: negRatings,
+
+          firstName: idea.author?.fname || '',
+          streetAddress: idea.address?.streetAddress || '',
+
+          state: idea.state,
+          active: idea.active,
+          banned: idea.banned,
+          reviewed: idea.reviewed,
+          updatedAt: idea.updatedAt,
+          createdAt: idea.createdAt,
+        };
+      });
+
+      // Sort to match previous ordering
+      const sortedResults = processed.sort((a, b) => {
+        if (b.ratingCount !== a.ratingCount) return b.ratingCount - a.ratingCount;
+        if (b.ratingAvg !== a.ratingAvg) return b.ratingAvg - a.ratingAvg;
+        if (b.updatedAt !== a.updatedAt) return new Date(b.updatedAt) - new Date(a.updatedAt);
+        return b.engagements - a.engagements;
+      });
+
+      // Convert bigint values if any
+      const finalResults = sortedResults.map((row) => {
         const newRow = {};
         for (const key in row) {
           if (typeof row[key] === 'bigint') {
@@ -537,7 +556,7 @@ ideaRouter.post(
         return newRow;
       });
 
-      return res.status(200).json(data);
+      return res.status(200).json(finalResults);
     } catch (error) {
       console.error('Error fetching ideas by segmentId:', error);
       return res.status(500).json({

@@ -787,84 +787,53 @@ segmentRouter.get(
   '/aggregateInfo/:segmentId',
   async (req, res) => {
     try {
-      const home = await prisma.userSegments.findMany({
-        where: {
-          homeSegmentId: parseInt(req.params.segmentId)
-        },
-      })
+      const segId = parseInt(req.params.segmentId, 10);
+      if (Number.isNaN(segId)) {
+        return res.status(400).json({ message: 'A valid segmentId must be specified in the route parameter.' });
+      }
 
-      const work = await prisma.userSegments.findMany({
-        where: {
-          workSegmentId: parseInt(req.params.segmentId)
-        },
-      })
-
-      const student = await prisma.userSegments.findMany({
-        where: {
-          schoolSegmentId: parseInt(req.params.segmentId)
-        },
-      })
+      // Users who set this segment via the userSegments relation
+      const home = await prisma.userSegments.findMany({ where: { segmentId: segId, userSegmentRelationship: 'HOME' } });
+      const work = await prisma.userSegments.findMany({ where: { segmentId: segId, userSegmentRelationship: 'WORK' } });
+      const student = await prisma.userSegments.findMany({ where: { segmentId: segId, userSegmentRelationship: 'SCHOOL' } });
 
       const allUsers = [...home, ...work, ...student];
-      const uniqueUser = [];
-      allUsers.forEach(user => {
-        if (!uniqueUser.includes(user.id)) {
-          uniqueUser.push(user.id);
+      const uniqueUserIds = [];
+      allUsers.forEach(us => {
+        if (us && us.userId && !uniqueUserIds.includes(us.userId)) {
+          uniqueUserIds.push(us.userId);
         }
       });
 
-      const idea = await prisma.idea.findMany({
-        where: {
-          segmentId: parseInt(req.params.segmentId)
-        }
-      })
+      // Ideas linked via many-to-many relation `idea.segments`
+      const ideas = await prisma.idea.findMany({
+        where: { segments: { some: { segId } } },
+        select: { id: true }
+      });
+      const ideaIds = ideas.map(i => i.id);
 
-      const ideaIds = idea.map((idea) => idea.id);
+      const proposalsCount = ideaIds.length ? await prisma.proposal.count({ where: { ideaId: { in: ideaIds } } }) : 0;
+      const projectsCount = ideaIds.length ? await prisma.project.count({ where: { ideaId: { in: ideaIds } } }) : 0;
 
-      const proposal = await prisma.proposal.aggregate({
-        where: {
-          ideaId: {
-            in: ideaIds
-          }
-        },
-        _count: true
-      })
+      // Sub-segments are rows in the unified segments table with parentId = segId
+      const subSegments = await prisma.segments.findMany({ where: { parentId: segId, segmentType: 'subSegment' } });
 
-      const project = await prisma.project.aggregate({
-        where: {
-          ideaId: {
-            in: ideaIds
-          }
-        },
-        _count: true
-      })
+      const superSegment = await prisma.segments.findFirst({ where: { segId } });
 
-      const subSegments = await prisma.subSegments.findMany({
-        where: {
-          segId: parseInt(req.params.segmentId)
-        }
-      })
-
-      const superSegment = await prisma.segments.findFirst({
-        where: {
-          segId: parseInt(req.params.segmentId)
-        }
-      })
-
-      const subsegmentNames = subSegments.map((subSegment) => subSegment.name);
+      const subsegmentNames = subSegments.map(s => s.name);
 
       const result = {
-        "totalUsers": uniqueUser.length,
-        "residents": home.length,
-        "workers": work.length,
-        "students": student.length,
-        "ideas": ideaIds.length,
-        "proposals": proposal._count,
-        "projects": project._count,
-        "superSegmentName": superSegment.superSegName,
-        "subSegmentsCount": subSegments.length,
-        "subSegments": subsegmentNames,
-      }
+        totalUsers: uniqueUserIds.length,
+        residents: home.length,
+        workers: work.length,
+        students: student.length,
+        ideas: ideaIds.length,
+        proposals: proposalsCount,
+        projects: projectsCount,
+        superSegmentName: superSegment ? superSegment.name : null,
+        subSegmentsCount: subSegments.length,
+        subSegments: subsegmentNames,
+      };
 
       res.status(200).json(result);
 

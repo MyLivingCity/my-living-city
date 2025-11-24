@@ -41,7 +41,7 @@ function Header() {
     //   segName:googleQuery.data.city, province:googleQuery.data.province, country:googleQuery.data.country
     // }, googleQuery.data != null)
 
-    const [userSegId, setUserSegId] = useState<any>(0);
+    const [userSegId, setUserSegId] = useState<number | null>(null);
     const [showWarningModal, setShowWarningModal] = useState<boolean>(!localStorage.getItem('warningModalState'));
 
     // Hook to set localStorage: warningModalState to !null
@@ -49,8 +49,32 @@ function Header() {
         localStorage.setItem('warningModalState', String(showWarningModal));
     }, [showWarningModal]);
     useEffect(() => {
-        if (userSegmentData && userSegmentData.homeSegmentId) {
-            setUserSegId(userSegmentData.homeSegmentId);
+        if (!userSegmentData) return;
+
+        // Support multiple shapes returned by different hooks/endpoints
+        // Case A: endpoint returns an object with homeSegmentId
+        if ((userSegmentData as any).homeSegmentId) {
+            setUserSegId(Number((userSegmentData as any).homeSegmentId));
+            return;
+        }
+
+        // Case B: hook returns an array of userSegment records
+        if (Array.isArray(userSegmentData) && userSegmentData.length > 0) {
+            // Prefer the HOME relationship
+            const homeSeg = (userSegmentData as any[]).find((s) => s.userSegmentRelationship === 'HOME' || s.userSegmentRelationship === 'home');
+            const segRecord = homeSeg || (userSegmentData as any[])[0];
+            // segRecord may include `segment` object
+            if (segRecord) {
+                const segId = segRecord.segment?.segId ?? segRecord.segId ?? segRecord.homeSegmentId;
+                if (segId) setUserSegId(Number(segId));
+            }
+            return;
+        }
+
+        // Case C: refined hook returns an array of simplified segments
+        if (Array.isArray(userSegmentData) && (userSegmentData as any[]).every(s => s.id !== undefined)) {
+            const first = (userSegmentData as any[])[0];
+            if (first && first.id) setUserSegId(Number(first.id));
         }
     }, [userSegmentData]);
 

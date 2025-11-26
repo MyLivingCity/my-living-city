@@ -8,6 +8,7 @@ import {
     capitalizeString,
     getIdeaSegmentsMap,
 } from '../../lib/utilityFunctions';
+import { useHistory } from 'react-router-dom';
 import CommentsSection from '../partials/SingleIdeaContent/CommentsSection';
 import RatingsSection from '../partials/SingleIdeaContent/RatingsSection';
 import {
@@ -122,6 +123,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
     // API hooks for this component
     const { user, token } = useContext(UserProfileContext);
+    const history = useHistory();
     const { data: isFollowingPost, isLoading: isFollowingPostLoading } = useCheckIdeaFollowedByUser(token, (user ? user.id : user), ideaId);
     const { data: isEndorsingPost, isLoading: isEndorsingPostLoading } = useCheckIdeaEndorsedByUser(token, (user ? user.id : user), ideaId);
     const { data: endorsedUsersData, isLoading: isEndorsedUsersDataLoading } = useGetEndorsedUsersByIdea(token, ideaId);
@@ -268,6 +270,30 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
             setFollowingPost(!followingPost);
         }
     };
+
+    const handleAuthorClick = () => {
+        if (!author) return;
+        
+        const transformedProfile = {
+            statement: '',
+            contactEmail: '',
+            contactPhone: '',
+            address: author.address?.streetAddress || '',
+            links: [],
+            responsibility: author.userType === USER_TYPES.MUNICIPAL ? '' : undefined,
+            description: author.userType !== USER_TYPES.MUNICIPAL ? '' : undefined,
+            user: {
+                id: author.id,
+                fname: author.fname || '',
+                lname: author.lname || '',
+                userType: author.userType,
+                organizationName: author.organizationName || ''
+            }
+        };
+        
+        history.push('/profile-card-display', { publicProfile: transformedProfile });
+    };
+
     if (!active) {
         return (
             <div>Idea Is Currently Inactive</div>
@@ -572,6 +598,14 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                     text-decoration:underline;
                     color: grey;
                   }
+                  .author-link {
+                    cursor: pointer;
+                    transition: color 0.2s;
+                  }
+                  .author-link:hover {
+                    color: #549762;
+                    text-decoration: underline;
+                  }
                   `}
                                     </style>
 
@@ -722,8 +756,10 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                     author?.userSegments?.find( seg => seg.userSegmentRelationship === UserSegmentRelationshipEnum.HOME)?.segmentId == primarySegment?.segId &&
                                     (
                                         <div>
-                                            {author?.userHandles?.find( h => h.userSegmentRelationship === UserSegmentRelationshipEnum.HOME)?.handle ?? 
-                                            `${author?.fname}@${author?.address?.streetAddress}`} as Resident
+                                            <span className='author-link' onClick={handleAuthorClick}>
+                                                {author?.userHandles?.find( h => h.userSegmentRelationship === UserSegmentRelationshipEnum.HOME)?.handle ?? 
+                                                `${author?.fname}@${author?.address?.streetAddress}`}
+                                            </span> as Resident
                                         </div>
                                     ) ||
 
@@ -731,14 +767,18 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
                                     (
                                         <div>
-                                            {author?.userHandles?.find( h => h.userSegmentRelationship === UserSegmentRelationshipEnum.SCHOOL)?.handle} as Student
+                                            <span className='author-link' onClick={handleAuthorClick}>
+                                                {author?.userHandles?.find( h => h.userSegmentRelationship === UserSegmentRelationshipEnum.SCHOOL)?.handle}
+                                            </span> as Student
                                         </div>
                                     ) ||
 
                                     author?.userSegments?.find( seg => seg.userSegmentRelationship === UserSegmentRelationshipEnum.WORK)?.segmentId == primarySegment?.segId &&
                                     (
                                         <div>
-                                            {author?.userHandles?.find( h => h.userSegmentRelationship === UserSegmentRelationshipEnum.WORK)?.handle} as Worker
+                                            <span className='author-link' onClick={handleAuthorClick}>
+                                                {author?.userHandles?.find( h => h.userSegmentRelationship === UserSegmentRelationshipEnum.WORK)?.handle}
+                                            </span> as Worker
                                         </div>
                                     )
                                 }

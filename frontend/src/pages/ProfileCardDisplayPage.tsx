@@ -66,8 +66,8 @@ const ProfileCardDisplayPage: React.FC = () => {
     const endorsedProposalTotalPages = Math.ceil(endorsedProposalIdeas.length / 6);
 
     const handleBackToCards = () => {
-        // Navigate back to the public profiles page
-        history.push(ROUTES.PUBLIC_PROFILES);
+        // Navigate back to the previous page
+        history.goBack();
     };
 
     // Fetch full profile data when component mounts
@@ -198,7 +198,7 @@ const ProfileCardDisplayPage: React.FC = () => {
             <Row className='mb-4'>
                 <Col>
                     <Button variant='secondary' onClick={handleBackToCards}>
-                        ← Back to Public Profiles
+                        ← Back
                     </Button>
                 </Col>
                 {isOwnProfile && (

@@ -54,7 +54,7 @@ const SegmentTable: React.FC<SegmentTableProps> = ({
     });
     const filteredSegments = segments!.filter(
         (segment) =>
-            segment.province.toLowerCase() === provName && segment.country.toLowerCase() === countryName.toLowerCase()
+            segment.province.toLowerCase() === provName.toLowerCase() && segment.country.toLowerCase() === countryName.toLowerCase()
     );
 
     useEffect(() => {
@@ -103,8 +103,8 @@ const SegmentTable: React.FC<SegmentTableProps> = ({
                 }
                 createData.country = countryName;
                 createData.province = provName;
-                await createSegment(createData, token);
-                if (segments) segments.push(createData);
+                const created = await createSegment(createData, token);
+                if (segments && created) segments.push(created);
             }
             setShowNewSeg(false);
             setError(null);
@@ -241,8 +241,8 @@ const SegmentTable: React.FC<SegmentTableProps> = ({
                                                             segment.parentId = parseInt(e.target.value, 10);
                                                         }}
                                                     >
-                                                        {(superSegments).map((superSegment) => (
-                                                            <option key={superSegment.superSegId} value={superSegment.name}>
+                                                        {superSegments.map((superSegment) => (
+                                                            <option key={superSegment.superSegId} value={superSegment.superSegId}>
                                                                 {superSegment.name.toUpperCase()}
                                                             </option>
                                                         ))}

@@ -35,6 +35,9 @@ import ModManagementPage from './pages/ModManagementPage';
 import MunicipalDashboardPage from './pages/MunicipalDashboardPage';
 import CheckEmailPage from './pages/CheckEmailPage';
 import { SegmentPage } from './pages/SegmentPage';
+import ProfileCardDisplayPage from './pages/ProfileCardDisplayPage';
+import PublicProfilesPage from './pages/PublicProfilesPage';
+import SubGroupCreationPage from './pages/SubGroupCreationPage';
 
 //* Added for SubGroup Management Page
 import SubGroupManagementPage from './pages/SubGroupManagementPage';
@@ -49,6 +52,9 @@ function App() {
                     
                     //* This is the route for the SubGroupManagerPage
                     <PrivateRoute path={ROUTES.SUBGROUP_MANAGEMENT} component={SubGroupManagementPage} />
+
+                    <Route path='/profile-card-display' component={ProfileCardDisplayPage} />
+                    <Route path={ROUTES.PUBLIC_PROFILES} component={PublicProfilesPage} />
 
                     <Route path={ROUTES.LANDING} component={LandingPage} exact />
                     <Route
@@ -119,6 +125,11 @@ function App() {
                     <AdminRoute
                         path={ROUTES.SEGMENT_MANAGEMENT_OVERVIEW}
                         component={SegmentManagementPage}
+                    />
+                    
+                    <AdminRoute
+                        path={ROUTES.SUBGROUP_MANAGEMENT_CREATION}
+                        component={SubGroupCreationPage}
                     />
 
                     <CustomRoute

@@ -23,7 +23,7 @@ export interface IParsedCommentAuthor {
     postalCode: string;
   }
   userType: string;
-  userSegments: {
+  userSegment: {
     homeSegmentId: number;
     workSegmentId: number;
     schoolSegmentId: number;

@@ -397,7 +397,7 @@ userRouter.post("/signup",
             passport.authenticate("jwt", { session: false }, async (err, user, info) => {
                 console.log("JWT return values", err, user, info);
                 if (err) {
-                    res.status(500).json(err);
+                    res.status(500).json(err.message);
                     return;
                 }
                 if (!user) {
@@ -479,7 +479,7 @@ userRouter.post("/login", async (req, res, next) => {
                 res.status(400);
                 return res.json({
                     error: err,
-                    message: "An Error occured.",
+                    message: `An Error occured. ${err.message}`,
                 });
             }
 

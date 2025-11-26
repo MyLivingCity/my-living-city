@@ -5,7 +5,7 @@ import { Row, Col, Form, Button, Card, Collapse } from 'react-bootstrap';
 // Work in progress, should be functional but should be adjusted and expanded 
 // after adding more accounts and different account types to the database.
 interface SearchFilters {
-    profileType?: 'MUNICIPAL' | 'BUSINESS' | '';
+    profileType?: 'MUNICIPAL' | 'BUSINESS' | 'RESIDENTIAL' | '';
     location?: string;
     searchQuery?: string;
 }
@@ -102,12 +102,13 @@ const PublicProfileSearch: React.FC<PublicProfileSearchProps> = ({ onSearch }) =
                                         as='select'
                                         value={filters.profileType || ''}
                                         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => 
-                                            handleFilterChange('profileType', e.target.value as 'MUNICIPAL' | 'BUSINESS' | '')
+                                            handleFilterChange('profileType', e.target.value as 'MUNICIPAL' | 'BUSINESS' | 'RESIDENTIAL' | '')
                                         }
                                     >
                                         <option value=''>All Types</option>
                                         <option value='MUNICIPAL'>Municipality Profiles</option>
                                         <option value='BUSINESS'>Community Businesses</option>
+                                        <option value='RESIDENTIAL'>Residential Users</option>
                                     </Form.Control>
                                 </Form.Group>
                             </Col>

@@ -20,8 +20,33 @@ const PublicProfileCard: React.FC<PublicProfileCardProps> = ({
     if (!profileWithStats) return null;
 
     // Using PublicProfileWithStats
-    const displayName = profileWithStats.businessName || profileWithStats.municipalityName || 
-                        `${profileWithStats.fname || ''} ${profileWithStats.lname || ''}`.trim() || 'Anonymous User';
+    const displayName = profileWithStats.businessName || 
+                        profileWithStats.municipalityName || 
+                        profileWithStats.userName ||
+                        `${profileWithStats.fname || ''} ${profileWithStats.lname || ''}`.trim() || 
+                        'Anonymous User';
+
+    const getBadgeVariant = () => {
+        switch (profileWithStats.profileType) {
+            case 'municipal':
+                return 'info';
+            case 'residential':
+                return 'secondary';
+            default:
+                return 'success';
+        }
+    };
+
+    const getBadgeLabel = () => {
+        switch (profileWithStats.profileType) {
+            case 'municipal':
+                return 'Municipal';
+            case 'residential':
+                return 'Residential';
+            default:
+                return 'Business';
+        }
+    };
 
     const handleCardClick = () => {
         if (onClick) {
@@ -67,10 +92,10 @@ const PublicProfileCard: React.FC<PublicProfileCardProps> = ({
 
                 {/* Profile Type Badge */}
                 <Badge 
-                    variant={profileWithStats.profileType === 'municipal' ? 'info' : 'success'} 
+                    variant={getBadgeVariant()} 
                     className='user-select-none'
                 >
-                    {profileWithStats.profileType === 'municipal' ? 'Municipal' : 'Business'}
+                    {getBadgeLabel()}
                 </Badge>
 
                 {/* Stats Display */}

@@ -9,12 +9,14 @@ export interface PublicProfileWithStats {
     fname: string;
     lname: string;
     avatar?: string;
-    profileType: 'community' | 'municipal';
+    profileType: 'community' | 'municipal' | 'residential';
     location?: string;
     endorsements?: number;
     postsCount?: number;
     businessName?: string;
     municipalityName?: string;
+    userName?: string;
+    userType?: string;
 }
 
 

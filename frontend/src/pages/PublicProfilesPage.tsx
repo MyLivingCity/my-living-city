@@ -6,7 +6,7 @@ import PublicProfileSearch from '../components/search/PublicProfileSearch';
 import { getAllPublicProfiles, PublicProfileWithStats } from '../lib/api/publicProfileRoutes';
 
 interface SearchFilters {
-    profileType?: 'MUNICIPAL' | 'BUSINESS' | '';
+    profileType?: 'MUNICIPAL' | 'BUSINESS' | 'RESIDENTIAL' | '';
     location?: string;
     searchQuery?: string;
 }
@@ -26,7 +26,7 @@ const PublicProfilesPage: React.FC = () => {
             
             // Map profile types to match API expectations
             let profileTypeParam: 'community' | 'municipal' | undefined;
-            if (searchFilters.profileType === 'BUSINESS') {
+            if (searchFilters.profileType === 'BUSINESS' || searchFilters.profileType === 'RESIDENTIAL') {
                 profileTypeParam = 'community';
             } else if (searchFilters.profileType === 'MUNICIPAL') {
                 profileTypeParam = 'municipal';

@@ -87,6 +87,7 @@ publicProfileRouter.get(
 
             const result = await prisma.public_Community_Business_Profile.findFirst({
                 where: { userId: userId },
+                include: { links: true }
             });
 
             if (!result) {
@@ -159,6 +160,7 @@ publicProfileRouter.put(
                 data: {
                     links: createdLinks,
                 },
+                include: { links: true }
             });
 
             res.status(201).json(updatedResult);
@@ -197,6 +199,7 @@ publicProfileRouter.put(
                     contactPhone: contactPhone,
                     updatedAt: updatedAt,
                 },
+                include: { links: true }
             });
             res.status(200).json(result);
             }
@@ -254,6 +257,7 @@ publicProfileRouter.get(
 
             const result = await prisma.public_Municipal_Profile.findFirst({
                 where: { userId: userId },
+                include: { links: true }
             });
 
             if (!result) {
@@ -323,6 +327,7 @@ publicProfileRouter.put(
                     data: {
                         links: createdLinks,
                     },
+                    include: { links: true }
                 });
 
                 res.status(201).json(updatedResult);
@@ -359,6 +364,7 @@ publicProfileRouter.put(
                         contactPhone: contactPhone,
                         updatedAt: updatedAt,
                     },
+                    include: { links: true }
                 });
                 res.status(200).json(result);
             }
@@ -414,11 +420,11 @@ publicProfileRouter.get('/all', async (req, res) => {
         // Build user type filters based on profile type
         let userTypeFilter = [];
         if (!profileType || profileType === 'all') {
-            userTypeFilter = ['MUNICIPAL', 'BUSINESS', 'COMMUNITY'];
+            userTypeFilter = ['MUNICIPAL', 'BUSINESS', 'COMMUNITY', 'RESIDENTIAL'];
         } else if (profileType === 'municipal') {
             userTypeFilter = ['MUNICIPAL'];
         } else if (profileType === 'community') {
-            userTypeFilter = ['BUSINESS', 'COMMUNITY'];
+            userTypeFilter = ['BUSINESS', 'COMMUNITY', 'RESIDENTIAL'];
         }
 
         // Build search conditions
@@ -504,6 +510,8 @@ publicProfileRouter.get('/all', async (req, res) => {
             let profileType = 'community';
             if (user.userType === 'MUNICIPAL') {
                 profileType = 'municipal';
+            } else if (user.userType === 'RESIDENTIAL') {
+                profileType = 'residential';
             }
 
             // Get location from user address
@@ -531,6 +539,7 @@ publicProfileRouter.get('/all', async (req, res) => {
                 postsCount: user.ideas?.length || 0, // Real post count, no random fallback
                 businessName: user.userType === 'BUSINESS' || user.userType === 'COMMUNITY' ? user.organizationName : null,
                 municipalityName: user.userType === 'MUNICIPAL' ? user.organizationName : null,
+                userName: user.userType === 'RESIDENTIAL' ? `${user.fname || ''} ${user.lname || ''}`.trim() : null,
                 userType: user.userType
             };
         });

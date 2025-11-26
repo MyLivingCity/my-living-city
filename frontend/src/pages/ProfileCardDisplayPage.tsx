@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Container, Row, Col, Card as BootstrapCard, Button, Badge, Spinner, Alert, Carousel } from 'react-bootstrap';
 import { useLocation, useHistory } from 'react-router-dom';
 import { PublicCommunityBusinessProfile, PublicMunicipalProfile } from '../lib/types/data/publicProfile.type';
 import { ROUTES } from '../lib/constants';
-import { getCommunityBusinessProfile, getMunicipalProfile } from '../lib/api/publicProfileRoutes';
+import { getCommunityBusinessProfile, getMunicipalProfile, updateCommunityBusinessProfile, updateMunicipalProfile } from '../lib/api/publicProfileRoutes';
 import { useUserIdeas, useUserEndorsedIdeas } from '../hooks/ideaHooks';
 import { useAllProposals } from '../hooks/proposalHooks';
 import IdeaTile from '../components/tiles/IdeaTile';
 import ProposalTile from '../components/tiles/ProposalTile';
+import EditPublicProfileModal from '../components/modal/EditPublicProfileModal';
+import { UserProfileContext } from '../contexts/UserProfile.Context';
 
 // Public profile type
 type PublicProfile = (PublicCommunityBusinessProfile | PublicMunicipalProfile) & {
@@ -15,6 +17,7 @@ type PublicProfile = (PublicCommunityBusinessProfile | PublicMunicipalProfile) &
         id: string;
         fname?: string;
         lname?: string;
+        email?: string;
         userType: string;
         organizationName?: string;
     }
@@ -32,11 +35,14 @@ const getProfileTypeColor = (profile: PublicProfile) => {
 const ProfileCardDisplayPage: React.FC = () => {
     const location = useLocation();
     const history = useHistory();
+    const { user: currentUser, token } = useContext(UserProfileContext);
     const [selectedProfile, setSelectedProfile] = useState<PublicProfile | null>(
         (location.state as any)?.publicProfile || null
     );
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [saving, setSaving] = useState(false);
 
     // Fetch user's posts using existing hook
     const { data: userPosts, isLoading: postsLoading } = useUserIdeas(selectedProfile?.user?.id || '');
@@ -84,7 +90,7 @@ const ProfileCardDisplayPage: React.FC = () => {
                 // Fetch the appropriate profile type based on user type
                 if (userType === 'MUNICIPAL') {
                     fullProfileData = await getMunicipalProfile(userId, null);
-                } else if (userType === 'BUSINESS' || userType === 'COMMUNITY') {
+                } else if (userType === 'BUSINESS' || userType === 'COMMUNITY' || userType === 'RESIDENTIAL') {
                     fullProfileData = await getCommunityBusinessProfile(userId, null);
                 } else {
                     // If userType doesn't match, use the basic data we have
@@ -125,6 +131,48 @@ const ProfileCardDisplayPage: React.FC = () => {
         fetchFullProfile();
     }, [selectedProfile?.user?.id]); // Only re-fetch if userId changes
 
+    // Check if current user is viewing their own profile
+    const isOwnProfile = currentUser?.id === selectedProfile?.user?.id;
+
+    // Determine profile type
+    const profileType = selectedProfile?.user?.userType === 'MUNICIPAL' ? 'municipal' : 
+        selectedProfile?.user?.userType === 'RESIDENTIAL' ? 'residential' : 'community';
+
+    // Handle saving profile edits
+    const handleSaveProfile = async (updatedProfile: any) => {
+        setSaving(true);
+        setError(null);
+        
+        try {
+            // Ensure userId is correctly set from the current user
+            const profileToSave = {
+                ...updatedProfile,
+                userId: selectedProfile?.user?.id || currentUser?.id
+            };
+            
+            let savedProfile;
+            
+            if (profileType === 'municipal') {
+                savedProfile = await updateMunicipalProfile(profileToSave, token);
+            } else {
+                savedProfile = await updateCommunityBusinessProfile(profileToSave, token);
+            }
+            
+            // Update the displayed profile with saved data
+            setSelectedProfile({
+                ...savedProfile,
+                user: selectedProfile?.user // Keep user data
+            } as PublicProfile);
+            
+            setShowEditModal(false);
+        } catch (err: any) {
+            console.error('Error saving profile:', err);
+            throw err; // Re-throw to let modal handle the error
+        } finally {
+            setSaving(false);
+        }
+    };
+
     // If no profile data is available, redirect to public profiles page
     if (!selectedProfile) {
         return (
@@ -153,6 +201,13 @@ const ProfileCardDisplayPage: React.FC = () => {
                         ← Back
                     </Button>
                 </Col>
+                {isOwnProfile && (
+                    <Col className='text-end'>
+                        <Button variant='primary' onClick={() => setShowEditModal(true)}>
+                            Edit Profile
+                        </Button>
+                    </Col>
+                )}
             </Row>
 
             {/* Error Alert */}
@@ -258,7 +313,7 @@ const ProfileCardDisplayPage: React.FC = () => {
                                 <Row>
                                     <Col md={6}>
                                         <h5>Contact Information</h5>
-                                        <p><strong>Email:</strong> {selectedProfile.contactEmail || 'Not provided'}</p>
+                                        <p><strong>Email:</strong> {selectedProfile.contactEmail || selectedProfile.user?.email || 'Not provided'}</p>
                                         <p><strong>Phone:</strong> {selectedProfile.contactPhone || 'Not provided'}</p>
                                         <p><strong>Address:</strong> {selectedProfile.address || 'Not provided'}</p>
                                     </Col>
@@ -494,6 +549,24 @@ const ProfileCardDisplayPage: React.FC = () => {
                     </Col>
                 </Row>
             )}
+
+            {/* Edit Profile Modal */}
+            <EditPublicProfileModal
+                show={showEditModal}
+                onHide={() => setShowEditModal(false)}
+                profile={selectedProfile || {
+                    userId: currentUser?.id || '',
+                    statement: '',
+                    description: '',
+                    responsibility: '',
+                    links: [],
+                    address: '',
+                    contactEmail: '',
+                    contactPhone: ''
+                } as any}
+                profileType={profileType}
+                onSave={handleSaveProfile}
+            />
         </Container>
     );
 };

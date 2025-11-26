@@ -4,12 +4,11 @@
   "description": "backend for mylivingcity",
   "main": "server.js",
   "scripts": {
-    "ts-node": "ts-node --compiler-options '{\"module\":\"CommonJS\"}'",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "prisma:migrate": "npx prisma migrate dev --preview-feature",
+    "prisma:migrate": "npx prisma migrate dev",
     "prisma:generate": "npx prisma generate",
-    "db:seed": "npx prisma db seed --preview-feature",
+    "db:seed": "npx prisma db seed",
     "db:seed:undo": "echo no command yet",
     "dev": "nodemon server.js"
   },
@@ -57,7 +56,7 @@
     "prisma": "^6.3.1"
   },
   "prisma": {
-    "seed_old": "node prisma/seed.js"
+    "seed": "node prisma/seed.js"
   },
   "directories": {
     "lib": "lib"

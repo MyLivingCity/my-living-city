@@ -11,17 +11,18 @@ interface EditAdPricingPageContentProps {
 const EditAdPricingPageContent: React.FC<EditAdPricingPageContentProps> = ({ adPriceOptions }) => {
     const { token } = useContext(UserProfileContext);
 
-    if (!token) {
-        console.error('No token available!');
-        return null;
-    }
-
+    
     // Local copy of adPriceOptions so we can edit in place
     const [rows, setRows] = useState<IAdPrice[]>(adPriceOptions || []);
     const [showModal, setShowModal] = useState(false);
     const [currentRow, setCurrentRow] = useState<IAdPrice | null>(null);
     const [newRow, setNewRow] = useState({ lengthWeeks: '', priceCadDollars: '' });
-
+    
+    if (!token) {
+        console.error('No token available!');
+        return null;
+    }
+    
     const handleEditClick = (row: IAdPrice) => {
         setCurrentRow({ ...row });
         setShowModal(true);

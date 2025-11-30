@@ -245,8 +245,8 @@ enum UserType {
 }
 
 enum AdType {
-  BASIC
-  EXTRA
+  COMPLIMENTARY
+  PAID
 
   @@map(name: "ad_type")
 }
@@ -651,6 +651,12 @@ model UserCommentDislikes {
   @@map(name: "user_comment_dislikes")
 }
 
+model AdPrice {
+  id                Int       @id @default(autoincrement())
+  lengthWeeks       Int       @map("length_weeks")
+  priceCadDollars   Decimal   @db.Decimal(10, 2) @map("price_cad_dollars")
+}
+
 model Advertisements {
   id       Int       @id @default(autoincrement())
   ownerId  String    @map("owner_id")
@@ -658,7 +664,7 @@ model Advertisements {
   updateAt DateTime? @default(now()) @updatedAt @map("update_at")
 
   adTitle      String    @map("advertisement_title")
-  adType       AdType    @default(BASIC) @map("advertisement_type")
+  adType       AdType    @default(COMPLIMENTARY) @map("advertisement_type")
   duration     DateTime? @map("advertisement_duration")
   adPosition   String    @map("advertisement_position")
   imagePath    String    @map("advertisement_image_path")

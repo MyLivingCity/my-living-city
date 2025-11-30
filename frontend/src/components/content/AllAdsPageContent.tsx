@@ -35,7 +35,10 @@ const AllAdsPageContent: React.FC<AllAdsPageContentProps> = ({
 
             <Row className='mb-3'>
                 <a href='/advertisement/submit'>
-                    <Button>Create Ads</Button>
+                    <Button>Create Paid Ads</Button>
+                </a>
+                <a className='ml-2' href='/advertisement/complimentary'>
+                    <Button>Create Complimentary Ad</Button>
                 </a>
             </Row>
 

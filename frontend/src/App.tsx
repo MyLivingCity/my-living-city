@@ -17,6 +17,7 @@ import LoginPage from './pages/LoginPage';
 import PrivateRoute from './components/utility/PrivateRoute';
 import PublicRoute from './components/utility/PublicRoute';
 import SubmitAdvertisementPage from './pages/SubmitAdvertisementPage';
+import SubmitAdvertisementComplimentaryPage from './pages/SubmitAdvertisementComplimentaryPage';
 import ResetPasswordContent from './pages/ResetPasswordPage';
 import SegmentManagementPage from './pages/SegmentManagementPage';
 import AdminEmailGeneratePage from './pages/AdminEmailGeneratePage';
@@ -41,6 +42,7 @@ import SubGroupCreationPage from './pages/SubGroupCreationPage';
 
 //* Added for SubGroup Management Page
 import SubGroupManagementPage from './pages/SubGroupManagementPage';
+import EditAdPricingPage from './pages/EditAdPricingPage';
 
 function App() {
     return (
@@ -102,6 +104,16 @@ function App() {
                         ]}
                     />
                     <CustomRoute
+                        path={ROUTES.SUBMIT_ADVERTISEMENT_COMPLIMENTARY}
+                        component={SubmitAdvertisementComplimentaryPage}
+                        userTypes={[
+                            USER_TYPES.BUSINESS,
+                            USER_TYPES.COMMUNITY,
+                            USER_TYPES.SUPER_ADMIN,
+                            USER_TYPES.ADMIN,
+                        ]}
+                    />
+                    <CustomRoute
                         path={ROUTES.COMMUNITY_DASHBOARD}
                         component={CommunityDashboardPage}
                         userTypes={[
@@ -121,6 +133,10 @@ function App() {
                     <AdminRoute
                         path={ROUTES.EDIT_ADVERTISEMENT}
                         component={EditAdsPage}
+                    />
+                    <AdminRoute
+                        path={ROUTES.EDIT_AD_PRICING}
+                        component={EditAdPricingPage}
                     />
                     <AdminRoute
                         path={ROUTES.SEGMENT_MANAGEMENT_OVERVIEW}

@@ -4,7 +4,7 @@ const advertisementRouter = express.Router();
 const prisma = require('../lib/prismaClient');
 const { imagePathsToS3Url } = require('../lib/utilityFunctions');
 const { isEmpty } = require('lodash');
-const { makeUpload, deleteImage} = require('../lib/imageBucket');
+const { makeUpload, deleteImage } = require('../lib/imageBucket');
 
 require('dotenv').config();
 
@@ -16,33 +16,33 @@ advertisementRouter.post(
     [passport.authenticate('jwt', { session: false }), upload],
     async (req, res) => {
 
-    //Error information holder
-    let error = '';
-    let errorMessage = '';
-    let errorStack = '';
+        //Error information holder
+        let error = '';
+        let errorMessage = '';
+        let errorStack = '';
         try {
-           let imagePath = req.file.key.substring(req.file.key.indexOf("/")+1); 
+            let imagePath = req.file.key.substring(req.file.key.indexOf("/") + 1);
             //get email and user id from request
             const { email, id } = req.user;
-            
+
             //find the requesting user in the database
             const theUser = await prisma.user.findUnique({
                 where: { id: id },
                 select: { userType: true }
             });
-            
+
             //test to see if the user is an admin or business user
             if (
-                theUser.userType == "SUPER_ADMIN" || 
-                theUser.userType == "ADMIN" || 
-                theUser.userType == "BUSINESS" || 
+                theUser.userType == "SUPER_ADMIN" ||
+                theUser.userType == "ADMIN" ||
+                theUser.userType == "BUSINESS" ||
                 theUser.userType == "COMMUNITY"
-                ) {
+            ) {
 
                 //if there's no object in the request body
                 if (isEmpty(req.body)) {
                     return res.status(400).json({
-                        
+
                         message: 'The objects in the request body are missing',
                         details: {
                             errorMessage: 'Creating an advertisement must supply necessary fields explicitly.',
@@ -54,12 +54,12 @@ advertisementRouter.post(
                 //decompose necessary fields from request body
                 const { adType, adTitle, adDuration, adPosition, externalLink, published } = req.body;
 
-                if (adType === 'BASIC') {
-                    const theBasicAd = await prisma.advertisements.findFirst({ where: { ownerId: id, adType: 'BASIC' } });
+                if (adType === 'COMPLIMENTARY') {
+                    const theComplimentaryAd = await prisma.advertisements.findFirst({ where: { ownerId: id, adType: 'COMPLIMENTARY' } });
 
-                    if (theBasicAd) {
+                    if (theComplimentaryAd) {
                         await deleteImage("advertisement", imagePath);
-                        return res.status(400).json({ message: `You already created a basic advertisement, if you want to create more, please select type "EXTRA"; you can edit or delete the current basic advertisement.` });
+                        return res.status(400).json({ message: `You already created a complimentary advertisement, if you want to create more, please select type "PAID"; you can edit or delete the current complimentary advertisement.` });
                     }
                 }
 
@@ -71,7 +71,7 @@ advertisementRouter.post(
                 }
 
                 //if adType is not valid
-                if (adType && !(adType == "BASIC" || adType == "EXTRA")) {
+                if (adType && !(adType == "PAID" || adType == "COMPLIMENTARY")) {
                     error += 'adType is invalid. ';
                     errorMessage += 'adType must be predefined value. ';
                     errorStack += 'adType must be assigned with predfined value. ';
@@ -116,7 +116,7 @@ advertisementRouter.post(
                 }
 
                 //if there's no adDuration field in the request body
-                if ((!adDuration && adType == 'EXTRA') || (parseInt(adDuration) <= 0 && adType == 'EXTRA')) {
+                if ((!adDuration && adType == 'PAID') || (parseInt(adDuration) <= 0 && adType == 'PAID')) {
                     error += 'adDuration must be provided. ';
                     errorMessage += 'adDuration must be provided in the body with a valid length. ';
                     errorStack += 'adDuration must be provided in the body with a valid length. ';
@@ -138,7 +138,7 @@ advertisementRouter.post(
                 //If there's error in error holder
                 if (error && errorMessage && errorStack) {
                     // delete image if it already exists
-                    await deleteImage("advertisement", imagePath); 
+                    await deleteImage("advertisement", imagePath);
 
                     let tempError = error;
                     let tempErrorMessage = errorMessage;
@@ -158,12 +158,12 @@ advertisementRouter.post(
 
                 let createAnAdvertisement;
 
-                //if advertisement type is extra, create one with duration date; if not, create one without duration.
-                if (adType == 'EXTRA') {
+                //if advertisement type is paid, create one with duration date; if not, create one without duration.
+                if (adType == 'PAID') {
                     //Calculate the ending date of advertisement based on duration field.
                     let theDate = new Date();
                     let endDate = new Date();
-                    endDate.setDate(theDate.getDate() + parseInt(adDuration));
+                    endDate.setDate(theDate.getDate() + parseInt(adDuration) * 7); // 7 converts value to weeks
 
                     //create an advertisement object
                     createAnAdvertisement = await prisma.advertisements.create({
@@ -253,7 +253,7 @@ advertisementRouter.get(
             const allAd = await prisma.advertisements.findMany({
                 where: {
                     OR: [{
-                        adType: "BASIC",
+                        adType: "COMPLIMENTARY",
                     },
                     {
                         published: true,
@@ -431,7 +431,7 @@ advertisementRouter.put(
                 };
 
                 //if adType is not valid
-                if (adType && !(adType == "BASIC" || adType == "EXTRA")) {
+                if (adType && !(adType == "COMPLIMENTARY" || adType == "PAID")) {
                     error += 'adType is invalid. ';
                     errorMessage += 'adType must be predefined value. ';
                     errorStack += 'adType must be assigned with predfined value. ';
@@ -446,13 +446,13 @@ advertisementRouter.put(
                     }
                 };
 
-                if (theAdvertisement.duration == null && !adDuration && adType == 'EXTRA') {
+                if (theAdvertisement.duration == null && !adDuration && adType == 'PAID') {
                     error += 'adDuration must be provided. ';
                     errorMessage += 'adDuration must be provided in the body with a valid length if there\'s no exisintg duration. ';
                     errorStack += 'adDuration must be provided in the body with a valid lenght. ';
                 }
 
-                if (adDuration && theAdvertisement.adType == 'EXTRA') {
+                if (adDuration && theAdvertisement.adType == 'PAID') {
                     if (parseInt(adDuration) <= 0) {
                         error += 'adDuration must be provided. ';
                         errorMessage += 'adDuration must be provided in the body with a valid length. ';
@@ -516,7 +516,7 @@ advertisementRouter.put(
                     data: {
                         adType: adType,
                         adTitle: adTitle,
-                        duration: adType == 'BASIC' ? null : endDate,
+                        duration: adType == 'COMPLIMENTARY' ? null : endDate,
                         imagePath: newImagePath,
                         externalLink: externalLink,
                         published: published
@@ -579,7 +579,7 @@ advertisementRouter.delete(
                 } else {
                     if (theAdvertisement.ownerId === loggedInUserId) {
                         await deleteImage("advertisement", theAdvertisement.imagePath);
-                        
+
                         const deletedAd = await prisma.advertisements.delete({
                             where: {
                                 id: parsedAdvertisementId
@@ -618,6 +618,123 @@ advertisementRouter.delete(
         }
     }
 )
+
+// Ad Pricing Section
+
+// GET ad pricing info
+advertisementRouter.get(
+    '/getPrices',
+    async (req, res) => {
+        try {
+            console.log('Get ad pricing');
+
+            const result = await prisma.adPrice.findMany({
+                orderBy: {
+                    lengthWeeks: 'asc',
+                },
+            });
+
+            res.status(200).json(result);
+        } catch (error) {
+            console.log(error);
+            res.status(400).json({
+                message: 'An error occurred while trying to retrieve ad pricing.',
+                details: {
+                    errorMessage: error.message,
+                    errorStack: error.stack,
+                },
+            });
+        }
+    }
+);
+
+// POST add a new ad price
+advertisementRouter.post(
+    '/addPrice',
+    async (req, res) => {
+        try {
+            const { lengthWeeks, priceCadDollars } = req.body;
+
+            if (!lengthWeeks || !priceCadDollars) {
+                return res.status(400).json({ message: 'Missing required fields' });
+            }
+
+            const newPrice = await prisma.adPrice.create({
+                data: {
+                    lengthWeeks,
+                    priceCadDollars,
+                },
+            });
+
+            res.status(201).json(newPrice);
+        } catch (error) {
+            console.error(error);
+            res.status(400).json({
+                message: 'Failed to create ad price',
+                details: error.message,
+            });
+        }
+    }
+);
+
+// PUT update a single ad price
+advertisementRouter.put(
+    '/updatePrice/:id',
+    async (req, res) => {
+        try {
+            const id = Number(req.params.id);
+            const { lengthWeeks, priceCadDollars } = req.body;
+
+            if (isNaN(id)) {
+                return res.status(400).json({ message: 'Invalid ID' });
+            }
+
+            const updatedPrice = await prisma.adPrice.update({
+                where: { id },
+                data: {
+                    lengthWeeks,
+                    priceCadDollars,
+                },
+            });
+
+            res.status(200).json(updatedPrice);
+        } catch (error) {
+            console.error(error);
+
+            res.status(400).json({
+                message: 'Failed to update ad price',
+                details: error.message,
+            });
+        }
+    }
+);
+
+// DELETE a single ad price
+advertisementRouter.delete(
+    '/deletePrice/:id',
+    async (req, res) => {
+        try {
+            const id = Number(req.params.id);
+
+            if (isNaN(id)) {
+                return res.status(400).json({ message: 'Invalid ID' });
+            }
+
+            await prisma.adPrice.delete({
+                where: { id },
+            });
+            
+            res.status(204).send();
+        } catch (error) {
+            console.error(error);
+            res.status(400).json({
+                message: 'Failed to delete ad price',
+                details: error.message,
+            });
+        }
+    }
+);
+
 
 // Experimental
 advertisementRouter.get(

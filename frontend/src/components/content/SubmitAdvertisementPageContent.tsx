@@ -23,12 +23,14 @@ import * as Yup from 'yup';
 
 import '../../scss/content/_createAds.scss';
 import { ISegment } from 'src/lib/types/data/segment.type';
+import { IAdPrice } from 'src/lib/types/data/adPrice.type';
 import { TEXT_INPUT_LIMIT } from 'src/lib/constants';
 
 //TODO: need to include segment property in formik (may not have server route yet) 2022/11/24
 
 interface SubmitAdvertisementPageContentProps {
     segmentOptions: ISegment[] | undefined;
+    adPriceOptions: IAdPrice[] | undefined;
 }
 //formik form input validation schema
 const schema = Yup.object().shape({
@@ -50,7 +52,7 @@ const schema = Yup.object().shape({
 
 const SubmitAdvertisementPageContent: React.FC<
     SubmitAdvertisementPageContentProps
-> = ({ segmentOptions }: SubmitAdvertisementPageContentProps) => {
+> = ({ segmentOptions, adPriceOptions }: SubmitAdvertisementPageContentProps) => {
     const [isLoading, setIsLoading] = useState(false);
     const [validated, setValidated] = useState(false);
     const [error, setError] = useState<IFetchError | null>(null);
@@ -155,30 +157,27 @@ const SubmitAdvertisementPageContent: React.FC<
                                     </Form.Control.Feedback>
                                 </Form.Group>
 
-                                <Form.Group controlId='validateDuration'>
-                                    <Form.Label>Length of Post</Form.Label>
-                                    <Form.Control
-                                        as='select'
-                                        name='duration'
-                                        size='sm'
-                                        onChange={handleChange}
-                                        value={values.duration}
-                                        placeholder='Your advertisement duration'
-                                        isInvalid={!!errors.duration}
-                                    >
-                                        {[...Array(12)].map((_, i) => {
-                                            const week = i + 1;
-                                            return (
-                                                <option key={week} value={week}>
-                                                    {week} {week === 1 ? 'week' : 'weeks'}
-                                                </option>
-                                            );
-                                        })}
-                                    </Form.Control>
-                                    <Form.Control.Feedback type='invalid'>
-                                        {errors.duration}
-                                    </Form.Control.Feedback>
-                                </Form.Group>
+                                <Form.Control
+                                    as='select'
+                                    name='duration'
+                                    size='sm'
+                                    onChange={handleChange}
+                                    value={values.duration}
+                                    isInvalid={!!errors.duration}
+                                >
+                                    <option value='' disabled>
+                                        Select Duration
+                                    </option>
+
+                                    {adPriceOptions &&
+                                        adPriceOptions.map((price) => (
+                                            <option key={price.id} value={price.lengthWeeks}>
+                                                {price.lengthWeeks}{' '}
+                                                {price.lengthWeeks === 1 ? 'week' : 'weeks'} - $
+                                                {price.priceCadDollars}
+                                            </option>
+                                        ))}
+                                </Form.Control>
 
                                 <Form.Group controlId='validateExternalLink'>
                                     <Form.Label>
@@ -254,6 +253,7 @@ const SubmitAdvertisementPageContent: React.FC<
                                         feedback={errors.published}
                                     />
                                 </Form.Group>
+
                                 <Button
                                     block
                                     size='lg'

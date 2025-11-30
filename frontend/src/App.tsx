@@ -39,6 +39,7 @@ import { SegmentPage } from './pages/SegmentPage';
 
 //* Added for SubGroup Management Page
 import SubGroupManagementPage from './pages/SubGroupManagementPage';
+import EditAdPricingPage from './pages/EditAdPricingPage';
 
 function App() {
     return (
@@ -126,6 +127,10 @@ function App() {
                     <AdminRoute
                         path={ROUTES.EDIT_ADVERTISEMENT}
                         component={EditAdsPage}
+                    />
+                    <AdminRoute
+                        path={ROUTES.EDIT_AD_PRICING}
+                        component={EditAdPricingPage}
                     />
                     <AdminRoute
                         path={ROUTES.SEGMENT_MANAGEMENT_OVERVIEW}

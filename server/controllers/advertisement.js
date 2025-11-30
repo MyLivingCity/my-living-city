@@ -4,7 +4,7 @@ const advertisementRouter = express.Router();
 const prisma = require('../lib/prismaClient');
 const { imagePathsToS3Url } = require('../lib/utilityFunctions');
 const { isEmpty } = require('lodash');
-const { makeUpload, deleteImage} = require('../lib/imageBucket');
+const { makeUpload, deleteImage } = require('../lib/imageBucket');
 
 require('dotenv').config();
 
@@ -16,33 +16,33 @@ advertisementRouter.post(
     [passport.authenticate('jwt', { session: false }), upload],
     async (req, res) => {
 
-    //Error information holder
-    let error = '';
-    let errorMessage = '';
-    let errorStack = '';
+        //Error information holder
+        let error = '';
+        let errorMessage = '';
+        let errorStack = '';
         try {
-           let imagePath = req.file.key.substring(req.file.key.indexOf("/")+1); 
+            let imagePath = req.file.key.substring(req.file.key.indexOf("/") + 1);
             //get email and user id from request
             const { email, id } = req.user;
-            
+
             //find the requesting user in the database
             const theUser = await prisma.user.findUnique({
                 where: { id: id },
                 select: { userType: true }
             });
-            
+
             //test to see if the user is an admin or business user
             if (
-                theUser.userType == "SUPER_ADMIN" || 
-                theUser.userType == "ADMIN" || 
-                theUser.userType == "BUSINESS" || 
+                theUser.userType == "SUPER_ADMIN" ||
+                theUser.userType == "ADMIN" ||
+                theUser.userType == "BUSINESS" ||
                 theUser.userType == "COMMUNITY"
-                ) {
+            ) {
 
                 //if there's no object in the request body
                 if (isEmpty(req.body)) {
                     return res.status(400).json({
-                        
+
                         message: 'The objects in the request body are missing',
                         details: {
                             errorMessage: 'Creating an advertisement must supply necessary fields explicitly.',
@@ -138,7 +138,7 @@ advertisementRouter.post(
                 //If there's error in error holder
                 if (error && errorMessage && errorStack) {
                     // delete image if it already exists
-                    await deleteImage("advertisement", imagePath); 
+                    await deleteImage("advertisement", imagePath);
 
                     let tempError = error;
                     let tempErrorMessage = errorMessage;
@@ -579,7 +579,7 @@ advertisementRouter.delete(
                 } else {
                     if (theAdvertisement.ownerId === loggedInUserId) {
                         await deleteImage("advertisement", theAdvertisement.imagePath);
-                        
+
                         const deletedAd = await prisma.advertisements.delete({
                             where: {
                                 id: parsedAdvertisementId
@@ -618,6 +618,123 @@ advertisementRouter.delete(
         }
     }
 )
+
+// Ad Pricing Section
+
+// GET ad pricing info
+advertisementRouter.get(
+    '/getPrices',
+    async (req, res) => {
+        try {
+            console.log('Get ad pricing');
+
+            const result = await prisma.adPrice.findMany({
+                orderBy: {
+                    lengthWeeks: 'asc',
+                },
+            });
+
+            res.status(200).json(result);
+        } catch (error) {
+            console.log(error);
+            res.status(400).json({
+                message: 'An error occurred while trying to retrieve ad pricing.',
+                details: {
+                    errorMessage: error.message,
+                    errorStack: error.stack,
+                },
+            });
+        }
+    }
+);
+
+// POST add a new ad price
+advertisementRouter.post(
+    '/addPrice',
+    async (req, res) => {
+        try {
+            const { lengthWeeks, priceCadDollars } = req.body;
+
+            if (!lengthWeeks || !priceCadDollars) {
+                return res.status(400).json({ message: 'Missing required fields' });
+            }
+
+            const newPrice = await prisma.adPrice.create({
+                data: {
+                    lengthWeeks,
+                    priceCadDollars,
+                },
+            });
+
+            res.status(201).json(newPrice);
+        } catch (error) {
+            console.error(error);
+            res.status(400).json({
+                message: 'Failed to create ad price',
+                details: error.message,
+            });
+        }
+    }
+);
+
+// PUT update a single ad price
+advertisementRouter.put(
+    '/updatePrice/:id',
+    async (req, res) => {
+        try {
+            const id = Number(req.params.id);
+            const { lengthWeeks, priceCadDollars } = req.body;
+
+            if (isNaN(id)) {
+                return res.status(400).json({ message: 'Invalid ID' });
+            }
+
+            const updatedPrice = await prisma.adPrice.update({
+                where: { id },
+                data: {
+                    lengthWeeks,
+                    priceCadDollars,
+                },
+            });
+
+            res.status(200).json(updatedPrice);
+        } catch (error) {
+            console.error(error);
+
+            res.status(400).json({
+                message: 'Failed to update ad price',
+                details: error.message,
+            });
+        }
+    }
+);
+
+// DELETE a single ad price
+advertisementRouter.delete(
+    '/deletePrice/:id',
+    async (req, res) => {
+        try {
+            const id = Number(req.params.id);
+
+            if (isNaN(id)) {
+                return res.status(400).json({ message: 'Invalid ID' });
+            }
+
+            await prisma.adPrice.delete({
+                where: { id },
+            });
+            
+            res.status(204).send();
+        } catch (error) {
+            console.error(error);
+            res.status(400).json({
+                message: 'Failed to delete ad price',
+                details: error.message,
+            });
+        }
+    }
+);
+
 
 // Experimental
 advertisementRouter.get(

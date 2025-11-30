@@ -71,6 +71,7 @@ export const ROUTES = {
     ALL_ADVERTISEMENT: '/advertisement/all',
     USER_ADVERTISEMENTS: '/advertisement/user',
     EDIT_ADVERTISEMENT: '/advertisement/edit',
+    EDIT_AD_PRICING: '/advertisement/pricing',
     SEND_EMAIL: '/sendEmail',
     RESET_PASSWORD: '/user/reset-password',
     SEGMENT_MANAGEMENT_OVERVIEW: '/segment/management/all',

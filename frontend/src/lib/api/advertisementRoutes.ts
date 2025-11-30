@@ -31,7 +31,7 @@ export const postCreateAdvertisement = async (advertisementData:CreateAdvertisem
         throw new Error('You must provided a advertisement image for you advertisement.');
     }
     //if published field is invalid
-    if(published==null || published==undefined){
+    if(published===null || published===undefined){
         throw new Error('You must let us know if you want to publish you advertisement.');
     }
     //create a new form-data form and add all filed to it

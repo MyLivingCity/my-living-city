@@ -653,6 +653,12 @@ model UserCommentDislikes {
   @@map(name: "user_comment_dislikes")
 }
 
+model AdPrice {
+  id                Int       @id @default(autoincrement())
+  lengthWeeks       Int       @map("length_weeks")
+  priceCadDollars   Decimal   @db.Decimal(10, 2) @map("price_cad_dollars")
+}
+
 model Advertisements {
   id       Int       @id @default(autoincrement())
   ownerId  String    @map("owner_id")

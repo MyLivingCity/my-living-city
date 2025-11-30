@@ -17,6 +17,7 @@ import LoginPage from './pages/LoginPage';
 import PrivateRoute from './components/utility/PrivateRoute';
 import PublicRoute from './components/utility/PublicRoute';
 import SubmitAdvertisementPage from './pages/SubmitAdvertisementPage';
+import SubmitAdvertisementComplimentaryPage from './pages/SubmitAdvertisementComplimentaryPage';
 import ResetPasswordContent from './pages/ResetPasswordPage';
 import SegmentManagementPage from './pages/SegmentManagementPage';
 import AdminEmailGeneratePage from './pages/AdminEmailGeneratePage';
@@ -35,10 +36,13 @@ import ModManagementPage from './pages/ModManagementPage';
 import MunicipalDashboardPage from './pages/MunicipalDashboardPage';
 import CheckEmailPage from './pages/CheckEmailPage';
 import { SegmentPage } from './pages/SegmentPage';
+import ProfileCardDisplayPage from './pages/ProfileCardDisplayPage';
+import PublicProfilesPage from './pages/PublicProfilesPage';
 import SubGroupCreationPage from './pages/SubGroupCreationPage';
 
 //* Added for SubGroup Management Page
 import SubGroupManagementPage from './pages/SubGroupManagementPage';
+import EditAdPricingPage from './pages/EditAdPricingPage';
 
 function App() {
     return (
@@ -50,6 +54,9 @@ function App() {
                     
                     //* This is the route for the SubGroupManagerPage
                     <PrivateRoute path={ROUTES.SUBGROUP_MANAGEMENT} component={SubGroupManagementPage} />
+
+                    <Route path='/profile-card-display' component={ProfileCardDisplayPage} />
+                    <Route path={ROUTES.PUBLIC_PROFILES} component={PublicProfilesPage} />
 
                     <Route path={ROUTES.LANDING} component={LandingPage} exact />
                     <Route
@@ -97,6 +104,16 @@ function App() {
                         ]}
                     />
                     <CustomRoute
+                        path={ROUTES.SUBMIT_ADVERTISEMENT_COMPLIMENTARY}
+                        component={SubmitAdvertisementComplimentaryPage}
+                        userTypes={[
+                            USER_TYPES.BUSINESS,
+                            USER_TYPES.COMMUNITY,
+                            USER_TYPES.SUPER_ADMIN,
+                            USER_TYPES.ADMIN,
+                        ]}
+                    />
+                    <CustomRoute
                         path={ROUTES.COMMUNITY_DASHBOARD}
                         component={CommunityDashboardPage}
                         userTypes={[
@@ -116,6 +133,10 @@ function App() {
                     <AdminRoute
                         path={ROUTES.EDIT_ADVERTISEMENT}
                         component={EditAdsPage}
+                    />
+                    <AdminRoute
+                        path={ROUTES.EDIT_AD_PRICING}
+                        component={EditAdPricingPage}
                     />
                     <AdminRoute
                         path={ROUTES.SEGMENT_MANAGEMENT_OVERVIEW}

@@ -8,7 +8,7 @@ datasource db {
 }
 
 generator client {
-  provider        = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 model User {
@@ -33,12 +33,10 @@ model User {
   hasFlagged       Int      @default(0) @map("has_flagged")
   verified         Boolean  @default(false)
   verifiedToken    String?  @default(cuid())
-  displayFName      String?  @map("display_f_name")
-  displayLName      String?  @map("display_l_name")
-  adminmodEmail     String?  @map("adminmod_email")
+  displayFName     String?  @map("display_f_name")
+  displayLName     String?  @map("display_l_name")
+  adminmodEmail    String?  @map("adminmod_email")
   status           Boolean  @default(true)
-
-
 
   // Relationships
   address             UserAddress?
@@ -88,27 +86,27 @@ model User {
 }
 
 model UserHandle {
-  id                  Int        @id @default(autoincrement())
-  userId              String        @map("user_id")
-  handle              String
-  userSegmentRelationship           UserSegmentRelationShipType @map("user_segment_relationship_type")
+  id                      Int                         @id @default(autoincrement())
+  userId                  String                      @map("user_id")
+  handle                  String
+  userSegmentRelationship UserSegmentRelationShipType @map("user_segment_relationship_type")
 
   // Relationships
-  user                 User         @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 
   @@unique([userId, userSegmentRelationship])
   @@map(name: "user_handle")
 }
 
 model UserSegments {
-  id                   Int        @id @default(autoincrement())
-  userId               String        @map("user_id")
+  id                      Int                         @id @default(autoincrement())
+  userId                  String                      @map("user_id")
   userSegmentRelationship UserSegmentRelationShipType @map("user_segment_relationship_type")
-  IdeaComment          IdeaComment[]
+  IdeaComment             IdeaComment[]
 
-  // relationships 
-  segment Segments @relation(fields: [segmentId] , references: [segId])
-  segmentId Int 
+  // relationships
+  segment   Segments @relation(fields: [segmentId], references: [segId])
+  segmentId Int
 
   user User @relation(fields: [userId], references: [id])
 }
@@ -122,41 +120,41 @@ enum UserSegmentRelationShipType {
 }
 
 model Segments {
-  segId        Int          @id @default(autoincrement()) @map("seg_id")
-  
-  parentSegment Segments? @relation("SegmentToSegment", fields: [parentId], references: [segId]) 
-  parentId     Int?
+  segId Int @id @default(autoincrement()) @map("seg_id")
+
+  parentSegment Segments? @relation("SegmentToSegment", fields: [parentId], references: [segId])
+  parentId      Int?
 
   children Segments[] @relation("SegmentToSegment")
 
-  name         String       @map("segment_name")
+  name String @map("segment_name")
 
-  country      String?
-  province     String?
-  lat          Decimal?
-  lon          Decimal?
-  radius       Decimal?
+  country  String?
+  province String?
+  lat      Decimal?
+  lon      Decimal?
+  radius   Decimal?
 
-  createdAt    DateTime     @default(now()) @map("created_at")
-  updatedAt    DateTime?    @default(now()) @updatedAt @map("update_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @default(now()) @updatedAt @map("update_at")
 
-  userReach      UserReach[]
-
-  @@map(name: "segment")
+  userReach UserReach[]
 
   // relations 
-  userSegment   UserSegments[]
-  segmentType    SegmentType
-  ideas          Idea[]
-  regionSubGroups     SubGroup[] @relation("SuperSegmentRelation")
-  segmentSubGroups    SubGroup[] @relation("SegmentRelation")
-  subSegmentSubGroups SubGroup[] @relation("SubSegmentRelation")
+  userSegment         UserSegments[]
+  segmentType         SegmentType
+  ideas               Idea[]
+  regionSubGroups     SubGroup[]     @relation("SuperSegmentRelation")
+  segmentSubGroups    SubGroup[]     @relation("SegmentRelation")
+  subSegmentSubGroups SubGroup[]     @relation("SubSegmentRelation")
+
+  @@map(name: "segment")
 }
 
 enum SegmentType {
-segment
-superSegment
-subSegment
+  segment
+  superSegment
+  subSegment
 }
 
 model Idea {
@@ -247,8 +245,8 @@ enum UserType {
 }
 
 enum AdType {
-  BASIC
-  EXTRA
+  COMPLIMENTARY
+  PAID
 
   @@map(name: "ad_type")
 }
@@ -358,7 +356,6 @@ model CommentBan {
 }
 
 // user segment entity
-
 
 // Category entity
 model Category {
@@ -487,7 +484,6 @@ model Donor {
   @@map(name: "donors")
 }
 
-
 model IdeaFlag {
   id         Int     @id @default(autoincrement())
   ideaId     Int     @map("idea_id")
@@ -541,10 +537,10 @@ model Proposal {
   feedbackType4 String? @map("feedback_type_4")
   feedbackType5 String? @map("feedback_type_5")
 
-  location       String? @map("location")
+  location        String?          @map("location")
   // Relations
-  idea           Idea    @relation("proposal", fields: [ideaId], references: [id])
-  suggestedIdeas Idea[]  @relation("supportedProposal")
+  idea            Idea             @relation("proposal", fields: [ideaId], references: [id])
+  suggestedIdeas  Idea[]           @relation("supportedProposal")
   feedbackRatings FeedbackRating[]
 
   @@map(name: "proposal")
@@ -569,18 +565,18 @@ model Project {
 
 model FeedbackRating {
   // Keys
-  id          Int      @id @default(autoincrement())
-  proposalId  Int      @map("proposal_id")
-  feedbackId  Int      @map("feedback_id")
-  authorId    String   @map("author_id")
+  id                Int      @id @default(autoincrement())
+  proposalId        Int      @map("proposal_id")
+  feedbackId        Int      @map("feedback_id")
+  authorId          String   @map("author_id")
   // Fields
-  rating             Int      @default(0)
-  ratingExplanation String? @map("rating_explaination")
-  createdAt          DateTime @default(now()) @map(name: "created_at")
-  updatedAt          DateTime @default(now()) @updatedAt @map(name: "updated_at")
+  rating            Int      @default(0)
+  ratingExplanation String?  @map("rating_explaination")
+  createdAt         DateTime @default(now()) @map(name: "created_at")
+  updatedAt         DateTime @default(now()) @updatedAt @map(name: "updated_at")
   // relations
-  author             User     @relation(fields: [authorId], references: [id])
-  proposal           Proposal @relation(fields: [proposalId], references: [id])
+  author            User     @relation(fields: [authorId], references: [id])
+  proposal          Proposal @relation(fields: [proposalId], references: [id])
 }
 
 model IdeaRating {
@@ -616,9 +612,9 @@ model IdeaComment {
   quarantined_at         DateTime @default(now()) @map(name: "quarantined_at")
 
   // Comment Funnel Fields
-  tone                   String?
-  attitude               String?
-  keywords               Json?
+  tone     String?
+  attitude String?
+  keywords Json?
 
   // Moderator Fields
   commentFlagNumber Int                   @default(0) @map("comment_flag_num")
@@ -655,6 +651,12 @@ model UserCommentDislikes {
   @@map(name: "user_comment_dislikes")
 }
 
+model AdPrice {
+  id                Int       @id @default(autoincrement())
+  lengthWeeks       Int       @map("length_weeks")
+  priceCadDollars   Decimal   @db.Decimal(10, 2) @map("price_cad_dollars")
+}
+
 model Advertisements {
   id       Int       @id @default(autoincrement())
   ownerId  String    @map("owner_id")
@@ -662,7 +664,7 @@ model Advertisements {
   updateAt DateTime? @default(now()) @updatedAt @map("update_at")
 
   adTitle      String    @map("advertisement_title")
-  adType       AdType    @default(BASIC) @map("advertisement_type")
+  adType       AdType    @default(COMPLIMENTARY) @map("advertisement_type")
   duration     DateTime? @map("advertisement_duration")
   adPosition   String    @map("advertisement_position")
   imagePath    String    @map("advertisement_image_path")
@@ -673,8 +675,6 @@ model Advertisements {
 
   @@map(name: "advertisement")
 }
-
-
 
 // UserReach
 model UserReach {
@@ -722,7 +722,6 @@ model UserIdeaEndorse {
   @@unique([userId, ideaId], name: "user_idea_endorse_unique")
   @@map(name: "user_idea_endorse")
 }
-
 
 model segmentRequest {
   id             Int      @id @default(autoincrement())
@@ -863,101 +862,102 @@ model False_Flagging_Behavior {
 }
 
 model Bad_Posting_Behavior {
-  id         Int       @id @default(autoincrement())
-  bad_post_count Int    @default(0)
-  post_flag_count Int  @default(0)
-  post_comment_ban Boolean @default(false)
-  bannedAt   DateTime? @map("banned_at")
-  bannedUntil DateTime? @map("banned_until")
-  userId     String    @map("user_id")
-  user       User      @relation(fields: [userId], references: [id])
+  id               Int       @id @default(autoincrement())
+  bad_post_count   Int       @default(0)
+  post_flag_count  Int       @default(0)
+  post_comment_ban Boolean   @default(false)
+  bannedAt         DateTime? @map("banned_at")
+  bannedUntil      DateTime? @map("banned_until")
+  userId           String    @map("user_id")
+  user             User      @relation(fields: [userId], references: [id])
 
   @@map(name: "bad_posting_behavior")
 }
 
 model School_Details {
-  id         Int      @id @default(autoincrement())
-  displayFName String? @map("display_f_name")
-  displayLName String? @map("display_l_name")
-  streetAddress String?   @map("street_address")
-  postalCode String?   @map("postal_code")
-  faculty   String?   
-  programCompletionDate DateTime? @db.Date @map("program_completion_date")
-  userId     String   @map("user_id")
-  user       User     @relation(fields: [userId], references: [id])
-  createdAt  DateTime @default(now()) @map("created_at")
-  updatedAt  DateTime @default(now()) @map("updated_at")
+  id                    Int       @id @default(autoincrement())
+  displayFName          String?   @map("display_f_name")
+  displayLName          String?   @map("display_l_name")
+  streetAddress         String?   @map("street_address")
+  postalCode            String?   @map("postal_code")
+  faculty               String?
+  programCompletionDate DateTime? @map("program_completion_date") @db.Date
+  userId                String    @map("user_id")
+  user                  User      @relation(fields: [userId], references: [id])
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @default(now()) @map("updated_at")
 
   @@map(name: "school_details")
 }
 
 model Work_Details {
-  id        Int      @id @default(autoincrement())
-  displayFName String? @map("display_f_name")
-  displayLName String? @map("display_l_name")
-  streetAddress String?   @map("street_address")
-  postalCode String?   @map("postal_code")
-  company    String? 
-  userId     String   @map("user_id")
-  user       User     @relation(fields: [userId], references: [id])
-  createdAt  DateTime @default(now()) @map("created_at")
-  updatedAt  DateTime @default(now()) @map("updated_at")
+  id            Int      @id @default(autoincrement())
+  displayFName  String?  @map("display_f_name")
+  displayLName  String?  @map("display_l_name")
+  streetAddress String?  @map("street_address")
+  postalCode    String?  @map("postal_code")
+  company       String?
+  userId        String   @map("user_id")
+  user          User     @relation(fields: [userId], references: [id])
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @default(now()) @map("updated_at")
 
   @@map(name: "work_details")
 }
 
 model Feature_Toggle {
-  id        Int      @id @default(autoincrement())
-  featureName String @unique
-  isEnabled Boolean @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          Int      @id @default(autoincrement())
+  featureName String   @unique
+  isEnabled   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
   @@map(name: "feature_toggle")
 }
 
 // SubGroup Functionality
 model SubGroup {
-  id           String       @id @default(cuid())
-  name         String
-  description  String?
+  id          String  @id @default(cuid())
+  name        String
+  description String?
 
   isVirtual    Boolean      @map("is_virtual")
   isPrivate    Boolean      @map("is_private")
-  privacyField PrivacyField @map("privacy_field") @default(PRIVATE)
+  privacyField PrivacyField @default(PRIVATE) @map("privacy_field")
 
-  createdAt    DateTime     @default(now()) @map("created_at")
-  updatedAt    DateTime     @default(now()) @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
 
   // Nesting Relationships
-  regionId     Int?       @map("region_id")
-  segmentId    Int?       @map("segment_id")
-  subSegmentId Int?       @map("sub_segment_id")
+  regionId     Int? @map("region_id")
+  segmentId    Int? @map("segment_id")
+  subSegmentId Int? @map("sub_segment_id")
 
   // Relations
-  managerId    String       @map("manager_id")
-  manager      User         @relation("ManagedSubGroups", fields: [managerId], references: [id])
+  managerId String @map("manager_id")
+  manager   User   @relation("ManagedSubGroups", fields: [managerId], references: [id])
 
-  region     Segments?  @relation("SuperSegmentRelation", fields: [regionId], references: [segId])
+  region     Segments? @relation("SuperSegmentRelation", fields: [regionId], references: [segId])
   segment    Segments? @relation("SegmentRelation", fields: [segmentId], references: [segId])
   subSegment Segments? @relation("SubSegmentRelation", fields: [subSegmentId], references: [segId])
 
-  members      SubGroupMember[]
+  members SubGroupMember[]
 
   @@map("subgroup")
 }
 
 model SubGroupMember {
-  id          String           @id @default(cuid())
-  userId      String           @map("user_id")
-  subGroupId  String           @map("sub_group_id")
+  id         String @id @default(cuid())
+  userId     String @map("user_id")
+  subGroupId String @map("sub_group_id")
 
   // Possible status: pending, approved, rejected
-  status      MembershipStatus @default(PENDING)
-  joinedAt    DateTime         @default(now()) @map("joined_at")
-  updatedAt   DateTime         @default(now()) @updatedAt @map("updated_at")
-  
-  user        User             @relation("JoinedSubGroups", fields: [userId], references: [id])
-  subGroup    SubGroup         @relation(fields: [subGroupId], references: [id])
+  status    MembershipStatus @default(PENDING)
+  joinedAt  DateTime         @default(now()) @map("joined_at")
+  updatedAt DateTime         @default(now()) @updatedAt @map("updated_at")
+
+  user     User     @relation("JoinedSubGroups", fields: [userId], references: [id])
+  subGroup SubGroup @relation(fields: [subGroupId], references: [id])
 
   @@unique([userId, subGroupId])
   @@map("subgroup_member")

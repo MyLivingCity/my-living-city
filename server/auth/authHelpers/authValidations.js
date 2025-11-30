@@ -1,5 +1,7 @@
 const prisma = require("../../lib/prismaClient");
 const { argon2Hash } = require("../../lib/utilityFunctions");
+const ValidationError = require("../../types/ValidationError");
+const UserExistsError = require("../../types/UserExistsError");
 
 const  validateUserData = async (email, password, confirmPassword) => {
     try {

@@ -588,84 +588,54 @@ segmentRouter.get(
     '/aggregateInfo/:segmentId',
     async (req, res) => {
         try {
-            const home = await prisma.userSegments.findMany({
-                where: {
-                    homeSegmentId: parseInt(req.params.segmentId)
-                },
-            })
+            const segmentId = parseInt(req.params.segmentId);
 
-            const work = await prisma.userSegments.findMany({
-                where: {
-                    workSegmentId: parseInt(req.params.segmentId)
-                },
-            })
-
-            const student = await prisma.userSegments.findMany({
-                where: {
-                    schoolSegmentId: parseInt(req.params.segmentId)
-                },
-            })
+            // Find users who have this segment as HOME / WORK / SCHOOL via UserSegments relation
+            const home = await prisma.userSegments.findMany({ where: { segmentId, userSegmentRelationship: 'HOME' } });
+            const work = await prisma.userSegments.findMany({ where: { segmentId, userSegmentRelationship: 'WORK' } });
+            const student = await prisma.userSegments.findMany({ where: { segmentId, userSegmentRelationship: 'SCHOOL' } });
 
             const allUsers = [...home, ...work, ...student];
-            const uniqueUser = [];
-            allUsers.forEach(user => {
-                if (!uniqueUser.includes(user.id)) {
-                    uniqueUser.push(user.id);
+            const uniqueUserIds = [];
+            allUsers.forEach(us => {
+                if (us && us.userId && !uniqueUserIds.includes(us.userId)) {
+                    uniqueUserIds.push(us.userId);
                 }
             });
 
-            const idea = await prisma.idea.findMany({
+            // Find ideas associated to this segment via the many-to-many relation
+            const ideas = await prisma.idea.findMany({
                 where: {
-                    segmentId: parseInt(req.params.segmentId)
-                }
-            })
-
-            const ideaIds = idea.map((idea) => idea.id);
-
-            const proposal = await prisma.proposal.aggregate({
-                where: {
-                    ideaId: {
-                        in: ideaIds
-                    }
+                    segments: { some: { segId: segmentId } }
                 },
-                _count: true
-            })
+                select: { id: true }
+            });
 
-            const project = await prisma.project.aggregate({
-                where: {
-                    ideaId: {
-                        in: ideaIds
-                    }
-                },
-                _count: true
-            })
+            const ideaIds = ideas.map(i => i.id);
 
-            const subSegments = await prisma.subSegments.findMany({
-                where: {
-                    segId: parseInt(req.params.segmentId)
-                }
-            })
+            // Count proposals and projects that reference these ideas
+            const proposalsCount = ideaIds.length ? await prisma.proposal.count({ where: { ideaId: { in: ideaIds } } }) : 0;
+            const projectsCount = ideaIds.length ? await prisma.project.count({ where: { ideaId: { in: ideaIds } } }) : 0;
 
-            const superSegment = await prisma.segments.findFirst({
-                where: {
-                    segId: parseInt(req.params.segmentId)
-                }
-            })
+            // Sub-segments are stored in Segments table with parentId referencing this segment
+            const subSegments = await prisma.segments.findMany({ where: { parentId: segmentId, segmentType: 'subSegment' } });
+
+            const superSegment = await prisma.segments.findFirst({ where: { segId: segmentId } });
 
             const subsegmentNames = subSegments.map((subSegment) => subSegment.name);
 
             const result = {
-                "totalUsers": uniqueUser.length,
-                "residents": home.length,
-                "workers": work.length,
-                "students": student.length,
-                "ideas": ideaIds.length,
-                "proposals": proposal._count,
-                "projects": project._count,
-                "superSegmentName": superSegment.superSegName,
-                "subSegmentsCount": subSegments.length,
-                "subSegments": subsegmentNames,
-            }
+                totalUsers: uniqueUserIds.length,
+                residents: home.length,
+                workers: work.length,
+                students: student.length,
+                ideas: ideaIds.length,
+                proposals: proposalsCount,
+                projects: projectsCount,
+                superSegmentName: superSegment ? superSegment.name : null,
+                subSegmentsCount: subSegments.length,
+                subSegments: subsegmentNames,
+            };
 
             res.status(200).json(result);
 

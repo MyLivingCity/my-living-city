@@ -23,14 +23,12 @@ import * as Yup from 'yup';
 
 import '../../scss/content/_createAds.scss';
 import { ISegment } from 'src/lib/types/data/segment.type';
-import { IAdPrice } from 'src/lib/types/data/adPrice.type';
 import { TEXT_INPUT_LIMIT } from 'src/lib/constants';
 
 //TODO: need to include segment property in formik (may not have server route yet) 2022/11/24
 
 interface SubmitAdvertisementPageContentProps {
     segmentOptions: ISegment[] | undefined;
-    adPriceOptions: IAdPrice[] | undefined;
 }
 //formik form input validation schema
 const schema = Yup.object().shape({
@@ -52,7 +50,7 @@ const schema = Yup.object().shape({
 
 const SubmitAdvertisementPageContent: React.FC<
     SubmitAdvertisementPageContentProps
-> = ({ segmentOptions, adPriceOptions }: SubmitAdvertisementPageContentProps) => {
+> = ({ segmentOptions }: SubmitAdvertisementPageContentProps) => {
     const [isLoading, setIsLoading] = useState(false);
     const [validated, setValidated] = useState(false);
     const [error, setError] = useState<IFetchError | null>(null);
@@ -92,10 +90,10 @@ const SubmitAdvertisementPageContent: React.FC<
     };
     //initial values for form
     const initialValues: CreateAdvertisementInput = {
-        adType: 'PAID',
+        adType: 'COMPLIMENTARY',
         adTitle: '',
         adPosition: '',
-        duration: 1,
+        duration: 0,
         published: false,
         externalLink: '',
         imagePath: '',
@@ -104,7 +102,7 @@ const SubmitAdvertisementPageContent: React.FC<
     return (
         <Container className='submit-advertisement-page-content'>
             <Row className='mb-4 mt-4 justify-content-center'>
-                <h2 className='pb-2 pt-2 display-6'>Create Advertisement</h2>
+                <h2 className='pb-2 pt-2 display-6'>Create Complimentary Advertisement</h2>
             </Row>
             <Row className='submit-advertisement-form-group justify-content-center'>
                 <Col lg={10}>
@@ -116,10 +114,10 @@ const SubmitAdvertisementPageContent: React.FC<
                                 actions.setSubmitting(false);
                                 actions.resetForm({
                                     values: {
-                                        adType: 'PAID',
+                                        adType: 'COMPLIMENTARY',
                                         adTitle: '',
                                         adPosition: '',
-                                        duration: 1,
+                                        duration: 0,
                                         published: false,
                                         externalLink: '',
                                         imagePath: '',
@@ -156,28 +154,6 @@ const SubmitAdvertisementPageContent: React.FC<
                                         {errors.adTitle}
                                     </Form.Control.Feedback>
                                 </Form.Group>
-
-                                <Form.Control
-                                    as='select'
-                                    name='duration'
-                                    size='sm'
-                                    onChange={handleChange}
-                                    value={values.duration}
-                                    isInvalid={!!errors.duration}
-                                >
-                                    <option value='' disabled>
-                                        Select Duration
-                                    </option>
-
-                                    {adPriceOptions &&
-                                        adPriceOptions.map((price) => (
-                                            <option key={price.id} value={price.lengthWeeks}>
-                                                {price.lengthWeeks}{' '}
-                                                {price.lengthWeeks === 1 ? 'week' : 'weeks'} - $
-                                                {price.priceCadDollars}
-                                            </option>
-                                        ))}
-                                </Form.Control>
 
                                 <Form.Group controlId='validateExternalLink'>
                                     <Form.Label>
@@ -253,7 +229,6 @@ const SubmitAdvertisementPageContent: React.FC<
                                         feedback={errors.published}
                                     />
                                 </Form.Group>
-
                                 <Button
                                     block
                                     size='lg'

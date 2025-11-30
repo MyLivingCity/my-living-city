@@ -67,9 +67,11 @@ export const ROUTES = {
     TEAM404: '/*',
     ADMIN_MOD_EMAIL_GENERATE: '/adminmod-email-generate',
     SUBMIT_ADVERTISEMENT: '/advertisement/submit',
+    SUBMIT_ADVERTISEMENT_COMPLIMENTARY: '/advertisement/complimentary',
     ALL_ADVERTISEMENT: '/advertisement/all',
     USER_ADVERTISEMENTS: '/advertisement/user',
     EDIT_ADVERTISEMENT: '/advertisement/edit',
+    EDIT_AD_PRICING: '/advertisement/pricing',
     SEND_EMAIL: '/sendEmail',
     RESET_PASSWORD: '/user/reset-password',
     SEGMENT_MANAGEMENT_OVERVIEW: '/segment/management/all',
@@ -85,6 +87,7 @@ export const ROUTES = {
     MOD_MANAGEMENT: '/mod/management',
     //* This is the route for the SubGroupManagerPage
     SUBGROUP_MANAGEMENT: '/subgroup-management',
+    PUBLIC_PROFILES: '/public-profiles',
     SUBGROUP_MANAGEMENT_CREATION: '/subgroup/management',
 };
 

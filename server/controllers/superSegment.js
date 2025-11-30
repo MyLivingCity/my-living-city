@@ -2,6 +2,7 @@ const passport = require('passport');
 const express = require('express');
 const superSegmentRouter = express.Router();
 const prisma = require('../lib/prismaClient');
+const segmentType = require('@prisma/client').SegmentType;
 
 const { isEmpty, isInteger, isString } = require('lodash');
 const { UserType } = require('@prisma/client');
@@ -21,9 +22,11 @@ superSegmentRouter.post(
                 where:{id:id},
                 select:{userType:true}
             });
+            if (theUser != null) console.log("THE USER: ", theUser.userType);
 
             if(theUser.userType==='SUPER_ADMIN' || theUser.userType==='ADMIN'){
                 const {name,country,province} = req.body;
+                console.log(Object.keys(prisma).sort());
 
                 if(!name||!isString(name)){
                     error+='A name is need for creating a super segment. ';
@@ -52,13 +55,13 @@ superSegmentRouter.post(
                           errorStack: errorStack
                         }
                     });
-                }
-
-                const result = await prisma.superSegment.create({
+                };
+                const result = await prisma.segments.create({
                     data:{
                         name:name,
                         country:country,
-                        province:province
+                        province:province,
+                        segmentType: segmentType.superSegment
                     }
                 })
 
@@ -91,7 +94,9 @@ superSegmentRouter.get(
     '/getAll',
     async(req,res) => {
         try{
-            const superSegments = await prisma.superSegment.findMany();
+                const superSegments = await prisma.segments.findMany({
+                    where: { segmentType: segmentType.superSegment }
+                });
 
             res.status(200).json(superSegments);
         }catch(error){
@@ -115,10 +120,11 @@ superSegmentRouter.get(
         try {
             const { country, province } = req.query;
             console.log(`Query Parameters: country=${country}, province=${province}`);
-            const superSegments = await prisma.superSegment.findMany({
+            const superSegments = await prisma.segments.findMany({
                 where: {
                     country: country,
-                    province: province
+                    province: province,
+                    segmentType: segmentType.superSegment
                 }
             });
             res.status(200).json(superSegments);
@@ -142,17 +148,17 @@ superSegmentRouter.get(
     passport.authenticate('jwt',{session:false}),
     async(req,res) => {
         try{
-            const {superSegmentId} = req.params;
-
-            if(!isInteger(superSegmentId)){
+            const { superSegmentId } = req.params;
+            const segIdNumber = Number.parseInt(superSegmentId);
+            if (!isInteger(segIdNumber)) {
                 return res.status(400).json("Invalid super segment id! ");
             }
 
-            const theSuperSegment = await prisma.superSegment.findUnique({
-                where:{superSegId:superSegmentId}
+            const theSuperSegment = await prisma.segments.findUnique({
+                where: { segId: segIdNumber }
             });
 
-            if(!theSuperSegment){
+            if (!theSuperSegment || theSuperSegment.segmentType !== segmentType.superSegment) {
                 return res.status(404).json("super segment not found! ");
             }
 
@@ -192,20 +198,20 @@ superSegmentRouter.delete(
                 const { deleteId } = req.params;
                 const segIdNumber = Number.parseInt(deleteId);
                 console.log("deleteId: ", deleteId);
-                if(!isInteger(segIdNumber)){
+                if (!isInteger(segIdNumber)) {
                     return res.status(400).json("Invalid super segment id! ");
                 }
-                
-                const theSuperSegment = await prisma.superSegment.findUnique({
-                    where:{superSegId:segIdNumber}
+
+                const theSuperSegment = await prisma.segments.findUnique({
+                    where: { segId: segIdNumber }
                 });
 
-                if(!theSuperSegment){
+                if (!theSuperSegment || theSuperSegment.segmentType !== segmentType.superSegment) {
                     return res.status(404).json("super segment not found! ");
                 }
 
-                const result = await prisma.superSegment.delete({
-                    where:{superSegId:segIdNumber}
+                const result = await prisma.segments.delete({
+                    where: { segId: segIdNumber }
                 });
 
                 res.sendStatus(204);
@@ -251,18 +257,18 @@ superSegmentRouter.post(
             });
 
             if(theUser.userType==='SUPER_ADMIN' || theUser.userType==='ADMIN'){
-                const {superSegId} = req.params;
+                const { superSegId } = req.params;
                 const segIdNumber = Number.parseInt(superSegId);
                 if (!isInteger(segIdNumber)) {
                     return res.status(400).json("Invalid super segment id! ");
                 }
-                const {name,country,province} = req.body;
+                const { name, country, province } = req.body;
 
-                const theSuperSegment = await prisma.superSegment.findUnique({
-                    where:{superSegId: segIdNumber}
+                const theSuperSegment = await prisma.segments.findUnique({
+                    where: { segId: segIdNumber }
                 });
 
-                if(!theSuperSegment){
+                if (!theSuperSegment || theSuperSegment.segmentType !== segmentType.superSegment) {
                     return res.status(404).json("super segment not found! ");
                 }
 
@@ -295,12 +301,12 @@ superSegmentRouter.post(
                     });
                 };
 
-                const result = await prisma.superSegment.update({
-                    where:{superSegId:segIdNumber},
-                    data:{
-                        name:name,
-                        country:country,
-                        province:province
+                const result = await prisma.segments.update({
+                    where: { segId: segIdNumber },
+                    data: {
+                        name: name,
+                        country: country,
+                        province: province
                     }
                 });
 

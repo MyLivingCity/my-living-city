@@ -397,7 +397,7 @@ userRouter.post("/signup",
             passport.authenticate("jwt", { session: false }, async (err, user, info) => {
                 console.log("JWT return values", err, user, info);
                 if (err) {
-                    res.status(500).json(err);
+                    res.status(500).json(err.message);
                     return;
                 }
                 if (!user) {
@@ -479,7 +479,7 @@ userRouter.post("/login", async (req, res, next) => {
                 res.status(400);
                 return res.json({
                     error: err,
-                    message: "An Error occured.",
+                    message: `An Error occured. ${err.message}`,
                 });
             }
 
@@ -836,13 +836,14 @@ userRouter.put(
             const {
                 fname,
                 lname,
+                publicProfileVisible,
                 address: {
                     streetAddress,
                     streetAddress2,
                     city,
                     country,
                     postalCode,
-                }
+                } = {}
             } = req.body;
 
             // Conditional add params to update only fields passed in
@@ -850,6 +851,7 @@ userRouter.put(
             const updateData = {
                 ...fname && { fname },
                 ...lname && { lname },
+                ...(publicProfileVisible !== undefined && { publicProfileVisible }),
             }
 
             const updateAddressData = {
@@ -864,9 +866,11 @@ userRouter.put(
                 where: { id: id },
                 data: {
                     ...updateData,
-                    address: {
-                        update: updateAddressData
-                    }
+                    ...(Object.keys(updateAddressData).length > 0 && {
+                        address: {
+                            update: updateAddressData
+                        }
+                    })
                 }
             });
 
@@ -879,6 +883,120 @@ userRouter.put(
         } catch (error) {
             res.status(400).json({
                 message: `An Error occured while trying to update the profile for the email ${req.user.email}.`,
+                details: {
+                    errorMessage: error.message,
+                    errorStack: error.stack,
+                }
+            });
+        } finally {
+            await prisma.$disconnect();
+        }
+    }
+);
+
+// Business update profile endpoint
+userRouter.put(
+    '/business-update-profile',
+    passport.authenticate('jwt', { session: false }),
+    async (req, res, next) => {
+        try {
+            const { id } = req.user;
+            const { publicProfileVisible } = req.body;
+
+            const updateData = {
+                ...(publicProfileVisible !== undefined && { publicProfileVisible }),
+            };
+
+            const updatedUser = await prisma.user.update({
+                where: { id: id },
+                data: updateData
+            });
+
+            const parsedUser = { ...updatedUser, password: null };
+
+            res.status(200).json({
+                message: "User successfully updated",
+                user: parsedUser,
+            });
+        } catch (error) {
+            res.status(400).json({
+                message: `An error occurred while trying to update the profile.`,
+                details: {
+                    errorMessage: error.message,
+                    errorStack: error.stack,
+                }
+            });
+        } finally {
+            await prisma.$disconnect();
+        }
+    }
+);
+
+// Municipal update profile endpoint
+userRouter.put(
+    '/municipal-update-profile',
+    passport.authenticate('jwt', { session: false }),
+    async (req, res, next) => {
+        try {
+            const { id } = req.user;
+            const { publicProfileVisible } = req.body;
+
+            const updateData = {
+                ...(publicProfileVisible !== undefined && { publicProfileVisible }),
+            };
+
+            const updatedUser = await prisma.user.update({
+                where: { id: id },
+                data: updateData
+            });
+
+            const parsedUser = { ...updatedUser, password: null };
+
+            res.status(200).json({
+                message: "User successfully updated",
+                user: parsedUser,
+            });
+        } catch (error) {
+            res.status(400).json({
+                message: `An error occurred while trying to update the profile.`,
+                details: {
+                    errorMessage: error.message,
+                    errorStack: error.stack,
+                }
+            });
+        } finally {
+            await prisma.$disconnect();
+        }
+    }
+);
+
+// Community update profile endpoint  
+userRouter.put(
+    '/community-update-profile',
+    passport.authenticate('jwt', { session: false }),
+    async (req, res, next) => {
+        try {
+            const { id } = req.user;
+            const { publicProfileVisible } = req.body;
+
+            const updateData = {
+                ...(publicProfileVisible !== undefined && { publicProfileVisible }),
+            };
+
+            const updatedUser = await prisma.user.update({
+                where: { id: id },
+                data: updateData
+            });
+
+            const parsedUser = { ...updatedUser, password: null };
+
+            res.status(200).json({
+                message: "User successfully updated",
+                user: parsedUser,
+            });
+        } catch (error) {
+            res.status(400).json({
+                message: `An error occurred while trying to update the profile.`,
                 details: {
                     errorMessage: error.message,
                     errorStack: error.stack,

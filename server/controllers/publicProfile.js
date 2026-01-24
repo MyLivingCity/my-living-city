@@ -512,6 +512,10 @@ publicProfileRouter.get('/all', async (req, res) => {
                 profileType = 'municipal';
             } else if (user.userType === 'RESIDENTIAL') {
                 profileType = 'residential';
+            } else if (user.userType === 'BUSINESS') {
+                profileType = 'business';
+            }else if (user.userType === 'COMMUNITY') {
+                profileType = 'community';
             }
 
             // Get location from user address

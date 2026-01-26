@@ -182,6 +182,10 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     const [showProposalSegmentError, setShowProposalSegmentError] = useState(false);
 
     function redirectToIdeaSubmit() {
+        if (!segment && !primarySegment && !subSegment && !superSegment) {
+            setShowProposalSegmentError(true);
+            return;
+        }
         if (userType === 'Resident') {
             let name = subSegment?.name;
 

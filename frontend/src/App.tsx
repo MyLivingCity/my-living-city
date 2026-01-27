@@ -94,6 +94,11 @@ function App() {
                         userTypes={[USER_TYPES.BUSINESS, USER_TYPES.COMMUNITY]}
                     />
                     <CustomRoute
+                        path={ROUTES.EDIT_ADVERTISEMENT}
+                        component={EditAdsPage}
+                        userTypes={[USER_TYPES.BUSINESS, USER_TYPES.COMMUNITY]}
+                    />
+                    <CustomRoute
                         path={ROUTES.SUBMIT_ADVERTISEMENT}
                         component={SubmitAdvertisementPage}
                         userTypes={[
@@ -130,10 +135,6 @@ function App() {
                     />
 
                     <AdminRoute path={ROUTES.ALL_ADVERTISEMENT} component={AllAdsPage} />
-                    <AdminRoute
-                        path={ROUTES.EDIT_ADVERTISEMENT}
-                        component={EditAdsPage}
-                    />
                     <AdminRoute
                         path={ROUTES.EDIT_AD_PRICING}
                         component={EditAdPricingPage}

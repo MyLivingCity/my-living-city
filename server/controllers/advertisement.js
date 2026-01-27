@@ -321,8 +321,7 @@ advertisementRouter.get(
     '/get/:adsId',
     async (req, res) => {
         try {
-            const { Int: adsId } = req.params;
-            console.log(adsId);
+            const adsId = parseInt(req.params.adsId);
             const result = await prisma.advertisements.findFirst({
                 where: { id: adsId }
             })

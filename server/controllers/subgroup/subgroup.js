@@ -267,7 +267,7 @@ subgroupRouter.patch(
                 return res.status(404).json({ message: `Subgroup with id ${subGroupId} not found.` });
             }
 
-            data = {name, description, typeField, privacyField};
+            let data = { name, description, typeField, privacyField };
 
             if (typeField !== undefined) {
                 data.typeField = typeField;

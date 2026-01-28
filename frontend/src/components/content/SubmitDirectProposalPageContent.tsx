@@ -60,12 +60,7 @@ const SubmitDirectProposalPageContent: React.FC<
     const [markers, sendData]: any = useState({
         home: { lat: null, lon: null },
     });
-    let updatedSegData = [{
-        id: 0,
-        name: '',
-        segType: '',
-        userType: ''
-    }];
+    const [processedSegData, setProcessedSegData] = useState<ISegmentData[]>([]);
     const [map, showMap] = useState(false);
     const { token, user } = useContext(UserProfileContext);
     const [isLoading, setIsLoading] = useState(false);
@@ -92,6 +87,39 @@ const SubmitDirectProposalPageContent: React.FC<
     const [feedbackTypeList, setFeedbackTypeList] = useState<string[]>(
         emptyFeedbackTypeList
     );
+
+    useEffect(() => {
+        let tempSegData: ISegmentData[] = [];
+        if (Array.isArray(segData) && segData.length > 0 && (segData as any)[0]?.segment) {
+            // Raw API data, transform it
+            tempSegData = (segData as any[]).map((userSegment: any) => {
+                const segment = userSegment.segment;
+                let segType: 'Super-Segment' | 'Segment' | 'Sub-Segment';
+                if (segment.segmentType === 'subSegment') {
+                    segType = 'Sub-Segment';
+                } else if (segment.segmentType === 'superSegment') {
+                    segType = 'Super-Segment';
+                } else {
+                    segType = 'Segment';
+                }
+                const userType = userSegment.userSegmentRelationship === 'HOME'
+                    ? 'Resident'
+                    : userSegment.userSegmentRelationship === 'WORK'
+                        ? 'Worker'
+                        : 'Student';
+                return {
+                    id: segment.segId,
+                    name: segment.name,
+                    segType,
+                    userType,
+                } as ISegmentData;
+            }).filter(seg => seg.name && seg.name.trim() !== '');
+        } else if (Array.isArray(segData)) {
+            tempSegData = segData.filter(seg => seg.name && seg.name.trim() !== '');
+        }
+        setProcessedSegData(tempSegData);
+        console.log('Processed segData for dropdown:', tempSegData);
+    }, [segData]);
 
     // const toggleNumberOfFeedback = (num: number) => {
     //   //let numberOfFeedback = 0;
@@ -158,8 +186,15 @@ const SubmitDirectProposalPageContent: React.FC<
     };
 
     const handleCommunityChange = (index: number) => {
-        if (Array.isArray(updatedSegData) && updatedSegData.length > index) {
-            const selectedSegment = updatedSegData[index];
+        if (index === -1) {
+            formik.setFieldValue('segmentId', undefined);
+            formik.setFieldValue('superSegmentId', undefined);
+            formik.setFieldValue('subSegmentId', undefined);
+            formik.setFieldValue('userType', 'Resident'); // Reset to a safe default
+            return; 
+        }
+        if (Array.isArray(processedSegData) && processedSegData.length > index) {
+            const selectedSegment = processedSegData[index];
             if (selectedSegment.segType === 'Segment') {
                 formik.setFieldValue('segmentId', selectedSegment.id);
                 formik.setFieldValue('superSegmentId', undefined);
@@ -234,8 +269,8 @@ const SubmitDirectProposalPageContent: React.FC<
 
                 const proposal = await postCreateProposal(
                     proposalValues,
-          user!.banned,
-          token
+                    user!.banned,
+                    token
                 );
 
                 setError(null);
@@ -312,12 +347,6 @@ const SubmitDirectProposalPageContent: React.FC<
         onSubmit: submitHandler,
     });
 
-    useEffect(() => {
-        if (updatedSegData) {
-            handleCommunityChange(0);
-        }
-    }, []);
-
     function reverseGeocode() {
         setIsLoading(true);
         fetch(
@@ -339,160 +368,6 @@ const SubmitDirectProposalPageContent: React.FC<
                 setIsLoading(false);
             });
     }
-
-
-    const destructuredSegData = Object.entries(segData);
-    if (destructuredSegData !== null) {
-
-        if (
-            destructuredSegData[2] &&
-      destructuredSegData[2][1] &&
-      destructuredSegData[2][1].toString() !== '' &&
-      destructuredSegData[3] &&
-      destructuredSegData[3][1] &&
-      destructuredSegData[3][1].toString() !== ''
-        ) {
-            updatedSegData.push({
-                id: parseInt(destructuredSegData[2][1].toString()),
-                name: destructuredSegData[3][1].toString(),
-                segType: 'Super-Segment',
-                userType: 'Resident'
-            });
-        }
-
-        if (
-            destructuredSegData[4] &&
-      destructuredSegData[4][1] &&
-      destructuredSegData[4][1].toString() !== '' &&
-      destructuredSegData[5] &&
-      destructuredSegData[5][1] &&
-      destructuredSegData[5][1].toString() !== ''
-        ) {
-            updatedSegData.push({
-                id: parseInt(destructuredSegData[4][1].toString()),
-                name: destructuredSegData[5][1].toString(),
-                segType: 'Super-Segment',
-                userType: 'Worker'
-            });
-        }
-
-        if (
-            destructuredSegData[6] &&
-      destructuredSegData[6][1] &&
-      destructuredSegData[6][1].toString() !== '' &&
-      destructuredSegData[7] &&
-      destructuredSegData[7][1] &&
-      destructuredSegData[7][1].toString() !== ''
-        ) {
-            updatedSegData.push({
-                id: parseInt(destructuredSegData[6][1].toString()),
-                name: destructuredSegData[7][1].toString(),
-                segType: 'Super-Segment',
-                userType: 'Student'
-            });
-        }
-
-        if (
-            destructuredSegData[8] &&
-      destructuredSegData[8][1] &&
-      destructuredSegData[8][1].toString() !== '' &&
-      destructuredSegData[9] &&
-      destructuredSegData[9][1] &&
-      destructuredSegData[9][1].toString() !== ''
-        ) {
-            updatedSegData.push({
-                id: parseInt(destructuredSegData[8][1].toString()),
-                name: destructuredSegData[9][1].toString(),
-                segType: 'Segment',
-                userType: 'Resident'
-            });
-        }
-
-        if (
-            destructuredSegData[10] &&
-      destructuredSegData[10][1] &&
-      destructuredSegData[10][1].toString() !== '' &&
-      destructuredSegData[11] &&
-      destructuredSegData[11][1] &&
-      destructuredSegData[11][1].toString() !== ''
-        ) {
-            updatedSegData.push({
-                id: parseInt(destructuredSegData[10][1].toString()),
-                name: destructuredSegData[11][1].toString(),
-                segType: 'Segment',
-                userType: 'Worker'
-            });
-        }
-
-        if (
-            destructuredSegData[12] &&
-      destructuredSegData[12][1] &&
-      destructuredSegData[12][1].toString() !== '' &&
-      destructuredSegData[13] &&
-      destructuredSegData[13][1] &&
-      destructuredSegData[13][1].toString() !== ''
-        ) {
-            updatedSegData.push({
-                id: parseInt(destructuredSegData[12][1].toString()),
-                name: destructuredSegData[13][1].toString(),
-                segType: 'Segment',
-                userType: 'Student'
-            });
-        }
-
-        if (
-            destructuredSegData[14] &&
-      destructuredSegData[14][1] &&
-      destructuredSegData[14][1].toString() !== '' &&
-      destructuredSegData[15] &&
-      destructuredSegData[15][1] &&
-      destructuredSegData[15][1].toString() !== ''
-        ) {
-            updatedSegData.push({
-                id: parseInt(destructuredSegData[14][1].toString()),
-                name: destructuredSegData[15][1].toString(),
-                segType: 'Sub-Segment',
-                userType: 'Resident'
-            });
-        }
-
-        if (
-            destructuredSegData[16] &&
-      destructuredSegData[16][1] &&
-      destructuredSegData[16][1].toString() !== '' &&
-      destructuredSegData[17] &&
-      destructuredSegData[17][1] &&
-      destructuredSegData[17][1].toString() !== ''
-        ) {
-            updatedSegData.push({
-                id: parseInt(destructuredSegData[16][1].toString()),
-                name: destructuredSegData[17][1].toString(),
-                segType: 'Sub-Segment',
-                userType: 'Worker'
-            });
-        }
-
-        if (
-            destructuredSegData[18] &&
-      destructuredSegData[18][1] &&
-      destructuredSegData[18][1].toString() !== '' &&
-      destructuredSegData[19] &&
-      destructuredSegData[19][1] &&
-      destructuredSegData[19][1].toString() !== ''
-        ) {
-            updatedSegData.push({
-                id: parseInt(destructuredSegData[18][1].toString()),
-                name: destructuredSegData[19][1].toString(),
-                segType: 'Sub-Segment',
-                userType: 'Student'
-            });
-        }
-
-    }
-
-
-
-
 
     return (
         <Container className='submit-idea-page-content'>
@@ -533,14 +408,17 @@ const SubmitDirectProposalPageContent: React.FC<
                             </Form.Control>
                         </Form.Group>
                         <Form.Group>
-                            <Form.Label>*Select your community of interest</Form.Label>
+                            <Form.Label htmlFor='community'>*Select your community of interest</Form.Label>
                             <Form.Control
                                 as='select'
                                 type='number'
+                                id='community'
+                                name='community'
                                 onChange={(e) => handleCommunityChange(Number(e.target.value))}
                             >
-                                {Array.isArray(updatedSegData) &&
-                  updatedSegData
+                                <option value={-1}>Select a Community...</option>
+                                {Array.isArray(processedSegData) &&
+                  processedSegData
                       .filter((seg, index, self) => {        
                           return (
                               index ===

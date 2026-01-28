@@ -1,5 +1,5 @@
 import { Formik} from 'formik';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import { Col, Container, Row, Form, Button, Alert, Modal } from 'react-bootstrap';
 import { CreateAdvertisementInput } from 'src/lib/types/input/advertisement.input';
 import { UserProfileContext } from '../../contexts/UserProfile.Context';
@@ -70,16 +70,16 @@ const EditAdsPageContent: React.FC<EditAdsPageContentProps> = ({adsData}) => {
             setIsLoading(false);
         }
     };
-    //initial values for form
-    const initialValues: CreateAdvertisementInput ={
-        adType: 'PAID',
-        adTitle: '',
-        adPosition: '',
-        duration: 0,
-        published: false,
-        externalLink: '',
-        imagePath: '',
-    };
+    //Memoize initial values - recalculates when adsData changes
+    const initialValues: CreateAdvertisementInput = useMemo(() => ({
+        adType: adsData?.adType ?? 'PAID',
+        adTitle: adsData?.adTitle ?? '',
+        adPosition: adsData?.adPosition ?? '',
+        duration: adsData?.duration ?? 0,
+        published: adsData?.published ?? false,
+        externalLink: adsData?.externalLink ?? '',
+        imagePath: adsData?.imagePath ?? '',
+    }), [adsData]);
   
     return (
         <Container className='edit-advertisement-page-content'>
@@ -90,6 +90,7 @@ const EditAdsPageContent: React.FC<EditAdsPageContentProps> = ({adsData}) => {
                 <Col lg={10} >
                     <Formik
                         initialValues = {initialValues}
+                        enableReinitialize={true}
                         validationSchema = {schema}
                         onSubmit = {(values,actions) => {submitHandler(values).then(()=>{
                             actions.setSubmitting(false);

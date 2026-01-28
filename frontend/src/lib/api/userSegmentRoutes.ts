@@ -138,15 +138,15 @@ export const getMyUserSegmentInfoRefined = async (token: string | null, userId: 
         );
 
         // Transform the response data into the expected format
-        const segments = response.data.data.map((userSegment: any) => {
+        const segments = response.data.map((userSegment: any) => {
             // Extract segment data
             const segment = userSegment.segment;
 
-            // Determine segment type from relationship or structure
+            // Determine segment type from segmentType field
             let segType: 'Super-Segment' | 'Segment' | 'Sub-Segment';
-            if (segment.isSubSegment) {
+            if (segment.segmentType === 'subSegment') {
                 segType = 'Sub-Segment';
-            } else if (segment.isSuperSegment) {
+            } else if (segment.segmentType === 'superSegment') {
                 segType = 'Super-Segment';
             } else {
                 segType = 'Segment';
@@ -166,7 +166,7 @@ export const getMyUserSegmentInfoRefined = async (token: string | null, userId: 
                 segType,
                 userType,
                 // If super segment info is needed
-                superSegId: segment.superSegmentId,
+                superSegId: segment.parentId,
                 superSegName: segment.superSegment?.name
             } as ISegmentData;
         });

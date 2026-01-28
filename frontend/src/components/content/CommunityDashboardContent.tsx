@@ -48,8 +48,6 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
         isLoading: isSegmentIdsLoading,
         isError: isSegmentIdsError,
     } = allUserSegmentsQueryResult;
-    console.log('allUserSegmentsQueryResult: ', allUserSegmentsQueryResult);
-    console.log('segmentIdsObj: ', segmentIdsObj);
     const {
         data: segmentInfoAggregateData,
         isLoading: isSegmentInfoAggregateLoading,
@@ -71,16 +69,24 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
 
     if (!isSegmentIdsLoading && !isSegmentIdsError && Array.isArray(segmentIdsObj)) {
         segmentIdsObj.forEach((seg) => {
+            const existing = segmentsArray.find(s => s.id === seg.segment.segId);
             if (
                 seg.userSegmentRelationship === 'HOME' &&
                 seg.segment.segmentType === 'segment' &&
                 seg.segment.segId !== null && 
                 seg.segment.name !== null
             ) {
-                segmentsArray.push({
-                    id: seg.segment.segId,
-                    name: seg.segment.name + ' 🏠',
-                });
+                if (!existing) {
+                    segmentsArray.push({
+                        id: seg.segment.segId,
+                        name: seg.segment.name + ' 🏠',
+                    });
+                } 
+                else {
+                    if (!existing.name.includes('🏠')) {
+                        existing.name += ` ${'🏠'}`;
+                    }
+                }
             }
 
             if (
@@ -89,10 +95,17 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
                 seg.segment.segId !== null && 
                 seg.segment.name !== null
             ) {
-                segmentsArray.push({
-                    id: seg.segment.segId,
-                    name: seg.segment.name + ' 🏢',
-                });
+                if (!existing) {
+                    segmentsArray.push({
+                        id: seg.segment.segId,
+                        name: seg.segment.name + ' 🏢',
+                    });
+                }
+                else {
+                    if (!existing.name.includes('🏢')) {
+                        existing.name += ` ${'🏢'}`;
+                    }
+                }
             }
 
             if (
@@ -101,14 +114,20 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
                 seg.segment.segId !== null && 
                 seg.segment.name !== null
             ) {
-                segmentsArray.push({
-                    id: seg.segment.segId,
-                    name: seg.segment.name + ' 🏫',
-                });
+                if (!existing) {
+                    segmentsArray.push({
+                        id: seg.segment.segId,
+                        name: seg.segment.name + ' 🏫',
+                    });
+                }
+                else {
+                    if (!existing.name.includes('🏫')) {
+                        existing.name += ` ${'🏫'}`;
+                    }
+                }
             }
         });
     }
-    console.log('segmentsArray: ', segmentsArray);
 
     const [currCommunityName, setCurrCommunityName] = useState<string>('');
     const [currCommunityPosts, setCurrCommunityPosts] = useState<IIdeaWithAggregations[]>([]);
@@ -161,8 +180,6 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
     };
 
     const handleActiveCommunity = (communityName: string, type: string) => {
-        console.log('type: ', type);
-        console.log('communityName: ', communityName);
         const regionLocation = document.getElementById('region-list');
         const municipalityLocation = document.getElementById('municipality-list');
         const neighbourhoodLocation = document.getElementById('neighbourhood-list');

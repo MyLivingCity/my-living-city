@@ -924,7 +924,7 @@ model SubGroup {
   isVirtual    Boolean      @map("is_virtual")
   isPrivate    Boolean      @map("is_private")
   privacyField PrivacyField @default(PRIVATE) @map("privacy_field")
-  typeField TypeField @map("type_field")
+  typeField TypeField @default(VIRTUAL) @map("type_field")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")

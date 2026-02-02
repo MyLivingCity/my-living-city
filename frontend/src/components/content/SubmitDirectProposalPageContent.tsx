@@ -14,6 +14,7 @@ import { TEXT_INPUT_LIMIT } from 'src/lib/constants';
 import {
     ISegmentData,
 } from 'src/lib/types/data/segment.type';
+import { useProcessSegments } from '../../hooks/useProcessSegments';
 import { UserProfileContext } from '../../contexts/UserProfile.Context';
 import { postCreateIdea } from '../../lib/api/ideaRoutes';
 import { ICategory } from '../../lib/types/data/category.type';
@@ -60,7 +61,7 @@ const SubmitDirectProposalPageContent: React.FC<
     const [markers, sendData]: any = useState({
         home: { lat: null, lon: null },
     });
-    const [processedSegData, setProcessedSegData] = useState<ISegmentData[]>([]);
+    const processedSegData = useProcessSegments(segData);
     const [map, showMap] = useState(false);
     const { token, user } = useContext(UserProfileContext);
     const [isLoading, setIsLoading] = useState(false);
@@ -87,39 +88,6 @@ const SubmitDirectProposalPageContent: React.FC<
     const [feedbackTypeList, setFeedbackTypeList] = useState<string[]>(
         emptyFeedbackTypeList
     );
-
-    useEffect(() => {
-        let tempSegData: ISegmentData[] = [];
-        if (Array.isArray(segData) && segData.length > 0 && (segData as any)[0]?.segment) {
-            // Raw API data, transform it
-            tempSegData = (segData as any[]).map((userSegment: any) => {
-                const segment = userSegment.segment;
-                let segType: 'Super-Segment' | 'Segment' | 'Sub-Segment';
-                if (segment.segmentType === 'subSegment') {
-                    segType = 'Sub-Segment';
-                } else if (segment.segmentType === 'superSegment') {
-                    segType = 'Super-Segment';
-                } else {
-                    segType = 'Segment';
-                }
-                const userType = userSegment.userSegmentRelationship === 'HOME'
-                    ? 'Resident'
-                    : userSegment.userSegmentRelationship === 'WORK'
-                        ? 'Worker'
-                        : 'Student';
-                return {
-                    id: segment.segId,
-                    name: segment.name,
-                    segType,
-                    userType,
-                } as ISegmentData;
-            }).filter(seg => seg.name && seg.name.trim() !== '');
-        } else if (Array.isArray(segData)) {
-            tempSegData = segData.filter(seg => seg.name && seg.name.trim() !== '');
-        }
-        setProcessedSegData(tempSegData);
-        console.log('Processed segData for dropdown:', tempSegData);
-    }, [segData]);
 
     // const toggleNumberOfFeedback = (num: number) => {
     //   //let numberOfFeedback = 0;

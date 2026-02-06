@@ -71,7 +71,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
         manufacturingImpact,
         createdAt,
         category,
-        segment,
+        segments,
         author,
         state,
         active,
@@ -147,7 +147,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
     }
 
     //Segments mapped by segmentType
-    const segmentMap = getIdeaSegmentsMap(segment);
+    const segmentMap = getIdeaSegmentsMap(segments);
 
     const primarySegment = segmentMap.segment;
     const subSegment = segmentMap.subSegment;

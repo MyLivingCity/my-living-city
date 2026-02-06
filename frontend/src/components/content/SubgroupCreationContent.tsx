@@ -54,7 +54,7 @@ const SubgroupManagementContent: React.FC<SubgroupManagementContentProps> = ({
     return (
         <Container className='mt-4 mb-4'>
             <div className='d-flex justify-content-between'>
-                <h2 className='mb-4 mt-4'>Subgroup Manager</h2>
+                <h2 className='mb-4 mt-4'>Subgroup Admin</h2>
                 <Button
                     variant='primary'
                     className='mb-4 mt-4'

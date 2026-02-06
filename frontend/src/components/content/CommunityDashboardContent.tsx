@@ -65,40 +65,68 @@ const CommunityDashboardContent: React.FC<CommunityDashboardContentProps> = ({
     } = ideasCommunityDashboardQueryResult;
 
     // Get segments as array of objects with id and name, but not super- or sub-segments.
-    const segmentsArray = [];
-    if (!isSegmentIdsLoading && !isSegmentIdsError) {
-        if (
-            segmentIdsObj.homeSegmentId &&
-        segmentIdsObj.homeSegmentName !== undefined
-        ) {
-            segmentsArray.push({
-                id: segmentIdsObj.homeSegmentId,
-                name: segmentIdsObj.homeSegmentName + ' 🏠',
-            });
-        }
-    
-        if (
-            segmentIdsObj.workSegmentId &&
-        segmentIdsObj.workSegmentName !== undefined &&
-        segmentIdsObj.workSegmentId !== segmentIdsObj.homeSegmentId
-        ) {
-            segmentsArray.push({
-                id: segmentIdsObj.workSegmentId,
-                name: segmentIdsObj.workSegmentName + ' 🏢',
-            });
-        }
-    
-        if (
-            segmentIdsObj.schoolSegmentId &&
-        segmentIdsObj.schoolSegmentName !== undefined &&
-        segmentIdsObj.schoolSegmentId !== segmentIdsObj.homeSegmentId &&
-        segmentIdsObj.schoolSegmentId !== segmentIdsObj.workSegmentId
-        ) {
-            segmentsArray.push({
-                id: segmentIdsObj.schoolSegmentId,
-                name: segmentIdsObj.schoolSegmentName + ' 🏫',
-            });
-        }
+    const segmentsArray: { id: number; name: string }[] = [];
+
+    if (!isSegmentIdsLoading && !isSegmentIdsError && Array.isArray(segmentIdsObj)) {
+        segmentIdsObj.forEach((seg) => {
+            const existing = segmentsArray.find(s => s.id === seg.segment.segId);
+            if (
+                seg.userSegmentRelationship === 'HOME' &&
+                seg.segment.segmentType === 'segment' &&
+                seg.segment.segId !== null && 
+                seg.segment.name !== null
+            ) {
+                if (!existing) {
+                    segmentsArray.push({
+                        id: seg.segment.segId,
+                        name: seg.segment.name + ' 🏠',
+                    });
+                } 
+                else {
+                    if (!existing.name.includes('🏠')) {
+                        existing.name += ` ${'🏠'}`;
+                    }
+                }
+            }
+
+            if (
+                seg.userSegmentRelationship === 'WORK' &&
+                seg.segment.segmentType === 'segment' &&
+                seg.segment.segId !== null && 
+                seg.segment.name !== null
+            ) {
+                if (!existing) {
+                    segmentsArray.push({
+                        id: seg.segment.segId,
+                        name: seg.segment.name + ' 🏢',
+                    });
+                }
+                else {
+                    if (!existing.name.includes('🏢')) {
+                        existing.name += ` ${'🏢'}`;
+                    }
+                }
+            }
+
+            if (
+                seg.userSegmentRelationship === 'SCHOOL' &&
+                seg.segment.segmentType === 'segment' &&
+                seg.segment.segId !== null && 
+                seg.segment.name !== null
+            ) {
+                if (!existing) {
+                    segmentsArray.push({
+                        id: seg.segment.segId,
+                        name: seg.segment.name + ' 🏫',
+                    });
+                }
+                else {
+                    if (!existing.name.includes('🏫')) {
+                        existing.name += ` ${'🏫'}`;
+                    }
+                }
+            }
+        });
     }
 
     const [currCommunityName, setCurrCommunityName] = useState<string>('');

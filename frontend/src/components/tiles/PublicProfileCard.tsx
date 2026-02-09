@@ -29,11 +29,15 @@ const PublicProfileCard: React.FC<PublicProfileCardProps> = ({
     const getBadgeVariant = () => {
         switch (profileWithStats.profileType) {
             case 'municipal':
-                return 'info';
+                return 'primary';
             case 'residential':
                 return 'secondary';
-            default:
+            case 'community':
                 return 'success';
+            case 'business':
+                return 'warning';
+            default:
+                return 'secondary';
         }
     };
 
@@ -43,6 +47,10 @@ const PublicProfileCard: React.FC<PublicProfileCardProps> = ({
                 return 'Municipal';
             case 'residential':
                 return 'Residential';
+            case 'community':
+                return 'Community';
+            case 'business':
+                return 'Business';
             default:
                 return 'Business';
         }

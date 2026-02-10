@@ -104,7 +104,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
         manufacturingImpact,
         createdAt,
         category,
-        segment,
+        segments,
         author,
         reviewed,
         state,
@@ -172,7 +172,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     /**
      * Breaks idea segments into key-value pairs and constants
      */
-    const segmentMap = getIdeaSegmentsMap(segment);
+    const segmentMap = getIdeaSegmentsMap(segments);
 
     const primarySegment = segmentMap.segment;
     const subSegment = segmentMap.subSegment;
@@ -182,7 +182,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     const [showProposalSegmentError, setShowProposalSegmentError] = useState(false);
 
     function redirectToIdeaSubmit() {
-        if (!segment && !primarySegment && !subSegment && !superSegment) {
+        if (!segments && !primarySegment && !subSegment && !superSegment) {
             setShowProposalSegmentError(true);
             return;
         }
@@ -198,7 +198,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                 }
             }
 
-            if (!name && segment) {
+            if (!name && segments) {
                 name = primarySegment?.name;
 
                 if (name && primarySegment) {

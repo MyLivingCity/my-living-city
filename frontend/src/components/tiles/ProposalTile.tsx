@@ -74,6 +74,7 @@ const ProposalTile: React.FC<proposalTileProps> = ({
             <Card.Body>
                 <div className='mb-1' style={{ textAlign: 'left', color: 'gray' }}>{postType}</div>
                 <Card.Title>{idea ? truncateString(idea.title, 50) : 'N/A'}</Card.Title>
+                <small className='text-muted'>By: {proposalData.idea.firstName || 'Unknown'}</small>
                 <Card.Text>{truncateString(idea.description, 100)}</Card.Text>
                 <div className='button-breakdown mt-3 d-flex justify-content-between align-items-center'>
                     <Card.Link href={`/proposals/${id}`}>

@@ -886,7 +886,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                         <div>
                                             <span className='author-link' onClick={handleAuthorClick}>
                                                 {author?.userHandles?.find( h => h.userSegmentRelationship === UserSegmentRelationshipEnum.HOME)?.handle ?? 
-                                                `${author?.fname}@${author?.address?.streetAddress}`}
+                                                `${author?.userType === USER_TYPES.BUSINESS || author?.userType === USER_TYPES.COMMUNITY ? author?.organizationName : author?.fname}@${author?.address?.streetAddress}`}
                                             </span> as Resident
                                         </div>
                                     ) ||

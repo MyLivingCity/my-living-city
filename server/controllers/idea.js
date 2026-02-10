@@ -88,6 +88,13 @@ ideaRouter.post(
         categoryId = parseInt(categoryId)
       }
 
+      // supportingProposalId: Prisma expects Int or null
+    if (supportingProposalId === '' || supportingProposalId === undefined || supportingProposalId === null) {
+      supportingProposalId = null;
+    } else if (!isInteger(supportingProposalId)) {
+      supportingProposalId = parseInt(supportingProposalId, 10);
+    }
+
       const validationResult = await validateIdeaPostingAccess({
         userId: id,
         subSegmentId,

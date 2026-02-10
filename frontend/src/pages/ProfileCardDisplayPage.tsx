@@ -28,8 +28,34 @@ const isMunicipalProfile = (profile: PublicProfile): boolean => {
     return 'responsibility' in profile;
 };
 
-const getProfileTypeColor = (profile: PublicProfile) => {
-    return isMunicipalProfile(profile) ? 'primary' : 'success';
+const getProfileBadgeLabel = (userType?: string) => {
+    switch (userType) {
+        case 'MUNICIPAL':
+            return 'Municipal';
+        case 'RESIDENTIAL':
+            return 'Residential';
+        case 'COMMUNITY':
+            return 'Community';
+        case 'BUSINESS':
+            return 'Business';
+        default:
+            return 'Public Profile';
+    }
+};
+
+const getProfileBadgeVariant = (userType?: string) => {
+    switch (userType) {
+        case 'MUNICIPAL':
+            return 'primary';
+        case 'RESIDENTIAL':
+            return 'secondary';
+        case 'COMMUNITY':
+            return 'success';
+        case 'BUSINESS':
+            return 'warning';
+        default:
+            return 'secondary';
+    }
 };
 
 const ProfileCardDisplayPage: React.FC = () => {
@@ -241,8 +267,8 @@ const ProfileCardDisplayPage: React.FC = () => {
                             <BootstrapCard.Header>
                                 <div className='d-flex justify-content-between align-items-center'>
                                     <h2>Public Profile</h2>
-                                    <Badge variant={getProfileTypeColor(selectedProfile)}>
-                                        {isMunicipalProfile(selectedProfile) ? 'Municipal' : 'Community Business'}
+                                    <Badge variant={getProfileBadgeVariant(selectedProfile.user?.userType)}>
+                                        {getProfileBadgeLabel(selectedProfile.user?.userType)}
                                     </Badge>
                                 </div>
                             </BootstrapCard.Header>

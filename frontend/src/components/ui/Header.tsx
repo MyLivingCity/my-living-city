@@ -234,7 +234,7 @@ function Header() {
                                                 <Nav.Link href='/segment/management/all'>Segments</Nav.Link>
                                                 <Nav.Link href='/user/management'>User Manager</Nav.Link>
                                                 <Nav.Link href='/admin/management'>Admin Manager</Nav.Link>
-                                                <Nav.Link href='/subgroup/management'>Subgroups</Nav.Link>
+                                                <Nav.Link href='/subgroup/management'>Subgroup Admin</Nav.Link>
                                             </>
                                         )}
                                         {/*//TODO: This link should be shown if the user is a subGroup Manager */}

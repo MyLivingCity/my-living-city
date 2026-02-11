@@ -6,7 +6,8 @@ import { Row, Col, Form, Button, Card, Collapse } from 'react-bootstrap';
 // after adding more accounts and different account types to the database.
 interface SearchFilters {
     profileType?: 'MUNICIPAL' | 'BUSINESS' | 'RESIDENTIAL' | '';
-    location?: string;
+    community?: string;
+    neighbourhood?: string;
     searchQuery?: string;
 }
 
@@ -18,7 +19,8 @@ const PublicProfileSearch: React.FC<PublicProfileSearchProps> = ({ onSearch }) =
     const [searchQuery, setSearchQuery] = useState('');
     const [filters, setFilters] = useState<SearchFilters>({
         profileType: '',
-        location: ''
+        community: '',
+        neighbourhood: ''
     });
     const [showFilters, setShowFilters] = useState(false);
 
@@ -35,13 +37,13 @@ const PublicProfileSearch: React.FC<PublicProfileSearchProps> = ({ onSearch }) =
     };
 
     const clearFilters = () => {
-        const clearedFilters: SearchFilters = { profileType: '' as '', location: '' };
+        const clearedFilters: SearchFilters = { profileType: '' as '', community: '', neighbourhood: '' };
         setFilters(clearedFilters);
         setSearchQuery('');
         onSearch('', clearedFilters);
     };
 
-    const hasActiveFilters = filters.profileType || filters.location || searchQuery;
+    const hasActiveFilters = filters.profileType || filters.community || filters.neighbourhood || searchQuery;
 
     return (
         <Card className='mb-4'>
@@ -83,7 +85,7 @@ const PublicProfileSearch: React.FC<PublicProfileSearchProps> = ({ onSearch }) =
                                 <span className='ms-2'>Filters</span>
                                 {hasActiveFilters && (
                                     <span className='badge bg-primary ms-2 rounded-pill'>
-                                        {[filters.profileType, filters.location, searchQuery].filter(Boolean).length}
+                                        {[filters.profileType, filters.community, filters.neighbourhood, searchQuery].filter(Boolean).length}
                                     </span>
                                 )}
                             </Button>
@@ -95,7 +97,7 @@ const PublicProfileSearch: React.FC<PublicProfileSearchProps> = ({ onSearch }) =
                 <Collapse in={showFilters}>
                     <div className='mt-3 pt-3 border-top'>
                         <Row>
-                            <Col md={4}>
+                            <Col md={3}>
                                 <Form.Group>
                                     <Form.Label>Profile Type</Form.Label>
                                     <Form.Control
@@ -112,18 +114,29 @@ const PublicProfileSearch: React.FC<PublicProfileSearchProps> = ({ onSearch }) =
                                     </Form.Control>
                                 </Form.Group>
                             </Col>
-                            <Col md={4}>
+                            <Col md={3}>
                                 <Form.Group>
-                                    <Form.Label>Location</Form.Label>
+                                    <Form.Label>Community</Form.Label>
                                     <Form.Control
                                         type='text'
-                                        placeholder='Enter city or postal code...'
-                                        value={filters.location || ''}
-                                        onChange={(e) => handleFilterChange('location', e.target.value)}
+                                        placeholder='Enter community...'
+                                        value={filters.community || ''}
+                                        onChange={(e) => handleFilterChange('community', e.target.value)}
                                     />
                                 </Form.Group>
                             </Col>
-                            <Col md={4} className='d-flex align-items-end'>
+                            <Col md={3}>
+                                <Form.Group>
+                                    <Form.Label>Neighbourhood</Form.Label>
+                                    <Form.Control
+                                        type='text'
+                                        placeholder='Enter neighbourhood...'
+                                        value={filters.neighbourhood || ''}
+                                        onChange={(e) => handleFilterChange('neighbourhood', e.target.value)}
+                                    />
+                                </Form.Group>
+                            </Col>
+                            <Col md={3} className='d-flex align-items-end'>
                                 <Button 
                                     variant='outline-danger' 
                                     onClick={clearFilters}

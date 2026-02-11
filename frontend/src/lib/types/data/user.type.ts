@@ -35,6 +35,7 @@ export interface IUser {
   school_geo?: IGeo;
   address?: IAddress;
   userRole?: IUserRole;
+  userSegment?: IUserSegment[];
   userSegments?: IUserSegment[];
   userHandles?: IUserHandle[];
   IdeaComments?: IComment[];

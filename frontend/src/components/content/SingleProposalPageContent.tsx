@@ -104,7 +104,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
         manufacturingImpact,
         createdAt,
         category,
-        segment,
+        segments,
         author,
         reviewed,
         state,
@@ -172,7 +172,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     /**
      * Breaks idea segments into key-value pairs and constants
      */
-    const segmentMap = getIdeaSegmentsMap(segment);
+    const segmentMap = getIdeaSegmentsMap(segments);
 
     const primarySegment = segmentMap.segment;
     const subSegment = segmentMap.subSegment;
@@ -181,58 +181,110 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
     const [showProposalSegmentError, setShowProposalSegmentError] = useState(false);
 
-    function redirectToIdeaSubmit() {
-        if (!segment && !primarySegment && !subSegment && !superSegment) {
-            setShowProposalSegmentError(true);
-            return;
-        }
-        if (userType === 'Resident') {
-            let name = subSegment?.name;
-
-            if (name && subSegment) {
-                if (subSegment.segId === userSegmentData.homeSubSegmentId || subSegment.segId === userSegmentData.workSubSegmentId || subSegment.segId === userSegmentData.schoolSubSegmentId) {
-                    const communityOfInterest = getSegmentName(name);
-                    window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}&category=${category?.id}`;   
-                } else {
-                    setShowProposalSegmentError(true);
-                }
-            }
-
-            if (!name && segment) {
-                name = primarySegment?.name;
-
-                if (name && primarySegment) {
-                    if (primarySegment.segId === userSegmentData.homeSegmentId || primarySegment.segId === userSegmentData.workSegmentId || primarySegment.segId === userSegmentData.schoolSegmentId) {
-                        const communityOfInterest = getSegmentName(name);
-                        window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}&category=${category?.id}`;
-                    } else {
-                        setShowProposalSegmentError(true);
-                    }
-                }
-            }
-
-            if (!name && superSegment) {
-                name = superSegment.name;
-                if (superSegment.segId === userSegmentData.homeSuperSegId || superSegment.segId === userSegmentData.workSuperSegId || superSegment.segId === userSegmentData.schoolSuperSegId) {
-                    const communityOfInterest = getSegmentName(name);
-                    window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}&category=${category?.id}`;
-                } else {
-                    setShowProposalSegmentError(true);
-                }
-            }
-        } else {
-            if (subSegment?.segId === userSegmentData.homeSubSegmentId || primarySegment?.segId === userSegmentData.homeSegmentId || superSegment?.segId === userSegmentData.homeSuperSegId) {
-                let name = subSegment?.name || primarySegment?.name || superSegment?.name;
-                const communityOfInterest = getSegmentName(name);
-                window.location.href = `/submit?supportedProposal=${proposalId}&communityOfInterest=${communityOfInterest}&category=${category?.id}`;
-            } else {
-                setShowProposalSegmentError(true);
-            }
-        }
-    }
 
     const { token, user } = useContext(UserProfileContext);
     const { data: userSegmentData, isLoading: userSegementLoading } = useAllUserSegments(token, user?.id || null);
+
+    function redirectToIdeaSubmit() {
+        if (!userSegmentData || userSegmentData.length === 0) {
+            setShowProposalSegmentError(true);
+            return;
+        }
+
+        const homeSegId = userSegmentData.find(
+            (s: IUserSegment) => s.userSegmentRelationship === UserSegmentRelationshipEnum.HOME
+        )?.segmentId;
+
+        const workSegId = userSegmentData.find(
+            (s: IUserSegment) => s.userSegmentRelationship === UserSegmentRelationshipEnum.WORK
+        )?.segmentId;
+
+        const schoolSegId = userSegmentData.find(
+            (s: IUserSegment) => s.userSegmentRelationship === UserSegmentRelationshipEnum.SCHOOL
+        )?.segmentId;
+
+        if (!segments && !primarySegment && !subSegment && !superSegment) {
+            setShowProposalSegmentError(true);
+            return;
+        }
+
+        const belongsToUser = (seg: any) => {
+            if (!seg) {
+                return false;
+            }
+
+            if (seg.segId === homeSegId) {
+                return true;
+            }
+            if (seg.segId === workSegId) {
+                return true;
+            }
+            if (seg.segId === schoolSegId) {
+                return true;
+            }
+            if (seg.parentId === homeSegId) {
+                return true;
+            }
+            if (seg.parentId === workSegId) {
+                return true;
+            }
+            if (seg.parentId === schoolSegId) {
+                return true;
+            }
+
+            return false;
+        };
+
+        const goSubmit = (name?: string) => {
+            const communityOfInterest = getSegmentName(name);
+            window.location.href =
+                '/submit?supportedProposal=' +
+                proposalId +
+                '&communityOfInterest=' +
+                communityOfInterest +
+                '&category=' +
+                category?.id;
+        };
+
+        if (userType === 'Resident') {
+            if (subSegment && subSegment.name && belongsToUser(subSegment)) {
+                goSubmit(subSegment.name);
+                return;
+            }
+
+            if (primarySegment && primarySegment.name && belongsToUser(primarySegment)) {
+                goSubmit(primarySegment.name);
+                return;
+            }
+
+            if (superSegment && superSegment.name && belongsToUser(superSegment)) {
+                goSubmit(superSegment.name);
+                return;
+            }
+
+            setShowProposalSegmentError(true);
+            return;
+        }
+
+        if (
+            (subSegment && subSegment.segId === homeSegId) ||
+            (primarySegment && primarySegment.segId === homeSegId) ||
+            (superSegment && superSegment.segId === homeSegId) ||
+            (subSegment && subSegment.parentId === homeSegId) ||
+            (primarySegment && primarySegment.parentId === homeSegId) ||
+            (superSegment && superSegment.parentId === homeSegId)
+        ) {
+            const name =
+                (subSegment && subSegment.name) ||
+                (primarySegment && primarySegment.name) ||
+                (superSegment && superSegment.name);
+        
+            goSubmit(name);
+            return;
+        }
+        setShowProposalSegmentError(true);
+    }
+
     const { data: useAllIdeaData, isLoading: useAllIdeaLoading } = useAllIdeas();
     const history = useHistory();
 

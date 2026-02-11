@@ -7,7 +7,8 @@ import { getAllPublicProfiles, PublicProfileWithStats } from '../lib/api/publicP
 
 interface SearchFilters {
     profileType?: 'MUNICIPAL' | 'BUSINESS' | 'RESIDENTIAL' | '';
-    location?: string;
+    community?: string;
+    neighbourhood?: string;
     searchQuery?: string;
 }
 
@@ -37,7 +38,8 @@ const PublicProfilesPage: React.FC = () => {
             const response = await getAllPublicProfiles(
                 searchFilters.searchQuery || '',
                 profileTypeParam,
-                searchFilters.location
+                searchFilters.community,
+                searchFilters.neighbourhood
             );
             
             setProfiles(response.profiles || []);

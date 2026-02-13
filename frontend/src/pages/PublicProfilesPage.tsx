@@ -26,11 +26,13 @@ const PublicProfilesPage: React.FC = () => {
             setError(null);
             
             // Map profile types to match API expectations
-            let profileTypeParam: 'community' | 'municipal' | undefined;
-            if (searchFilters.profileType === 'BUSINESS' || searchFilters.profileType === 'RESIDENTIAL') {
+            let profileTypeParam: 'community' | 'municipal' | 'residential' | undefined;
+            if (searchFilters.profileType === 'BUSINESS') {
                 profileTypeParam = 'community';
             } else if (searchFilters.profileType === 'MUNICIPAL') {
                 profileTypeParam = 'municipal';
+            } else if (searchFilters.profileType === 'RESIDENTIAL') {
+                profileTypeParam = 'residential';
             } else {
                 profileTypeParam = undefined;
             }
@@ -67,6 +69,16 @@ const PublicProfilesPage: React.FC = () => {
         // Transform PublicProfileWithStats to a basic format for ProfileCardDisplayPage
         // Note: Some fields will be empty as they're not provided by the summary API, 
         // Will need to fetch the PublicProfile information when it exists.
+        let profileProfileType: 'BUSINESS' | 'MUNICIPAL' | 'RESIDENTIAL' | undefined;
+        if (profile.profileType === 'community') {
+            profileProfileType = 'BUSINESS';
+        } else if (profile.profileType === 'municipal') {
+            profileProfileType = 'MUNICIPAL';
+        } else if (profile.profileType === 'residential') {
+            profileProfileType = 'RESIDENTIAL';
+        } else {
+            profileProfileType = undefined;
+        }
         const transformedProfile = {
             statement: '', // Not available in summary data
             contactEmail: '', // Not available in summary data
@@ -79,7 +91,7 @@ const PublicProfilesPage: React.FC = () => {
                 id: profile.userId || '',
                 fname: profile.fname || '',
                 lname: profile.lname || '',
-                userType: profile.profileType === 'municipal' ? 'MUNICIPAL' : 'BUSINESS',
+                userType: profileProfileType || '',
                 organizationName: profile.businessName || profile.municipalityName || '',
             }
         };

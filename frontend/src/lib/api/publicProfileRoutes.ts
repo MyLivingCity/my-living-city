@@ -162,7 +162,7 @@ export const updateStandardProfile = async (
 
 export const getAllPublicProfiles = async (
     search?: string,
-    profileType?: 'all' | 'community' | 'municipal',
+    profileType?: 'all' | 'community' | 'municipal' | 'residential',
     location?: string,
     token?: string | null
 ): Promise<{

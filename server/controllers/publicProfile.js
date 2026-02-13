@@ -424,12 +424,14 @@ publicProfileRouter.get('/all', async (req, res) => {
         } else if (profileType === 'municipal') {
             userTypeFilter = ['MUNICIPAL'];
         } else if (profileType === 'community') {
-            userTypeFilter = ['BUSINESS', 'COMMUNITY', 'RESIDENTIAL'];
+            userTypeFilter = ['BUSINESS', 'COMMUNITY'];
+        } else if (profileType === 'residential') {
+            userTypeFilter = ['RESIDENTIAL'];
         }
-
+        
         // Build search conditions
         const searchWhere = {
-            userType: { in: userTypeFilter },
+            // userType: { in: userTypeFilter },
             status: true, // Only active users
             ...(search && {
                 OR: [
@@ -439,6 +441,16 @@ publicProfileRouter.get('/all', async (req, res) => {
                 ]
             })
         };
+
+        if (profileType === 'municipal') {
+            searchWhere.userType = 'MUNICIPAL';
+        } else if (profileType === 'community') {
+            searchWhere.userType = { in: ['BUSINESS', 'COMMUNITY'] };
+        } else if (profileType === 'residential') {
+            searchWhere.userType = 'RESIDENTIAL';
+        } else {
+            searchWhere.userType = { in: ['MUNICIPAL', 'BUSINESS', 'COMMUNITY', 'RESIDENTIAL'] };
+        }
 
         // Add location filter if provided
         if (location) {
@@ -507,11 +519,13 @@ publicProfileRouter.get('/all', async (req, res) => {
         // Transform users into profile format
         const profiles = users.map(user => {
             // Determine profile type based on user type
-            let profileType = 'community';
+            let profileType;
             if (user.userType === 'MUNICIPAL') {
                 profileType = 'municipal';
             } else if (user.userType === 'RESIDENTIAL') {
                 profileType = 'residential';
+            } else if (user.userType === 'BUSINESS' || user.userType === 'COMMUNITY') {
+                profileType = 'community';
             }
 
             // Get location from user address

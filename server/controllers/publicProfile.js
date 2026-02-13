@@ -570,7 +570,7 @@ publicProfileRouter.get('/all', async (req, res) => {
 
             // Get primary segment/region from userReach
             const primarySegment = user.userReach?.[0]?.segment?.name || '';
-
+            
             return {
                 id: user.id,
                 userId: user.id,
@@ -583,7 +583,9 @@ publicProfileRouter.get('/all', async (req, res) => {
                 postsCount: user.ideas?.length || 0, // Real post count, no random fallback
                 businessName: user.userType === 'BUSINESS' || user.userType === 'COMMUNITY' ? user.organizationName : null,
                 municipalityName: user.userType === 'MUNICIPAL' ? user.organizationName : null,
-                userName: user.userType === 'RESIDENTIAL' ? `${user.fname || ''} ${user.lname || ''}`.trim() : null,
+                userName: user.userType === 'RESIDENTIAL' 
+                    ? `${user.displayFName || user.fname || ''}@${user.displayLName || user.lname || ''}` 
+                    : null,
                 userType: user.userType
             };
         });

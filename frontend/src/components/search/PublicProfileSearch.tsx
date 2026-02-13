@@ -1,14 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Row, Col, Form, Button, Card, Collapse } from 'react-bootstrap';
+import { getAllSegments } from '../../lib/api/segmentRoutes';
+import { SearchFilters } from '../../lib/types/data/publicProfile.type';
 
 
 // Work in progress, should be functional but should be adjusted and expanded 
 // after adding more accounts and different account types to the database.
-interface SearchFilters {
-    profileType?: 'MUNICIPAL' | 'BUSINESS' | 'RESIDENTIAL' | '';
-    location?: string;
-    searchQuery?: string;
-}
 
 interface PublicProfileSearchProps {
     onSearch: (searchQuery: string, filters: SearchFilters) => void;
@@ -18,9 +15,29 @@ const PublicProfileSearch: React.FC<PublicProfileSearchProps> = ({ onSearch }) =
     const [searchQuery, setSearchQuery] = useState('');
     const [filters, setFilters] = useState<SearchFilters>({
         profileType: '',
-        location: ''
+        community: '',
+        neighbourhood: ''
     });
     const [showFilters, setShowFilters] = useState(false);
+    const [communities, setCommunities] = useState<any[]>([]);
+    const [neighbourhoods, setNeighbourhoods] = useState<any[]>([]);
+
+    useEffect(() => {
+        const loadSegments = async () => {
+            const allSegments = await getAllSegments();
+
+            setCommunities(
+                allSegments.filter(s => s.segmentType === 'segment')
+            );
+
+            setNeighbourhoods(
+                allSegments.filter(s => s.segmentType === 'subSegment')
+            );
+        };
+
+        loadSegments();
+    }, []);
+
 
     const handleSearchSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -35,13 +52,13 @@ const PublicProfileSearch: React.FC<PublicProfileSearchProps> = ({ onSearch }) =
     };
 
     const clearFilters = () => {
-        const clearedFilters: SearchFilters = { profileType: '' as '', location: '' };
+        const clearedFilters: SearchFilters = { profileType: '' as '', community: '', neighbourhood: '' };
         setFilters(clearedFilters);
         setSearchQuery('');
         onSearch('', clearedFilters);
     };
 
-    const hasActiveFilters = filters.profileType || filters.location || searchQuery;
+    const hasActiveFilters = filters.profileType || filters.community || filters.neighbourhood || searchQuery;
 
     return (
         <Card className='mb-4'>
@@ -83,7 +100,7 @@ const PublicProfileSearch: React.FC<PublicProfileSearchProps> = ({ onSearch }) =
                                 <span className='ms-2'>Filters</span>
                                 {hasActiveFilters && (
                                     <span className='badge bg-primary ms-2 rounded-pill'>
-                                        {[filters.profileType, filters.location, searchQuery].filter(Boolean).length}
+                                        {[filters.profileType, filters.community, filters.neighbourhood, searchQuery].filter(Boolean).length}
                                     </span>
                                 )}
                             </Button>
@@ -95,7 +112,7 @@ const PublicProfileSearch: React.FC<PublicProfileSearchProps> = ({ onSearch }) =
                 <Collapse in={showFilters}>
                     <div className='mt-3 pt-3 border-top'>
                         <Row>
-                            <Col md={4}>
+                            <Col md={3}>
                                 <Form.Group>
                                     <Form.Label>Profile Type</Form.Label>
                                     <Form.Control
@@ -112,18 +129,47 @@ const PublicProfileSearch: React.FC<PublicProfileSearchProps> = ({ onSearch }) =
                                     </Form.Control>
                                 </Form.Group>
                             </Col>
-                            <Col md={4}>
+                            <Col md={3}>
                                 <Form.Group>
-                                    <Form.Label>Location</Form.Label>
+                                    <Form.Label>Community</Form.Label>
                                     <Form.Control
-                                        type='text'
-                                        placeholder='Enter city or postal code...'
-                                        value={filters.location || ''}
-                                        onChange={(e) => handleFilterChange('location', e.target.value)}
-                                    />
+                                        as='select'
+                                        value={filters.community || ''}
+                                        onChange={(e) =>
+                                            handleFilterChange('community', e.target.value)
+                                        }
+                                    >
+                                        <option value=''>All Communities</option>
+                                        {communities.map(c => (
+                                            <option key={c.segId} value={c.segId}>
+                                                {c.name}
+                                            </option>
+                                        ))}
+                                    </Form.Control>
+
                                 </Form.Group>
                             </Col>
-                            <Col md={4} className='d-flex align-items-end'>
+                            <Col md={3}>
+                                <Form.Group>
+                                    <Form.Label>Neighbourhood</Form.Label>
+                                    <Form.Control
+                                        as='select'
+                                        value={filters.neighbourhood || ''}
+                                        onChange={(e) =>
+                                            handleFilterChange('neighbourhood', e.target.value)
+                                        }
+                                    >
+                                        <option value=''>All Neighbourhoods</option>
+                                        {neighbourhoods.map(n => (
+                                            <option key={n.segId} value={n.segId}>
+                                                {n.name}
+                                            </option>
+                                        ))}
+                                    </Form.Control>
+
+                                </Form.Group>
+                            </Col>
+                            <Col md={3} className='d-flex align-items-end'>
                                 <Button 
                                     variant='outline-danger' 
                                     onClick={clearFilters}

@@ -64,16 +64,6 @@ const PublicProfilesPage: React.FC = () => {
         // Transform PublicProfileWithStats to a basic format for ProfileCardDisplayPage
         // Note: Some fields will be empty as they're not provided by the summary API, 
         // Will need to fetch the PublicProfile information when it exists.
-        let profileProfileType: 'BUSINESS' | 'MUNICIPAL' | 'RESIDENTIAL' | undefined;
-        if (profile.profileType === 'community') {
-            profileProfileType = 'BUSINESS';
-        } else if (profile.profileType === 'municipal') {
-            profileProfileType = 'MUNICIPAL';
-        } else if (profile.profileType === 'residential') {
-            profileProfileType = 'RESIDENTIAL';
-        } else {
-            profileProfileType = undefined;
-        }
         const transformedProfile = {
             statement: '', // Not available in summary data
             contactEmail: '', // Not available in summary data
@@ -86,7 +76,11 @@ const PublicProfilesPage: React.FC = () => {
                 id: profile.userId || '',
                 fname: profile.fname || '',
                 lname: profile.lname || '',
-                userType: profileProfileType || '',
+                userType: 
+                    profile.profileType === 'municipal' ? 'MUNICIPAL'
+                        : profile.profileType === 'residential' ? 'RESIDENTIAL'
+                            : profile.profileType === 'community' ? 'COMMUNITY'
+                                : 'BUSINESS',
                 organizationName: profile.businessName || profile.municipalityName || '',
             }
         };

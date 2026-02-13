@@ -414,25 +414,61 @@ publicProfileRouter.get('/all', async (req, res) => {
         const { 
             search = '', 
             profileType, 
-            location 
+            communityId,
+            neighbourhoodId 
         } = req.query;
 
-        // Build user type filters based on profile type
-        let userTypeFilter = [];
-        if (!profileType || profileType === 'all') {
-            userTypeFilter = ['MUNICIPAL', 'BUSINESS', 'COMMUNITY', 'RESIDENTIAL'];
-        } else if (profileType === 'municipal') {
-            userTypeFilter = ['MUNICIPAL'];
-        } else if (profileType === 'community') {
-            userTypeFilter = ['BUSINESS', 'COMMUNITY'];
-        } else if (profileType === 'residential') {
-            userTypeFilter = ['RESIDENTIAL'];
+        // Filter for Community and Neighbourhood using UserSegments table (AND logic)
+        let userIdFilter = undefined;
+        if (communityId && neighbourhoodId) {
+            // BOTH filters selected (AND logic)
+            const [communityUsers, neighbourhoodUsers] = await Promise.all([
+                prisma.userSegments.findMany({
+                    where: { segmentId: Number(communityId) },
+                    select: { userId: true }
+                }),
+                prisma.userSegments.findMany({
+                    where: { segmentId: Number(neighbourhoodId) },
+                    select: { userId: true }
+                })
+            ]);
+
+            const communityUserIds = communityUsers.map(u => u.userId);
+            const neighbourhoodUserIds = neighbourhoodUsers.map(u => u.userId);
+
+            // Intersection (users in BOTH)
+            userIdFilter = communityUserIds.filter(id =>
+                neighbourhoodUserIds.includes(id)
+            );
+
+            if (userIdFilter.length === 0) {
+                return res.status(200).json({ profiles: [], totalCount: 0 });
+            }
+
+        } else if (communityId || neighbourhoodId) {
+            // ONLY one filter selected
+            const segmentId = Number(communityId || neighbourhoodId);
+
+            const userSegments = await prisma.userSegments.findMany({
+                where: { segmentId },
+                select: { userId: true }
+            });
+
+            userIdFilter = userSegments.map(us => us.userId);
+
+            if (userIdFilter.length === 0) {
+                return res.status(200).json({ profiles: [], totalCount: 0 });
+            }
         }
         
         // Build search conditions
         const searchWhere = {
-            // userType: { in: userTypeFilter },
             status: true, // Only active users
+
+            ...(userIdFilter && {
+                id: { in: userIdFilter }
+            }),
+
             ...(search && {
                 OR: [
                     { fname: { contains: search, mode: 'insensitive' } },
@@ -452,12 +488,6 @@ publicProfileRouter.get('/all', async (req, res) => {
             searchWhere.userType = { in: ['MUNICIPAL', 'BUSINESS', 'COMMUNITY', 'RESIDENTIAL'] };
         }
 
-        // Add location filter if provided
-        if (location) {
-            searchWhere.address = {
-                streetAddress: { contains: location, mode: 'insensitive' }
-            };
-        }
 
         // Fetch users with their related data
         const users = await prisma.user.findMany({

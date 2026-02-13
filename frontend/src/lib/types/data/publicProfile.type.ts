@@ -65,3 +65,10 @@ export interface JoinRequestResponse {
     userId: string;
     subgroupId: string;
 }
+
+export interface SearchFilters {
+    profileType?: 'MUNICIPAL' | 'BUSINESS' | 'RESIDENTIAL' | '';
+    community?: string;
+    neighbourhood?: string;
+    searchQuery?: string;
+}

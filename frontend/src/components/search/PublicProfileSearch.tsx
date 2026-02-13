@@ -1,15 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Row, Col, Form, Button, Card, Collapse } from 'react-bootstrap';
+import { getAllSegments } from '../../lib/api/segmentRoutes';
+import { SearchFilters } from '../../lib/types/data/publicProfile.type';
 
 
 // Work in progress, should be functional but should be adjusted and expanded 
 // after adding more accounts and different account types to the database.
-interface SearchFilters {
-    profileType?: 'MUNICIPAL' | 'BUSINESS' | 'RESIDENTIAL' | '';
-    community?: string;
-    neighbourhood?: string;
-    searchQuery?: string;
-}
 
 interface PublicProfileSearchProps {
     onSearch: (searchQuery: string, filters: SearchFilters) => void;
@@ -23,6 +19,25 @@ const PublicProfileSearch: React.FC<PublicProfileSearchProps> = ({ onSearch }) =
         neighbourhood: ''
     });
     const [showFilters, setShowFilters] = useState(false);
+    const [communities, setCommunities] = useState<any[]>([]);
+    const [neighbourhoods, setNeighbourhoods] = useState<any[]>([]);
+
+    useEffect(() => {
+        const loadSegments = async () => {
+            const allSegments = await getAllSegments();
+
+            setCommunities(
+                allSegments.filter(s => s.segmentType === 'segment')
+            );
+
+            setNeighbourhoods(
+                allSegments.filter(s => s.segmentType === 'subSegment')
+            );
+        };
+
+        loadSegments();
+    }, []);
+
 
     const handleSearchSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -118,22 +133,40 @@ const PublicProfileSearch: React.FC<PublicProfileSearchProps> = ({ onSearch }) =
                                 <Form.Group>
                                     <Form.Label>Community</Form.Label>
                                     <Form.Control
-                                        type='text'
-                                        placeholder='Enter community...'
+                                        as='select'
                                         value={filters.community || ''}
-                                        onChange={(e) => handleFilterChange('community', e.target.value)}
-                                    />
+                                        onChange={(e) =>
+                                            handleFilterChange('community', e.target.value)
+                                        }
+                                    >
+                                        <option value=''>All Communities</option>
+                                        {communities.map(c => (
+                                            <option key={c.segId} value={c.segId}>
+                                                {c.name}
+                                            </option>
+                                        ))}
+                                    </Form.Control>
+
                                 </Form.Group>
                             </Col>
                             <Col md={3}>
                                 <Form.Group>
                                     <Form.Label>Neighbourhood</Form.Label>
                                     <Form.Control
-                                        type='text'
-                                        placeholder='Enter neighbourhood...'
+                                        as='select'
                                         value={filters.neighbourhood || ''}
-                                        onChange={(e) => handleFilterChange('neighbourhood', e.target.value)}
-                                    />
+                                        onChange={(e) =>
+                                            handleFilterChange('neighbourhood', e.target.value)
+                                        }
+                                    >
+                                        <option value=''>All Neighbourhoods</option>
+                                        {neighbourhoods.map(n => (
+                                            <option key={n.segId} value={n.segId}>
+                                                {n.name}
+                                            </option>
+                                        ))}
+                                    </Form.Control>
+
                                 </Form.Group>
                             </Col>
                             <Col md={3} className='d-flex align-items-end'>

@@ -4,13 +4,8 @@ import { useHistory } from 'react-router-dom';
 import PublicProfileCard from '../components/tiles/PublicProfileCard';
 import PublicProfileSearch from '../components/search/PublicProfileSearch';
 import { getAllPublicProfiles, PublicProfileWithStats } from '../lib/api/publicProfileRoutes';
+import { SearchFilters } from '../lib/types/data/publicProfile.type';
 
-interface SearchFilters {
-    profileType?: 'MUNICIPAL' | 'BUSINESS' | 'RESIDENTIAL' | '';
-    community?: string;
-    neighbourhood?: string;
-    searchQuery?: string;
-}
 
 const PublicProfilesPage: React.FC = () => {
     const history = useHistory();
@@ -40,8 +35,8 @@ const PublicProfilesPage: React.FC = () => {
             const response = await getAllPublicProfiles(
                 searchFilters.searchQuery || '',
                 profileTypeParam,
-                searchFilters.community,
-                searchFilters.neighbourhood
+                searchFilters.community ? Number(searchFilters.community) : undefined,
+                searchFilters.neighbourhood ? Number(searchFilters.neighbourhood) : undefined
             );
             
             setProfiles(response.profiles || []);

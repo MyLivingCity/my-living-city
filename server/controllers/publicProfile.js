@@ -588,6 +588,14 @@ publicProfileRouter.get('/all', async (req, res) => {
             };
         });
 
+        // Rank profiles by engagement (endorsements + posts)
+        profiles.sort((a, b) => {
+            const aScore = (a.endorsements || 0) + (a.postsCount || 0);
+            const bScore = (b.endorsements || 0) + (b.postsCount || 0);
+
+            return bScore - aScore;
+        });
+
         res.status(200).json({
             profiles,
             totalCount

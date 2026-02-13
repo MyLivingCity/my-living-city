@@ -86,15 +86,7 @@ const PublicProfilesPage: React.FC = () => {
                 id: profile.userId || '',
                 fname: profile.fname || '',
                 lname: profile.lname || '',
-<<<<<<< HEAD
                 userType: profileProfileType || '',
-=======
-                userType:
-                    profile.profileType === 'municipal' ?   'MUNICIPAL'
-                        : profile.profileType ===   'residential' ? 'RESIDENTIAL'
-                            : profile.profileType === 'community' ?     'COMMUNITY'
-                                : 'BUSINESS',
->>>>>>> origin/development
                 organizationName: profile.businessName || profile.municipalityName || '',
             }
         };

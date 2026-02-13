@@ -554,7 +554,13 @@ publicProfileRouter.get('/all', async (req, res) => {
                 profileType = 'municipal';
             } else if (user.userType === 'RESIDENTIAL') {
                 profileType = 'residential';
+<<<<<<< HEAD
             } else if (user.userType === 'BUSINESS' || user.userType === 'COMMUNITY') {
+=======
+            } else if (user.userType === 'BUSINESS') {
+                profileType = 'business';
+            }else if (user.userType === 'COMMUNITY') {
+>>>>>>> origin/development
                 profileType = 'community';
             }
 

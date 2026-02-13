@@ -13,6 +13,7 @@ import { TEXT_INPUT_LIMIT } from 'src/lib/constants';
 import {
     ISegmentData,
 } from 'src/lib/types/data/segment.type';
+import { useProcessSegments } from '../../hooks/useProcessSegments';
 import { UserProfileContext } from '../../contexts/UserProfile.Context';
 import { postCreateIdea } from '../../lib/api/ideaRoutes';
 import { getUserBanWithToken } from '../../lib/api/banRoutes';
@@ -47,32 +48,37 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<IFetchError | null>(null);
     const history = useHistory();
-    const [userSegments, setUserSegments] = useState<ISegmentData[]>();
+    const processedSegData = useProcessSegments(segData);
 
-    const segDatas = getMyUserSegmentInfoRefined(token, user!?.id);
-    segDatas.then((data) => {
-        setUserSegments(data);
-    }).catch((error) => {
-        console.log(error);
-    });
+    // handleCommunityChange: set formik fields based on processedSegData
     const handleCommunityChange = (index: number) => {
-        // if (updatedSegData[index].segType === 'Segment') {
-        if (true) {
-            // formik.setFieldValue('segmentId', updatedSegData[index].id);
-            formik.setFieldValue('segmentId', 2);
+        if (!Array.isArray(processedSegData) || processedSegData.length === 0) return;
+
+        if (index === -1) {
+            formik.setFieldValue('segmentId', undefined);
             formik.setFieldValue('superSegmentId', undefined);
             formik.setFieldValue('subSegmentId', undefined);
+            formik.setFieldValue('userType', 'Resident');
+            return;
         }
-        // if (updatedSegData[index].segType === 'Sub-Segment') {
-        //     formik.setFieldValue('subSegmentId', updatedSegData[index].id);
-        //     formik.setFieldValue('superSegmentId', undefined);
-        //     formik.setFieldValue('segmentId', undefined);
-        // }
-        // if (updatedSegData[index].segType === 'Super-Segment') {
-        //     formik.setFieldValue('superSegmentId', updatedSegData[index].id);
-        //     formik.setFieldValue('subSegmentId', undefined);
-        //     formik.setFieldValue('segmentId', undefined);
-        // }
+
+        const selected = processedSegData[index];
+        if (!selected) return;
+
+        if (selected.segType === 'Segment') {
+            formik.setFieldValue('segmentId', selected.id);
+            formik.setFieldValue('superSegmentId', undefined);
+            formik.setFieldValue('subSegmentId', undefined);
+        } else if (selected.segType === 'Sub-Segment') {
+            formik.setFieldValue('subSegmentId', selected.id);
+            formik.setFieldValue('superSegmentId', undefined);
+            formik.setFieldValue('segmentId', undefined);
+        } else if (selected.segType === 'Super-Segment') {
+            formik.setFieldValue('superSegmentId', selected.id);
+            formik.setFieldValue('subSegmentId', undefined);
+            formik.setFieldValue('segmentId', undefined);
+        }
+        formik.setFieldValue('userType', selected.userType);
     };
 
     const submitHandler = async (values: ICreateIdeaInput) => {
@@ -106,25 +112,20 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
     const communityOfInterest = urlParams.get('communityOfInterest');
     const categoryIdFromURL = urlParams.get('category');
     const parsedProposalId = parseInt(supportedProposal!);
-    let updatedSegData: ISegmentData[] = [];
-    const destructuredSegData = Object.entries(segData);
     console.log('segData', segData);
-    console.log('destructuredSegData', destructuredSegData);
 
-    const renderCommunitiesOfInterest = (segData: ISegmentData[], communityOfInterest: string | null) => {
+    const renderCommunitiesOfInterest = (communityOfInterest: string | null) => {
         if (communityOfInterest) {
             return <option key={communityOfInterest} value={communityOfInterest}>
                 {communityOfInterest}
             </option>;
         }
 
-        console.log('segData', segData);
-        return userSegments &&
-            userSegments.map((seg: ISegmentData, index: number) => (
-                <option key={String(seg.name)} value={index}>
-                    {`${capitalizeString(seg.name)} as ${capitalizeString(seg.userType)} `}
-                </option>
-            ));
+        return processedSegData && processedSegData.map((seg: ISegmentData, index: number) => (
+            <option key={String(seg.name)} value={index}>
+                {capitalizeString(seg.name)}
+            </option>
+        ));
     };
 
     const formik = useFormik<ICreateIdeaInput>({
@@ -153,8 +154,8 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
                 lat: undefined,
                 lon: undefined,
             },
-            segmentId: 2,
-            subSegmentId: 5,
+            segmentId: undefined,
+            subSegmentId: undefined,
             superSegmentId: undefined,
             supportingProposalId: parsedProposalId,
         },
@@ -162,23 +163,19 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
     });
 
     useEffect(() => {
-
-        if (segData) {
-
-            const communityOfInterest = urlParams.get('communityOfInterest');
-            if (communityOfInterest) {
-                let foundIndex = 0;
-                for (let obj of updatedSegData) {
-                    if (obj.name == communityOfInterest) {
-                        handleCommunityChange(foundIndex);
-                        return;
-                    }
-                    foundIndex++;
+        if (Array.isArray(processedSegData) && processedSegData.length > 0) {
+            const communityOfInterestParam = urlParams.get('communityOfInterest');
+            if (communityOfInterestParam) {
+                const foundIndex = processedSegData.findIndex((obj) => obj.name === communityOfInterestParam);
+                if (foundIndex >= 0) {
+                    handleCommunityChange(foundIndex);
+                    return;
                 }
             }
+            // default to first entry
             handleCommunityChange(0);
         }
-    }, []);
+    }, [processedSegData]);
     return (
         <Container className='submit-idea-page-content'>
             <Row className='mb-4 mt-4 justify-content-center'>
@@ -218,7 +215,8 @@ const SubmitIdeaPageContent: React.FC<SubmitIdeaPageContentProps> = ({
                                 type='number'
                                 onChange={(e) => handleCommunityChange(Number(e.target.value))}
                             >
-                                {renderCommunitiesOfInterest(updatedSegData, communityOfInterest)}
+                                <option value={-1}>Select a Community...</option>
+                                {renderCommunitiesOfInterest(communityOfInterest)}
                             </Form.Control>
                         </Form.Group>
                         <Form.Group>

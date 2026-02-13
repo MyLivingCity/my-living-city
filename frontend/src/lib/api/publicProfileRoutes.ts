@@ -9,7 +9,7 @@ export interface PublicProfileWithStats {
     fname: string;
     lname: string;
     avatar?: string;
-    profileType: 'community' | 'municipal' | 'residential';
+    profileType: 'community' | 'municipal' | 'residential' | 'business';
     location?: string;
     endorsements?: number;
     postsCount?: number;

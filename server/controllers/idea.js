@@ -88,6 +88,13 @@ ideaRouter.post(
         categoryId = parseInt(categoryId)
       }
 
+      // supportingProposalId: Prisma expects Int or null
+    if (supportingProposalId === '' || supportingProposalId === undefined || supportingProposalId === null) {
+      supportingProposalId = null;
+    } else if (!isInteger(supportingProposalId)) {
+      supportingProposalId = parseInt(supportingProposalId, 10);
+    }
+
       const validationResult = await validateIdeaPostingAccess({
         userId: id,
         subSegmentId,
@@ -282,6 +289,8 @@ ideaRouter.post('/getall/aggregations', async (req, res, next) => {
         author: {
           select: {
             fname: true,
+            organizationName: true,
+            userType: true,
           }
         },
         address: {
@@ -371,8 +380,8 @@ ideaRouter.post('/getall/aggregations', async (req, res, next) => {
         posRatings: posRatings,
         negRatings: negRatings,
 
-        // User data
-        firstName: idea.author?.fname || '',
+        // User data: prefer organizationName for business/community, fall back to first name
+        firstName: idea.author?.organizationName || idea.author?.fname || '',
         streetAddress: idea.address?.streetAddress || '',
 
         // Status data
@@ -460,7 +469,7 @@ ideaRouter.post(
               parentSegment: true,
             },
           },
-          author: { select: { fname: true } },
+          author: { select: { fname: true, organizationName: true, userType: true } },
           address: { select: { streetAddress: true } },
           category: true,
           comments: { select: { id: true } },
@@ -523,7 +532,7 @@ ideaRouter.post(
           posRatings: posRatings,
           negRatings: negRatings,
 
-          firstName: idea.author?.fname || '',
+          firstName: idea.author?.organizationName || idea.author?.fname || '',
           streetAddress: idea.address?.streetAddress || '',
 
           state: idea.state,
@@ -614,7 +623,7 @@ ideaRouter.get(
         coalesce(ir.total_ratings, 0) as "ratingCount",
         coalesce(pr.pos_rating, 0) as "posRatings",
         coalesce(nr.neg_rating, 0) as "negRatings",
-        coalesce(userfname.f_name, '') as "firstName",
+        coalesce(userfname.organization_name, userfname.f_name, '') as "firstName",
         coalesce(userStreetAddress.street_address, '') as "streetAddress",
         i.state,
         i.active,
@@ -687,9 +696,9 @@ ideaRouter.get(
             where s."segmentType" = 'superSegment'
           ) superseg on superseg.idea_id = i.id
 
-          -- Aggregate author's first name
-          left join  (
-              select id, f_name
+            -- Aggregate author's name (prefer organization for business/community)
+            left join  (
+              select id, f_name, organization_name
               from "user"
               ) userfname on i.author_id = userfname.id
 

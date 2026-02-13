@@ -47,7 +47,7 @@ export interface IIdeaWithRelationship extends IIdea {
   category?: ICategory;
   userType: string;
   supportedProposal?: IProposalWithAggregations;
-  segment?: ISegment[];
+  segments?: ISegment[];
   author?: IUser;
   champion?: IUser | null;
   proposalInfo?: { id: number } | null;

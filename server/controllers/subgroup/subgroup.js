@@ -119,6 +119,9 @@ subgroupRouter.post(
                 managerId,
             } = req.body;
 
+            const isVirtual = typeField === 'VIRTUAL';
+            const isPrivate = privacyField === 'PRIVATE';
+
             // Create the subgroup
             const newSubGroup = await prisma.subGroup.create({
                 data: {
@@ -126,6 +129,8 @@ subgroupRouter.post(
                     description,
                     typeField,
                     privacyField,
+                    isVirtual,
+                    isPrivate,
                     regionId,
                     segmentId,
                     subSegmentId,
@@ -262,16 +267,23 @@ subgroupRouter.patch(
                 return res.status(404).json({ message: `Subgroup with id ${subGroupId} not found.` });
             }
 
+            let data = { name, description, typeField, privacyField };
+
+            if (typeField !== undefined) {
+                data.typeField = typeField;
+                data.isVirtual = typeField === 'VIRTUAL';
+            }
+
+            if (privacyField !== undefined) {
+                data.privacyField = privacyField;
+                data.isPrivate = privacyField === 'PRIVATE';
+            }
+
+
             // Update subgroup
             const updatedSubGroup = await prisma.subGroup.update({
                 where: { id: subGroupId },
-                data: {
-                    name,
-                    description,
-                    typeField,
-                    privacyField,
-                },
-
+                data,
                 include: {
                     region: { select: { name: true } },
                     segment: { select: { name: true } },

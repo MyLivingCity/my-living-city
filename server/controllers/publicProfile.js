@@ -414,23 +414,61 @@ publicProfileRouter.get('/all', async (req, res) => {
         const { 
             search = '', 
             profileType, 
-            location 
+            communityId,
+            neighbourhoodId 
         } = req.query;
 
-        // Build user type filters based on profile type
-        let userTypeFilter = [];
-        if (!profileType || profileType === 'all') {
-            userTypeFilter = ['MUNICIPAL', 'BUSINESS', 'COMMUNITY', 'RESIDENTIAL'];
-        } else if (profileType === 'municipal') {
-            userTypeFilter = ['MUNICIPAL'];
-        } else if (profileType === 'community') {
-            userTypeFilter = ['BUSINESS', 'COMMUNITY', 'RESIDENTIAL'];
-        }
+        // Filter for Community and Neighbourhood using UserSegments table (AND logic)
+        let userIdFilter = undefined;
+        if (communityId && neighbourhoodId) {
+            // BOTH filters selected (AND logic)
+            const [communityUsers, neighbourhoodUsers] = await Promise.all([
+                prisma.userSegments.findMany({
+                    where: { segmentId: Number(communityId) },
+                    select: { userId: true }
+                }),
+                prisma.userSegments.findMany({
+                    where: { segmentId: Number(neighbourhoodId) },
+                    select: { userId: true }
+                })
+            ]);
 
+            const communityUserIds = communityUsers.map(u => u.userId);
+            const neighbourhoodUserIds = neighbourhoodUsers.map(u => u.userId);
+
+            // Intersection (users in BOTH)
+            userIdFilter = communityUserIds.filter(id =>
+                neighbourhoodUserIds.includes(id)
+            );
+
+            if (userIdFilter.length === 0) {
+                return res.status(200).json({ profiles: [], totalCount: 0 });
+            }
+
+        } else if (communityId || neighbourhoodId) {
+            // ONLY one filter selected
+            const segmentId = Number(communityId || neighbourhoodId);
+
+            const userSegments = await prisma.userSegments.findMany({
+                where: { segmentId },
+                select: { userId: true }
+            });
+
+            userIdFilter = userSegments.map(us => us.userId);
+
+            if (userIdFilter.length === 0) {
+                return res.status(200).json({ profiles: [], totalCount: 0 });
+            }
+        }
+        
         // Build search conditions
         const searchWhere = {
-            userType: { in: userTypeFilter },
             status: true, // Only active users
+
+            ...(userIdFilter && {
+                id: { in: userIdFilter }
+            }),
+
             ...(search && {
                 OR: [
                     { fname: { contains: search, mode: 'insensitive' } },
@@ -440,12 +478,16 @@ publicProfileRouter.get('/all', async (req, res) => {
             })
         };
 
-        // Add location filter if provided
-        if (location) {
-            searchWhere.address = {
-                streetAddress: { contains: location, mode: 'insensitive' }
-            };
+        if (profileType === 'municipal') {
+            searchWhere.userType = 'MUNICIPAL';
+        } else if (profileType === 'community') {
+            searchWhere.userType = { in: ['BUSINESS', 'COMMUNITY'] };
+        } else if (profileType === 'residential') {
+            searchWhere.userType = 'RESIDENTIAL';
+        } else {
+            searchWhere.userType = { in: ['MUNICIPAL', 'BUSINESS', 'COMMUNITY', 'RESIDENTIAL'] };
         }
+
 
         // Fetch users with their related data
         const users = await prisma.user.findMany({
@@ -507,11 +549,15 @@ publicProfileRouter.get('/all', async (req, res) => {
         // Transform users into profile format
         const profiles = users.map(user => {
             // Determine profile type based on user type
-            let profileType = 'community';
+            let profileType;
             if (user.userType === 'MUNICIPAL') {
                 profileType = 'municipal';
             } else if (user.userType === 'RESIDENTIAL') {
                 profileType = 'residential';
+            } else if (user.userType === 'BUSINESS') {
+                profileType = 'business';
+            } else if (user.userType === 'COMMUNITY') {
+                profileType = 'community';
             }
 
             // Get location from user address
@@ -526,7 +572,7 @@ publicProfileRouter.get('/all', async (req, res) => {
 
             // Get primary segment/region from userReach
             const primarySegment = user.userReach?.[0]?.segment?.name || '';
-
+            
             return {
                 id: user.id,
                 userId: user.id,
@@ -539,9 +585,19 @@ publicProfileRouter.get('/all', async (req, res) => {
                 postsCount: user.ideas?.length || 0, // Real post count, no random fallback
                 businessName: user.userType === 'BUSINESS' || user.userType === 'COMMUNITY' ? user.organizationName : null,
                 municipalityName: user.userType === 'MUNICIPAL' ? user.organizationName : null,
-                userName: user.userType === 'RESIDENTIAL' ? `${user.fname || ''} ${user.lname || ''}`.trim() : null,
+                userName: user.userType === 'RESIDENTIAL' 
+                    ? `${user.displayFName || user.fname || ''}@${user.displayLName || user.lname || ''}` 
+                    : null,
                 userType: user.userType
             };
+        });
+
+        // Rank profiles by engagement (endorsements + posts)
+        profiles.sort((a, b) => {
+            const aScore = (a.endorsements || 0) + (a.postsCount || 0);
+            const bScore = (b.endorsements || 0) + (b.postsCount || 0);
+
+            return bScore - aScore;
         });
 
         res.status(200).json({

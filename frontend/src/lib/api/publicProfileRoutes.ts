@@ -9,7 +9,7 @@ export interface PublicProfileWithStats {
     fname: string;
     lname: string;
     avatar?: string;
-    profileType: 'community' | 'municipal' | 'residential';
+    profileType: 'community' | 'municipal' | 'residential' | 'business';
     location?: string;
     endorsements?: number;
     postsCount?: number;
@@ -162,8 +162,9 @@ export const updateStandardProfile = async (
 
 export const getAllPublicProfiles = async (
     search?: string,
-    profileType?: 'all' | 'community' | 'municipal',
-    location?: string,
+    profileType?: 'all' | 'community' | 'municipal' | 'residential',
+    communityId?: number,
+    neighbourhoodId?: number,
     token?: string | null
 ): Promise<{
     profiles: PublicProfileWithStats[];
@@ -173,7 +174,8 @@ export const getAllPublicProfiles = async (
 
     if (search) params.append('search', search);
     if (profileType && profileType !== 'all') params.append('profileType', profileType);
-    if (location) params.append('location', location);
+    if (communityId) params.append('communityId', String(communityId));
+    if (neighbourhoodId) params.append('neighbourhoodId', String(neighbourhoodId));
 
     const res = await axios({
         method: 'get',

@@ -937,8 +937,9 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                         <div>
                                             <span className='author-link' onClick={handleAuthorClick}>
                                                 {author?.userHandles?.find( h => h.userSegmentRelationship === UserSegmentRelationshipEnum.HOME)?.handle ?? 
-                                                `${author?.fname}@${author?.address?.streetAddress}`}
-                                            </span> as Resident
+                                                `${author?.userType === USER_TYPES.BUSINESS || author?.userType === USER_TYPES.COMMUNITY ? author?.organizationName : author?.fname}@
+                                                ${author?.userType === USER_TYPES.BUSINESS || author?.userType === USER_TYPES.COMMUNITY ? author?.userSegment?.[1]?.segment?.name : author?.address?.streetAddress}`}
+                                            </span>{author?.userType !== USER_TYPES.BUSINESS && author?.userType !== USER_TYPES.COMMUNITY ? ' as Resident' : ''}
                                         </div>
                                     ) ||
 

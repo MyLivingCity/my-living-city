@@ -181,7 +181,6 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
 
     const [showProposalSegmentError, setShowProposalSegmentError] = useState(false);
 
-
     const { token, user } = useContext(UserProfileContext);
     const { data: userSegmentData, isLoading: userSegementLoading } = useAllUserSegments(token, user?.id || null);
 

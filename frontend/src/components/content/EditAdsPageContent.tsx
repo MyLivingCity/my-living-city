@@ -6,12 +6,13 @@ import { UserProfileContext } from '../../contexts/UserProfile.Context';
 import { updateAdvertisement } from 'src/lib/api/advertisementRoutes';
 import { IAdvertisement } from '../../lib/types/data/advertisement.type';
 import { IFetchError } from '../../lib/types/types';
-import { handlePotentialAxiosError } from '../../lib/utilityFunctions';
+import { capitalizeFirstLetterEachWord, handlePotentialAxiosError } from '../../lib/utilityFunctions';
 import ImageUploader from 'react-images-upload';
 import * as Yup from 'yup';
 
 import '../../scss/content/_createAds.scss';
 import moment from 'moment';
+import { useAllSegments } from 'src/hooks/segmentHooks';
 
 interface EditAdsPageContentProps {
   adsData: IAdvertisement | undefined;
@@ -30,6 +31,7 @@ const EditAdsPageContent: React.FC<EditAdsPageContentProps> = ({adsData}) => {
     const [isLoading, setIsLoading] = useState(false);
     const [validated, setValidated] = useState(false);
     const [error, setError] = useState<IFetchError | null>(null);
+    const { data: segmentsData, isLoading: segmentsLoading, error: segmentsError } = useAllSegments();
 
     const [successModal, setSuccessModal] = useState(false);
     const handleClose = () => setSuccessModal(false);
@@ -122,10 +124,29 @@ const EditAdsPageContent: React.FC<EditAdsPageContentProps> = ({adsData}) => {
                                     <Form.Text className='text-muted'>"{adsData?.adTitle}"</Form.Text>
                                 </Form.Group>
                                 <Form.Group controlId='validateAdPosition'>
-                                    <Form.Label>Target position</Form.Label>
-                                    <Form.Control type='text' name='adPosition' onChange={handleChange} value={values.adPosition} placeholder='Enter new target position' isInvalid={!!errors.adPosition}/>
+                                    <Form.Label>Target Community</Form.Label>
+                                    <Form.Control
+                                        as='select'
+                                        name='adPosition'
+                                        onChange={handleChange}
+                                        value={values.adPosition}
+                                        isInvalid={!!errors.adPosition}
+                                    >
+                                        {segmentsData && segmentsData.length > 0 ? (
+                                            segmentsData.map((segment, i) => (
+                                                <option
+                                                    key={i}
+                                                    value={segment.name}
+                                                >
+                                                    {capitalizeFirstLetterEachWord(segment.name)}
+                                                </option>
+                                            ))
+                                        ) : (
+                                            <option value=''>No segments available</option>
+                                        )}
+                                    </Form.Control>
                                     <Form.Control.Feedback type='invalid'>{errors.adPosition}</Form.Control.Feedback>
-                                    <Form.Text className='text-muted'>"{adsData?.adPosition}"</Form.Text>
+                                    <Form.Text className='text-muted'>Current: "{adsData?.adPosition}"</Form.Text>
                                 </Form.Group>
                                 <Form.Group controlId='validateDuration'>
                                     <Form.Label>Advertisement Duration in Days</Form.Label>

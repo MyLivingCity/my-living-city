@@ -71,7 +71,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
         manufacturingImpact,
         createdAt,
         category,
-        segment,
+        segments,
         author,
         state,
         active,
@@ -147,7 +147,7 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
     }
 
     //Segments mapped by segmentType
-    const segmentMap = getIdeaSegmentsMap(segment);
+    const segmentMap = getIdeaSegmentsMap(segments);
 
     const primarySegment = segmentMap.segment;
     const subSegment = segmentMap.subSegment;
@@ -758,8 +758,9 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                         <div>
                                             <span className='author-link' onClick={handleAuthorClick}>
                                                 {author?.userHandles?.find( h => h.userSegmentRelationship === UserSegmentRelationshipEnum.HOME)?.handle ?? 
-                                                `${author?.fname}@${author?.address?.streetAddress}`}
-                                            </span> as Resident
+                                                `${author?.userType === USER_TYPES.BUSINESS || author?.userType === USER_TYPES.COMMUNITY ? author?.organizationName : author?.fname}@
+                                                ${author?.userType === USER_TYPES.BUSINESS || author?.userType === USER_TYPES.COMMUNITY ? author?.userSegment?.[1]?.segment?.name : author?.address?.streetAddress}`}
+                                            </span>{author?.userType !== USER_TYPES.BUSINESS && author?.userType !== USER_TYPES.COMMUNITY ? ' as Resident' : ''}
                                         </div>
                                     ) ||
 

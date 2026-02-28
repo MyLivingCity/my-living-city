@@ -964,6 +964,25 @@ model SubGroupMember {
   @@map("subgroup_member")
 }
 
+model AccountPricing {
+  id               Int      @id @default(autoincrement())
+  accountType      PricingAccountType @unique @map("account_type")
+  yearlyPriceCents Int      @map("yearly_price_cents")
+  updatedAt        DateTime @default(now()) @updatedAt @map("updated_at")
+  updatedByUserId  String?  @map("updated_by_user_id")
+
+  @@map("account_pricing")
+}
+
+enum PricingAccountType {
+  ENHANCED_REGULAR
+  COMMUNITY
+  BUSINESS
+
+  @@map("pricing_account_type")
+}
+
+
 enum MembershipStatus {
   PENDING
   APPROVED

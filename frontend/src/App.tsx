@@ -28,6 +28,7 @@ import AdminRoute from './components/utility/AdminRoute';
 import CustomRoute from './components/utility/CustomRoute';
 import UserManagementPage from './pages/UserManagementPage';
 import AdminManagementPage from './pages/AdminManagementPage';
+import PricingAndLimitManagerPage from './pages/PricingAndLimitManagerPage';
 import SubmitDirectProposalPage from './pages/SubmitDirectProposalPage';
 import DashboardPage from './pages/DashboardPage';
 import MyPostsPage from './pages/MyPostsPage';
@@ -188,7 +189,11 @@ function App() {
                             USER_TYPES.SEG_ADMIN
                         ]}
                     />
-
+                    <CustomRoute
+                        path={ROUTES.ADMIN_PRICING_AND_LIMIT}
+                        component={PricingAndLimitManagerPage}
+                        userTypes={[USER_TYPES.SUPER_ADMIN, USER_TYPES.ADMIN]}
+                    />
                     <CustomRoute
                         path={ROUTES.MOD_MANAGEMENT}
                         component={ModManagementPage}

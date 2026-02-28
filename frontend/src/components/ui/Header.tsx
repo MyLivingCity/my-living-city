@@ -234,6 +234,7 @@ function Header() {
                                                 <Nav.Link href='/segment/management/all'>Segments</Nav.Link>
                                                 <Nav.Link href='/user/management'>User Manager</Nav.Link>
                                                 <Nav.Link href='/admin/management'>Admin Manager</Nav.Link>
+                                                <Nav.Link href='/admin/pricing-and-limit'>Pricing and Limit Manager</Nav.Link>
                                                 <Nav.Link href='/subgroup/management'>Subgroup Admin</Nav.Link>
                                             </>
                                         )}

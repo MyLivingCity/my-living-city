@@ -78,6 +78,7 @@ export const ROUTES = {
     SEGMENT_MANAGEMENT: '/segment/management/:segId',
     USER_MANAGEMENT: '/user/management',
     ADMIN_MANAGEMENT: '/admin/management',
+    ADMIN_PRICING_AND_LIMIT: '/admin/pricing-and-limit',
     SUBMIT_DIRECT_PROPOSAL: '/submit-direct-proposal',
     DASHBOARD: '/dashboard',
     My_POSTS: '/dashboard/my-posts',

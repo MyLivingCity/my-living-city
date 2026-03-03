@@ -54,7 +54,7 @@ advertisementRouter.post(
                 //decompose necessary fields from request body
                 const { adType, adTitle, adDuration, adPosition, externalLink, published } = req.body;
 
-                if (adType === 'COMPLIMENTARY') {
+                if (adType === 'COMPLIMENTARY' && theUser.userType !== 'SUPER_ADMIN' && theUser.userType !== 'ADMIN') {
                     const theComplimentaryAd = await prisma.advertisements.findFirst({ where: { ownerId: id, adType: 'COMPLIMENTARY' } });
 
                     if (theComplimentaryAd) {

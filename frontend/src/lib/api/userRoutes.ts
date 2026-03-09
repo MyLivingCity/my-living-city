@@ -135,6 +135,24 @@ export const getUserSubscriptionStatus = async (userId: string | undefined) => {
     );
     return res.data;
 };
+
+export const getEnhancedMemberStatus = async (userId: string | undefined, token: string | null) => {
+    const res = await axios.get(
+        `${API_BASE_URL}/enhanced-member/status/${userId}`,
+        getAxiosJwtRequestOption(token!)
+    );
+    return res.data;
+};
+
+export const promoteToEnhancedMember = async (userId: string | undefined, token: string | null) => {
+    const res = await axios.post(
+        `${API_BASE_URL}/enhanced-member/promote`,
+        { userId },
+        getAxiosJwtRequestOption(token!)
+    );
+    return res.data;
+};
+
 export const getUserWithJWTVerbose = async ({ jwtAuthToken }: GetUserWithJWTInput): Promise<IUser> => {
     const res = await axios.get<IUser>(
         `${API_BASE_URL}/user/me-verbose`,

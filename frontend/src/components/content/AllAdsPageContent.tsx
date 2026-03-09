@@ -27,6 +27,17 @@ const AllAdsPageContent: React.FC<AllAdsPageContentProps> = ({
         }
     }
 
+    const formatExpiration = (duration: number) => {
+        const expirationDate = moment(duration);
+        const now = moment();
+
+        if (expirationDate.isBefore(now)) {
+            return 'Expired';
+        }
+
+        return expirationDate.format('YYYY-MM-DD HH:mm:ss');
+    };
+
     return (
         <Container className='all-ads-page-content w-100'>
             <Row className='mb-4 mt-4'>
@@ -94,7 +105,7 @@ const AllAdsPageContent: React.FC<AllAdsPageContentProps> = ({
                                         height='100rem'
                                     ></img>
                                 </td>
-                                <td>{moment(item.duration).format('YYYY-MM-DD HH:mm:ss')}</td>
+                                <td>{formatExpiration(item.duration)}</td>
                                 <td>{item.adPosition}</td>
                                 <td>
                                     <a href={item.externalLink}>{item.externalLink}</a>

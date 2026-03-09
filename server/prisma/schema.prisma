@@ -46,6 +46,7 @@ model User {
   userIdeaEndorse     UserIdeaEndorse[]
   userSegment         UserSegments[]
   userHandles          UserHandle[]
+  enhancedMember      EnhancedMember?
   //subGroupsManaged    SubGroup[]            @relation("ManagedSubGroups")
   //subGroupsJoined     SubGroupMember[]      @relation("JoinedSubGroups") 
 
@@ -962,6 +963,32 @@ model SubGroupMember {
 
   @@unique([userId, subGroupId])
   @@map("subgroup_member")
+}
+
+model AccountPricing {
+  id               Int      @id @default(autoincrement())
+  accountType      PricingAccountType @unique @map("account_type")
+  yearlyPriceCents Int      @map("yearly_price_cents")
+  updatedAt        DateTime @default(now()) @updatedAt @map("updated_at")
+  updatedByUserId  String?  @map("updated_by_user_id")
+
+  @@map("account_pricing")
+}
+
+enum PricingAccountType {
+  ENHANCED_REGULAR
+  COMMUNITY
+  BUSINESS
+
+  @@map("pricing_account_type")
+}
+
+model EnhancedMember {
+  id        String   @id @default(cuid())
+  userId    String   @unique @map("user_id")
+  user      User     @relation(fields: [userId], references: [id])
+  
+  @@map("enhanced_member")
 }
 
 enum MembershipStatus {

@@ -24,6 +24,8 @@ import { RequestSegmentModal } from '../partials/RequestSegmentModal';
 import StripeCheckoutButton from 'src/components/partials/StripeCheckoutButton';
 import {
     getSchoolSegmentDetails,
+    getEnhancedMemberStatus,
+    promoteToEnhancedMember,
     getUserSubscriptionStatus,
     getWorkSegmentDetails,
 } from 'src/lib/api/userRoutes';
@@ -190,6 +192,9 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
     const [editHomeSegment, setEditHomeSegment] = useState(false);
     const [editWorkSegment, setEditWorkSegment] = useState(false);
     const [editSchoolSegment, setEditSchoolSegment] = useState(false);
+    const [isEnhancedMember, setIsEnhancedMember] = useState(false);
+    const [upgradingToEnhanced, setUpgradingToEnhanced] = useState(false);
+    const [upgradeStatus, setUpgradeStatus] = useState<{ success: boolean; message: string } | null>(null);
 
     //find and join public subgroups
     const [publicSubgroupData, setPublicSubgroupData] = useState<PublicSubGroup[]>([]);
@@ -267,6 +272,12 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
             .then((e) => setStandardProfile(e))
             .catch((e) => console.log(e));
     }, []);
+
+    useEffect(() => {
+        getEnhancedMemberStatus(user.id, token)
+            .then((response) => setIsEnhancedMember(!!response?.isEnhancedMember))
+            .catch((e) => console.log(e));
+    }, [user.id, token]);
 
     useEffect(() => {
         getWorkSegmentDetails(user.id)
@@ -366,7 +377,11 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
     };
 
     function handleUpdateProfile() {
-        if (userType === USER_TYPES.BUSINESS || userType === USER_TYPES.COMMUNITY) {
+        if (
+            userType === USER_TYPES.BUSINESS ||
+            userType === USER_TYPES.COMMUNITY ||
+            (userType === USER_TYPES.RESIDENTIAL && isEnhancedMember)
+        ) {
             const userId = user.id;
             const statement = (
                 document.getElementById('formVisionStatement') as HTMLInputElement
@@ -503,6 +518,19 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
             lastName: lastName,
             email: email,
         };
+    };
+
+    const handleUpgradeToEnhanced = async () => {
+        try {
+            setUpgradingToEnhanced(true);
+            await promoteToEnhancedMember(user.id, token);
+            setIsEnhancedMember(true);
+            setUpgradeStatus({ success: true, message: 'Your account is now upgraded to Enhanced Member.' });
+        } catch (error) {
+            setUpgradeStatus({ success: false, message: 'Failed to upgrade account. Please try again.' });
+        } finally {
+            setUpgradingToEnhanced(false);
+        }
     };
 
     // Find and join public SubGroups 
@@ -2310,6 +2338,326 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                             setSegmentRequests={setSegmentRequests}
                             segmentRequests={segmentRequests}
                         />
+                    </Card>
+                </Row>
+
+                <Row className='mb-4 mt-4 justify-content-center'>
+                    <h2 className='pb-2 pt-2 display-6'>Public Profile</h2>
+                </Row>
+
+                <Row>
+                    <Card style={{ width: '80rem' }}>
+                        <Card.Body className='my-5'>
+                            {upgradeStatus ? (
+                                <Alert
+                                    variant={upgradeStatus.success ? 'success' : 'danger'}
+                                    dismissible
+                                    onClose={() => setUpgradeStatus(null)}
+                                >
+                                    {upgradeStatus.message}
+                                </Alert>
+                            ) : null}
+
+                            {isEnhancedMember ? (
+                                <Form
+                                    id='formPublicProfile'
+                                    onSubmit={(e) => {
+                                        e.preventDefault();
+                                        handleUpdateProfile();
+                                    }}
+                                >
+                                    {showAlert ? (
+                                        <Alert
+                                            variant='primary'
+                                            dismissible
+                                            onClose={() => setShowAlert(false)}
+                                        >
+                                            Profile Updated
+                                        </Alert>
+                                    ) : null}
+                                    <Form.Group className='mb-3' controlId='formVisionStatement'>
+                                        <Form.Label>Mission/Vision Statement</Form.Label>
+                                        <Form.Control
+                                            type='text'
+                                            id='formVisionStatement'
+                                            placeholder='Say a few words about your mission/vision'
+                                            defaultValue={communityBusinessProfile.statement}
+                                            maxLength={TEXT_INPUT_LIMIT.MISSION_STATEMENT}
+                                        />
+                                    </Form.Group>
+                                    <Form.Group className='mb-3' controlId='formServiceDescription'>
+                                        <Form.Label>Product/Service Description</Form.Label>
+                                        <Form.Control
+                                            type='text'
+                                            id='formServiceDescription'
+                                            placeholder='Tell us about the product/service you provide'
+                                            defaultValue={communityBusinessProfile.description}
+                                            maxLength={TEXT_INPUT_LIMIT.DESCRIPTION}
+                                        />
+                                    </Form.Group>
+                                    <Form.Group className='mb-3' controlId='formPublicAddress'>
+                                        <Form.Label>Public Address</Form.Label>
+                                        <Form.Control
+                                            type='text'
+                                            id='formPublicAddress'
+                                            placeholder='Public Address'
+                                            defaultValue={communityBusinessProfile.address}
+                                            maxLength={TEXT_INPUT_LIMIT.LOCATION}
+                                        />
+                                    </Form.Group>
+                                    <Form.Group
+                                        className='mb-3'
+                                        controlId='formLinks'
+                                        id='formLinks'
+                                    >
+                                        <Form.Label>Links</Form.Label>
+                                        <Button
+                                            className='float-right'
+                                            size='sm'
+                                            onClick={() => {
+                                                addNewRow();
+                                            }}
+                                        >
+                                            Add New Link
+                                        </Button>
+                                        <Table bordered hover size='sm'>
+                                            <thead>
+                                                <tr>
+                                                    <th style={{ width: '10rem' }}>Type</th>
+                                                    <th>Link</th>
+                                                    <th style={{ width: '10rem' }}>Controls</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id='formLinksBody'>
+                                                {links &&
+                                                    links.map((link) => (
+                                                        <tr
+                                                            key={links.indexOf(link)}
+                                                        >
+                                                            <td>
+                                                                <Form.Control
+                                                                    as='select'
+                                                                    onChange={(e) => {
+                                                                        updateLinkType(e.target.value, link);
+                                                                    }}
+                                                                    defaultValue={link.linkType}
+                                                                >
+                                                                    {LinkTypes.map((linkType) => (
+                                                                        <option>{linkType}</option>
+                                                                    ))}
+                                                                </Form.Control>
+                                                            </td>
+                                                            <td>
+                                                                <Form.Control
+                                                                    type='text'
+                                                                    placeholder='Link'
+                                                                    defaultValue={link.link}
+                                                                    onChange={(e) => {
+                                                                        updateLink(e.target.value, link);
+                                                                    }}
+                                                                    maxLength={TEXT_INPUT_LIMIT.EXTERNAL_LINK}
+                                                                />
+                                                            </td>
+                                                            <td>
+                                                                <NavDropdown title='Controls' id='nav-dropdown'>
+                                                                    <Dropdown.Item
+                                                                        class='deleteButton'
+                                                                        onClick={() => {
+                                                                            deleteRow(link);
+                                                                        }}
+                                                                    >
+                                                                        Delete
+                                                                    </Dropdown.Item>
+                                                                </NavDropdown>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                            </tbody>
+                                        </Table>
+                                    </Form.Group>
+                                    <Form.Group className='mb-3' controlId='formContactInformation'>
+                                        <Form.Label>Contact Information</Form.Label>
+                                        <Table bordered hover size='sm'>
+                                            <thead>
+                                                <tr>
+                                                    <th>First Name</th>
+                                                    <th>Last Name</th>
+                                                    <th>Email</th>
+                                                    <th>Phone Number</th>
+                                                </tr>
+                                            </thead>
+                                            {communityBusinessProfile ? (
+                                                <tbody>
+                                                    <tr>
+                                                        <td>{fname}</td>
+                                                        <td>{lname}</td>
+                                                        <td>
+                                                            <Form.Control
+                                                                type='email'
+                                                                id='formContactEmail'
+                                                                placeholder='Email Address'
+                                                                defaultValue={
+                                                                    communityBusinessProfile.contactEmail
+                                                                }
+                                                            />
+                                                        </td>
+                                                        <td>
+                                                            <Form.Control
+                                                                type='phone'
+                                                                id='formContactPhone'
+                                                                placeholder='Phone Number'
+                                                                defaultValue={
+                                                                    communityBusinessProfile.contactPhone
+                                                                }
+                                                            />
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            ) : null}
+                                        </Table>
+                                    </Form.Group>
+                                    <Button variant='primary' type='submit'>
+                                        Update
+                                    </Button>
+                                </Form>
+                            ) : (
+                                <div className='bg-light p-4 rounded text-muted'>
+                                    <Form id='formPublicProfile'>
+                                        <fieldset disabled>
+                                            <Form.Group className='mb-3' controlId='formVisionStatement'>
+                                                <Form.Label>Mission/Vision Statement</Form.Label>
+                                                <Form.Control
+                                                    type='text'
+                                                    id='formVisionStatement'
+                                                    placeholder='Say a few words about your mission/vision'
+                                                    defaultValue={communityBusinessProfile.statement}
+                                                    maxLength={TEXT_INPUT_LIMIT.MISSION_STATEMENT}
+                                                />
+                                            </Form.Group>
+                                            <Form.Group className='mb-3' controlId='formServiceDescription'>
+                                                <Form.Label>Product/Service Description</Form.Label>
+                                                <Form.Control
+                                                    type='text'
+                                                    id='formServiceDescription'
+                                                    placeholder='Tell us about the product/service you provide'
+                                                    defaultValue={communityBusinessProfile.description}
+                                                    maxLength={TEXT_INPUT_LIMIT.DESCRIPTION}
+                                                />
+                                            </Form.Group>
+                                            <Form.Group className='mb-3' controlId='formPublicAddress'>
+                                                <Form.Label>Public Address</Form.Label>
+                                                <Form.Control
+                                                    type='text'
+                                                    id='formPublicAddress'
+                                                    placeholder='Public Address'
+                                                    defaultValue={communityBusinessProfile.address}
+                                                    maxLength={TEXT_INPUT_LIMIT.LOCATION}
+                                                />
+                                            </Form.Group>
+                                            <Form.Group
+                                                className='mb-3'
+                                                controlId='formLinks'
+                                                id='formLinks'
+                                            >
+                                                <Form.Label>Links</Form.Label>
+                                                <Button className='float-right' size='sm' disabled>
+                                                    Add New Link
+                                                </Button>
+                                                <Table bordered hover size='sm'>
+                                                    <thead>
+                                                        <tr>
+                                                            <th style={{ width: '10rem' }}>Type</th>
+                                                            <th>Link</th>
+                                                            <th style={{ width: '10rem' }}>Controls</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id='formLinksBody'>
+                                                        {links &&
+                                                            links.map((link) => (
+                                                                <tr key={links.indexOf(link)}>
+                                                                    <td>
+                                                                        <Form.Control as='select' defaultValue={link.linkType}>
+                                                                            {LinkTypes.map((linkType) => (
+                                                                                <option>{linkType}</option>
+                                                                            ))}
+                                                                        </Form.Control>
+                                                                    </td>
+                                                                    <td>
+                                                                        <Form.Control
+                                                                            type='text'
+                                                                            placeholder='Link'
+                                                                            defaultValue={link.link}
+                                                                            maxLength={TEXT_INPUT_LIMIT.EXTERNAL_LINK}
+                                                                        />
+                                                                    </td>
+                                                                    <td>
+                                                                        <NavDropdown title='Controls' id='nav-dropdown'>
+                                                                            <Dropdown.Item class='deleteButton'>
+                                                                                Delete
+                                                                            </Dropdown.Item>
+                                                                        </NavDropdown>
+                                                                    </td>
+                                                                </tr>
+                                                            ))}
+                                                    </tbody>
+                                                </Table>
+                                            </Form.Group>
+                                            <Form.Group className='mb-3' controlId='formContactInformation'>
+                                                <Form.Label>Contact Information</Form.Label>
+                                                <Table bordered hover size='sm'>
+                                                    <thead>
+                                                        <tr>
+                                                            <th>First Name</th>
+                                                            <th>Last Name</th>
+                                                            <th>Email</th>
+                                                            <th>Phone Number</th>
+                                                        </tr>
+                                                    </thead>
+                                                    {communityBusinessProfile ? (
+                                                        <tbody>
+                                                            <tr>
+                                                                <td>{fname}</td>
+                                                                <td>{lname}</td>
+                                                                <td>
+                                                                    <Form.Control
+                                                                        type='email'
+                                                                        id='formContactEmail'
+                                                                        placeholder='Email Address'
+                                                                        defaultValue={
+                                                                            communityBusinessProfile.contactEmail
+                                                                        }
+                                                                    />
+                                                                </td>
+                                                                <td>
+                                                                    <Form.Control
+                                                                        type='phone'
+                                                                        id='formContactPhone'
+                                                                        placeholder='Phone Number'
+                                                                        defaultValue={
+                                                                            communityBusinessProfile.contactPhone
+                                                                        }
+                                                                    />
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    ) : null}
+                                                </Table>
+                                            </Form.Group>
+                                        </fieldset>
+                                    </Form>
+                                    <div className='d-flex justify-content-between align-items-center'>
+                                        <span>Upgrade to Enhanced Member to edit your public profile.</span>
+                                        <Button
+                                            variant='secondary'
+                                            onClick={handleUpgradeToEnhanced}
+                                            disabled={upgradingToEnhanced}
+                                        >
+                                            {upgradingToEnhanced ? 'Upgrading...' : 'Upgrade Account'}
+                                        </Button>
+                                    </div>
+                                </div>
+                            )}
+                        </Card.Body>
                     </Card>
                 </Row>
 

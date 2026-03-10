@@ -46,6 +46,7 @@ model User {
   userIdeaEndorse     UserIdeaEndorse[]
   userSegment         UserSegments[]
   userHandles          UserHandle[]
+  enhancedMember      EnhancedMember?
   //subGroupsManaged    SubGroup[]            @relation("ManagedSubGroups")
   //subGroupsJoined     SubGroupMember[]      @relation("JoinedSubGroups") 
 
@@ -984,6 +985,13 @@ enum PricingAccountType {
   @@map("pricing_account_type")
 }
 
+model EnhancedMember {
+  id        String   @id @default(cuid())
+  userId    String   @unique @map("user_id")
+  user      User     @relation(fields: [userId], references: [id])
+  
+  @@map("enhanced_member")
+}
 
 enum MembershipStatus {
   PENDING

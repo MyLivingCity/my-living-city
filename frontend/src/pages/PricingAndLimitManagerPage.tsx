@@ -1,5 +1,6 @@
 import { Container } from 'react-bootstrap';
 import AccountPricingContent from '../components/content/AccountPricingContent';
+import ExtraProposalPricingContent from '../components/content/ExtraProposalPricingContent';
 
 export default function PricingAndLimitManagerPage() {
     return (
@@ -9,6 +10,9 @@ export default function PricingAndLimitManagerPage() {
 
                 {/* Scope - C2-004 */}
                 <AccountPricingContent />
+
+                {/* Scope - C2-007 */}
+                <ExtraProposalPricingContent />
             </Container>  
         </div>
         

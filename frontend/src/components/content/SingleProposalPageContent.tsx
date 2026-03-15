@@ -184,104 +184,125 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
     const { token, user } = useContext(UserProfileContext);
     const { data: userSegmentData, isLoading: userSegementLoading } = useAllUserSegments(token, user?.id || null);
 
+
+
+    /**
+    * Handles the "Propose Idea" button click and checks whether the current user
+    * is allowed to submit an idea for this proposal's community.
+    *
+    * Logic:
+    * - Residential users can submit if the proposal community matches any of their
+    *   HOME, WORK, or SCHOOL segments.
+    * - Non-residential users can submit only if the proposal community matches
+    *   their HOME segment.
+    *
+    * A user is considered part of a community if their segment matches
+    * the proposal's community segment or belongs to it within the
+    * segment hierarchy.
+    */
     function redirectToIdeaSubmit() {
         if (!userSegmentData || userSegmentData.length === 0) {
             setShowProposalSegmentError(true);
             return;
         }
 
-        const homeSegId = userSegmentData.find(
-            (s: IUserSegment) => s.userSegmentRelationship === UserSegmentRelationshipEnum.HOME
-        )?.segmentId;
+        const targetCommunity = subSegment || primarySegment || superSegment;
 
-        const workSegId = userSegmentData.find(
-            (s: IUserSegment) => s.userSegmentRelationship === UserSegmentRelationshipEnum.WORK
-        )?.segmentId;
-
-        const schoolSegId = userSegmentData.find(
-            (s: IUserSegment) => s.userSegmentRelationship === UserSegmentRelationshipEnum.SCHOOL
-        )?.segmentId;
-
-        if (!segments && !primarySegment && !subSegment && !superSegment) {
+        if (!targetCommunity) {
             setShowProposalSegmentError(true);
             return;
         }
 
-        const belongsToUser = (seg: any) => {
-            if (!seg) {
+        const homeUserSegs = userSegmentData.filter(
+            (s: IUserSegment) => s.userSegmentRelationship === UserSegmentRelationshipEnum.HOME
+        );
+
+        const workUserSegs = userSegmentData.filter(
+            (s: IUserSegment) => s.userSegmentRelationship === UserSegmentRelationshipEnum.WORK
+        );
+
+        const schoolUserSegs = userSegmentData.filter(
+            (s: IUserSegment) => s.userSegmentRelationship === UserSegmentRelationshipEnum.SCHOOL
+        );
+
+        const doesSingleUserSegmentBelongToCommunity = (
+            userSeg: IUserSegment | undefined,
+            community: any
+        ) => {
+            if (!userSeg || !community || !userSeg.segment) {
                 return false;
             }
 
-            if (seg.segId === homeSegId) {
+            const userSegId = userSeg.segmentId;
+            const userSegType = userSeg.segment.segmentType;
+            const userParentId = userSeg.segment.parentId;
+
+            // Case 1: User belongs directly to the same community
+            if (userSegId === community.segId) {
                 return true;
             }
-            if (seg.segId === workSegId) {
+
+            // Case 2: Proposal is at the segment level,
+            // and the user belongs to a subSegment under that segment
+            if (
+                community.segmentType === 'segment' &&
+            userSegType === 'subSegment' &&
+            userParentId === community.segId
+            ) {
                 return true;
             }
-            if (seg.segId === schoolSegId) {
-                return true;
-            }
-            if (seg.parentId === homeSegId) {
-                return true;
-            }
-            if (seg.parentId === workSegId) {
-                return true;
-            }
-            if (seg.parentId === schoolSegId) {
+
+            // Case 3: Proposal is at the superSegment level,
+            // and the user belongs to a segment under that superSegment
+            if (
+                community.segmentType === 'superSegment' &&
+            userSegType === 'segment' &&
+            userParentId === community.segId
+            ) {
                 return true;
             }
 
             return false;
         };
 
+        const doesAnyUserSegmentBelongToCommunity = (
+            userSegs: IUserSegment[],
+            community: any
+        ) => {
+            return userSegs.some((seg) =>
+                doesSingleUserSegmentBelongToCommunity(seg, community)
+            );
+        };
+
         const goSubmit = (name?: string) => {
             const communityOfInterest = getSegmentName(name);
             window.location.href =
-                '/submit?supportedProposal=' +
-                proposalId +
-                '&communityOfInterest=' +
-                communityOfInterest +
-                '&category=' +
-                category?.id;
+            '/submit?supportedProposal=' +
+            proposalId +
+            '&communityOfInterest=' +
+            communityOfInterest +
+            '&category=' +
+            category?.id;
         };
 
-        if (userType === 'Resident') {
-            if (subSegment && subSegment.name && belongsToUser(subSegment)) {
-                goSubmit(subSegment.name);
-                return;
-            }
+        let canSubmit = false;
 
-            if (primarySegment && primarySegment.name && belongsToUser(primarySegment)) {
-                goSubmit(primarySegment.name);
-                return;
-            }
+        if (user?.userType === USER_TYPES.RESIDENTIAL) {
+            canSubmit =
+            doesAnyUserSegmentBelongToCommunity(homeUserSegs, targetCommunity) ||
+            doesAnyUserSegmentBelongToCommunity(workUserSegs, targetCommunity) ||
+            doesAnyUserSegmentBelongToCommunity(schoolUserSegs, targetCommunity);
+        } else {
+            canSubmit =
+            doesAnyUserSegmentBelongToCommunity(homeUserSegs, targetCommunity);
+        }
 
-            if (superSegment && superSegment.name && belongsToUser(superSegment)) {
-                goSubmit(superSegment.name);
-                return;
-            }
-
+        if (!canSubmit) {
             setShowProposalSegmentError(true);
             return;
         }
 
-        if (
-            (subSegment && subSegment.segId === homeSegId) ||
-            (primarySegment && primarySegment.segId === homeSegId) ||
-            (superSegment && superSegment.segId === homeSegId) ||
-            (subSegment && subSegment.parentId === homeSegId) ||
-            (primarySegment && primarySegment.parentId === homeSegId) ||
-            (superSegment && superSegment.parentId === homeSegId)
-        ) {
-            const name =
-                (subSegment && subSegment.name) ||
-                (primarySegment && primarySegment.name) ||
-                (superSegment && superSegment.name);
-        
-            goSubmit(name);
-            return;
-        }
-        setShowProposalSegmentError(true);
+        goSubmit(targetCommunity.name);
     }
 
     const { data: useAllIdeaData, isLoading: useAllIdeaLoading } = useAllIdeas();

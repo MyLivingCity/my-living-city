@@ -39,14 +39,14 @@ model User {
   status           Boolean  @default(true)
 
   // Relationships
-  address             UserAddress?
-  geo                 UserGeo?
-  userReach           UserReach[]
-  userIdeaFollow      UserIdeaFollow[]
-  userIdeaEndorse     UserIdeaEndorse[]
-  userSegment         UserSegments[]
-  userHandles          UserHandle[]
-  enhancedMember      EnhancedMember?
+  address         UserAddress?
+  geo             UserGeo?
+  userReach       UserReach[]
+  userIdeaFollow  UserIdeaFollow[]
+  userIdeaEndorse UserIdeaEndorse[]
+  userSegment     UserSegments[]
+  userHandles     UserHandle[]
+  enhancedMember  EnhancedMember?
   //subGroupsManaged    SubGroup[]            @relation("ManagedSubGroups")
   //subGroupsJoined     SubGroupMember[]      @relation("JoinedSubGroups") 
 
@@ -81,8 +81,9 @@ model User {
   Work_Details                      Work_Details[]
 
   //Model Subgroup
-  managedSubGroups SubGroup[] @relation("ManagedSubGroups")
-  joinedSubGroups SubGroupMember[] @relation("JoinedSubGroups")
+  managedSubGroups SubGroup[]       @relation("ManagedSubGroups")
+  joinedSubGroups  SubGroupMember[] @relation("JoinedSubGroups")
+
   @@map(name: "user")
 }
 
@@ -653,9 +654,9 @@ model UserCommentDislikes {
 }
 
 model AdPrice {
-  id                Int       @id @default(autoincrement())
-  lengthWeeks       Int       @map("length_weeks")
-  priceCadDollars   Decimal   @db.Decimal(10, 2) @map("price_cad_dollars")
+  id              Int     @id @default(autoincrement())
+  lengthWeeks     Int     @map("length_weeks")
+  priceCadDollars Decimal @map("price_cad_dollars") @db.Decimal(10, 2)
 }
 
 model Advertisements {
@@ -925,7 +926,7 @@ model SubGroup {
   isVirtual    Boolean      @map("is_virtual")
   isPrivate    Boolean      @map("is_private")
   privacyField PrivacyField @default(PRIVATE) @map("privacy_field")
-  typeField TypeField @default(VIRTUAL) @map("type_field")
+  typeField    TypeField    @default(VIRTUAL) @map("type_field")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
@@ -966,11 +967,11 @@ model SubGroupMember {
 }
 
 model AccountPricing {
-  id               Int      @id @default(autoincrement())
+  id               Int                @id @default(autoincrement())
   accountType      PricingAccountType @unique @map("account_type")
-  yearlyPriceCents Int      @map("yearly_price_cents")
-  updatedAt        DateTime @default(now()) @updatedAt @map("updated_at")
-  updatedByUserId  String?  @map("updated_by_user_id")
+  yearlyPriceCents Int                @map("yearly_price_cents")
+  updatedAt        DateTime           @default(now()) @updatedAt @map("updated_at")
+  updatedByUserId  String?            @map("updated_by_user_id")
 
   @@map("account_pricing")
 }
@@ -984,11 +985,22 @@ enum PricingAccountType {
 }
 
 model EnhancedMember {
-  id        String   @id @default(cuid())
-  userId    String   @unique @map("user_id")
-  user      User     @relation(fields: [userId], references: [id])
-  
+  id     String @id @default(cuid())
+  userId String @unique @map("user_id")
+  user   User   @relation(fields: [userId], references: [id])
+
   @@map("enhanced_member")
+}
+
+model AccountType {
+  id                  Int       @id @default(autoincrement())
+  updatedBy           String?   @map("updated_by") @db.VarChar(30)
+  accountType         String    @map("account_type") @db.VarChar(255)
+  yearlyProposalLimit Int?      @map("yearly_proposal_limit")
+  extraProposalCost   Int?      @map("extra_proposal_cost")
+  lastUpdated         DateTime? @map("last_updated") @db.Date
+
+  @@map("account_type")
 }
 
 enum MembershipStatus {

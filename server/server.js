@@ -83,6 +83,7 @@ const main = async () => {
 	const publicSubgroupRouter = require('./controllers/publicSubgroup.js');
 	const subgroupRouter = require('./controllers/subgroup/subgroup.js');
 	const pricingAndLimitRouter = require("./controllers/pricingAndLimit/accountPricing");
+  const extraProposalPricingRouter = require("./controllers/extraProposalPricing/extraProposalPricing");
 	const enhancedMemberRouter = require('./controllers/enhancedMember');
 
 
@@ -134,6 +135,7 @@ const main = async () => {
 	apiRouter.use('/subgroupRequest', subGroupRequestRouter);
 	apiRouter.use('/subgroup', subgroupRouter);
 	apiRouter.use('/pricing-and-limit', pricingAndLimitRouter);
+  apiRouter.use("/extra-proposal-pricing", extraProposalPricingRouter);
 	apiRouter.use('/enhanced-member', enhancedMemberRouter);
 	// Listen to server
 	app.listen(PORT, console.log(`Server running on PORT:${PORT}\n\n`));

@@ -102,6 +102,7 @@ export default function ProposalLimitManager() {
     const [defaultInputValue, setDefaultInputValue] = useState<string>('');
 
     const [filter, setFilter] = useState<FilterType>('all');
+    const [search, setSearch] = useState<string>('');
     const [toast, setToast] = useState<string | null>(null);
 
     // Helpers
@@ -185,7 +186,13 @@ export default function ProposalLimitManager() {
         }
     };
 
-    const filtered: UserLimitItem[] = filter === 'all' ? users : users.filter((u) => u.userType === filter);
+    const searchLower = search.toLowerCase();
+    const filtered: UserLimitItem[] = users.filter((u) => {
+        if (filter !== 'all' && u.userType !== filter) return false;
+        if (!searchLower) return true;
+        const name = [u.fname, u.lname].filter(Boolean).join(' ').toLowerCase();
+        return name.includes(searchLower) || u.email.toLowerCase().includes(searchLower);
+    });
 
     return (
         <div style={{ minHeight: '100vh', backgroundColor: '#fff', color: '#212529' }}>
@@ -344,6 +351,17 @@ export default function ProposalLimitManager() {
                                 </button>
                             ))}
                         </div>
+                    </div>
+
+                    <div className='px-3 pt-3'>
+                        <input
+                            type='text'
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            placeholder='Search by name or email…'
+                            className='form-control form-control-sm'
+                            style={{ maxWidth: '320px' }}
+                        />
                     </div>
 
                     <div className='table-responsive'>

@@ -41,13 +41,9 @@ const verifyUserExists = async (email) => {
     if (userExists) {
       if (userExists.verified) {
         throw new UserExistsError("User already exists.");
-      } 
-      // else {
-      //   await sendEmailVerification(userExists);
-      //   throw new UserExistsError(
-      //     "User already exists. Please check your email for verification link."
-      //   );
-      // }
+      } else {
+        throw new UserExistsError("An account with this email already exists but is not verified. Please check your email.");
+      }
     }
 
     return false;

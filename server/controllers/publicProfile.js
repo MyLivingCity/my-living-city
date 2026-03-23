@@ -121,7 +121,7 @@ publicProfileRouter.put(
             }
 
             const data = req.body;
-            const { statement, description, links, address, contactEmail, contactPhone } = data;
+            const { statement, description, links, address, contactFirstName, contactLastName, contactEmail, contactPhone } = data;
             const updatedAt = new Date();
 
             const userProfile = await prisma.public_Community_Business_Profile.findFirst({
@@ -136,6 +136,8 @@ publicProfileRouter.put(
                     statement: statement,
                     description: description,
                     address: address,
+                    contactFirstName: contactFirstName,
+                    contactLastName: contactLastName,
                     contactEmail: contactEmail,
                     contactPhone: contactPhone,
                     updatedAt: updatedAt,
@@ -195,6 +197,8 @@ publicProfileRouter.put(
                         connect: createdLinks,
                     },
                     address: address,
+                    contactFirstName: contactFirstName,
+                    contactLastName: contactLastName,
                     contactEmail: contactEmail,
                     contactPhone: contactPhone,
                     updatedAt: updatedAt,

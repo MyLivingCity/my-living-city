@@ -144,9 +144,9 @@ const IdeaTile: React.FC<ideaTileProps> = ({
                     </small>
                     <div className='text-right'>
                         <small className='text-muted user-select-none'>
-                            {subSegmentName ? ` ${capitalizeString(segmentName)}\/${capitalizeString(subSegmentName)}` :
-                                segmentName ? ` ${capitalizeString(segmentName)}` :
-                                    superSegmentName ? ` ${capitalizeString(superSegmentName)}` : ''}
+                            {subSegmentName ? ` ${capitalizeString(segmentName || '')}\/${capitalizeString(subSegmentName || '')}` :
+                                segmentName ? ` ${capitalizeString(segmentName || '')}` :
+                                    superSegmentName ? ` ${capitalizeString(superSegmentName || '')}` : ''}
                         </small>
                     </div>
                 </Card.Footer>

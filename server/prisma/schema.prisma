@@ -66,36 +66,15 @@ model User {
 
   // Model overwrites
   Advertisements                    Advertisements[]
-  Bad_Posting_Behavior              Bad_Posting_Behavior[]
+  //Not sure if this one stays
+  segmentRequest                    segmentRequest[]
+  Quarantine_Notifications          Quarantine_Notifications[]
   Ban_History                       Ban_History[]
-  userBans                          UserBan[]
-  collaborators                     Collaborator[]                      @relation("ideaCollaborator")
-  commentFlags                      CommentFlag[]
-  donors                            Donor[]                             @relation("ideaDonor")
-  enhancedMember                    EnhancedMember?
-  False_Flagging_Behavior           False_Flagging_Behavior[]
-  ideas                             Idea[]                              @relation("ideaAuthor")
-  championedIdeas                   Idea[]                              @relation("ideaChampion")
-  ideaComments                      IdeaComment[]
-  ideaFlags                         IdeaFlag[]
-  ideaRatings                       IdeaRating[]
   Public_Community_Business_Profile Public_Community_Business_Profile[]
   Public_Municipal_Profile          Public_Municipal_Profile[]
-  Quarantine_Notifications          Quarantine_Notifications[]
+  False_Flagging_Behavior           False_Flagging_Behavior[]
+  Bad_Posting_Behavior              Bad_Posting_Behavior[]
   School_Details                    School_Details[]
-  segmentRequest                    segmentRequest[]
-  managedSubGroups                  SubGroup[]                          @relation("ManagedSubGroups")
-  joinedSubGroups                   SubGroupMember[]                    @relation("JoinedSubGroups")
-  address                           UserAddress?
-  ideaCommentDislikes               UserCommentDislikes[]
-  ideaCommentLikes                  UserCommentLikes[]
-  geo                               UserGeo?
-  userHandles                       UserHandle[]
-  userIdeaEndorse                   UserIdeaEndorse[]
-  userIdeaFollow                    UserIdeaFollow[]
-  userReach                         UserReach[]
-  stripe                            UserStripe?
-  volunteers                        Volunteer[]                         @relation("ideaVolunteer")
   Work_Details                      Work_Details[]
 
   //Model Subgroup
@@ -880,193 +859,12 @@ enum LinkType {
   OTHER
 }
 
-model Link {
-  id                                  Int                                @id @default(autoincrement())
-  link                                String
-  linkType                            LinkType
-  createdAt                           DateTime                           @default(now()) @map("created_at")
-  Public_Community_Business_Profile   Public_Community_Business_Profile? @relation(fields: [public_Community_Business_ProfileId], references: [id])
-  public_Community_Business_ProfileId Int?
-  Public_Municipal_Profile            Public_Municipal_Profile?          @relation(fields: [public_Municipal_ProfileId], references: [id])
-  public_Municipal_ProfileId          Int?
-
-  @@map(name: "link")
-}
-
-// Split the public profiles so it is easier to scale them individually
-model Public_Community_Business_Profile {
-  id                Int      @id @default(autoincrement())
-  userId            String
-  statement         String?
-  description       String?
-  links             Link[]
-  address           String?
-  contactFirstName  String?  @map("contact_first_name")
-  contactLastName   String?  @map("contact_last_name")
-  contactEmail      String?  @map("contact_email")
-  contactPhone      String?  @map("contact_phone")
-  createdAt         DateTime @default(now()) @map("created_at")
-  updatedAt         DateTime @default(now()) @map("updated_at")
-  user              User     @relation(fields: [userId], references: [id])
-
-  @@map(name: "public_community_business_profile")
-}
-
-model Public_Municipal_Profile {
-  id             Int      @id @default(autoincrement())
-  userId         String
-  statement      String
-  responsibility String
-  links          Link[]
-  address        String
-  contactEmail   String?  @map("contact_email")
-  contactPhone   String?  @map("contact_phone")
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @default(now()) @map("updated_at")
-  user           User     @relation(fields: [userId], references: [id])
-
-  @@map(name: "public_municipal_profile")
-}
-
-model False_Flagging_Behavior {
-  id          Int       @id @default(autoincrement())
-  flag_count  Int       @default(0)
-  flag_ban    Boolean   @default(false)
-  userId      String    @map("user_id")
-  bannedAt    DateTime? @map("banned_at")
-  bannedUntil DateTime? @map("banned_until")
-  user        User      @relation(fields: [userId], references: [id])
-
-  @@map(name: "false_flagging_behavior")
-}
-
-model Bad_Posting_Behavior {
-  id               Int       @id @default(autoincrement())
-  bad_post_count   Int       @default(0)
-  post_flag_count  Int       @default(0)
-  post_comment_ban Boolean   @default(false)
-  bannedAt         DateTime? @map("banned_at")
-  bannedUntil      DateTime? @map("banned_until")
-  userId           String    @map("user_id")
-  user             User      @relation(fields: [userId], references: [id])
-
-  @@map(name: "bad_posting_behavior")
-}
-
-model School_Details {
-  id                    Int       @id @default(autoincrement())
-  displayFName          String?   @map("display_f_name")
-  displayLName          String?   @map("display_l_name")
-  streetAddress         String?   @map("street_address")
-  postalCode            String?   @map("postal_code")
-  faculty               String?
-  programCompletionDate DateTime? @map("program_completion_date") @db.Date
-  userId                String    @map("user_id")
-  user                  User      @relation(fields: [userId], references: [id])
-  createdAt             DateTime  @default(now()) @map("created_at")
-  updatedAt             DateTime  @default(now()) @map("updated_at")
-
-  @@map(name: "school_details")
-}
-
-model Work_Details {
-  id            Int      @id @default(autoincrement())
-  displayFName  String?  @map("display_f_name")
-  displayLName  String?  @map("display_l_name")
-  streetAddress String?  @map("street_address")
-  postalCode    String?  @map("postal_code")
-  company       String?
-  userId        String   @map("user_id")
-  user          User     @relation(fields: [userId], references: [id])
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @default(now()) @map("updated_at")
-
-  @@map(name: "work_details")
-}
-
-model Feature_Toggle {
-  id          Int      @id @default(autoincrement())
-  featureName String   @unique
-  isEnabled   Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@map(name: "feature_toggle")
-}
-
-// SubGroup Functionality
-model SubGroup {
-  id          String  @id @default(cuid())
-  name        String
-  description String?
-
-  isVirtual    Boolean      @map("is_virtual")
-  isPrivate    Boolean      @map("is_private")
-  privacyField PrivacyField @default(PRIVATE) @map("privacy_field")
-  typeField    TypeField    @default(VIRTUAL) @map("type_field")
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
-
-  // Nesting Relationships
-  regionId     Int? @map("region_id")
-  segmentId    Int? @map("segment_id")
-  subSegmentId Int? @map("sub_segment_id")
-
-  // Relations
-  managerId String @map("manager_id")
-  manager   User   @relation("ManagedSubGroups", fields: [managerId], references: [id])
-
-  region     Segments? @relation("SuperSegmentRelation", fields: [regionId], references: [segId])
-  segment    Segments? @relation("SegmentRelation", fields: [segmentId], references: [segId])
-  subSegment Segments? @relation("SubSegmentRelation", fields: [subSegmentId], references: [segId])
-
-  members SubGroupMember[]
-
-  @@map("subgroup")
-}
-
-model SubGroupMember {
-  id         String @id @default(cuid())
-  userId     String @map("user_id")
-  subGroupId String @map("sub_group_id")
-
-  // Possible status: pending, approved, rejected
-  status    MembershipStatus @default(PENDING)
-  joinedAt  DateTime         @default(now()) @map("joined_at")
-  updatedAt DateTime         @default(now()) @updatedAt @map("updated_at")
-
-  user     User     @relation("JoinedSubGroups", fields: [userId], references: [id])
-  subGroup SubGroup @relation(fields: [subGroupId], references: [id])
-
-  @@unique([userId, subGroupId])
-  @@map("subgroup_member")
-}
-
-model AccountPricing {
-  id               Int                @id @default(autoincrement())
-  accountType      PricingAccountType @unique @map("account_type")
-  yearlyPriceCents Int                @map("yearly_price_cents")
-  updatedAt        DateTime           @default(now()) @updatedAt @map("updated_at")
-  updatedByUserId  String?            @map("updated_by_user_id")
-
-  @@map("account_pricing")
-}
-
 enum PricingAccountType {
   ENHANCED_REGULAR
   COMMUNITY
   BUSINESS
 
   @@map("pricing_account_type")
-}
-
-model EnhancedMember {
-  id     String @id @default(cuid())
-  userId String @unique @map("user_id")
-  user   User   @relation(fields: [userId], references: [id])
-
-  @@map("enhanced_member")
 }
 
 model AccountType {

@@ -33,6 +33,7 @@ model User {
   displayLName     String?  @map("display_l_name")
   adminmodEmail    String?  @map("adminmod_email")
   status           Boolean  @default(true)
+  proposalLimit    Int?     @map("proposal_limit")
 
   // Relationships
   address         UserAddress?

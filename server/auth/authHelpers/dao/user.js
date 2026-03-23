@@ -4,6 +4,7 @@ const createUser = async (userData) => {
   try {
     // Destructure all the related data
     const {
+      id, // Prisma generates this via @default(cuid())
       geo,
       address,
       userSegment, // This will now need to include segmentHandle and userSegmentRelationship

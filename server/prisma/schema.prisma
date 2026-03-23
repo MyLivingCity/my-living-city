@@ -772,14 +772,6 @@ model EnhancedMember {
   @@map("enhanced_member")
 }
 
-model account_type {
-  id                    Int       @id @default(autoincrement())
-  updated_by            String?   @db.VarChar(30)
-  account_type          String    @db.VarChar(255)
-  yearly_proposal_limit Int?
-  extra_proposal_cost   Int?
-  last_updated          DateTime? @db.Date
-}
 
 enum UserSegmentRelationShipType {
   HOME

@@ -1,5 +1,6 @@
 import { Container } from 'react-bootstrap';
 import AccountPricingContent from '../components/content/AccountPricingContent';
+import ProposalLimitManager from 'src/components/content/ProposalLimitManager';
 import ExtraProposalPricingContent from '../components/content/ExtraProposalPricingContent';
 
 export default function PricingAndLimitManagerPage() {
@@ -10,6 +11,9 @@ export default function PricingAndLimitManagerPage() {
 
                 {/* Scope - C2-004 */}
                 <AccountPricingContent />
+
+                {/* Proposal Limit */}
+                <ProposalLimitManager />
 
                 {/* Scope - C2-007 */}
                 <ExtraProposalPricingContent />

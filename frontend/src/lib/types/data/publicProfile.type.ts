@@ -31,6 +31,8 @@ export interface PublicCommunityBusinessProfile {
     description: string;
     links: Object[];
     address: string;
+    contactFirstName: string;
+    contactLastName: string;
     contactEmail: string;
     contactPhone: string;
 }

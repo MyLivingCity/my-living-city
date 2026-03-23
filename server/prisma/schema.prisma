@@ -1,14 +1,10 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schem
+generator client {
+  provider = "prisma-client-js"
+}
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  //url      = "postgresql://postgres:postgres@localhost:5432/postgres?schema=public"
-}
-
-generator client {
-  provider = "prisma-client-js"
 }
 
 model User {
@@ -70,15 +66,36 @@ model User {
 
   // Model overwrites
   Advertisements                    Advertisements[]
-  //Not sure if this one stays
-  segmentRequest                    segmentRequest[]
-  Quarantine_Notifications          Quarantine_Notifications[]
+  Bad_Posting_Behavior              Bad_Posting_Behavior[]
   Ban_History                       Ban_History[]
+  userBans                          UserBan[]
+  collaborators                     Collaborator[]                      @relation("ideaCollaborator")
+  commentFlags                      CommentFlag[]
+  donors                            Donor[]                             @relation("ideaDonor")
+  enhancedMember                    EnhancedMember?
+  False_Flagging_Behavior           False_Flagging_Behavior[]
+  ideas                             Idea[]                              @relation("ideaAuthor")
+  championedIdeas                   Idea[]                              @relation("ideaChampion")
+  ideaComments                      IdeaComment[]
+  ideaFlags                         IdeaFlag[]
+  ideaRatings                       IdeaRating[]
   Public_Community_Business_Profile Public_Community_Business_Profile[]
   Public_Municipal_Profile          Public_Municipal_Profile[]
-  False_Flagging_Behavior           False_Flagging_Behavior[]
-  Bad_Posting_Behavior              Bad_Posting_Behavior[]
+  Quarantine_Notifications          Quarantine_Notifications[]
   School_Details                    School_Details[]
+  segmentRequest                    segmentRequest[]
+  managedSubGroups                  SubGroup[]                          @relation("ManagedSubGroups")
+  joinedSubGroups                   SubGroupMember[]                    @relation("JoinedSubGroups")
+  address                           UserAddress?
+  ideaCommentDislikes               UserCommentDislikes[]
+  ideaCommentLikes                  UserCommentLikes[]
+  geo                               UserGeo?
+  userHandles                       UserHandle[]
+  userIdeaEndorse                   UserIdeaEndorse[]
+  userIdeaFollow                    UserIdeaFollow[]
+  userReach                         UserReach[]
+  stripe                            UserStripe?
+  volunteers                        Volunteer[]                         @relation("ideaVolunteer")
   Work_Details                      Work_Details[]
 
   //Model Subgroup
@@ -89,402 +106,269 @@ model User {
 }
 
 model UserHandle {
-  id                      Int                         @id @default(autoincrement())
   userId                  String                      @map("user_id")
   handle                  String
   userSegmentRelationship UserSegmentRelationShipType @map("user_segment_relationship_type")
-
-  // Relationships
-  user User @relation(fields: [userId], references: [id])
+  id                      Int                         @id @default(autoincrement())
+  user                    User                        @relation(fields: [userId], references: [id])
 
   @@unique([userId, userSegmentRelationship])
-  @@map(name: "user_handle")
+  @@map("user_handle")
 }
 
 model UserSegments {
   id                      Int                         @id @default(autoincrement())
   userId                  String                      @map("user_id")
   userSegmentRelationship UserSegmentRelationShipType @map("user_segment_relationship_type")
+  segmentId               Int
+  segment                 Segments                    @relation(fields: [segmentId], references: [segId])
+  user                    User                        @relation(fields: [userId], references: [id])
   IdeaComment             IdeaComment[]
-
-  // relationships
-  segment   Segments @relation(fields: [segmentId], references: [segId])
-  segmentId Int
-
-  user User @relation(fields: [userId], references: [id])
-}
-
-enum UserSegmentRelationShipType {
-  HOME
-  WORK
-  SCHOOL
-
-  @@map(name: "user_segment_relationship_type")
 }
 
 model Segments {
-  segId Int @id @default(autoincrement()) @map("seg_id")
-
-  parentSegment Segments? @relation("SegmentToSegment", fields: [parentId], references: [segId])
-  parentId      Int?
-
-  children Segments[] @relation("SegmentToSegment")
-
-  name String @map("segment_name")
-
-  country  String?
-  province String?
-  lat      Decimal?
-  lon      Decimal?
-  radius   Decimal?
-
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime? @default(now()) @updatedAt @map("update_at")
-
-  userReach UserReach[]
-
-  // relations 
-  userSegment         UserSegments[]
+  segId               Int            @id @default(autoincrement()) @map("seg_id")
+  country             String?
+  province            String?
+  name                String         @map("segment_name")
+  createdAt           DateTime       @default(now()) @map("created_at")
+  updatedAt           DateTime?      @default(now()) @updatedAt @map("update_at")
+  lat                 Decimal?
+  lon                 Decimal?
+  parentId            Int?
+  radius              Decimal?
   segmentType         SegmentType
-  ideas               Idea[]
+  userSegment         UserSegments[]
+  parentSegment       Segments?      @relation("SegmentToSegment", fields: [parentId], references: [segId])
+  children            Segments[]     @relation("SegmentToSegment")
   regionSubGroups     SubGroup[]     @relation("SuperSegmentRelation")
   segmentSubGroups    SubGroup[]     @relation("SegmentRelation")
   subSegmentSubGroups SubGroup[]     @relation("SubSegmentRelation")
+  userReach           UserReach[]
+  ideas               Idea[]         @relation("IdeaToSegments")
 
-  @@map(name: "segment")
-}
-
-enum SegmentType {
-  segment
-  superSegment
-  subSegment
+  @@map("segment")
 }
 
 model Idea {
-  // Keys
-  id                   Int     @id @default(autoincrement())
-  authorId             String  @map("author_id")
-  supportingProposalId Int?    @map("supporting_proposal_id")
-  championId           String? @map("champion_id")
-  categoryId           Int     @map("category_id")
-
-  // Values
-  title                  String
-  description            String
-  proposal_role          String    @default("")
-  requirements           String    @default("")
-  proposal_benefits      String    @default("")
-  userType               String    @default("Resident")
-  communityImpact        String?   @map("community_impact")
-  natureImpact           String?   @map("nature_impact")
-  artsImpact             String?   @map("arts_impact")
-  energyImpact           String?   @map("energy_impact")
-  manufacturingImpact    String?   @map("manufacturing_impact")
-  state                  IdeaState @default(IDEA)
-  active                 Boolean   @default(true)
-  banned                 Boolean   @default(false)
-  reviewed               Boolean   @default(false)
-  imagePath              String?   @map("image_path")
-  createdAt              DateTime  @default(now()) @map(name: "created_at")
-  updatedAt              DateTime  @default(now()) @updatedAt @map(name: "updated_at")
-  notification_dismissed Boolean   @map("notification_dismissed")
-  quarantined_at         DateTime  @default(now()) @map(name: "quarantined_at")
-
-  // relations
-  comments        IdeaComment[]
-  ratings         IdeaRating[]
-  flags           IdeaFlag[]
-  PostBan         PostBan[]
-  proposalInfo    Proposal?         @relation("proposal")
-  projectInfo     Project?
-  address         IdeaAddress?
-  geo             IdeaGeo?
-  userIdeaFollow  UserIdeaFollow[]
-  userIdeaEndorse UserIdeaEndorse[]
-
-  // Multiple relationships pointing to same User Model
-  // https://github.com/prisma/prisma/discussions/2073
+  id                       Int                        @id @default(autoincrement())
+  authorId                 String                     @map("author_id")
+  categoryId               Int                        @map("category_id")
+  title                    String
+  description              String
+  communityImpact          String?                    @map("community_impact")
+  natureImpact             String?                    @map("nature_impact")
+  artsImpact               String?                    @map("arts_impact")
+  energyImpact             String?                    @map("energy_impact")
+  manufacturingImpact      String?                    @map("manufacturing_impact")
+  state                    IdeaState                  @default(IDEA)
+  active                   Boolean                    @default(true)
+  createdAt                DateTime                   @default(now()) @map("created_at")
+  updatedAt                DateTime                   @default(now()) @updatedAt @map("updated_at")
+  championId               String?                    @map("champion_id")
+  userType                 String                     @default("Resident")
+  imagePath                String?                    @map("image_path")
+  supportingProposalId     Int?                       @map("supporting_proposal_id")
+  banned                   Boolean                    @default(false)
+  reviewed                 Boolean                    @default(false)
+  notification_dismissed   Boolean                    @map("notification_dismissed")
+  quarantined_at           DateTime                   @default(now()) @map("quarantined_at")
+  proposal_benefits        String                     @default("")
+  proposal_role            String                     @default("")
+  requirements             String                     @default("")
+  PostBan                  PostBan[]
   author                   User                       @relation("ideaAuthor", fields: [authorId], references: [id])
-  supportedProposal        Proposal?                  @relation("supportedProposal", fields: [supportingProposalId], references: [id])
-  champion                 User?                      @relation("ideaChampion", fields: [championId], references: [id])
   category                 Category                   @relation(fields: [categoryId], references: [id])
-  segments                 Segments[]
+  champion                 User?                      @relation("ideaChampion", fields: [championId], references: [id])
+  supportedProposal        Proposal?                  @relation("supportedProposal", fields: [supportingProposalId], references: [id])
+  address                  IdeaAddress?
+  comments                 IdeaComment[]
+  flags                    IdeaFlag[]
+  geo                      IdeaGeo?
+  ratings                  IdeaRating[]
+  projectInfo              Project?
+  proposalInfo             Proposal?                  @relation("proposal")
   Quarantine_Notifications Quarantine_Notifications[]
+  userIdeaEndorse          UserIdeaEndorse[]
+  userIdeaFollow           UserIdeaFollow[]
+  segments                 Segments[]                 @relation("IdeaToSegments")
 
   @@unique([id, title])
-  @@map(name: "idea")
+  @@map("idea")
 }
 
-// Report Entity
 model Report {
   id          Int      @id @default(autoincrement())
   email       String
   description String
-  createdAt   DateTime @default(now()) @map(name: "created_at")
-  updatedAt   DateTime @default(now()) @updatedAt @map(name: "updated_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
 
-  // Model Overwrites
-  @@map(name: "report")
+  @@map("report")
 }
-
-// User Entity
-enum UserType {
-  SUPER_ADMIN
-  ADMIN
-  MOD
-  SEG_ADMIN
-  SEG_MOD
-  MUNICIPAL_SEG_ADMIN
-  BUSINESS
-  RESIDENTIAL
-  MUNICIPAL
-  WORKER
-  ASSOCIATE
-  DEVELOPER
-  COMMUNITY
-  IN_PROGRESS
-
-  @@map(name: "user_type")
-}
-
-enum AdType {
-  COMPLIMENTARY
-  PAID
-
-  @@map(name: "ad_type")
-}
-
-enum BanUserType {
-  WARNING
-  POST_BAN
-  SYS_BAN
-
-  @@map(name: "ban_user_type")
-}
-
-// model UserRole {
-//   // keys
-//   id        Int      @id @default(autoincrement())
-//   name      String   @unique
-//   createdAt DateTime @default(now()) @map(name: "created_at")
-//   updatedAt DateTime @default(now()) @updatedAt @map(name: "updated_at")
-
-//   // relations
-//   users User[]
-// }
 
 model UserGeo {
-  // keys
-  id     Int    @id @default(autoincrement())
-  userId String @unique @map("user_id")
-
-  // Columns
+  id         Int      @id @default(autoincrement())
+  userId     String   @unique @map("user_id")
   lat        Decimal?
   lon        Decimal?
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @default(now()) @updatedAt @map("updated_at")
   work_lat   Decimal?
   work_lon   Decimal?
   school_lat Decimal?
   school_lon Decimal?
-  createdAt  DateTime @default(now()) @map(name: "created_at")
-  updatedAt  DateTime @default(now()) @updatedAt @map(name: "updated_at")
+  user       User     @relation(fields: [userId], references: [id])
 
-  // relationships
-  user User @relation(fields: [userId], references: [id])
-
-  @@map(name: "user_geo")
+  @@map("user_geo")
 }
 
 model UserAddress {
-  // keys
-  id     Int    @id @default(autoincrement())
-  userId String @unique @map("user_id")
-
-  // Columns
+  id             Int      @id @default(autoincrement())
+  userId         String   @unique @map("user_id")
   streetAddress  String?  @map("street_address")
   streetAddress2 String?  @map("street_address_2")
   city           String?
   country        String?
   postalCode     String?  @map("postal_code")
-  createdAt      DateTime @default(now()) @map(name: "created_at")
-  updatedAt      DateTime @default(now()) @updatedAt @map(name: "updated_at")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @default(now()) @updatedAt @map("updated_at")
+  user           User     @relation(fields: [userId], references: [id])
 
-  // relationships
-  user User @relation(fields: [userId], references: [id])
-
-  @@map(name: "user_address")
+  @@map("user_address")
 }
 
 model UserBan {
   id                    Int         @id @default(autoincrement())
-  userId                String      @map(name: "user_id")
-  banType               BanUserType @default(WARNING) @map(name: "ban_type")
-  banReason             String      @map(name: "ban_reason")
-  banMessage            String?     @map(name: "ban_message")
-  bannedBy              String      @map(name: "banned_by")
-  createdAt             DateTime    @default(now()) @map(name: "created_at")
-  banUntil              DateTime    @default(now()) @map(name: "banned_until")
-  notificationDismissed Boolean     @default(false) @map(name: "notification_dismissed")
-  banDuration           Int         @default(0) @map(name: "ban_duration")
+  userId                String      @map("user_id")
+  banType               BanUserType @default(WARNING) @map("ban_type")
+  banReason             String      @map("ban_reason")
+  banMessage            String?     @map("ban_message")
+  bannedBy              String      @map("banned_by")
+  createdAt             DateTime    @default(now()) @map("created_at")
+  banUntil              DateTime    @default(now()) @map("banned_until")
+  notificationDismissed Boolean     @default(false) @map("notification_dismissed")
+  banDuration           Int         @default(0) @map("ban_duration")
   user                  User        @relation(fields: [userId], references: [id])
 
-  @@map(name: "ban_user")
+  @@map("ban_user")
 }
 
 model PostBan {
   id                    Int      @id @default(autoincrement())
-  postId                Int      @map(name: "post_id")
-  authorId              String   @map(name: "author_id")
-  banReason             String   @map(name: "ban_reason")
-  banMessage            String?  @map(name: "ban_message")
-  bannedBy              String   @map(name: "banned_by")
-  createdAt             DateTime @default(now()) @map(name: "created_at")
-  notificationDismissed Boolean  @default(false) @map(name: "notification_dismissed")
+  postId                Int      @map("post_id")
+  banMessage            String?  @map("ban_message")
+  bannedBy              String   @map("banned_by")
+  createdAt             DateTime @default(now()) @map("created_at")
+  notificationDismissed Boolean  @default(false) @map("notification_dismissed")
+  authorId              String   @map("author_id")
+  banReason             String   @map("ban_reason")
   post                  Idea     @relation(fields: [postId], references: [id])
 
-  @@map(name: "ban_post")
+  @@map("ban_post")
 }
 
 model CommentBan {
   id                    Int         @id @default(autoincrement())
-  commentId             Int         @map(name: "comment_id")
-  authorId              String      @map(name: "author_id")
-  banReason             String      @map(name: "ban_reason")
-  banMessage            String?     @map(name: "ban_message")
-  bannedBy              String      @map(name: "banned_by")
-  createdAt             DateTime    @default(now()) @map(name: "created_at")
-  notificationDismissed Boolean     @default(false) @map(name: "notification_dismissed")
+  commentId             Int         @map("comment_id")
+  banMessage            String?     @map("ban_message")
+  bannedBy              String      @map("banned_by")
+  createdAt             DateTime    @default(now()) @map("created_at")
+  notificationDismissed Boolean     @default(false) @map("notification_dismissed")
+  authorId              String      @map("author_id")
+  banReason             String      @map("ban_reason")
   comment               IdeaComment @relation(fields: [commentId], references: [id])
 
-  @@map(name: "ban_comment")
+  @@map("ban_comment")
 }
 
-// user segment entity
-
-// Category entity
 model Category {
-  // keys
-  id Int @id @default(autoincrement())
-
-  // Fields
+  id          Int      @id @default(autoincrement())
   title       String   @unique
   description String?
-  createdAt   DateTime @default(now()) @map(name: "created_at")
-  updatedAt   DateTime @default(now()) @updatedAt @map(name: "updated_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+  ideas       Idea[]
 
-  // relations
-  ideas Idea[]
-
-  @@map(name: "category")
-}
-
-// Idea Entity
-enum IdeaState {
-  IDEA
-  PROPOSAL
-  PROJECT
-
-  @@map(name: "idea_state")
+  @@map("category")
 }
 
 model IdeaGeo {
-  // keys
-  id         Int  @id @default(autoincrement())
-  ideaId     Int? @unique @map("idea_id")
-  proposalId Int? @map("proposal_id")
+  id         Int      @id @default(autoincrement())
+  ideaId     Int?     @unique @map("idea_id")
+  lat        Decimal?
+  lon        Decimal?
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @default(now()) @updatedAt @map("updated_at")
+  proposalId Int?     @map("proposal_id")
+  idea       Idea?    @relation(fields: [ideaId], references: [id])
 
-  // Columns
-  lat       Decimal?
-  lon       Decimal?
-  createdAt DateTime @default(now()) @map(name: "created_at")
-  updatedAt DateTime @default(now()) @updatedAt @map(name: "updated_at")
-
-  // relationships
-  idea Idea? @relation(fields: [ideaId], references: [id])
-
-  @@map(name: "idea_geo")
+  @@map("idea_geo")
 }
 
 model IdeaAddress {
-  // keys
-  id         Int  @id @default(autoincrement())
-  ideaId     Int? @unique @map("idea_id")
-  proposalId Int? @map("proposal_id")
-
-  // Columns
+  id             Int      @id @default(autoincrement())
+  ideaId         Int?     @unique @map("idea_id")
   streetAddress  String?  @map("street_address")
   streetAddress2 String?  @map("street_address_2")
   city           String?
   country        String?
   postalCode     String?  @map("postal_code")
-  createdAt      DateTime @default(now()) @map(name: "created_at")
-  updatedAt      DateTime @default(now()) @updatedAt @map(name: "updated_at")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @default(now()) @updatedAt @map("updated_at")
+  proposalId     Int?     @map("proposal_id")
+  idea           Idea?    @relation(fields: [ideaId], references: [id])
 
-  // relationships
-  idea Idea? @relation(fields: [ideaId], references: [id])
-
-  @@map(name: "idea_address")
+  @@map("idea_address")
 }
 
 model Collaborator {
-  // keys
-  id         Int    @id @default(autoincrement())
-  proposalId Int    @map("proposal_id")
-  authorId   String @map("author_id")
-
-  experience  String? @default("No experience")
-  role        String? @default("No role")
-  time        String? @default("No time")
-  contactInfo String? @default("No contact info")
-
-  createdAt DateTime @default(now()) @map(name: "created_at")
-  updatedAt DateTime @default(now()) @updatedAt @map(name: "updated_at")
-
-  // relationships
-  proposal Proposal @relation("collab", fields: [proposalId], references: [id])
-  author   User     @relation("ideaCollaborator", fields: [authorId], references: [id])
+  id          Int      @id @default(autoincrement())
+  proposalId  Int      @map("proposal_id")
+  authorId    String   @map("author_id")
+  experience  String?  @default("No experience")
+  role        String?  @default("No role")
+  time        String?  @default("No time")
+  contactInfo String?  @default("No contact info")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+  author      User     @relation("ideaCollaborator", fields: [authorId], references: [id])
+  proposal    Proposal @relation("collab", fields: [proposalId], references: [id])
 
   @@unique([proposalId, authorId], name: "collaborator_unique")
-  @@map(name: "collaborator")
+  @@map("collaborator")
 }
 
 model Volunteer {
-  id         Int    @id @default(autoincrement())
-  proposalId Int    @map("proposal_id")
-  authorId   String @map("author_id")
-
-  experience  String? @default("No experience")
-  task        String? @default("No task")
-  time        String? @default("No time")
-  contactInfo String? @default("No contact info")
-
-  createdAt DateTime @default(now()) @map(name: "created_at")
-  updatedAt DateTime @default(now()) @updatedAt @map(name: "updated_at")
-
-  // relationships
-  proposal Proposal @relation("volunteer", fields: [proposalId], references: [id])
-  author   User     @relation("ideaVolunteer", fields: [authorId], references: [id])
+  id          Int      @id @default(autoincrement())
+  proposalId  Int      @map("proposal_id")
+  authorId    String   @map("author_id")
+  experience  String?  @default("No experience")
+  task        String?  @default("No task")
+  time        String?  @default("No time")
+  contactInfo String?  @default("No contact info")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+  author      User     @relation("ideaVolunteer", fields: [authorId], references: [id])
+  proposal    Proposal @relation("volunteer", fields: [proposalId], references: [id])
 
   @@unique([proposalId, authorId], name: "volunteer_unique")
-  @@map(name: "volunteer")
+  @@map("volunteer")
 }
 
 model Donor {
-  id         Int    @id @default(autoincrement())
-  proposalId Int    @map("proposal_id")
-  authorId   String @map("author_id")
-
-  donations   String? @default("No donations")
-  contactInfo String? @default("No contact info")
-
-  createdAt DateTime @default(now()) @map(name: "created_at")
-  updatedAt DateTime @default(now()) @updatedAt @map(name: "updated_at")
-
-  // relationships
-  proposal Proposal @relation("donor", fields: [proposalId], references: [id])
-  author   User     @relation("ideaDonor", fields: [authorId], references: [id])
+  id          Int      @id @default(autoincrement())
+  proposalId  Int      @map("proposal_id")
+  authorId    String   @map("author_id")
+  donations   String?  @default("No donations")
+  contactInfo String?  @default("No contact info")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+  author      User     @relation("ideaDonor", fields: [authorId], references: [id])
+  proposal    Proposal @relation("donor", fields: [proposalId], references: [id])
 
   @@unique([proposalId, authorId], name: "donor_unique")
-  @@map(name: "donors")
+  @@map("donors")
 }
 
 model IdeaFlag {
@@ -493,11 +377,10 @@ model IdeaFlag {
   flaggerId  String  @map("flagger_id")
   falseFlag  Boolean @default(false) @map("false_flag")
   flagReason String? @map("flag_reason")
-  //relations
-  idea       Idea    @relation(fields: [ideaId], references: [id])
   flagger    User    @relation(fields: [flaggerId], references: [id])
+  idea       Idea    @relation(fields: [ideaId], references: [id])
 
-  @@map(name: "idea_flag")
+  @@map("idea_flag")
 }
 
 model CommentFlag {
@@ -505,153 +388,126 @@ model CommentFlag {
   commentId   Int         @map("comment_id")
   flaggerId   String      @map("flagger_id")
   falseFlag   Boolean     @default(false) @map("false_flag")
-  //relations
+  flagReason  String?     @map("flag_reason")
   ideaComment IdeaComment @relation(fields: [commentId], references: [id])
   flagger     User        @relation(fields: [flaggerId], references: [id])
 
-  flagReason String? @map("flag_reason")
-
-  @@map(name: "comment_flag")
+  @@map("comment_flag")
 }
 
 model Proposal {
-  id     Int @id @default(autoincrement())
-  ideaId Int @unique @map("idea_id")
+  id                Int              @id @default(autoincrement())
+  ideaId            Int              @unique @map("idea_id")
+  feedback1         String?          @map("feedback_1")
+  feedback2         String?          @map("feedback_2")
+  feedback3         String?          @map("feedback_3")
+  feedback4         String?          @map("feedback_4")
+  feedback5         String?          @map("feedback_5")
+  needCollaborators Boolean          @default(false)
+  needDonations     Boolean          @default(false)
+  needFeedback      Boolean          @default(false)
+  needSuggestions   Boolean          @default(false)
+  needVolunteers    Boolean          @default(false)
+  location          String?          @map("location")
+  feedbackType1     String?          @map("feedback_type_1")
+  feedbackType2     String?          @map("feedback_type_2")
+  feedbackType3     String?          @map("feedback_type_3")
+  feedbackType4     String?          @map("feedback_type_4")
+  feedbackType5     String?          @map("feedback_type_5")
+  feedbackRatings   FeedbackRating[]
+  collaborations    Collaborator[]   @relation("collab")
+  donors            Donor[]          @relation("donor")
+  suggestedIdeas    Idea[]           @relation("supportedProposal")
+  idea              Idea             @relation("proposal", fields: [ideaId], references: [id])
+  volunteers        Volunteer[]      @relation("volunteer")
 
-  needCollaborators Boolean @default(false)
-  needVolunteers    Boolean @default(false)
-  needDonations     Boolean @default(false)
-  needSuggestions   Boolean @default(false)
-  needFeedback      Boolean @default(false)
-
-  collaborations Collaborator[] @relation("collab")
-  volunteers     Volunteer[]    @relation("volunteer")
-  donors         Donor[]        @relation("donor")
-
-  feedback1 String? @map("feedback_1")
-  feedback2 String? @map("feedback_2")
-  feedback3 String? @map("feedback_3")
-  feedback4 String? @map("feedback_4")
-  feedback5 String? @map("feedback_5")
-
-  feedbackType1 String? @map("feedback_type_1")
-  feedbackType2 String? @map("feedback_type_2")
-  feedbackType3 String? @map("feedback_type_3")
-  feedbackType4 String? @map("feedback_type_4")
-  feedbackType5 String? @map("feedback_type_5")
-
-  location        String?          @map("location")
-  // Relations
-  idea            Idea             @relation("proposal", fields: [ideaId], references: [id])
-  suggestedIdeas  Idea[]           @relation("supportedProposal")
-  feedbackRatings FeedbackRating[]
-
-  @@map(name: "proposal")
+  @@map("proposal")
 }
 
 model Project {
-  // keys
-  id     Int @id @default(autoincrement())
-  ideaId Int @unique @map("idea_id")
-
-  // fields
-  // TODO: Add fields that would be in Project state
+  id          Int      @id @default(autoincrement())
+  ideaId      Int      @unique @map("idea_id")
   description String?
-  createdAt   DateTime @default(now()) @map(name: "created_at")
-  updatedAt   DateTime @default(now()) @updatedAt @map(name: "updated_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+  idea        Idea     @relation(fields: [ideaId], references: [id])
 
-  // relations
-  idea Idea @relation(fields: [ideaId], references: [id])
-
-  @@map(name: "project")
+  @@map("project")
 }
 
 model FeedbackRating {
-  // Keys
   id                Int      @id @default(autoincrement())
   proposalId        Int      @map("proposal_id")
-  feedbackId        Int      @map("feedback_id")
   authorId          String   @map("author_id")
-  // Fields
   rating            Int      @default(0)
   ratingExplanation String?  @map("rating_explaination")
-  createdAt         DateTime @default(now()) @map(name: "created_at")
-  updatedAt         DateTime @default(now()) @updatedAt @map(name: "updated_at")
-  // relations
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @default(now()) @updatedAt @map("updated_at")
+  feedbackId        Int      @map("feedback_id")
   author            User     @relation(fields: [authorId], references: [id])
   proposal          Proposal @relation(fields: [proposalId], references: [id])
 }
 
 model IdeaRating {
-  // Keys
   id                Int      @id @default(autoincrement())
   ideaId            Int      @map("idea_id")
   authorId          String   @map("author_id")
-  // Fields
   rating            Int      @default(0)
   ratingExplanation String?  @map("rating_explanation")
-  createdAt         DateTime @default(now()) @map(name: "created_at")
-  updatedAt         DateTime @default(now()) @updatedAt @map(name: "updated_at")
-  // relations
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @default(now()) @updatedAt @map("updated_at")
   author            User     @relation(fields: [authorId], references: [id])
   idea              Idea     @relation(fields: [ideaId], references: [id])
 
-  @@map(name: "idea_rating")
+  @@map("idea_rating")
 }
 
 model IdeaComment {
-  // keys
-  id                     Int      @id @default(autoincrement())
-  ideaId                 Int      @map("idea_id")
-  // Fields
-  authorId               String   @map("author_id")
-  userSegId              Int      @map("user_segment_id")
+  id                     Int                   @id @default(autoincrement())
+  ideaId                 Int                   @map("idea_id")
+  authorId               String                @map("author_id")
   content                String
-  active                 Boolean  @default(true)
-  reviewed               Boolean  @default(false)
-  createdAt              DateTime @default(now()) @map(name: "created_at")
-  updatedAt              DateTime @default(now()) @updatedAt @map(name: "updated_at")
-  notification_dismissed Boolean  @default(false) @map("notification_dismissed")
-  quarantined_at         DateTime @default(now()) @map(name: "quarantined_at")
+  active                 Boolean               @default(true)
+  createdAt              DateTime              @default(now()) @map("created_at")
+  updatedAt              DateTime              @default(now()) @updatedAt @map("updated_at")
+  bannedComment          Boolean               @default(false) @map("banned_comment")
+  commentFlagNumber      Int                   @default(0) @map("comment_flag_num")
+  reviewed               Boolean               @default(false)
+  quarantined_at         DateTime              @default(now()) @map("quarantined_at")
+  notification_dismissed Boolean               @default(false) @map("notification_dismissed")
+  attitude               String?
+  keywords               Json?
+  tone                   String?
+  userSegId              Int                   @map("user_segment_id")
+  commentBans            CommentBan[]
+  commentFlags           CommentFlag[]
+  author                 User                  @relation(fields: [authorId], references: [id])
+  idea                   Idea                  @relation(fields: [ideaId], references: [id])
+  userSeg                UserSegments          @relation(fields: [userSegId], references: [id])
+  dislikes               UserCommentDislikes[]
+  likes                  UserCommentLikes[]
 
-  // Comment Funnel Fields
-  tone     String?
-  attitude String?
-  keywords Json?
-
-  // Moderator Fields
-  commentFlagNumber Int                   @default(0) @map("comment_flag_num")
-  bannedComment     Boolean               @default(false) @map("banned_comment")
-  // relations
-  author            User                  @relation(fields: [authorId], references: [id])
-  idea              Idea                  @relation(fields: [ideaId], references: [id])
-  userSeg           UserSegments          @relation(fields: [userSegId], references: [id])
-  likes             UserCommentLikes[]
-  commentFlags      CommentFlag[]
-  commentBans       CommentBan[]
-  dislikes          UserCommentDislikes[]
-
-  @@map(name: "idea_comment")
+  @@map("idea_comment")
 }
 
 model UserCommentLikes {
   id            Int          @id @default(autoincrement())
   ideaCommentId Int?         @map("idea_comment_id")
   authorId      String?      @map("author_id")
-  ideaComment   IdeaComment? @relation(fields: [ideaCommentId], references: [id])
   author        User?        @relation(fields: [authorId], references: [id])
+  ideaComment   IdeaComment? @relation(fields: [ideaCommentId], references: [id])
 
-  @@map(name: "user_comment_likes")
+  @@map("user_comment_likes")
 }
 
 model UserCommentDislikes {
   id            Int          @id @default(autoincrement())
   ideaCommentId Int?         @map("idea_comment_id")
   authorId      String?      @map("author_id")
-  ideaComment   IdeaComment? @relation(fields: [ideaCommentId], references: [id])
   author        User?        @relation(fields: [authorId], references: [id])
+  ideaComment   IdeaComment? @relation(fields: [ideaCommentId], references: [id])
 
-  @@map(name: "user_comment_dislikes")
+  @@map("user_comment_dislikes")
 }
 
 model AdPrice {
@@ -661,11 +517,10 @@ model AdPrice {
 }
 
 model Advertisements {
-  id       Int       @id @default(autoincrement())
-  ownerId  String    @map("owner_id")
-  createAt DateTime  @default(now()) @map("creat_at")
-  updateAt DateTime? @default(now()) @updatedAt @map("update_at")
-
+  id           Int       @id @default(autoincrement())
+  ownerId      String    @map("owner_id")
+  createAt     DateTime  @default(now()) @map("creat_at")
+  updateAt     DateTime? @default(now()) @updatedAt @map("update_at")
   adTitle      String    @map("advertisement_title")
   adType       AdType    @default(COMPLIMENTARY) @map("advertisement_type")
   duration     DateTime? @map("advertisement_duration")
@@ -673,57 +528,44 @@ model Advertisements {
   imagePath    String    @map("advertisement_image_path")
   externalLink String    @map("advertisement_external_link")
   published    Boolean   @default(false) @map("published")
+  author       User      @relation(fields: [ownerId], references: [id])
 
-  author User? @relation(fields: [ownerId], references: [id])
-
-  @@map(name: "advertisement")
+  @@map("advertisement")
 }
 
-// UserReach
 model UserReach {
-  // Columns
-  id     String @id @default(cuid())
-  userId String @map("user_id")
-  segId  Int
-
-  // Relations
-  user    User     @relation(references: [id], fields: [userId])
-  segment Segments @relation(references: [segId], fields: [segId])
+  id      String   @id @default(cuid())
+  userId  String   @map("user_id")
+  segId   Int
+  segment Segments @relation(fields: [segId], references: [segId])
+  user    User     @relation(fields: [userId], references: [id])
 
   @@unique([userId, segId], name: "user_reach_unique")
-  @@map(name: "user_reach")
+  @@map("user_reach")
 }
 
-// UserIdeaFollow
 model UserIdeaFollow {
-  // Columns
   id         Int      @id @default(autoincrement()) @map("id")
   userId     String   @map("user_id")
   ideaId     Int      @map("idea_id")
   followedAt DateTime @default(now()) @map("followed_at")
-
-  // Relations
-  user User @relation(references: [id], fields: [userId])
-  idea Idea @relation(references: [id], fields: [ideaId])
+  idea       Idea     @relation(fields: [ideaId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
 
   @@unique([userId, ideaId], name: "user_idea_follow_unique")
-  @@map(name: "user_idea_follow")
+  @@map("user_idea_follow")
 }
 
-// UserIdeaEndorse
 model UserIdeaEndorse {
-  // Columns
   id         Int      @id @default(autoincrement()) @map("id")
   userId     String   @map("user_id")
   ideaId     Int      @map("idea_id")
   endorsedAt DateTime @default(now()) @map("endorsed_at")
-
-  // Relations
-  user User @relation(references: [id], fields: [userId])
-  idea Idea @relation(references: [id], fields: [ideaId])
+  idea       Idea     @relation(fields: [ideaId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
 
   @@unique([userId, ideaId], name: "user_idea_endorse_unique")
-  @@map(name: "user_idea_endorse")
+  @@map("user_idea_endorse")
 }
 
 model segmentRequest {
@@ -738,13 +580,13 @@ model segmentRequest {
 }
 
 model UserStripe {
-  user     User   @relation(fields: [userId], references: [id])
   userId   String @unique
   stripeId String
   status   Status @default(incomplete)
+  user     User   @relation(fields: [userId], references: [id])
 
   @@id([userId, stripeId])
-  @@map(name: "user_stripe")
+  @@map("user_stripe")
 }
 
 model Threshhold {
@@ -752,29 +594,18 @@ model Threshhold {
   number Int @default(3)
 }
 
-enum Status {
-  active
-  incomplete
-}
-
 model Quarantine_Notifications {
   id        Int      @id @default(autoincrement())
   userId    String
   ideaId    Int
-  ideaTitle String
-  seen      Boolean  @default(false)
   createdAt DateTime @default(now()) @map("created_at")
-  user      User     @relation(fields: [userId], references: [id])
+  seen      Boolean  @default(false)
+  ideaTitle String
   idea      Idea     @relation(fields: [ideaId, ideaTitle], references: [id, title])
+  user      User     @relation(fields: [userId], references: [id])
 
   @@unique([id, userId, ideaId], name: "user_idea_quarantine_unique")
-  @@map(name: "quarantine_notifications")
-}
-
-enum BanType {
-  IDEA
-  COMMENT
-  USER
+  @@map("quarantine_notifications")
 }
 
 model Ban_History {
@@ -782,17 +613,260 @@ model Ban_History {
   userId          String
   type            BanType
   reason          String
-  userBanType     String?
-  userBannedUntil DateTime?
   ideaId          Int?
   commentId       Int?
   modId           String
   message         String
   createdAt       DateTime  @default(now()) @map("created_at")
+  userBanType     String?
+  userBannedUntil DateTime?
+  user            User      @relation(fields: [userId], references: [id])
 
-  user User @relation(fields: [userId], references: [id])
+  @@map("ban_history")
+}
 
-  @@map(name: "ban_history")
+model Link {
+  id                                  Int                                @id @default(autoincrement())
+  link                                String
+  linkType                            LinkType
+  createdAt                           DateTime                           @default(now()) @map("created_at")
+  public_Community_Business_ProfileId Int?
+  public_Municipal_ProfileId          Int?
+  Public_Community_Business_Profile   Public_Community_Business_Profile? @relation(fields: [public_Community_Business_ProfileId], references: [id])
+  Public_Municipal_Profile            Public_Municipal_Profile?          @relation(fields: [public_Municipal_ProfileId], references: [id])
+
+  @@map("link")
+}
+
+model Public_Community_Business_Profile {
+  id                Int      @id @default(autoincrement())
+  userId            String
+  statement         String?
+  description       String?
+  address           String?
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @default(now()) @map("updated_at")
+  contactFirstName  String?  @map("contact_first_name")
+  contactLastName   String?  @map("contact_last_name")
+  contactEmail      String?  @map("contact_email")
+  contactPhone      String?  @map("contact_phone")
+  links             Link[]
+  user              User     @relation(fields: [userId], references: [id])
+
+  @@map("public_community_business_profile")
+}
+
+model Public_Municipal_Profile {
+  id             Int      @id @default(autoincrement())
+  userId         String
+  statement      String
+  responsibility String
+  address        String
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @default(now()) @map("updated_at")
+  contactEmail   String?  @map("contact_email")
+  contactPhone   String?  @map("contact_phone")
+  links          Link[]
+  user           User     @relation(fields: [userId], references: [id])
+
+  @@map("public_municipal_profile")
+}
+
+model False_Flagging_Behavior {
+  id          Int       @id @default(autoincrement())
+  flag_count  Int       @default(0)
+  flag_ban    Boolean   @default(false)
+  userId      String    @map("user_id")
+  bannedAt    DateTime? @map("banned_at")
+  bannedUntil DateTime? @map("banned_until")
+  user        User      @relation(fields: [userId], references: [id])
+
+  @@map("false_flagging_behavior")
+}
+
+model Bad_Posting_Behavior {
+  id               Int       @id @default(autoincrement())
+  bad_post_count   Int       @default(0)
+  post_flag_count  Int       @default(0)
+  post_comment_ban Boolean   @default(false)
+  bannedAt         DateTime? @map("banned_at")
+  bannedUntil      DateTime? @map("banned_until")
+  userId           String    @map("user_id")
+  user             User      @relation(fields: [userId], references: [id])
+
+  @@map("bad_posting_behavior")
+}
+
+model School_Details {
+  id                    Int       @id @default(autoincrement())
+  streetAddress         String?   @map("street_address")
+  postalCode            String?   @map("postal_code")
+  faculty               String?
+  programCompletionDate DateTime? @map("program_completion_date") @db.Date
+  userId                String    @map("user_id")
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @default(now()) @map("updated_at")
+  displayFName          String?   @map("display_f_name")
+  displayLName          String?   @map("display_l_name")
+  user                  User      @relation(fields: [userId], references: [id])
+
+  @@map("school_details")
+}
+
+model Work_Details {
+  id            Int      @id @default(autoincrement())
+  streetAddress String?  @map("street_address")
+  postalCode    String?  @map("postal_code")
+  company       String?
+  userId        String   @map("user_id")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @default(now()) @map("updated_at")
+  displayFName  String?  @map("display_f_name")
+  displayLName  String?  @map("display_l_name")
+  user          User     @relation(fields: [userId], references: [id])
+
+  @@map("work_details")
+}
+
+model Feature_Toggle {
+  id          Int      @id @default(autoincrement())
+  featureName String   @unique
+  isEnabled   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("feature_toggle")
+}
+
+model SubGroup {
+  id           String           @id @default(cuid())
+  name         String
+  description  String?
+  privacyField PrivacyField     @default(PRIVATE) @map("privacy_field")
+  createdAt    DateTime         @default(now()) @map("created_at")
+  updatedAt    DateTime         @default(now()) @updatedAt @map("updated_at")
+  managerId    String           @map("manager_id")
+  regionId     Int?             @map("region_id")
+  segmentId    Int?             @map("segment_id")
+  subSegmentId Int?             @map("sub_segment_id")
+  typeField    TypeField        @default(VIRTUAL) @map("type_field")
+  isPrivate    Boolean          @map("is_private")
+  isVirtual    Boolean          @map("is_virtual")
+  manager      User             @relation("ManagedSubGroups", fields: [managerId], references: [id])
+  region       Segments?        @relation("SuperSegmentRelation", fields: [regionId], references: [segId])
+  segment      Segments?        @relation("SegmentRelation", fields: [segmentId], references: [segId])
+  subSegment   Segments?        @relation("SubSegmentRelation", fields: [subSegmentId], references: [segId])
+  members      SubGroupMember[]
+
+  @@map("subgroup")
+}
+
+model SubGroupMember {
+  id         String           @id @default(cuid())
+  userId     String           @map("user_id")
+  subGroupId String           @map("sub_group_id")
+  status     MembershipStatus @default(PENDING)
+  joinedAt   DateTime         @default(now()) @map("joined_at")
+  updatedAt  DateTime         @default(now()) @updatedAt @map("updated_at")
+  subGroup   SubGroup         @relation(fields: [subGroupId], references: [id])
+  user       User             @relation("JoinedSubGroups", fields: [userId], references: [id])
+
+  @@unique([userId, subGroupId])
+  @@map("subgroup_member")
+}
+
+model AccountPricing {
+  id               Int                @id @default(autoincrement())
+  accountType      PricingAccountType @unique @map("account_type")
+  yearlyPriceCents Int                @map("yearly_price_cents")
+  updatedAt        DateTime           @default(now()) @updatedAt @map("updated_at")
+  updatedByUserId  String?            @map("updated_by_user_id")
+
+  @@map("account_pricing")
+}
+
+model EnhancedMember {
+  id     String @id @default(cuid())
+  userId String @unique @map("user_id")
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@map("enhanced_member")
+}
+
+model account_type {
+  id                    Int       @id @default(autoincrement())
+  updated_by            String?   @db.VarChar(30)
+  account_type          String    @db.VarChar(255)
+  yearly_proposal_limit Int?
+  extra_proposal_cost   Int?
+  last_updated          DateTime? @db.Date
+}
+
+enum UserSegmentRelationShipType {
+  HOME
+  WORK
+  SCHOOL
+
+  @@map("user_segment_relationship_type")
+}
+
+enum SegmentType {
+  segment
+  superSegment
+  subSegment
+}
+
+enum UserType {
+  ADMIN
+  MOD
+  SEG_ADMIN
+  SEG_MOD
+  MUNICIPAL_SEG_ADMIN
+  BUSINESS
+  RESIDENTIAL
+  MUNICIPAL
+  WORKER
+  ASSOCIATE
+  DEVELOPER
+  COMMUNITY
+  IN_PROGRESS
+  SUPER_ADMIN
+
+  @@map("user_type")
+}
+
+enum AdType {
+  COMPLIMENTARY
+  PAID
+
+  @@map("ad_type")
+}
+
+enum BanUserType {
+  WARNING
+  POST_BAN
+  SYS_BAN
+
+  @@map("ban_user_type")
+}
+
+enum IdeaState {
+  IDEA
+  PROPOSAL
+  PROJECT
+
+  @@map("idea_state")
+}
+
+enum Status {
+  active
+  incomplete
+}
+
+enum BanType {
+  IDEA
+  COMMENT
+  USER
 }
 
 enum LinkType {
@@ -821,17 +895,19 @@ model Link {
 
 // Split the public profiles so it is easier to scale them individually
 model Public_Community_Business_Profile {
-  id           Int      @id @default(autoincrement())
-  userId       String
-  statement    String?
-  description  String?
-  links        Link[]
-  address      String?
-  contactEmail String?  @map("contact_email")
-  contactPhone String?  @map("contact_phone")
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @default(now()) @map("updated_at")
-  user         User     @relation(fields: [userId], references: [id])
+  id                Int      @id @default(autoincrement())
+  userId            String
+  statement         String?
+  description       String?
+  links             Link[]
+  address           String?
+  contactFirstName  String?  @map("contact_first_name")
+  contactLastName   String?  @map("contact_last_name")
+  contactEmail      String?  @map("contact_email")
+  contactPhone      String?  @map("contact_phone")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @default(now()) @map("updated_at")
+  user              User     @relation(fields: [userId], references: [id])
 
   @@map(name: "public_community_business_profile")
 }

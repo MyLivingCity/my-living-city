@@ -410,6 +410,12 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
             const address = (
                 document.getElementById('formPublicAddress') as HTMLInputElement
             ).value;
+            const contactFirstName = (
+                document.getElementById('formContactFirstName') as HTMLInputElement
+            ).value;
+            const contactLastName = (
+                document.getElementById('formContactLastName') as HTMLInputElement
+            ).value;
             const contactEmail = (
                 document.getElementById('formContactEmail') as HTMLInputElement
             ).value;
@@ -423,6 +429,8 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                 description: description,
                 links: links,
                 address: address,
+                contactFirstName: contactFirstName,
+                contactLastName: contactLastName,
                 contactEmail: contactEmail,
                 contactPhone: contactPhone,
             };
@@ -894,8 +902,26 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                         {communityBusinessProfile ? (
                                             <tbody>
                                                 <tr>
-                                                    <td>{fname}</td>
-                                                    <td>{lname}</td>
+                                                    <td>
+                                                        <Form.Control
+                                                            type='text'
+                                                            id='formContactFirstName'
+                                                            placeholder='FirstName'
+                                                            defaultValue={
+                                                                communityBusinessProfile.contactFirstName
+                                                            }
+                                                        />
+                                                    </td>
+                                                    <td>
+                                                        <Form.Control
+                                                            type='text'
+                                                            id='formContactLastName'
+                                                            placeholder='Last Name'
+                                                            defaultValue={
+                                                                communityBusinessProfile.contactLastName
+                                                            }
+                                                        />
+                                                    </td>
                                                     <td>
                                                         <Form.Control
                                                             type='email'
@@ -908,7 +934,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                                     </td>
                                                     <td>
                                                         <Form.Control
-                                                            type='phone'
+                                                            type='text'
                                                             id='formContactPhone'
                                                             placeholder='Phone Number'
                                                             defaultValue={

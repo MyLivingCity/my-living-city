@@ -25,11 +25,19 @@ export interface PublicStandardProfile {
     lname: string;
 }
 
+export enum ProfileVisibility {
+    PUBLIC = 'PUBLIC',
+    COMMUNITY_MEMBERS = 'COMMUNITY_MEMBERS',
+    CONTACTS_ONLY = 'CONTACTS_ONLY',
+    PRIVATE = 'PRIVATE',
+}
+
 export interface PublicCommunityBusinessProfile {
     userId: string;
     statement: string;
     description: string;
     links: Object[];
+    profileVisibility?: ProfileVisibility;
     address: string;
     contactFirstName: string;
     contactLastName: string;

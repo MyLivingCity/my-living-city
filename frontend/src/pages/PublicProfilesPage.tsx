@@ -1,14 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Container, Row, Col, Alert, Spinner } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
 import PublicProfileCard from '../components/tiles/PublicProfileCard';
 import PublicProfileSearch from '../components/search/PublicProfileSearch';
 import { getAllPublicProfiles, PublicProfileWithStats } from '../lib/api/publicProfileRoutes';
 import { SearchFilters } from '../lib/types/data/publicProfile.type';
+import { UserProfileContext } from '../contexts/UserProfile.Context';
 
 
 const PublicProfilesPage: React.FC = () => {
     const history = useHistory();
+    const { token } = useContext(UserProfileContext);
     const [profiles, setProfiles] = useState<PublicProfileWithStats[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -36,7 +38,8 @@ const PublicProfilesPage: React.FC = () => {
                 searchFilters.searchQuery || '',
                 profileTypeParam,
                 searchFilters.community ? Number(searchFilters.community) : undefined,
-                searchFilters.neighbourhood ? Number(searchFilters.neighbourhood) : undefined
+                searchFilters.neighbourhood ? Number(searchFilters.neighbourhood) : undefined,
+                token || null
             );
             
             setProfiles(response.profiles || []);
@@ -53,7 +56,7 @@ const PublicProfilesPage: React.FC = () => {
 
     useEffect(() => {
         fetchProfiles(filters);
-    }, [filters]);
+    }, [filters, token]);
 
     const handleSearch = (searchQuery: string, searchFilters: SearchFilters) => {
         const newFilters = { ...searchFilters, searchQuery };

@@ -31,6 +31,7 @@ import {
 } from 'src/lib/api/userRoutes';
 import {
     LinkType,
+    ProfileVisibility,
     PublicStandardProfile,
     PublicCommunityBusinessProfile,
     PublicMunicipalProfile,
@@ -78,6 +79,19 @@ const LinkTypes = Object.keys(LinkType).filter((item) => {
 });
 
 const FILTER_OPTIONS = ['name', 'region', 'municipality', 'neighborhood'];
+
+const PROFILE_VISIBILITY_OPTIONS: Array<{ value: ProfileVisibility; label: string }> = [
+    { value: ProfileVisibility.PUBLIC, label: 'Visible to public (visible to anyone looking at website)' },
+    {
+        value: ProfileVisibility.COMMUNITY_MEMBERS,
+        label: 'Visible only to other community members (public profile only visible to members of communities you belong to)',
+    },
+    {
+        value: ProfileVisibility.CONTACTS_ONLY,
+        label: 'Visible only to contacts (only people in your approved contact lists can view public profile)',
+    },
+    { value: ProfileVisibility.PRIVATE, label: 'Private (no one can view your public profile)' },
+];
 
 const deleteSchoolSegmentDetail = async (user: string | undefined) => {
     if (user === undefined) {
@@ -411,6 +425,10 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                     statement: statement,
                     description: description,
                     links: links,
+                    profileVisibility: getInputValue(
+                        'formProfileVisibility',
+                        communityBusinessProfile.profileVisibility || ProfileVisibility.PUBLIC
+                    ) as ProfileVisibility,
                     address: getInputValue('formPublicAddress', communityBusinessProfile.address || ''),
                     contactFirstName: getInputValue('formContactFirstName', communityBusinessProfile.contactFirstName || ''),
                     contactLastName: getInputValue('formContactLastName', communityBusinessProfile.contactLastName || ''),
@@ -743,7 +761,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                 </Row>
                 <Row>
                     <Card style={{ width: '80rem' }}>
-                        <Card.Body className='my-5'>
+                        <Card.Body className='p-4'>
                             <Form
                                 id='formPublicProfile'
                                 onSubmit={(e) => {
@@ -2351,6 +2369,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                             Profile Updated
                                         </Alert>
                                     ) : null}
+                                    <h4 className='mb-3'>Public Profile Information</h4>
                                     <Form.Group className='mb-3' controlId='formVisionStatement'>
                                         <Form.Label>Personal Statement</Form.Label>
                                         <Form.Control
@@ -2442,12 +2461,33 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                         </Table>
                                     </Form.Group>
 
+                                    <hr className='my-4' />
+                                    <h4 className='mb-3'>Public Profile Settings</h4>
+                                    <Form.Group className='mb-0' controlId='formProfileVisibility'>
+                                        <Form.Label>Visibility Preferences</Form.Label>
+                                        <Form.Control
+                                            as='select'
+                                            id='formProfileVisibility'
+                                            defaultValue={communityBusinessProfile.profileVisibility || ProfileVisibility.PUBLIC}
+                                        >
+                                            {PROFILE_VISIBILITY_OPTIONS.map((option) => (
+                                                <option key={option.value} value={option.value}>
+                                                    {option.label}
+                                                </option>
+                                            ))}
+                                        </Form.Control>
+                                        <Form.Text className='text-muted'>
+                                            Admins, Moderators, and Municipal users can always view public profiles.
+                                        </Form.Text>
+                                    </Form.Group>
+
                                     <Button variant='primary' type='submit'>
                                         Update
                                     </Button>
                                 </Form>
                             ) : (
                                 <div className='bg-light p-4 rounded text-muted'>
+                                    <h4 className='mb-3'>Public Profile Information</h4>
                                     <Form id='formPublicProfile'>
                                         <fieldset disabled>
                                             <Form.Group className='mb-3' controlId='formVisionStatement'>
@@ -2518,6 +2558,25 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                                     </tbody>
                                                 </Table>
                                             </Form.Group>
+                                            <hr className='my-4' />
+                                            <h4 className='mb-3'>Public Profile Settings</h4>
+                                            <Form.Group className='mb-0' controlId='formProfileVisibility'>
+                                                <Form.Label>Visibility Preferences</Form.Label>
+                                                <Form.Control
+                                                    as='select'
+                                                    id='formProfileVisibility'
+                                                    defaultValue={communityBusinessProfile.profileVisibility || ProfileVisibility.PUBLIC}
+                                                >
+                                                    {PROFILE_VISIBILITY_OPTIONS.map((option) => (
+                                                        <option key={option.value} value={option.value}>
+                                                            {option.label}
+                                                        </option>
+                                                    ))}
+                                                </Form.Control>
+                                                <Form.Text className='text-muted'>
+                                                    Admins, Moderators, and Municipal users can always view public profiles.
+                                                </Form.Text>
+                                            </Form.Group>                                            
                                         </fieldset>
                                     </Form>
                                     <div className='d-flex justify-content-between align-items-center'>
@@ -2536,7 +2595,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                     </Card>
                 </Row>
 
-                <Row>
+                <Row className='mt-3'>
                     <SegmentInfo
                         user={user!}
                         token={token!}

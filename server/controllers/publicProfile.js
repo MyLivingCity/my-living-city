@@ -122,6 +122,7 @@ publicProfileRouter.put(
 
             const data = req.body;
             const { statement, description, links, address, contactFirstName, contactLastName, contactEmail, contactPhone } = data;
+            const profileLinks = Array.isArray(links) ? links : [];
             const updatedAt = new Date();
 
             const userProfile = await prisma.public_Community_Business_Profile.findFirst({
@@ -136,8 +137,6 @@ publicProfileRouter.put(
                     statement: statement,
                     description: description,
                     address: address,
-                    contactFirstName: contactFirstName,
-                    contactLastName: contactLastName,
                     contactEmail: contactEmail,
                     contactPhone: contactPhone,
                     updatedAt: updatedAt,
@@ -145,8 +144,8 @@ publicProfileRouter.put(
             });
 
             let createdLinks = [];
-            for (let i = 0; i < links.length; i++) {
-                const link = links[i];
+            for (let i = 0; i < profileLinks.length; i++) {
+                const link = profileLinks[i];
                 const createdLink = await prisma.link.create({
                     data: {
                         link: link.link,
@@ -154,13 +153,15 @@ publicProfileRouter.put(
                         public_Community_Business_ProfileId: result.id,
                     },
                 });
-                createdLinks.push(createdLink.id);
+                createdLinks.push({ id: createdLink.id });
             }
 
             const updatedResult = await prisma.public_Community_Business_Profile.update({
                 where: { id: result.id },
                 data: {
-                    links: createdLinks,
+                    links: {
+                        connect: createdLinks,
+                    },
                 },
                 include: { links: true }
             });
@@ -176,8 +177,8 @@ publicProfileRouter.put(
                 });
 
                 let createdLinks = [];
-                for (let i = 0; i < links.length; i++) {
-                    const link = links[i];
+                for (let i = 0; i < profileLinks.length; i++) {
+                    const link = profileLinks[i];
                     const createdLink = await prisma.link.create({
                         data: {
                             link: link.link,
@@ -197,8 +198,6 @@ publicProfileRouter.put(
                         connect: createdLinks,
                     },
                     address: address,
-                    contactFirstName: contactFirstName,
-                    contactLastName: contactLastName,
                     contactEmail: contactEmail,
                     contactPhone: contactPhone,
                     updatedAt: updatedAt,
@@ -294,6 +293,7 @@ publicProfileRouter.put(
 
             const data = req.body;
             const { statement, responsibility, links, address, contactEmail, contactPhone } = data;
+            const profileLinks = Array.isArray(links) ? links : [];
             const updatedAt = new Date();
 
             const userProfile = await prisma.public_Municipal_Profile.findFirst({
@@ -314,8 +314,8 @@ publicProfileRouter.put(
                 });
 
                 let createdLinks = [];
-                for (let i = 0; i < links.length; i++) {
-                    const link = links[i];
+                for (let i = 0; i < profileLinks.length; i++) {
+                    const link = profileLinks[i];
                     const createdLink = await prisma.link.create({
                         data: {
                             link: link.link,
@@ -323,13 +323,15 @@ publicProfileRouter.put(
                             public_Municipal_ProfileId: result.id,
                         },
                     });
-                    createdLinks.push(createdLink.id);
+                    createdLinks.push({ id: createdLink.id });
                 }
 
                 const updatedResult = await prisma.public_Municipal_Profile.update({
                     where: { id: result.id },
                     data: {
-                        links: createdLinks,
+                        links: {
+                            connect: createdLinks,
+                        },
                     },
                     include: { links: true }
                 });
@@ -343,8 +345,8 @@ publicProfileRouter.put(
                 });
 
                 let createdLinks = [];
-                for (let i = 0; i < links.length; i++) {
-                    const link = links[i];
+                for (let i = 0; i < profileLinks.length; i++) {
+                    const link = profileLinks[i];
                     const createdLink = await prisma.link.create({
                         data: {
                             link: link.link,

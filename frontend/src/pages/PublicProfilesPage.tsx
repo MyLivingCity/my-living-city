@@ -71,7 +71,12 @@ const PublicProfilesPage: React.FC = () => {
             address: profile.location || '', // Use location as address
             links: [], // Not available in summary data
             responsibility: profile.profileType === 'municipal' ? 'Municipal services and administration' : undefined,
-            description: profile.profileType !== 'municipal' ? 'Community business services' : undefined,
+            description:
+                profile.profileType === 'residential'
+                    ? ''
+                    : profile.profileType !== 'municipal'
+                        ? 'Community business services'
+                        : undefined,
             user: {
                 id: profile.userId || '',
                 fname: profile.fname || '',

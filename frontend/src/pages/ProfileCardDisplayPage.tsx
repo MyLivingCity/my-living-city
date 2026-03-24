@@ -25,7 +25,7 @@ type PublicProfile = (PublicCommunityBusinessProfile | PublicMunicipalProfile) &
 
 // Helper to determine if profile is municipal
 const isMunicipalProfile = (profile: PublicProfile): boolean => {
-    return 'responsibility' in profile;
+    return profile.user?.userType === 'MUNICIPAL';
 };
 
 const getProfileBadgeLabel = (userType?: string) => {
@@ -316,17 +316,19 @@ const ProfileCardDisplayPage: React.FC = () => {
                                             <h6><strong>Statement</strong></h6>
                                             <p>{selectedProfile.statement || 'No statement provided'}</p>
                                         </div>
-                                        
                                         {/* Service/Product Description */}
                                         <div className='mb-3'>
                                             <h6>
-                                                <strong>{isMunicipalProfile(selectedProfile) ? 
-                                                    'Service Responsibility' : 'Product/Service Description'}</strong>
+                                                <strong>{isMunicipalProfile(selectedProfile)
+                                                    ? 'Service Responsibility'
+                                                    : selectedProfile.user?.userType === 'RESIDENTIAL'
+                                                        ? 'Skill Set'
+                                                        : 'Product/Service Description'}</strong>
                                             </h6>
                                             <p>
                                                 {isMunicipalProfile(selectedProfile) 
                                                     ? (selectedProfile as any).responsibility || 'No responsibility description provided'
-                                                    : (selectedProfile as any).description || 'No product/service description provided'
+                                                    : (selectedProfile as any).description || (selectedProfile.user?.userType === 'RESIDENTIAL' ? 'No skill set provided' : 'No product/service description provided')
                                                 }
                                             </p>
                                         </div>

@@ -6,6 +6,7 @@ export type AdvertisementType = 'PAID' | 'COMPLIMENTARY';
 export interface IAdvertisement {
 	id: number;
 	ownerId: string;
+    ownerEmail: string;
 	adTitle: string;
     adType: AdvertisementType;
     duration: number;

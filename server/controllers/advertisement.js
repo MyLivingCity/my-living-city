@@ -169,6 +169,7 @@ advertisementRouter.post(
                     createAnAdvertisement = await prisma.advertisements.create({
                         data: {
                             ownerId: id,
+                            ownerEmail: email,
                             adTitle: adTitle,
                             duration: endDate,
                             adType: adType,
@@ -182,6 +183,7 @@ advertisementRouter.post(
                     createAnAdvertisement = await prisma.advertisements.create({
                         data: {
                             ownerId: id,
+                            ownerEmail: email,
                             adTitle: adTitle,
                             adType: adType,
                             adPosition: adPosition,

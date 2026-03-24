@@ -60,7 +60,7 @@ const AllAdsPageContent: React.FC<AllAdsPageContentProps> = ({
                             <th>Actions</th>
                             <th>Title</th>
                             <th>Type</th>
-                            <th>Owner ID</th>
+                            <th>Owner Email</th>
                             <th>Images</th>
                             <th>Expiration</th>
                             <th>Position</th>
@@ -97,7 +97,7 @@ const AllAdsPageContent: React.FC<AllAdsPageContentProps> = ({
                                 </td>
                                 <td>{item.adTitle}</td>
                                 <td>{item.adType}</td>
-                                <td>{item.ownerId}</td>
+                                <td>{item.ownerEmail}</td>
                                 <td>
                                     <img
                                         alt=''

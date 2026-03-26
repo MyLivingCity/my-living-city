@@ -622,6 +622,7 @@ model Public_Community_Business_Profile {
   userId            String
   statement         String?
   description       String?
+  profileVisibility ProfileVisibility @default(PUBLIC) @map("profile_visibility")
   address           String?
   createdAt         DateTime @default(now()) @map("created_at")
   updatedAt         DateTime @default(now()) @map("updated_at")
@@ -880,6 +881,13 @@ enum PrivacyField {
   PUBLIC
   PRIVATE
   TEST
+}
+
+enum ProfileVisibility {
+  PUBLIC
+  COMMUNITY_MEMBERS
+  CONTACTS_ONLY
+  PRIVATE
 }
 
 enum TypeField {

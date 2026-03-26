@@ -18,14 +18,19 @@ type PublicProfile = (PublicCommunityBusinessProfile | PublicMunicipalProfile) &
         fname?: string;
         lname?: string;
         email?: string;
+        createdAt?: string;
         userType: string;
+        isEnhancedMember?: boolean;
         organizationName?: string;
+        displayFName?: string;
+        displayLName?: string;
+        displayName?: string;
     }
 };
 
 // Helper to determine if profile is municipal
 const isMunicipalProfile = (profile: PublicProfile): boolean => {
-    return 'responsibility' in profile;
+    return profile.user?.userType === 'MUNICIPAL';
 };
 
 const getProfileBadgeLabel = (userType?: string) => {
@@ -115,9 +120,9 @@ const ProfileCardDisplayPage: React.FC = () => {
 
                 // Fetch the appropriate profile type based on user type
                 if (userType === 'MUNICIPAL') {
-                    fullProfileData = await getMunicipalProfile(userId, null);
+                    fullProfileData = await getMunicipalProfile(userId, token || null);
                 } else if (userType === 'BUSINESS' || userType === 'COMMUNITY' || userType === 'RESIDENTIAL') {
-                    fullProfileData = await getCommunityBusinessProfile(userId, null);
+                    fullProfileData = await getCommunityBusinessProfile(userId, token || null);
                 } else {
                     // If userType doesn't match, use the basic data we have
                     setLoading(false);
@@ -129,7 +134,12 @@ const ProfileCardDisplayPage: React.FC = () => {
                     // Merge the fetched full profile data with existing user data
                     const mergedProfile = {
                         ...fullProfileData,
-                        user: selectedProfile.user // Keep the user data we already have
+                        // Prefer fetched user fields (displayName/displayFName/displayLName),
+                        // while keeping any existing user fields as fallback.
+                        user: {
+                            ...selectedProfile.user,
+                            ...(fullProfileData as any).user
+                        }
                     };
 
                     setSelectedProfile(mergedProfile as PublicProfile);
@@ -143,6 +153,10 @@ const ProfileCardDisplayPage: React.FC = () => {
                 if (err.response?.status === 404) {
                     // Profile doesn't exist yet - this is normal, just use basic data
                     console.log('Profile not found - using basic user info');
+                } else if (err.response?.status === 403) {
+                    setError(
+                        'This profile is currently private to you based on the user\'s profile preferences.'
+                    );
                 } else {
                     // Real error - log it and show user message
                     console.error('Error fetching full profile:', err);
@@ -155,7 +169,7 @@ const ProfileCardDisplayPage: React.FC = () => {
         };
 
         fetchFullProfile();
-    }, [selectedProfile?.user?.id]); // Only re-fetch if userId changes
+    }, [selectedProfile?.user?.id, token]); // Only re-fetch if userId changes
 
     // Check if current user is viewing their own profile
     const isOwnProfile = currentUser?.id === selectedProfile?.user?.id;
@@ -308,7 +322,14 @@ const ProfileCardDisplayPage: React.FC = () => {
                                             {selectedProfile.user?.organizationName || 'Public Profile'}
                                         </h4>
                                         <p className='text-muted'>
-                                            {selectedProfile.user ? `${selectedProfile.user.fname} ${selectedProfile.user.lname}` : 'No contact person'}
+                                            {selectedProfile.user ? (
+                                                selectedProfile.user.userType === 'RESIDENTIAL'
+                                                    ? (
+                                                        selectedProfile.user.displayName ||
+                                                        `${selectedProfile.user.displayFName || selectedProfile.user.fname || ''} @ ${selectedProfile.user.displayLName || selectedProfile.user.lname || ''}`.trim()
+                                                    )
+                                                    : `${selectedProfile.user.fname || ''} ${selectedProfile.user.lname || ''}`.trim()
+                                            ) : 'No contact person'}
                                         </p>
                                         
                                         {/* Mission Statement */}
@@ -316,54 +337,71 @@ const ProfileCardDisplayPage: React.FC = () => {
                                             <h6><strong>Statement</strong></h6>
                                             <p>{selectedProfile.statement || 'No statement provided'}</p>
                                         </div>
-                                        
                                         {/* Service/Product Description */}
                                         <div className='mb-3'>
                                             <h6>
-                                                <strong>{isMunicipalProfile(selectedProfile) ? 
-                                                    'Service Responsibility' : 'Product/Service Description'}</strong>
+                                                <strong>{isMunicipalProfile(selectedProfile)
+                                                    ? 'Service Responsibility'
+                                                    : selectedProfile.user?.userType === 'RESIDENTIAL'
+                                                        ? 'Skill Set'
+                                                        : 'Product/Service Description'}</strong>
                                             </h6>
                                             <p>
                                                 {isMunicipalProfile(selectedProfile) 
                                                     ? (selectedProfile as any).responsibility || 'No responsibility description provided'
-                                                    : (selectedProfile as any).description || 'No product/service description provided'
+                                                    : (selectedProfile as any).description || (selectedProfile.user?.userType === 'RESIDENTIAL' ? 'No skill set provided' : 'No product/service description provided')
                                                 }
                                             </p>
                                         </div>
+                                        {/* Registration Date (Residential only) */}
+                                        {selectedProfile.user?.userType === 'RESIDENTIAL' && (
+                                            <div className='mb-3'>
+                                                <h6><strong>Registration Date</strong></h6>
+                                                <p>
+                                                    {selectedProfile.user?.createdAt
+                                                        ? new Date(selectedProfile.user.createdAt).toLocaleDateString()
+                                                        : 'Not provided'}
+                                                </p>
+                                            </div>
+                                        )}
                                     </Col>
                                 </Row>
                                 
                                 <hr />
                                 
-                                {/* Contact Information */}
-                                <Row>
-                                    <Col md={6}>
-                                        <h5>Contact Information</h5>
-                                        <p><strong>Email:</strong> {selectedProfile.contactEmail || selectedProfile.user?.email || 'Not provided'}</p>
-                                        <p><strong>Phone:</strong> {selectedProfile.contactPhone || 'Not provided'}</p>
-                                        <p><strong>Address:</strong> {selectedProfile.address || 'Not provided'}</p>
-                                    </Col>
-                                    
-                                    {/* Links */}
-                                    <Col md={6}>
-                                        <h5>Links & Resources</h5>
-                                        {selectedProfile.links && selectedProfile.links.length > 0 ? (
-                                            <div>
-                                                <ul>
-                                                    {selectedProfile.links.map((link: any, index: number) => (
-                                                        <li key={index}>
-                                                            <a href={link.link} target='_blank' rel='noopener noreferrer'>
-                                                                {link.linkType} - {link.link}
-                                                            </a>
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            </div>
-                                        ) : (
-                                            <p className='text-muted'>No links provided</p>
-                                        )}
-                                    </Col>
-                                </Row>
+                                {/* Contact Information (hidden for non-enhanced residential users) */}
+                                {(selectedProfile.user?.userType !== 'RESIDENTIAL' || selectedProfile.user?.isEnhancedMember) && (
+                                    <Row>
+                                        <Col md={6}>
+                                            <h5>Contact Information</h5>
+                                            <p><strong>Email:</strong> {selectedProfile.contactEmail || selectedProfile.user?.email || 'Not provided'}</p>
+                                            <p><strong>Phone:</strong> {selectedProfile.contactPhone || 'Not provided'}</p>
+                                            {!selectedProfile.user?.isEnhancedMember && (
+                                                <p><strong>Address:</strong> {selectedProfile.address || 'Not provided'}</p>
+                                            )}
+                                        </Col>
+                                        
+                                        {/* Links */}
+                                        <Col md={6}>
+                                            <h5>Links & Resources</h5>
+                                            {selectedProfile.links && selectedProfile.links.length > 0 ? (
+                                                <div>
+                                                    <ul>
+                                                        {selectedProfile.links.map((link: any, index: number) => (
+                                                            <li key={index}>
+                                                                <a href={link.link} target='_blank' rel='noopener noreferrer'>
+                                                                    {link.linkType} - {link.link}
+                                                                </a>
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                </div>
+                                            ) : (
+                                                <p className='text-muted'>No links provided</p>
+                                            )}
+                                        </Col>
+                                    </Row>
+                                )}
                             </BootstrapCard.Body>
                         </BootstrapCard>
                     </Col>

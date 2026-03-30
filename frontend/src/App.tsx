@@ -97,7 +97,7 @@ function App() {
                     <CustomRoute
                         path={ROUTES.EDIT_ADVERTISEMENT}
                         component={EditAdsPage}
-                        userTypes={[USER_TYPES.BUSINESS, USER_TYPES.COMMUNITY]}
+                        userTypes={[USER_TYPES.BUSINESS, USER_TYPES.COMMUNITY, USER_TYPES.ADMIN, USER_TYPES.SUPER_ADMIN]}
                     />
                     <CustomRoute
                         path={ROUTES.SUBMIT_ADVERTISEMENT}

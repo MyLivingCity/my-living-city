@@ -957,9 +957,17 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                     (
                                         <div>
                                             <span className='author-link' onClick={handleAuthorClick}>
-                                                {author?.userHandles?.find( h => h.userSegmentRelationship === UserSegmentRelationshipEnum.HOME)?.handle ?? 
-                                                `${author?.userType === USER_TYPES.BUSINESS || author?.userType === USER_TYPES.COMMUNITY ? author?.organizationName : author?.fname}@
-                                                ${author?.userType === USER_TYPES.BUSINESS || author?.userType === USER_TYPES.COMMUNITY ? author?.userSegment?.[1]?.segment?.name : author?.address?.streetAddress}`}
+                                                {author?.userHandles?.find( h => h.userSegmentRelationship === UserSegmentRelationshipEnum.HOME)?.handle ??
+                                                (() => {
+                                                    const isBizOrCommunity = author?.userType === USER_TYPES.BUSINESS || author?.userType === USER_TYPES.COMMUNITY;
+                                                    const name = isBizOrCommunity
+                                                        ? (author?.organizationName || author?.fname || 'Unknown')
+                                                        : (author?.fname || 'Unknown');
+                                                    const location = isBizOrCommunity
+                                                        ? author?.userSegment?.[1]?.segment?.name
+                                                        : author?.address?.streetAddress;
+                                                    return location ? `${name} — ${location}` : name;
+                                                })()}
                                             </span>{author?.userType !== USER_TYPES.BUSINESS && author?.userType !== USER_TYPES.COMMUNITY ? ' as Resident' : ''}
                                         </div>
                                     ) ||

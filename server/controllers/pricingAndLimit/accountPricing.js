@@ -179,7 +179,7 @@ accountPricingRouter.get(
     try {
       const users = await prisma.user.findMany({
         where: {
-          userType: { in: ["BUSINESS", "COMMUNITY", "MUNICIPAL", "RESIDENTIAL"] },
+          userType: { in: ["BUSINESS", "COMMUNITY", "MUNICIPAL"] },
         },
         select: {
           id: true,

@@ -10,7 +10,8 @@ import { AiOutlineStar } from 'react-icons/ai';
 import { getAllSuperSegments } from '../../lib/api/segmentRoutes';
 import { ISuperSegment } from '../../lib/types/data/segment.type';
 // import { FaRegThumbsUp, FaRegThumbsDown } from 'react-icons/fa'
-const capitalizeString = (s: string) => {
+const capitalizeString = (s: string | null | undefined) => {
+    if (!s) return '';
     return s.charAt(0).toUpperCase() + s.slice(1);
 };
 interface proposalTileProps {

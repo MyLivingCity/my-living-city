@@ -3,8 +3,113 @@ const express = require('express');
 const publicProfileRouter = express.Router();
 const prisma = require('../lib/prismaClient');
 const { Link } = require('@prisma/client');
+const jwt = require('jsonwebtoken');
+const { JWT_SECRET } = require('../lib/constants');
 
 const fs = require('fs');
+
+const PROFILE_VISIBILITY = {
+    PUBLIC: 'PUBLIC',
+    COMMUNITY_MEMBERS: 'COMMUNITY_MEMBERS',
+    CONTACTS_ONLY: 'CONTACTS_ONLY',
+    PRIVATE: 'PRIVATE',
+};
+
+const PRIVILEGED_USER_TYPES = new Set([
+    'SUPER_ADMIN',
+    'ADMIN',
+    'MOD',
+    'SEG_ADMIN',
+    'SEG_MOD',
+    'MUNICIPAL',
+    'MUNICIPAL_SEG_ADMIN',
+]);
+
+const isPrivilegedViewer = (viewer) => {
+    return !!viewer && PRIVILEGED_USER_TYPES.has(viewer.userType);
+};
+
+const getViewerFromRequest = async (req) => {
+    const token = req.header('x-auth-token');
+    if (!token) {
+        return null;
+    }
+
+    try {
+        const { user } = jwt.verify(token, JWT_SECRET);
+        if (!user?.id) {
+            return null;
+        }
+
+        const viewer = await prisma.user.findUnique({
+            where: { id: user.id },
+            select: { id: true, userType: true },
+        });
+
+        return viewer || null;
+    } catch (error) {
+        return null;
+    }
+};
+
+const hasSharedApprovedSubgroupMembership = async (viewerId, ownerId) => {
+    if (!viewerId || !ownerId) {
+        return false;
+    }
+
+    const [viewerMemberships, ownerMemberships] = await Promise.all([
+        prisma.subGroupMember.findMany({
+            where: { userId: viewerId, status: 'APPROVED' },
+            select: { subGroupId: true },
+        }),
+        prisma.subGroupMember.findMany({
+            where: { userId: ownerId, status: 'APPROVED' },
+            select: { subGroupId: true },
+        }),
+    ]);
+
+    if (!viewerMemberships.length || !ownerMemberships.length) {
+        return false;
+    }
+
+    const viewerSubgroups = new Set(viewerMemberships.map((m) => m.subGroupId));
+    return ownerMemberships.some((m) => viewerSubgroups.has(m.subGroupId));
+};
+
+const canViewResidentialProfile = async ({ viewer, ownerId, visibility }) => {
+    const effectiveVisibility = visibility || PROFILE_VISIBILITY.PUBLIC;
+
+    if (!ownerId) {
+        return false;
+    }
+
+    if (viewer?.id === ownerId || isPrivilegedViewer(viewer)) {
+        return true;
+    }
+
+    if (effectiveVisibility === PROFILE_VISIBILITY.PUBLIC) {
+        return true;
+    }
+
+    if (!viewer) {
+        return false;
+    }
+
+    if (effectiveVisibility === PROFILE_VISIBILITY.PRIVATE) {
+        return false;
+    }
+
+    if (effectiveVisibility === PROFILE_VISIBILITY.COMMUNITY_MEMBERS) {
+        return hasSharedApprovedSubgroupMembership(viewer.id, ownerId);
+    }
+
+    if (effectiveVisibility === PROFILE_VISIBILITY.CONTACTS_ONLY) {
+        // Approved contact lists are not yet modelled in this codebase.
+        return false;
+    }
+
+    return false;
+};
 
 publicProfileRouter.get(
     '/standardProfile/:userId',
@@ -79,6 +184,7 @@ publicProfileRouter.get(
     async (req, res) => {
         try {
             const userId = req.params.userId;
+            const viewer = await getViewerFromRequest(req);
             if (!userId) {
                 return res.status(400).json({
                     message: `A valid userId must be specified in the route paramater.`,
@@ -87,7 +193,27 @@ publicProfileRouter.get(
 
             const result = await prisma.public_Community_Business_Profile.findFirst({
                 where: { userId: userId },
-                include: { links: true }
+                include: {
+                    links: true,
+                    user: {
+                        select: {
+                            id: true,
+                            fname: true,
+                            lname: true,
+                            email: true,
+                            createdAt: true,
+                            userType: true,
+                            organizationName: true,
+                            displayFName: true,
+                            displayLName: true,
+                            enhancedMember: {
+                                select: {
+                                    userId: true
+                                }
+                            }
+                        }
+                    },
+                }
             });
 
             if (!result) {
@@ -95,8 +221,36 @@ publicProfileRouter.get(
                     message: `The user with that listed ID (${userId}) does not exist.`,
                 });
             } else {
-                console.log("Hey I made it here!");
-                console.log(result.links);
+                
+                // Add computed display name for residential users
+                if (result.user && result.user.userType === 'RESIDENTIAL') {
+                    const canView = await canViewResidentialProfile({
+                        viewer,
+                        ownerId: result.user.id,
+                        visibility: result.profileVisibility,
+                    });
+
+                    if (!canView) {
+                        return res.status(403).json({
+                            message: 'This profile is not visible to your account based on user preferences.',
+                        });
+                    }
+
+                    // Create a new object with displayName to ensure it's included in JSON response
+                    const displayName = `${result.user.displayFName && result.user.displayFName.trim() ? result.user.displayFName : result.user.fname}@${result.user.displayLName && result.user.displayLName.trim() ? result.user.displayLName : result.user.lname}`;
+
+                    result.user = {
+                        ...result.user,
+                        displayName: displayName,
+                        isEnhancedMember: !!result.user.enhancedMember
+                    };
+                } else if (result.user) {
+                    result.user = {
+                        ...result.user,
+                        isEnhancedMember: !!result.user.enhancedMember
+                    };
+                }
+                
                 return res.status(200).json(result);
             }
         } catch (error) {
@@ -121,8 +275,21 @@ publicProfileRouter.put(
             }
 
             const data = req.body;
-            const { statement, description, links, address, contactFirstName, contactLastName, contactEmail, contactPhone } = data;
+            const {
+                statement,
+                description,
+                links,
+                address,
+                contactFirstName,
+                contactLastName,
+                contactEmail,
+                contactPhone,
+                profileVisibility,
+            } = data;
+            const profileLinks = Array.isArray(links) ? links : [];
             const updatedAt = new Date();
+            const effectiveProfileVisibility =
+                profileVisibility || PROFILE_VISIBILITY.PUBLIC;
 
             const userProfile = await prisma.public_Community_Business_Profile.findFirst({
                 where: { userId: userId },
@@ -135,9 +302,8 @@ publicProfileRouter.put(
                     userId: userId,
                     statement: statement,
                     description: description,
+                    profileVisibility: effectiveProfileVisibility,
                     address: address,
-                    contactFirstName: contactFirstName,
-                    contactLastName: contactLastName,
                     contactEmail: contactEmail,
                     contactPhone: contactPhone,
                     updatedAt: updatedAt,
@@ -145,8 +311,8 @@ publicProfileRouter.put(
             });
 
             let createdLinks = [];
-            for (let i = 0; i < links.length; i++) {
-                const link = links[i];
+            for (let i = 0; i < profileLinks.length; i++) {
+                const link = profileLinks[i];
                 const createdLink = await prisma.link.create({
                     data: {
                         link: link.link,
@@ -154,13 +320,15 @@ publicProfileRouter.put(
                         public_Community_Business_ProfileId: result.id,
                     },
                 });
-                createdLinks.push(createdLink.id);
+                createdLinks.push({ id: createdLink.id });
             }
 
             const updatedResult = await prisma.public_Community_Business_Profile.update({
                 where: { id: result.id },
                 data: {
-                    links: createdLinks,
+                    links: {
+                        connect: createdLinks,
+                    },
                 },
                 include: { links: true }
             });
@@ -176,8 +344,8 @@ publicProfileRouter.put(
                 });
 
                 let createdLinks = [];
-                for (let i = 0; i < links.length; i++) {
-                    const link = links[i];
+                for (let i = 0; i < profileLinks.length; i++) {
+                    const link = profileLinks[i];
                     const createdLink = await prisma.link.create({
                         data: {
                             link: link.link,
@@ -193,19 +361,23 @@ publicProfileRouter.put(
                 data: {
                     statement: statement,
                     description: description,
+                    profileVisibility: effectiveProfileVisibility,
                     links: {
                         connect: createdLinks,
                     },
                     address: address,
-                    contactFirstName: contactFirstName,
-                    contactLastName: contactLastName,
                     contactEmail: contactEmail,
                     contactPhone: contactPhone,
                     updatedAt: updatedAt,
                 },
                 include: { links: true }
             });
-            res.status(200).json(result);
+                // Add computed display name for residential users
+                if (result.user && result.user.userType === 'RESIDENTIAL') {
+                    result.user.displayName = `${result.user.displayFName || result.user.fname || ''}@${result.user.displayLName || result.user.lname || ''}`;
+                }
+                
+                return res.status(200).json(result);
             }
         } catch (error) {
             console.log(error);
@@ -215,7 +387,6 @@ publicProfileRouter.put(
         }
     }
 );
-
 
 publicProfileRouter.get(
     '/communityBusinessProfile/:profileId/links',
@@ -261,7 +432,27 @@ publicProfileRouter.get(
 
             const result = await prisma.public_Municipal_Profile.findFirst({
                 where: { userId: userId },
-                include: { links: true }
+                include: {
+                    links: true,
+                    user: {
+                        select: {
+                            id: true,
+                            fname: true,
+                            lname: true,
+                            email: true,
+                            createdAt: true,
+                            userType: true,
+                            organizationName: true,
+                            displayFName: true,
+                            displayLName: true,
+                            enhancedMember: {
+                                select: {
+                                    userId: true
+                                }
+                            }
+                        }
+                    }
+                }
             });
 
             if (!result) {
@@ -269,6 +460,30 @@ publicProfileRouter.get(
                     message: `The user with that listed ID (${userId}) does not exist.`,
                 });
             } else {
+                // Add computed display name for residential users
+                if (result.user && result.user.userType === 'RESIDENTIAL') {
+                    console.log('Municipal - User displayFName:', result.user.displayFName);
+                    console.log('Municipal - User displayLName:', result.user.displayLName);
+                    console.log('Municipal - User fname:', result.user.fname);
+                    console.log('Municipal - User lname:', result.user.lname);
+                    
+                        // Create a new object with displayName to ensure it's included in JSON response
+                        const displayName = `${result.user.displayFName && result.user.displayFName.trim() ? result.user.displayFName : result.user.fname} @ ${result.user.displayLName && result.user.displayLName.trim() ? result.user.displayLName : result.user.lname}`;
+                        console.log('Municipal - Computed displayName:', displayName);
+                    
+                        result.user = {
+                            ...result.user,
+                            displayName: displayName,
+                            isEnhancedMember: !!result.user.enhancedMember
+                        };
+                        console.log('Municipal - Modified user object:', result.user);
+                } else if (result.user) {
+                    result.user = {
+                        ...result.user,
+                        isEnhancedMember: !!result.user.enhancedMember
+                    };
+                }
+                
                 return res.status(200).json(result);
             }
         } catch (error) {
@@ -294,6 +509,7 @@ publicProfileRouter.put(
 
             const data = req.body;
             const { statement, responsibility, links, address, contactEmail, contactPhone } = data;
+            const profileLinks = Array.isArray(links) ? links : [];
             const updatedAt = new Date();
 
             const userProfile = await prisma.public_Municipal_Profile.findFirst({
@@ -314,8 +530,8 @@ publicProfileRouter.put(
                 });
 
                 let createdLinks = [];
-                for (let i = 0; i < links.length; i++) {
-                    const link = links[i];
+                for (let i = 0; i < profileLinks.length; i++) {
+                    const link = profileLinks[i];
                     const createdLink = await prisma.link.create({
                         data: {
                             link: link.link,
@@ -323,13 +539,15 @@ publicProfileRouter.put(
                             public_Municipal_ProfileId: result.id,
                         },
                     });
-                    createdLinks.push(createdLink.id);
+                    createdLinks.push({ id: createdLink.id });
                 }
 
                 const updatedResult = await prisma.public_Municipal_Profile.update({
                     where: { id: result.id },
                     data: {
-                        links: createdLinks,
+                        links: {
+                            connect: createdLinks,
+                        },
                     },
                     include: { links: true }
                 });
@@ -343,8 +561,8 @@ publicProfileRouter.put(
                 });
 
                 let createdLinks = [];
-                for (let i = 0; i < links.length; i++) {
-                    const link = links[i];
+                for (let i = 0; i < profileLinks.length; i++) {
+                    const link = profileLinks[i];
                     const createdLink = await prisma.link.create({
                         data: {
                             link: link.link,
@@ -415,6 +633,7 @@ publicProfileRouter.get(
 // Get all public profiles with filtering
 publicProfileRouter.get('/all', async (req, res) => {
     try {
+        const viewer = await getViewerFromRequest(req);
         const { 
             search = '', 
             profileType, 
@@ -513,11 +732,98 @@ publicProfileRouter.get('/all', async (req, res) => {
             ]
         });
 
+        const residentialUsers = users.filter((u) => u.userType === 'RESIDENTIAL');
+        const residentialUserIds = residentialUsers.map((u) => u.id);
+        const profileRows = residentialUserIds.length
+            ? await prisma.public_Community_Business_Profile.findMany({
+                where: { userId: { in: residentialUserIds } },
+                select: { userId: true, profileVisibility: true },
+            })
+            : [];
+        const visibilityByUserId = profileRows.reduce((acc, profileRow) => {
+            acc[profileRow.userId] = profileRow.profileVisibility || PROFILE_VISIBILITY.PUBLIC;
+            return acc;
+        }, {});
+
+        const residentialAllowedUserIds = new Set();
+        const defaultAllowedUserIds = new Set();
+
+        users.forEach((userRow) => {
+            if (userRow.userType !== 'RESIDENTIAL') {
+                defaultAllowedUserIds.add(userRow.id);
+            }
+        });
+
+        if (!residentialUsers.length) {
+            // No-op when there are no residential profiles in current result set.
+        } else if (isPrivilegedViewer(viewer)) {
+            residentialUsers.forEach((u) => residentialAllowedUserIds.add(u.id));
+        } else {
+            const viewerMemberships = viewer
+                ? await prisma.subGroupMember.findMany({
+                    where: { userId: viewer.id, status: 'APPROVED' },
+                    select: { subGroupId: true },
+                })
+                : [];
+            const viewerSubgroupSet = new Set(viewerMemberships.map((m) => m.subGroupId));
+
+            const ownerMemberships = viewer && viewerSubgroupSet.size
+                ? await prisma.subGroupMember.findMany({
+                    where: {
+                        userId: { in: residentialUserIds },
+                        status: 'APPROVED',
+                        subGroupId: { in: Array.from(viewerSubgroupSet) },
+                    },
+                    select: { userId: true },
+                })
+                : [];
+            const ownerCommunityMemberSet = new Set(ownerMemberships.map((m) => m.userId));
+
+            residentialUsers.forEach((residentialUser) => {
+                const visibility =
+                    visibilityByUserId[residentialUser.id] || PROFILE_VISIBILITY.PUBLIC;
+
+                if (viewer?.id === residentialUser.id) {
+                    residentialAllowedUserIds.add(residentialUser.id);
+                    return;
+                }
+
+                if (visibility === PROFILE_VISIBILITY.PUBLIC) {
+                    residentialAllowedUserIds.add(residentialUser.id);
+                    return;
+                }
+
+                if (!viewer) {
+                    return;
+                }
+
+                if (visibility === PROFILE_VISIBILITY.COMMUNITY_MEMBERS) {
+                    if (ownerCommunityMemberSet.has(residentialUser.id)) {
+                        residentialAllowedUserIds.add(residentialUser.id);
+                    }
+                    return;
+                }
+
+                if (visibility === PROFILE_VISIBILITY.CONTACTS_ONLY) {
+                    // Approved contact lists are not yet modelled in this codebase.
+                    return;
+                }
+
+                // PRIVATE profiles remain hidden for non-privileged viewers.
+            });
+        }
+
+        const allowedUserIds = new Set([
+            ...Array.from(defaultAllowedUserIds),
+            ...Array.from(residentialAllowedUserIds),
+        ]);
+        const filteredUsers = users.filter((u) => allowedUserIds.has(u.id));
+
         // Get total count
-        const totalCount = users.length;
+        const totalCount = filteredUsers.length;
 
         // Collect all idea IDs from all users for efficient endorsement query
-        const allIdeaIds = users.flatMap(user => user.ideas.map(idea => idea.id));
+        const allIdeaIds = filteredUsers.flatMap(user => user.ideas.map(idea => idea.id));
 
         // Single aggregated query to get all endorsements (ratings) for all ideas
         let endorsementsByIdea = {};
@@ -542,7 +848,7 @@ publicProfileRouter.get('/all', async (req, res) => {
 
         // Create a map of userId -> total endorsements received
         const endorsementsByUser = {};
-        users.forEach(user => {
+        filteredUsers.forEach(user => {
             let totalEndorsements = 0;
             user.ideas.forEach(idea => {
                 totalEndorsements += endorsementsByIdea[idea.id] || 0;
@@ -551,7 +857,7 @@ publicProfileRouter.get('/all', async (req, res) => {
         });
 
         // Transform users into profile format
-        const profiles = users.map(user => {
+        const profiles = filteredUsers.map(user => {
             // Determine profile type based on user type
             let profileType;
             if (user.userType === 'MUNICIPAL') {
@@ -592,7 +898,10 @@ publicProfileRouter.get('/all', async (req, res) => {
                 userName: user.userType === 'RESIDENTIAL' 
                     ? `${user.displayFName || user.fname || ''}@${user.displayLName || user.lname || ''}` 
                     : null,
-                userType: user.userType
+                userType: user.userType,
+                profileVisibility: user.userType === 'RESIDENTIAL'
+                    ? visibilityByUserId[user.id] || PROFILE_VISIBILITY.PUBLIC
+                    : PROFILE_VISIBILITY.PUBLIC,
             };
         });
 

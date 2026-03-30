@@ -31,6 +31,7 @@ import {
 } from 'src/lib/api/userRoutes';
 import {
     LinkType,
+    ProfileVisibility,
     PublicStandardProfile,
     PublicCommunityBusinessProfile,
     PublicMunicipalProfile,
@@ -78,6 +79,19 @@ const LinkTypes = Object.keys(LinkType).filter((item) => {
 });
 
 const FILTER_OPTIONS = ['name', 'region', 'municipality', 'neighborhood'];
+
+const PROFILE_VISIBILITY_OPTIONS: Array<{ value: ProfileVisibility; label: string }> = [
+    { value: ProfileVisibility.PUBLIC, label: 'Visible to public (visible to anyone looking at website)' },
+    {
+        value: ProfileVisibility.COMMUNITY_MEMBERS,
+        label: 'Visible only to other community members (public profile only visible to members of communities you belong to)',
+    },
+    {
+        value: ProfileVisibility.CONTACTS_ONLY,
+        label: 'Visible only to contacts (only people in your approved contact lists can view public profile)',
+    },
+    { value: ProfileVisibility.PRIVATE, label: 'Private (no one can view your public profile)' },
+];
 
 const deleteSchoolSegmentDetail = async (user: string | undefined) => {
     if (user === undefined) {
@@ -376,119 +390,99 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
         }
     };
 
-    function handleUpdateProfile() {
-        if (
-            userType === USER_TYPES.BUSINESS ||
-            userType === USER_TYPES.COMMUNITY ||
-            (userType === USER_TYPES.RESIDENTIAL && isEnhancedMember)
-        ) {
-            const userId = user.id;
-            const statement = (
-                document.getElementById('formVisionStatement') as HTMLInputElement
-            ).value;
-            const description = (
-                document.getElementById('formServiceDescription') as HTMLInputElement
-            ).value;
-            const linksLocation = document.getElementById('formLinksBody');
-            const linksRows = linksLocation?.getElementsByTagName('tr');
-            let links: Object[] = [];
-            if (linksRows) {
-                for (let i = 0; i < linksRows.length; i++) {
-                    const linkType = linksRows[i]
-                        .getElementsByTagName('td')[0]
-                        .getElementsByTagName('select')[0].value;
-                    const linkUrl = linksRows[i]
-                        .getElementsByTagName('td')[1]
-                        .getElementsByTagName('input')[0].value;
-                    const link = {
-                        link: linkUrl,
-                        linkType: linkType,
-                    };
-                    links.push(link);
+    async function handleUpdateProfile() {
+        const getInputValue = (id: string, fallback: string = '') => {
+            const element = document.getElementById(id) as HTMLInputElement | null;
+            return element?.value ?? fallback;
+        };
+
+        try {
+            if (
+                userType === USER_TYPES.BUSINESS ||
+                userType === USER_TYPES.COMMUNITY ||
+                (userType === USER_TYPES.RESIDENTIAL && isEnhancedMember)
+            ) {
+                const userId = user.id;
+                const statement = getInputValue('formVisionStatement', communityBusinessProfile.statement || '');
+                const description = getInputValue('formServiceDescription', communityBusinessProfile.description || '');
+                const linksLocation = document.getElementById('formLinksBody');
+                const linksRows = linksLocation?.getElementsByTagName('tr');
+                let links: Object[] = [];
+                if (linksRows) {
+                    for (let i = 0; i < linksRows.length; i++) {
+                        const linkType = linksRows[i]
+                            .getElementsByTagName('td')[0]
+                            .getElementsByTagName('select')[0].value;
+                        const linkUrl = linksRows[i]
+                            .getElementsByTagName('td')[1]
+                            .getElementsByTagName('input')[0].value;
+                        links.push({ link: linkUrl, linkType: linkType });
+                    }
                 }
-            }
-            const address = (
-                document.getElementById('formPublicAddress') as HTMLInputElement
-            ).value;
-            const contactFirstName = (
-                document.getElementById('formContactFirstName') as HTMLInputElement
-            ).value;
-            const contactLastName = (
-                document.getElementById('formContactLastName') as HTMLInputElement
-            ).value;
-            const contactEmail = (
-                document.getElementById('formContactEmail') as HTMLInputElement
-            ).value;
-            const contactPhone = (
-                document.getElementById('formContactPhone') as HTMLInputElement
-            ).value;
 
-            const profileNew: PublicCommunityBusinessProfile = {
-                userId: userId,
-                statement: statement,
-                description: description,
-                links: links,
-                address: address,
-                contactFirstName: contactFirstName,
-                contactLastName: contactLastName,
-                contactEmail: contactEmail,
-                contactPhone: contactPhone,
-            };
+                const profileNew: PublicCommunityBusinessProfile = {
+                    userId: userId,
+                    statement: statement,
+                    description: description,
+                    links: links,
+                    profileVisibility: getInputValue(
+                        'formProfileVisibility',
+                        communityBusinessProfile.profileVisibility || ProfileVisibility.PUBLIC
+                    ) as ProfileVisibility,
+                    address: getInputValue('formPublicAddress', communityBusinessProfile.address || ''),
+                    contactFirstName: getInputValue('formContactFirstName', communityBusinessProfile.contactFirstName || ''),
+                    contactLastName: getInputValue('formContactLastName', communityBusinessProfile.contactLastName || ''),
+                    contactEmail: getInputValue('formContactEmail', communityBusinessProfile.contactEmail || ''),
+                    contactPhone: getInputValue('formContactPhone', communityBusinessProfile.contactPhone || ''),
+                };
 
-            const test = updateCommunityBusinessProfile(profileNew, token)
-                .then((e) => console.log(e))
-                .catch((e) => console.log(e));
-            setShowAlert(true);
-        } else if (userType === USER_TYPES.MUNICIPAL) {
-            const userId = user.id;
-            const statement = (
-                document.getElementById('formVisionStatement') as HTMLInputElement
-            ).value;
-            const responsibility = (
-                document.getElementById('formServiceResponsibility') as HTMLInputElement
-            ).value;
-            const linksLocation = document.getElementById('formLinksBody');
-            const linksRows = linksLocation?.getElementsByTagName('tr');
-            let links: Object[] = [];
-            if (linksRows) {
-                for (let i = 0; i < linksRows.length; i++) {
-                    const linkType = linksRows[i]
-                        .getElementsByTagName('td')[0]
-                        .getElementsByTagName('select')[0].value;
-                    const linkUrl = linksRows[i]
-                        .getElementsByTagName('td')[1]
-                        .getElementsByTagName('input')[0].value;
-                    const link = {
-                        link: linkUrl,
-                        linkType: linkType,
-                    };
-                    links.push(link);
+                const updatedProfile = await updateCommunityBusinessProfile(profileNew, token);
+                setCommunityBusinessProfile(updatedProfile);
+                setLinks(updatedProfile.links || []);
+                setShowAlert(true);
+                setUpgradeStatus(null);
+            } else if (userType === USER_TYPES.MUNICIPAL) {
+                const userId = user.id;
+                const statement = getInputValue('formVisionStatement', municipalProfile.statement || '');
+                const responsibility = getInputValue('formServiceResponsibility', municipalProfile.responsibility || '');
+                const linksLocation = document.getElementById('formLinksBody');
+                const linksRows = linksLocation?.getElementsByTagName('tr');
+                let links: Object[] = [];
+                if (linksRows) {
+                    for (let i = 0; i < linksRows.length; i++) {
+                        const linkType = linksRows[i]
+                            .getElementsByTagName('td')[0]
+                            .getElementsByTagName('select')[0].value;
+                        const linkUrl = linksRows[i]
+                            .getElementsByTagName('td')[1]
+                            .getElementsByTagName('input')[0].value;
+                        links.push({ link: linkUrl, linkType: linkType });
+                    }
                 }
+
+                const profileNew: PublicMunicipalProfile = {
+                    userId: userId,
+                    statement: statement,
+                    responsibility: responsibility,
+                    links: links,
+                    address: getInputValue('formPublicAddress', municipalProfile.address || ''),
+                    contactEmail: getInputValue('formContactEmail', municipalProfile.contactEmail || ''),
+                    contactPhone: getInputValue('formContactPhone', municipalProfile.contactPhone || ''),
+                };
+
+                const updatedProfile = await updateMunicipalProfile(profileNew, token);
+                setMunicipalProfile(updatedProfile);
+                setLinks(updatedProfile.links || []);
+                setShowAlert(true);
+                setUpgradeStatus(null);
             }
-            const address = (
-                document.getElementById('formPublicAddress') as HTMLInputElement
-            ).value;
-            const contactEmail = (
-                document.getElementById('formContactEmail') as HTMLInputElement
-            ).value;
-            const contactPhone = (
-                document.getElementById('formContactPhone') as HTMLInputElement
-            ).value;
-
-            const profileNew: PublicMunicipalProfile = {
-                userId: userId,
-                statement: statement,
-                responsibility: responsibility,
-                links: links,
-                address: address,
-                contactEmail: contactEmail,
-                contactPhone: contactPhone,
-            };
-
-            const test = updateMunicipalProfile(profileNew, token)
-                .then((e) => console.log(e))
-                .catch((e) => console.log(e));
-            setShowAlert(true);
+        } catch (error: any) {
+            console.error('Failed to update profile:', error);
+            setShowAlert(false);
+            setUpgradeStatus({
+                success: false,
+                message: error?.response?.data?.message || 'Failed to update profile. Please try again.',
+            });
         }
     }
 
@@ -767,7 +761,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                 </Row>
                 <Row>
                     <Card style={{ width: '80rem' }}>
-                        <Card.Body className='my-5'>
+                        <Card.Body className='p-4'>
                             <Form
                                 id='formPublicProfile'
                                 onSubmit={(e) => {
@@ -2375,8 +2369,9 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                             Profile Updated
                                         </Alert>
                                     ) : null}
+                                    <h4 className='mb-3'>Public Profile Information</h4>
                                     <Form.Group className='mb-3' controlId='formVisionStatement'>
-                                        <Form.Label>Mission/Vision Statement</Form.Label>
+                                        <Form.Label>Personal Statement</Form.Label>
                                         <Form.Control
                                             type='text'
                                             id='formVisionStatement'
@@ -2386,23 +2381,13 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                         />
                                     </Form.Group>
                                     <Form.Group className='mb-3' controlId='formServiceDescription'>
-                                        <Form.Label>Product/Service Description</Form.Label>
+                                        <Form.Label>Skill Set</Form.Label>
                                         <Form.Control
                                             type='text'
                                             id='formServiceDescription'
-                                            placeholder='Tell us about the product/service you provide'
+                                            placeholder='Tell us about the skills you have'
                                             defaultValue={communityBusinessProfile.description}
                                             maxLength={TEXT_INPUT_LIMIT.DESCRIPTION}
-                                        />
-                                    </Form.Group>
-                                    <Form.Group className='mb-3' controlId='formPublicAddress'>
-                                        <Form.Label>Public Address</Form.Label>
-                                        <Form.Control
-                                            type='text'
-                                            id='formPublicAddress'
-                                            placeholder='Public Address'
-                                            defaultValue={communityBusinessProfile.address}
-                                            maxLength={TEXT_INPUT_LIMIT.LOCATION}
                                         />
                                     </Form.Group>
                                     <Form.Group
@@ -2410,7 +2395,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                         controlId='formLinks'
                                         id='formLinks'
                                     >
-                                        <Form.Label>Links</Form.Label>
+                                        <Form.Label>Social Media Links</Form.Label>
                                         <Button
                                             className='float-right'
                                             size='sm'
@@ -2475,57 +2460,38 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                             </tbody>
                                         </Table>
                                     </Form.Group>
-                                    <Form.Group className='mb-3' controlId='formContactInformation'>
-                                        <Form.Label>Contact Information</Form.Label>
-                                        <Table bordered hover size='sm'>
-                                            <thead>
-                                                <tr>
-                                                    <th>First Name</th>
-                                                    <th>Last Name</th>
-                                                    <th>Email</th>
-                                                    <th>Phone Number</th>
-                                                </tr>
-                                            </thead>
-                                            {communityBusinessProfile ? (
-                                                <tbody>
-                                                    <tr>
-                                                        <td>{fname}</td>
-                                                        <td>{lname}</td>
-                                                        <td>
-                                                            <Form.Control
-                                                                type='email'
-                                                                id='formContactEmail'
-                                                                placeholder='Email Address'
-                                                                defaultValue={
-                                                                    communityBusinessProfile.contactEmail
-                                                                }
-                                                            />
-                                                        </td>
-                                                        <td>
-                                                            <Form.Control
-                                                                type='phone'
-                                                                id='formContactPhone'
-                                                                placeholder='Phone Number'
-                                                                defaultValue={
-                                                                    communityBusinessProfile.contactPhone
-                                                                }
-                                                            />
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            ) : null}
-                                        </Table>
+
+                                    <hr className='my-4' />
+                                    <h4 className='mb-3'>Public Profile Settings</h4>
+                                    <Form.Group className='mb-0' controlId='formProfileVisibility'>
+                                        <Form.Label>Visibility Preferences</Form.Label>
+                                        <Form.Control
+                                            as='select'
+                                            id='formProfileVisibility'
+                                            defaultValue={communityBusinessProfile.profileVisibility || ProfileVisibility.PUBLIC}
+                                        >
+                                            {PROFILE_VISIBILITY_OPTIONS.map((option) => (
+                                                <option key={option.value} value={option.value}>
+                                                    {option.label}
+                                                </option>
+                                            ))}
+                                        </Form.Control>
+                                        <Form.Text className='text-muted'>
+                                            Admins, Moderators, and Municipal users can always view public profiles.
+                                        </Form.Text>
                                     </Form.Group>
+
                                     <Button variant='primary' type='submit'>
                                         Update
                                     </Button>
                                 </Form>
                             ) : (
                                 <div className='bg-light p-4 rounded text-muted'>
+                                    <h4 className='mb-3'>Public Profile Information</h4>
                                     <Form id='formPublicProfile'>
                                         <fieldset disabled>
                                             <Form.Group className='mb-3' controlId='formVisionStatement'>
-                                                <Form.Label>Mission/Vision Statement</Form.Label>
+                                                <Form.Label>Personal Statement</Form.Label>
                                                 <Form.Control
                                                     type='text'
                                                     id='formVisionStatement'
@@ -2535,23 +2501,13 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                                 />
                                             </Form.Group>
                                             <Form.Group className='mb-3' controlId='formServiceDescription'>
-                                                <Form.Label>Product/Service Description</Form.Label>
+                                                <Form.Label>Skill Set</Form.Label>
                                                 <Form.Control
                                                     type='text'
                                                     id='formServiceDescription'
-                                                    placeholder='Tell us about the product/service you provide'
+                                                    placeholder='Tell us about the skills you have'
                                                     defaultValue={communityBusinessProfile.description}
                                                     maxLength={TEXT_INPUT_LIMIT.DESCRIPTION}
-                                                />
-                                            </Form.Group>
-                                            <Form.Group className='mb-3' controlId='formPublicAddress'>
-                                                <Form.Label>Public Address</Form.Label>
-                                                <Form.Control
-                                                    type='text'
-                                                    id='formPublicAddress'
-                                                    placeholder='Public Address'
-                                                    defaultValue={communityBusinessProfile.address}
-                                                    maxLength={TEXT_INPUT_LIMIT.LOCATION}
                                                 />
                                             </Form.Group>
                                             <Form.Group
@@ -2559,7 +2515,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                                 controlId='formLinks'
                                                 id='formLinks'
                                             >
-                                                <Form.Label>Links</Form.Label>
+                                                <Form.Label>Social Media Links</Form.Label>
                                                 <Button className='float-right' size='sm' disabled>
                                                     Add New Link
                                                 </Button>
@@ -2602,47 +2558,25 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                                                     </tbody>
                                                 </Table>
                                             </Form.Group>
-                                            <Form.Group className='mb-3' controlId='formContactInformation'>
-                                                <Form.Label>Contact Information</Form.Label>
-                                                <Table bordered hover size='sm'>
-                                                    <thead>
-                                                        <tr>
-                                                            <th>First Name</th>
-                                                            <th>Last Name</th>
-                                                            <th>Email</th>
-                                                            <th>Phone Number</th>
-                                                        </tr>
-                                                    </thead>
-                                                    {communityBusinessProfile ? (
-                                                        <tbody>
-                                                            <tr>
-                                                                <td>{fname}</td>
-                                                                <td>{lname}</td>
-                                                                <td>
-                                                                    <Form.Control
-                                                                        type='email'
-                                                                        id='formContactEmail'
-                                                                        placeholder='Email Address'
-                                                                        defaultValue={
-                                                                            communityBusinessProfile.contactEmail
-                                                                        }
-                                                                    />
-                                                                </td>
-                                                                <td>
-                                                                    <Form.Control
-                                                                        type='phone'
-                                                                        id='formContactPhone'
-                                                                        placeholder='Phone Number'
-                                                                        defaultValue={
-                                                                            communityBusinessProfile.contactPhone
-                                                                        }
-                                                                    />
-                                                                </td>
-                                                            </tr>
-                                                        </tbody>
-                                                    ) : null}
-                                                </Table>
-                                            </Form.Group>
+                                            <hr className='my-4' />
+                                            <h4 className='mb-3'>Public Profile Settings</h4>
+                                            <Form.Group className='mb-0' controlId='formProfileVisibility'>
+                                                <Form.Label>Visibility Preferences</Form.Label>
+                                                <Form.Control
+                                                    as='select'
+                                                    id='formProfileVisibility'
+                                                    defaultValue={communityBusinessProfile.profileVisibility || ProfileVisibility.PUBLIC}
+                                                >
+                                                    {PROFILE_VISIBILITY_OPTIONS.map((option) => (
+                                                        <option key={option.value} value={option.value}>
+                                                            {option.label}
+                                                        </option>
+                                                    ))}
+                                                </Form.Control>
+                                                <Form.Text className='text-muted'>
+                                                    Admins, Moderators, and Municipal users can always view public profiles.
+                                                </Form.Text>
+                                            </Form.Group>                                            
                                         </fieldset>
                                     </Form>
                                     <div className='d-flex justify-content-between align-items-center'>
@@ -2661,7 +2595,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, token }) => {
                     </Card>
                 </Row>
 
-                <Row>
+                <Row className='mt-3'>
                     <SegmentInfo
                         user={user!}
                         token={token!}

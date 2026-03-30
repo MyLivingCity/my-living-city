@@ -393,11 +393,14 @@ const SubmitDirectProposalPageContent: React.FC<
                         self.findIndex((s) => s.name === seg.name)
                           );
                       })
-                      .map((seg, index) => (
-                          <option key={String(seg.name)} value={index}>
-                              {capitalizeString(seg.name)}
-                          </option>
-                      ))}
+                      .map((seg) => {
+                          const originalIndex = processedSegData.findIndex((s) => s.name === seg.name);
+                          return (
+                              <option key={String(seg.name)} value={originalIndex}>
+                                  {capitalizeString(seg.name)}
+                              </option>
+                          );
+                      })}
                             </Form.Control>
                         </Form.Group>
                         <Form.Group>

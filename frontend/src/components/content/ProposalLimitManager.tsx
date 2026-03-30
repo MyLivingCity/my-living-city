@@ -10,7 +10,7 @@ import {
 // Types
 
 type SiteDefaults = Record<string, number>;
-type FilterType = 'all' | 'BUSINESS' | 'COMMUNITY' | 'MUNICIPAL' | 'RESIDENTIAL';
+type FilterType = 'all' | 'BUSINESS' | 'COMMUNITY' | 'MUNICIPAL';
 
 // Maps DB userType enum → account_type key used in siteDefaults
 const TYPE_TO_ACCOUNT_KEY: Record<string, string> = {
@@ -19,14 +19,13 @@ const TYPE_TO_ACCOUNT_KEY: Record<string, string> = {
     MUNICIPAL: 'municipality',
 };
 
-const FILTERS: FilterType[] = ['all', 'BUSINESS', 'COMMUNITY', 'MUNICIPAL', 'RESIDENTIAL'];
+const FILTERS: FilterType[] = ['all', 'BUSINESS', 'COMMUNITY', 'MUNICIPAL'];
 
 const FILTER_LABELS: Record<FilterType, string> = {
     all: 'All',
     BUSINESS: 'Business',
     COMMUNITY: 'Community',
     MUNICIPAL: 'Municipal',
-    RESIDENTIAL: 'Residential',
 };
 
 // Constants

@@ -1,22 +1,76 @@
-import React from 'react';
-import { Container, Row, Table, Button } from 'react-bootstrap';
-import { IAdvertisement } from 'src/lib/types/data/advertisement.type';
+import React, { useContext, useState } from 'react';
+import { Container, Row, Table, Button, Form, Card, Col } from 'react-bootstrap';
+import { IAdvertisement, ISegmentAdPrice, IDefaultAdPrice } from 'src/lib/types/data/advertisement.type';
+import { IUser } from '../../lib/types/data/user.type';
 import moment from 'moment';
-import { API_BASE_URL } from '../../lib/constants';
+import { API_BASE_URL, USER_TYPES } from '../../lib/constants';
 import {
-    deleteAdvertisement,
+    deleteAdvertisement, 
+    updateSegmentAdPrice, 
+    updateDefaultAdPrice
 } from 'src/lib/api/advertisementRoutes';
 import { timeDifference } from 'src/lib/utilityFunctions';
+import { UserProfileContext } from '../../contexts/UserProfile.Context';
+
 interface AllAdsPageContentProps {
-  AllAdvertisement: IAdvertisement[] | undefined;
-  token: string | null;
+    AllAdvertisement: IAdvertisement[] | undefined;
+    token: string | null;
+    user: IUser | null;
+    segmentAdPrices?: ISegmentAdPrice[];
+    defaultAdPrice?: IDefaultAdPrice | undefined;
+    refetchPricing?: () => void;
 }
 
 const AllAdsPageContent: React.FC<AllAdsPageContentProps> = ({
     AllAdvertisement,
     token,
+    user,
+    segmentAdPrices,
+    defaultAdPrice,
+    refetchPricing,
 }) => {
- 
+    // Segment price inline editing
+    const [editingSegmentId, setEditingSegmentId] = useState<number | null>(null);
+    const [draftSegmentPrice, setDraftSegmentPrice] = useState('');
+
+    // Default price inline editing
+    const [editingDefault, setEditingDefault] = useState(false);
+    const [draftDefaultPrice, setDraftDefaultPrice] = useState('');
+
+    // Segment price handlers
+    const handleSegmentEditClick = (row: ISegmentAdPrice) => {
+        setEditingSegmentId(row.segmentId);
+        setDraftSegmentPrice(row.weeklyPrice ?? '');
+    };
+
+    const handleSegmentSave = async (row: ISegmentAdPrice) => {
+        if (!token) return;
+        try {
+            await updateSegmentAdPrice(row.segmentId, { weeklyPrice: draftSegmentPrice }, token);
+            setEditingSegmentId(null);
+            refetchPricing?.();
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    // Default price handlers
+    const handleDefaultEditClick = () => {
+        if (!defaultAdPrice) return;
+        setEditingDefault(true);
+        setDraftDefaultPrice(defaultAdPrice.weeklyPrice);
+    };
+
+    const handleDefaultSave = async () => {
+        if (!token || !defaultAdPrice) return;
+        try {
+            await updateDefaultAdPrice(defaultAdPrice.id, { weeklyPrice: draftDefaultPrice }, token);
+            setEditingDefault(false);
+            refetchPricing?.();
+        } catch (err) {
+            console.error(err);
+        }
+    };
 
     async function handleDelete(adsId: number) {
         try {
@@ -44,7 +98,93 @@ const AllAdsPageContent: React.FC<AllAdsPageContentProps> = ({
                 <h2 className='pb-2 pt-2 display-6'>Advertisements Manager</h2>
             </Row>
 
-            <Row className='mb-3'>
+            {user?.userType === USER_TYPES.ADMIN && (
+                <>
+                    <Row className='mb-4'>
+                        <Col xs={12}>
+                            <Card>
+                                <Card.Header className='text-capitalize'>
+                                    Ad Pricing
+                                </Card.Header>
+
+                                <Card.Body className='pb-0'>
+
+                                    <Row className='mb-3 align-items-center'>
+                                        <div className='d-flex align-items-center px-2 gap-3'>
+                                            <strong>Default Weekly Price:</strong>
+                                            {editingDefault ? (
+                                                <>
+                                                    <Form.Control
+                                                        type='text'
+                                                        value={draftDefaultPrice}
+                                                        onChange={e => setDraftDefaultPrice(e.target.value)}
+                                                        style={{ width: '120px' }}
+                                                    />
+                                                    <Button size='sm' onClick={handleDefaultSave}>Save</Button>
+                                                    <Button size='sm' variant='outline-danger' onClick={() => setEditingDefault(false)}>Cancel</Button>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <span className='me-2'>${defaultAdPrice?.weeklyPrice ?? '—'}</span>
+                                                    <Button size='sm' variant='primary' onClick={handleDefaultEditClick}>Edit</Button>
+                                                </>
+                                            )}
+                                        </div>
+                                    </Row>
+
+                                    <Row>
+                                        <Table bordered hover size='sm'>
+                                            <thead>
+                                                <tr>
+                                                    <th>Segment</th>
+                                                    <th>Weekly Price</th>
+                                                    <th>Controls</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {segmentAdPrices?.map(row => (
+                                                    <tr key={row.id}>
+                                                        <td className='p-2'>{row.segmentName}</td>
+                                                        <td className='p-2'>
+                                                            {editingSegmentId === row.segmentId ? (
+                                                                <Form.Control
+                                                                    type='text'
+                                                                    value={draftSegmentPrice}
+                                                                    onChange={e => setDraftSegmentPrice(e.target.value)}
+                                                                    style={{ width: '120px' }}
+                                                                />
+                                                            ) : (
+                                                                row.weeklyPrice
+                                                                    ? `$${row.weeklyPrice}`
+                                                                    : <span className='text-muted'>Default (${defaultAdPrice?.weeklyPrice ?? '—'})</span>
+                                                            )}
+                                                        </td>
+                                                        <td className='pl-2'>
+                                                            {editingSegmentId === row.segmentId ? (
+                                                                <>
+                                                                    <Button size='sm' onClick={() => handleSegmentSave(row)}>Save</Button>{' '}
+                                                                    <Button size='sm' variant='outline-danger' onClick={() => setEditingSegmentId(null)}>Cancel</Button>
+                                                                </>
+                                                            ) : (
+                                                                <Button size='sm' variant='primary' onClick={() => handleSegmentEditClick(row)}>Edit</Button>
+                                                            )}
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </Table>
+                                    </Row>
+
+                                </Card.Body>
+                            </Card>
+                        </Col>
+                    </Row>
+
+                    <div className='p-2'></div>
+                </>
+            )}
+
+            <Row className='mb-3 mt-2'>
                 <a href='/advertisement/submit'>
                     <Button>Create Paid Ads</Button>
                 </a>

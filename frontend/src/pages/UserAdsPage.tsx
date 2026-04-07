@@ -13,13 +13,13 @@ interface AllAdsPageProps extends RouteComponentProps<{}> {
 }
 
 const UserAdsPage: React.FC<AllAdsPageProps> = ({}) => {
-    const { token } = useContext(UserProfileContext);
-    const { data: user, isError, error } = useUserWithJwtVerbose({
+    const { token, user } = useContext(UserProfileContext);
+    const { data: aUser, isError, error } = useUserWithJwtVerbose({
         jwtAuthToken: token!,
         shouldTrigger: token != null
     });
 
-    const { data, isLoading} = useGetUserAds(user?.id);
+    const { data, isLoading} = useGetUserAds(aUser?.id);
   
     if (isLoading) {
         <div className='wrapper'>
@@ -31,7 +31,7 @@ const UserAdsPage: React.FC<AllAdsPageProps> = ({}) => {
 
     return (
         <div className='wrapper'>
-            <AllAdsPageContent token={token} AllAdvertisement={data}/>
+            <AllAdsPageContent token={token} user={user} AllAdvertisement={data}/>
         </div>
     );
 };

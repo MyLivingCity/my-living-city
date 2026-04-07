@@ -778,4 +778,154 @@ advertisementRouter.get(
     }
 )
 
+// GET all segment ad prices (with segment name joined)
+advertisementRouter.get(
+    '/getSegmentPrices',
+    async (req, res) => {
+        try {
+            const segments = await prisma.segments.findMany({
+                orderBy: { segId: 'asc' },
+                include: {
+                    segmentAdPrice: true
+                }
+            });
+
+            const mapped = segments.map(s => ({
+                // if no segmentAdPrice row exists, id will be null
+                id: s.segmentAdPrice?.id ?? null,
+                segmentId: s.segId,
+                segmentName: s.name,
+                // null means no custom price set — frontend treats as "default"
+                weeklyPrice: s.segmentAdPrice?.weeklyPrice?.toString() ?? null
+            }));
+
+            res.status(200).json(mapped);
+        } catch (error) {
+            console.log(error);
+            res.status(400).json({
+                message: 'An error occurred while retrieving segment ad prices.',
+                details: { errorMessage: error.message, errorStack: error.stack }
+            });
+        } finally {
+            await prisma.$disconnect();
+        }
+    }
+);
+
+// PUT update a segment ad price
+advertisementRouter.put(
+    '/updateSegmentPrice/:segmentId',
+    passport.authenticate('jwt', { session: false }),
+    async (req, res) => {
+        try {
+            const segmentId = Number(req.params.segmentId);
+            const { weeklyPrice } = req.body;
+
+            if (isNaN(segmentId)) {
+                return res.status(400).json({ message: 'Invalid segment ID' });
+            }
+
+            const theUser = await prisma.user.findUnique({
+                where: { id: req.user.id },
+                select: { userType: true }
+            });
+
+            if (theUser.userType !== 'SUPER_ADMIN' && theUser.userType !== 'ADMIN') {
+                return res.status(403).json({ message: "You don't have the right to update ad pricing!" });
+            }
+
+            const updated = await prisma.segmentAdPrice.upsert({
+                where: { segmentId },
+                update: { weeklyPrice },
+                create: { segmentId, weeklyPrice },
+                include: { segment: { select: { name: true } } }
+            });
+
+            res.status(200).json({
+                id: updated.id,
+                segmentId: updated.segmentId,
+                segmentName: updated.segment.name,
+                weeklyPrice: updated.weeklyPrice.toString()
+            });
+        } catch (error) {
+            console.error(error);
+            res.status(400).json({
+                message: 'Failed to update segment ad price',
+                details: { errorMessage: error.message, errorStack: error.stack }
+            });
+        } finally {
+            await prisma.$disconnect();
+        }
+    }
+);
+
+// GET default ad price
+advertisementRouter.get(
+    '/getDefaultPrice',
+    async (req, res) => {
+        try {
+            // There is only ever one row; findFirst is appropriate here
+            const defaultPrice = await prisma.defaultAdPrice.findFirst();
+            if (!defaultPrice) {
+                return res.status(404).json({ message: 'No default price set.' });
+            }
+            res.status(200).json({
+                id: defaultPrice.id,
+                weeklyPrice: defaultPrice.weeklyPrice.toString()
+            });
+        } catch (error) {
+            console.error(error);
+            res.status(400).json({
+                message: 'Failed to retrieve default ad price',
+                details: { errorMessage: error.message, errorStack: error.stack }
+            });
+        } finally {
+            await prisma.$disconnect();
+        }
+    }
+);
+
+// PUT update default ad price
+advertisementRouter.put(
+    '/updateDefaultPrice/:id',
+    passport.authenticate('jwt', { session: false }),
+    async (req, res) => {
+        try {
+            const id = Number(req.params.id);
+            const { weeklyPrice } = req.body;
+
+            if (isNaN(id)) {
+                return res.status(400).json({ message: 'Invalid ID' });
+            }
+
+            const theUser = await prisma.user.findUnique({
+                where: { id: req.user.id },
+                select: { userType: true }
+            });
+
+            if (theUser.userType !== 'SUPER_ADMIN' && theUser.userType !== 'ADMIN') {
+                return res.status(403).json({ message: "You don't have the right to update ad pricing!" });
+            }
+
+            const updated = await prisma.defaultAdPrice.update({
+                where: { id },
+                data: { weeklyPrice }
+            });
+
+            res.status(200).json({
+                id: updated.id,
+                weeklyPrice: updated.weeklyPrice.toString()
+            });
+        } catch (error) {
+            console.error(error);
+            res.status(400).json({
+                message: 'Failed to update default ad price',
+                details: { errorMessage: error.message, errorStack: error.stack }
+            });
+        } finally {
+            await prisma.$disconnect();
+        }
+    }
+);
+
 module.exports = advertisementRouter;

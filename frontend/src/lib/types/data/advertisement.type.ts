@@ -17,3 +17,15 @@ export interface IAdvertisement {
 	createdAt: string;
 	updatedAt: string;
 }
+
+export interface ISegmentAdPrice {
+    id: number | null;
+    segmentId: number;
+    segmentName: string;
+    weeklyPrice: string | null;
+}
+
+export interface IDefaultAdPrice {
+    id: number;
+    weeklyPrice: string;
+}

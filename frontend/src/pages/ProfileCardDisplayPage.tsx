@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Container, Row, Col, Card as BootstrapCard, Button, Badge, Spinner, Alert, Carousel } from 'react-bootstrap';
 import { useLocation, useHistory } from 'react-router-dom';
-import { PublicCommunityBusinessProfile, PublicMunicipalProfile } from '../lib/types/data/publicProfile.type';
+import { PublicCommunityBusinessProfile, PublicMunicipalProfile, PublicStandardProfile } from '../lib/types/data/publicProfile.type';
 import { ROUTES } from '../lib/constants';
 import { getCommunityBusinessProfile, getMunicipalProfile, updateCommunityBusinessProfile, updateMunicipalProfile } from '../lib/api/publicProfileRoutes';
 import { useUserIdeas, useUserEndorsedIdeas } from '../hooks/ideaHooks';
@@ -12,7 +12,7 @@ import EditPublicProfileModal from '../components/modal/EditPublicProfileModal';
 import { UserProfileContext } from '../contexts/UserProfile.Context';
 
 // Public profile type
-type PublicProfile = (PublicCommunityBusinessProfile | PublicMunicipalProfile) & {
+type PublicProfile = (PublicCommunityBusinessProfile | PublicMunicipalProfile ) & {
     user: {
         id: string;
         fname?: string;
@@ -326,7 +326,7 @@ const ProfileCardDisplayPage: React.FC = () => {
                                                 selectedProfile.user.userType === 'RESIDENTIAL'
                                                     ? (
                                                         selectedProfile.user.displayName ||
-                                                        `${selectedProfile.user.displayFName || selectedProfile.user.fname || ''} @ ${selectedProfile.user.displayLName || selectedProfile.user.lname || ''}`.trim()
+                                                        `${selectedProfile.user.displayFName || selectedProfile.user.fname || ''}@${selectedProfile.address || selectedProfile.user.lname || ''}`.trim()
                                                     )
                                                     : `${selectedProfile.user.fname || ''} ${selectedProfile.user.lname || ''}`.trim()
                                             ) : 'No contact person'}

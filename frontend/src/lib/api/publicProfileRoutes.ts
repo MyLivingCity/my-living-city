@@ -17,6 +17,7 @@ export interface PublicProfileWithStats {
     municipalityName?: string;
     userName?: string;
     userType?: string;
+    profileVisibility?: 'PUBLIC' | 'COMMUNITY_MEMBERS' | 'CONTACTS_ONLY' | 'PRIVATE';
 }
 
 

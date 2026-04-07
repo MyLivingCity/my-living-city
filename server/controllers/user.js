@@ -110,7 +110,7 @@ userRouter.get(
  *          application/json:
  *            schema:
  *              $ref: '#/components/schemas/User'
- * 			400:
+ *      400:
  *        description: The user logged in with JWT
 */
 userRouter.get(
@@ -469,7 +469,7 @@ userRouter.post("/signup",
  *                  $ref: '#/components/schemas/User'
  *                token:
  *                  type: string
- * 			400:
+ *      400:
  *        description: The user could not be logged in
 */
 userRouter.post("/login", async (req, res, next) => {
@@ -586,7 +586,7 @@ userRouter.post(
  *              type: array
  *              items:
  *                $ref: '#/components/schemas/User'
- * 			400:
+ *      400:
  *        description: A set of users could not be fetched properly
 */
 userRouter.get(
@@ -724,7 +724,7 @@ userRouter.get(
  *                  $ref: '#/components/schemas/User'
  *                validPassword:
  *                  type: boolean
- * 			400:
+ *      400:
  *        description: The user's password failed to update
 */
 userRouter.put(

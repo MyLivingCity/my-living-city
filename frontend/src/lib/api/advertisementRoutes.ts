@@ -138,6 +138,16 @@ export const updateSegmentAdPrice = async (
     return res.data;
 };
 
+export const deleteSegmentAdPrice = async (
+    segmentId: number,
+    token: string
+): Promise<void> => {
+    await axios.delete(
+        `${API_BASE_URL}/advertisement/deleteSegmentPrice/${segmentId}`,
+        { headers: { 'x-auth-token': token } }
+    );
+};
+
 export const getDefaultAdPrice = async (): Promise<IDefaultAdPrice> => {
     const res = await axios.get<IDefaultAdPrice>(`${API_BASE_URL}/advertisement/getDefaultPrice`);
     return res.data;

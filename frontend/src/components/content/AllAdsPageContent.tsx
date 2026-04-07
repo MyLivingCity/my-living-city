@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { Container, Row, Table, Button, Form, Card, Col } from 'react-bootstrap';
+import { Container, Row, Table, Button, Form, Card, Col, Dropdown } from 'react-bootstrap';
 import { IAdvertisement, ISegmentAdPrice, IDefaultAdPrice } from 'src/lib/types/data/advertisement.type';
 import { IUser } from '../../lib/types/data/user.type';
 import moment from 'moment';
@@ -7,7 +7,8 @@ import { API_BASE_URL, USER_TYPES } from '../../lib/constants';
 import {
     deleteAdvertisement, 
     updateSegmentAdPrice, 
-    updateDefaultAdPrice
+    updateDefaultAdPrice,
+    deleteSegmentAdPrice,
 } from 'src/lib/api/advertisementRoutes';
 import { timeDifference } from 'src/lib/utilityFunctions';
 import { UserProfileContext } from '../../contexts/UserProfile.Context';
@@ -48,6 +49,16 @@ const AllAdsPageContent: React.FC<AllAdsPageContentProps> = ({
         try {
             await updateSegmentAdPrice(row.segmentId, { weeklyPrice: draftSegmentPrice }, token);
             setEditingSegmentId(null);
+            refetchPricing?.();
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const handleSegmentReset = async (row: ISegmentAdPrice) => {
+        if (!token) return;
+        try {
+            await deleteSegmentAdPrice(row.segmentId, token);
             refetchPricing?.();
         } catch (err) {
             console.error(err);
@@ -143,7 +154,7 @@ const AllAdsPageContent: React.FC<AllAdsPageContentProps> = ({
                                             </thead>
                                             <tbody>
                                                 {segmentAdPrices?.map(row => (
-                                                    <tr key={row.id}>
+                                                    <tr key={row.segmentId}>
                                                         <td className='p-2'>{row.segmentName}</td>
                                                         <td className='p-2'>
                                                             {editingSegmentId === row.segmentId ? (
@@ -166,7 +177,22 @@ const AllAdsPageContent: React.FC<AllAdsPageContentProps> = ({
                                                                     <Button size='sm' variant='outline-danger' onClick={() => setEditingSegmentId(null)}>Cancel</Button>
                                                                 </>
                                                             ) : (
-                                                                <Button size='sm' variant='primary' onClick={() => handleSegmentEditClick(row)}>Edit</Button>
+                                                                <>
+                                                                    <Dropdown>
+                                                                        <Dropdown.Toggle variant='link' className='p-0'>
+                                                                            Controls
+                                                                        </Dropdown.Toggle>
+                                                                    
+                                                                        <Dropdown.Menu>
+                                                                            <Dropdown.Item onClick={() => handleSegmentEditClick(row)}>
+                                                                                Edit
+                                                                            </Dropdown.Item>
+                                                                            <Dropdown.Item onClick={() => handleSegmentReset(row)} className='text-danger'>
+                                                                                Reset
+                                                                            </Dropdown.Item>
+                                                                        </Dropdown.Menu>
+                                                                    </Dropdown>
+                                                                </>
                                                             )}
                                                         </td>
                                                     </tr>

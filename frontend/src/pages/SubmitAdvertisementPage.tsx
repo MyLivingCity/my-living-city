@@ -10,6 +10,7 @@ import LoadingSpinner from '../components/ui/LoadingSpinner';
 import { useCategories } from '../hooks/categoryHooks';
 import { useAllAdPrices } from '../hooks/adPriceHooks';
 import { useAllSegments } from '../hooks/segmentHooks';
+import { useSegmentAdPrices, useDefaultAdPrice } from '../hooks/advertisementHooks';
 import { getAllSegments } from './../lib/api/segmentRoutes';
 import { getMyUserSegmentInfo } from './../lib/api/userSegmentRoutes';
 //import { getAdPrice } from './../lib/api/adPriceRoutes';
@@ -22,11 +23,13 @@ const SubmitAdvertisementPage: React.FC<SubmitAdvertisementPageProps> = ({ }) =>
     const { data: categoriesData, isLoading: categoriesLoading, error: categoriesError } = useCategories();
     const { data: adPriceData, isLoading: adPricesLoading, error: adPriceError} = useAllAdPrices();
     const { data: segmentsData, isLoading: segmentsLoading, error: segmentsError} = useAllSegments();
+    const { data: segmentAdPrices, isLoading: segmentAdPricesLoading } = useSegmentAdPrices();
+    const { data: defaultAdPrice, isLoading: defaultAdPriceLoading } = useDefaultAdPrice();
     const { token, user } = useContext(UserProfileContext);
 
     let isLoading = categoriesLoading || adPricesLoading;
 
-    if (isLoading) {
+    if (segmentsLoading || segmentAdPricesLoading || defaultAdPriceLoading) {
         return (
             <div className='wrapper'>
                 <LoadingSpinner />
@@ -42,6 +45,8 @@ const SubmitAdvertisementPage: React.FC<SubmitAdvertisementPageProps> = ({ }) =>
             <SubmitAdvertisementPageContent
                 segmentOptions={segmentsData}
                 adPriceOptions={adPriceData}
+                segmentAdPrices={segmentAdPrices}
+                defaultAdPrice={defaultAdPrice}
             />
         </div>
     );

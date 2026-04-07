@@ -859,6 +859,45 @@ advertisementRouter.put(
     }
 );
 
+// DELETE a segment ad price (resets to default)
+advertisementRouter.delete(
+    '/deleteSegmentPrice/:segmentId',
+    passport.authenticate('jwt', { session: false }),
+    async (req, res) => {
+        try {
+            const segmentId = Number(req.params.segmentId);
+
+            if (isNaN(segmentId)) {
+                return res.status(400).json({ message: 'Invalid segment ID' });
+            }
+
+            const theUser = await prisma.user.findUnique({
+                where: { id: req.user.id },
+                select: { userType: true }
+            });
+
+            if (theUser.userType !== 'SUPER_ADMIN' && theUser.userType !== 'ADMIN') {
+                return res.status(403).json({ message: "You don't have the right to update ad pricing!" });
+            }
+
+            // Only delete if a custom price row exists — no error if already at default
+            await prisma.segmentAdPrice.deleteMany({
+                where: { segmentId }
+            });
+
+            res.status(200).json({ message: 'Segment price reset to default' });
+        } catch (error) {
+            console.error(error);
+            res.status(400).json({
+                message: 'Failed to reset segment ad price',
+                details: { errorMessage: error.message, errorStack: error.stack }
+            });
+        } finally {
+            await prisma.$disconnect();
+        }
+    }
+);
+
 // GET default ad price
 advertisementRouter.get(
     '/getDefaultPrice',

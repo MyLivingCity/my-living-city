@@ -114,6 +114,36 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
         projectInfo,
     } = ideaData;
 
+    useEffect(() => {
+        const homeSeg = author?.userSegment?.find(
+            seg => seg.userSegmentRelationship === UserSegmentRelationshipEnum.HOME
+        );
+        const schoolSeg = author?.userSegment?.find(
+            seg => seg.userSegmentRelationship === UserSegmentRelationshipEnum.SCHOOL
+        );
+        const workSeg = author?.userSegment?.find(
+            seg => seg.userSegmentRelationship === UserSegmentRelationshipEnum.WORK
+        );
+
+        console.log('[SingleProposalPageContent] Author segment debug', {
+            ideaId,
+            proposalId: proposalData?.id,
+            author,
+            authorId: author?.id,
+            authorUserType: author?.userType,
+            authorOrganizationName: author?.organizationName,
+            authorAddressStreet: author?.address?.streetAddress,
+            authorUserSegment: author?.userSegment,
+            authorUserSegments: author?.userSegments,
+            homeSegId: homeSeg?.segmentId,
+            homeSegName: homeSeg?.segment?.name,
+            schoolSegId: schoolSeg?.segmentId,
+            schoolSegName: schoolSeg?.segment?.name,
+            workSegId: workSeg?.segmentId,
+            workSegName: workSeg?.segment?.name,
+        });
+    }, [ideaId, proposalData?.id, author]);
+
     // console.log('segment', segment);
     // console.log('sub segment', subSegment);
     // console.log('super segment', superSegment);
@@ -956,7 +986,7 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                                     (author?.userType === USER_TYPES.BUSINESS || author?.userType === USER_TYPES.COMMUNITY) ? (
                                         <div>
                                             <span className='author-link' onClick={handleAuthorClick}>
-                                                {author?.organizationName}@{author.userSegment?.[1].segment?.name}
+                                                {author?.organizationName}@{author?.userSegment?.[1]?.segment?.name ?? author?.address?.streetAddress}
                                             </span>
                                         </div>
                                     ) : (

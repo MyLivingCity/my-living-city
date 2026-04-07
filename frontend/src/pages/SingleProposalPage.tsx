@@ -20,12 +20,8 @@ const SingleProposalPage = (props: any) => {
         isError: proposalIsError,
     } = useSingleProposal(proposalId);
 
-    //wait for proposal data to load
-    if (!proposalIsLoading) {
-        var ideaStringId = proposalData!.ideaId.toString();
-    } else {
-        var ideaStringId = '';
-    }
+    // Derive idea id safely from proposal payload.
+    const ideaStringId = proposalData?.ideaId ? proposalData.ideaId.toString() : '';
 
     const { data, error: ideaError, isLoading: ideaIsLoading, isError: ideaIsError } = useSingleIdea(ideaStringId);
 
@@ -34,6 +30,17 @@ const SingleProposalPage = (props: any) => {
 
     if (ideaIsError || proposalIsError) {
   
+        return (
+            <div className='wrapper'>
+                <p>
+          Error occured while trying to retrieve proposal. Please try again
+          later.
+                </p>
+            </div>
+        );
+    }
+
+    if (!proposalIsLoading && !proposalData?.ideaId) {
         return (
             <div className='wrapper'>
                 <p>

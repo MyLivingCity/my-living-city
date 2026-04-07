@@ -4,6 +4,7 @@ import { API_BASE_URL } from '../constants';
 import { CreateAdvertisementInput } from '../types/input/advertisement.input';
 import { getAxiosJwtRequestOption } from './axiosRequestOptions';
 import { IAdvertisement } from '../types/data/advertisement.type';
+import { ISegmentAdPrice, IDefaultAdPrice } from '../types/data/advertisement.type';
 
 // POST Create a new advertisement
 export const postCreateAdvertisement = async (advertisementData:CreateAdvertisementInput, token: string | null) =>{
@@ -116,5 +117,51 @@ export const deleteAdvertisement = async (token: any, id: any) =>{
         headers: { 'x-auth-token': token, 'Access-Control-Allow-Origin': '*',},
         withCredentials: true
     });
+    return res.data;
+};
+
+export const getSegmentAdPrices = async (): Promise<ISegmentAdPrice[]> => {
+    const res = await axios.get<ISegmentAdPrice[]>(`${API_BASE_URL}/advertisement/getSegmentPrices`);
+    return res.data;
+};
+
+export const updateSegmentAdPrice = async (
+    segmentId: number,
+    data: { weeklyPrice: string },
+    token: string
+): Promise<ISegmentAdPrice> => {
+    const res = await axios.put<ISegmentAdPrice>(
+        `${API_BASE_URL}/advertisement/updateSegmentPrice/${segmentId}`,
+        data,
+        { headers: { 'x-auth-token': token } }
+    );
+    return res.data;
+};
+
+export const deleteSegmentAdPrice = async (
+    segmentId: number,
+    token: string
+): Promise<void> => {
+    await axios.delete(
+        `${API_BASE_URL}/advertisement/deleteSegmentPrice/${segmentId}`,
+        { headers: { 'x-auth-token': token } }
+    );
+};
+
+export const getDefaultAdPrice = async (): Promise<IDefaultAdPrice> => {
+    const res = await axios.get<IDefaultAdPrice>(`${API_BASE_URL}/advertisement/getDefaultPrice`);
+    return res.data;
+};
+
+export const updateDefaultAdPrice = async (
+    id: number,
+    data: { weeklyPrice: string },
+    token: string
+): Promise<IDefaultAdPrice> => {
+    const res = await axios.put<IDefaultAdPrice>(
+        `${API_BASE_URL}/advertisement/updateDefaultPrice/${id}`,
+        data,
+        { headers: { 'x-auth-token': token } }
+    );
     return res.data;
 };

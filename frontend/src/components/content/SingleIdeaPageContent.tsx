@@ -159,21 +159,6 @@ const SingleIdeaPageContent: React.FC<SingleIdeaPageContentProps> = ({
         )?.handle;
         const fallbackHandle = `${author?.userType === USER_TYPES.BUSINESS || author?.userType === USER_TYPES.COMMUNITY ? author?.organizationName : author?.fname}@${author?.userType === USER_TYPES.BUSINESS || author?.userType === USER_TYPES.COMMUNITY ? author?.userSegment?.[1]?.segment?.name : author?.address?.streetAddress}`;
 
-        console.log('[SingleIdeaPageContent] Author debug', {
-            ideaId,
-            ideaTitle: title,
-            author,
-            authorId: author?.id,
-            authorUserType: author?.userType,
-            authorOrganizationName: author?.organizationName,
-            authorAddressStreet: author?.address?.streetAddress,
-            authorUserSegment: author?.userSegment,
-            authorUserSegments: author?.userSegments,
-            authorUserHandles: author?.userHandles,
-            primarySegmentId: primarySegment?.segId,
-            homeHandle,
-            fallbackHandle,
-        });
     }, [ideaId, title, author, primarySegment?.segId]);
 
     const handleHideFlagButton = () => setShowFlagButton(false);

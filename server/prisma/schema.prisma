@@ -125,6 +125,7 @@ model Segments {
   subSegmentSubGroups SubGroup[]     @relation("SubSegmentRelation")
   userReach           UserReach[]
   ideas               Idea[]         @relation("IdeaToSegments")
+  segmentAdPrice      SegmentAdPrice?
 
   @@map("segment")
 }
@@ -498,6 +499,7 @@ model AdPrice {
 model Advertisements {
   id           Int       @id @default(autoincrement())
   ownerId      String    @map("owner_id")
+  ownerEmail   String?   @map("owner_email")
   createAt     DateTime  @default(now()) @map("creat_at")
   updateAt     DateTime? @default(now()) @updatedAt @map("update_at")
   adTitle      String    @map("advertisement_title")
@@ -510,6 +512,22 @@ model Advertisements {
   author       User      @relation(fields: [ownerId], references: [id])
 
   @@map("advertisement")
+}
+
+model SegmentAdPrice {
+  id          Int      @id @default(autoincrement())
+  segmentId   Int      @unique @map("segment_id")
+  weeklyPrice Decimal  @map("weekly_price") @db.Decimal(10, 2)
+  segment     Segments @relation(fields: [segmentId], references: [segId])
+
+  @@map("segment_ad_price")
+}
+
+model DefaultAdPrice {
+  id          Int     @id @default(autoincrement())
+  weeklyPrice Decimal @map("weekly_price") @db.Decimal(10, 2)
+
+  @@map("default_ad_price")
 }
 
 model UserReach {

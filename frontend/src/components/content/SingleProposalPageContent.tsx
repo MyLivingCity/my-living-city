@@ -953,42 +953,41 @@ const SingleProposalPageContent: React.FC<SingleIdeaPageContentProps> = ({
                             </div>
                             <div className='footer-handle'>
                                 {
-                                    author?.userSegments?.find( seg => seg.userSegmentRelationship === UserSegmentRelationshipEnum.HOME)?.segmentId == primarySegment?.segId &&
-                                    (
+                                    (author?.userType === USER_TYPES.BUSINESS || author?.userType === USER_TYPES.COMMUNITY) ? (
                                         <div>
                                             <span className='author-link' onClick={handleAuthorClick}>
-                                                {author?.userHandles?.find( h => h.userSegmentRelationship === UserSegmentRelationshipEnum.HOME)?.handle ??
-                                                (() => {
-                                                    const isBizOrCommunity = author?.userType === USER_TYPES.BUSINESS || author?.userType === USER_TYPES.COMMUNITY;
-                                                    const name = isBizOrCommunity
-                                                        ? (author?.organizationName || author?.fname || 'Unknown')
-                                                        : (author?.fname || 'Unknown');
-                                                    const location = isBizOrCommunity
-                                                        ? author?.userSegment?.[1]?.segment?.name
-                                                        : author?.address?.streetAddress;
-                                                    return location ? `${name} — ${location}` : name;
-                                                })()}
-                                            </span>{author?.userType !== USER_TYPES.BUSINESS && author?.userType !== USER_TYPES.COMMUNITY ? ' as Resident' : ''}
+                                                {author?.organizationName}@{author.userSegment?.[1].segment?.name}
+                                            </span>
                                         </div>
-                                    ) ||
+                                    ) : (
+                                        author?.userSegments?.find( seg => seg.userSegmentRelationship === UserSegmentRelationshipEnum.HOME)?.segmentId == primarySegment?.segId &&
+                                        (
+                                            <div>
+                                                <span className='author-link' onClick={handleAuthorClick}>
+                                                    {author?.userHandles?.find( h => h.userSegmentRelationship === UserSegmentRelationshipEnum.HOME)?.handle ?? 
+                                                    `${author?.fname}@${author?.address?.streetAddress}`}
+                                                </span> as Resident
+                                            </div>
+                                        ) ||
 
-                                    author?.userSegments?.find( seg => seg.userSegmentRelationship === UserSegmentRelationshipEnum.SCHOOL)?.segmentId == primarySegment?.segId &&
+                                        author?.userSegments?.find( seg => seg.userSegmentRelationship === UserSegmentRelationshipEnum.SCHOOL)?.segmentId == primarySegment?.segId &&
 
-                                    (
-                                        <div>
-                                            <span className='author-link' onClick={handleAuthorClick}>
-                                                {author?.userHandles?.find( h => h.userSegmentRelationship === UserSegmentRelationshipEnum.SCHOOL)?.handle}
-                                            </span> as Student
-                                        </div>
-                                    ) ||
+                                        (
+                                            <div>
+                                                <span className='author-link' onClick={handleAuthorClick}>
+                                                    {author?.userHandles?.find( h => h.userSegmentRelationship === UserSegmentRelationshipEnum.SCHOOL)?.handle}
+                                                </span> as Student
+                                            </div>
+                                        ) ||
 
-                                    author?.userSegments?.find( seg => seg.userSegmentRelationship === UserSegmentRelationshipEnum.WORK)?.segmentId == primarySegment?.segId &&
-                                    (
-                                        <div>
-                                            <span className='author-link' onClick={handleAuthorClick}>
-                                                {author?.userHandles?.find( h => h.userSegmentRelationship === UserSegmentRelationshipEnum.WORK)?.handle}
-                                            </span> as Worker
-                                        </div>
+                                        author?.userSegments?.find( seg => seg.userSegmentRelationship === UserSegmentRelationshipEnum.WORK)?.segmentId == primarySegment?.segId &&
+                                        (
+                                            <div>
+                                                <span className='author-link' onClick={handleAuthorClick}>
+                                                    {author?.userHandles?.find( h => h.userSegmentRelationship === UserSegmentRelationshipEnum.WORK)?.handle}
+                                                </span> as Worker
+                                            </div>
+                                        )
                                     )
                                 }
                             </div>

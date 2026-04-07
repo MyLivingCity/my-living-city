@@ -209,7 +209,8 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
         formData: FormData
     ): string | undefined => {
         switch(selectedUserType) {
-            case USER_TYPES.BUSINESS || USER_TYPES.COMMUNITY: {
+            case USER_TYPES.BUSINESS:
+            case USER_TYPES.COMMUNITY: {
                 return formData.get('inputOrg') as string;
             }
             case USER_TYPES.MUNICIPAL: {
@@ -227,7 +228,8 @@ export const UserManagementContent: React.FC<UserManagementContentProps> = ({ us
     ): string | undefined => {
         // Check the type of user creating the account, since the wizards display different fields
         switch(user?.userType){
-            case USER_TYPES.ADMIN || USER_TYPES.SUPER_ADMIN: {
+            case USER_TYPES.ADMIN:
+            case USER_TYPES.SUPER_ADMIN: {
                 return getOrganizationNameAdmin(selectedUserType, formData);
             }
 

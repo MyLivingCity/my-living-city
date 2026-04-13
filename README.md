@@ -18,3 +18,8 @@ Increasing the knowledge in the community, contributing experts can post on the 
 ## Capstone Development
 Chris, Paul, and Chelsea has made this web application for their Capstone project in June 2019.
 Jennifer, Joshua, and Changsin will update this application with new features for their Capstone project.
+
+## Development
+Please read the contributing documentation at [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md)
+for details on development environment setup, prerequisites, git branch/commit
+guidelines, and clean code practices.

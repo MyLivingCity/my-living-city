@@ -1,0 +1,37 @@
+services:
+  server:
+    build:
+      context: ./server
+      dockerfile: ./Dockerfile.dev
+    ports:
+      - 3001:3001
+    depends_on:
+      - postgres
+    links:
+      - postgres
+    volumes:
+      - ./server/config:/opt/server/config
+      - ./server/controllers:/opt/server/controllers
+      - ./server/db:/opt/server/db
+      - ./server/server.js:/opt/server/server.js
+  postgres:
+    image: postgres:12
+    ports:
+      - 5432:5432
+    volumes:
+      - ./postgres/data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=mlc
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ./Dockerfile
+    ports:
+      - 3000:3000
+    volumes:
+      - ./frontend/src:/opt/app/src
+      - ./frontend/public:/opt/app/public
+    stdin_open: true

@@ -1,0 +1,25 @@
+FROM node:18-bullseye-slim
+
+WORKDIR /opt/server
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . ./
+
+RUN chmod 777 \
+  ./uploads/ideaImage \
+  ./uploads/adImage \
+  ./uploads/avatarImages \
+  ./prisma/migrations \
+  ./prisma/migrations/migration_lock.toml
+
+
+RUN npm run prisma:generate
+
+ENV NODE_ENV=development
+
+EXPOSE 3001
+CMD ["node", "server.js"]
+USER node

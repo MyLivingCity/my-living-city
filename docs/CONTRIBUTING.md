@@ -58,10 +58,10 @@ development environment.
 
 ### Development using Docker
 
-Run `docker compose up -d` in a terminal/cmd/shell at the project root to start the 
-development environment.
+Run `docker compose watch` in a terminal/cmd/shell at the project root to start the 
+development environment and watch for code changes.
 
-To watch console output, run `docker compose logs -f` in a terminal/cmd/shell.\
+To view application console output, run `docker compose logs -f` in a terminal/cmd/shell.\
 If you are using a Linux terminal or git bash on Windows, `grep` can be used to 
 filter console output to a specific container or pattern by using \
 `docker compose logs -f | grep ^<frontend|server|postgres>` or \

@@ -89,6 +89,11 @@ const main = async () => {
 
 	const apiRouter = express.Router();
 	app.use('/', apiRouter);
+
+  app.use('/api/v1/health', (_, res) => {
+    return res.sendStatus(200);
+  });
+
 	apiRouter.use('/user', userRouter);
 	apiRouter.use('/role', roleRouter);
 	apiRouter.use('/report', reportRouter);

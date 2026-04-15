@@ -1,12 +1,15 @@
-FROM node:18-bullseye-slim
+FROM node:20-bullseye-slim
 
+RUN apt-get update && apt-get install -y curl
+
+USER node
 WORKDIR /opt/server
 
-COPY package*.json ./
+COPY --chown=node:node package*.json ./
 
 RUN npm install
 
-COPY . ./
+COPY --chown=node:node . ./
 
 RUN chmod 777 \
   ./uploads/ideaImage \
@@ -15,11 +18,9 @@ RUN chmod 777 \
   ./prisma/migrations \
   ./prisma/migrations/migration_lock.toml
 
-
 RUN npm run prisma:generate
 
 ENV NODE_ENV=development
 
 EXPOSE 3001
-CMD ["node", "server.js"]
-USER node
+CMD ["npx", "nodemon", "-L", "--watch", ".", "server.js"]

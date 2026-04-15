@@ -7,15 +7,38 @@ services:
       - 3001:3001
     env_file:
       - ./server/.env
+    environment:
+      - WATCHPACK_POLLING=true
     depends_on:
-      - postgres
-    links:
-      - postgres
-    volumes:
-      - ./server/config:/opt/server/config
-      - ./server/controllers:/opt/server/controllers
-      - ./server/db:/opt/server/db
-      - ./server/server.js:/opt/server/server.js
+      postgres:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/api/v1/health"]
+      interval: 1s
+      timeout: 200ms
+      retries: 3
+      start_period: 1s
+    develop:
+      watch:
+        - action: rebuild
+          path: ./server
+          include:
+            - .env
+            - "Dockerfile*"
+            - package-lock.json
+
+        - action: sync
+          path: ./server
+          target: /opt/server
+          ignore:
+            - "Dockerfile*"
+            - .vs/
+            - .vscode/
+            - node_modules/
+            - dist/
+            - "*.log"
+            - package.json
+            - package-lock.json
   postgres:
     image: postgres:12
     ports:
@@ -26,13 +49,15 @@ services:
       - POSTGRES_DB=mlc
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-
   frontend:
     build:
       context: ./frontend
       dockerfile: ./Dockerfile
     ports:
       - 3000:3000
+    depends_on:
+      server:
+        condition: service_healthy
     volumes:
       - ./frontend/src:/opt/app/src
       - ./frontend/public:/opt/app/public

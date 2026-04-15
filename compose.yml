@@ -1,4 +1,34 @@
 services:
+  postgres:
+    image: postgres:12
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_DB=mlc
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+  init-db-from-snapshot:
+    image: alpine:3.18
+    depends_on:
+      postgres:
+        condition: service_started
+    volumes:
+      - ./db:/var/run/db
+    command: >
+      /bin/sh -c "
+        if [ -f /var/run/db/db_init.tar ]; then
+          apk update && apk add postgresql13-client &&
+
+          export PGPASSWORD=postgres &&
+          /usr/libexec/postgresql13/pg_restore -h postgres -U postgres -p 5432 -d mlc --verbose /var/run/db/db_init.tar
+        else
+          echo 'Database restore file not found, skipping...'
+        fi
+        
+        exit 0
+      "
+
   server:
     build:
       context: ./server
@@ -8,10 +38,13 @@ services:
     env_file:
       - ./server/.env
     environment:
-      - WATCHPACK_POLLING=true
+      DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/mlc?schema=public"
+      WATCHPACK_POLLING: true
     depends_on:
       postgres:
         condition: service_started
+      init-db-from-snapshot:
+        condition: service_completed_successfully 
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3001/api/v1/health"]
       interval: 1s
@@ -39,16 +72,7 @@ services:
             - "*.log"
             - package.json
             - package-lock.json
-  postgres:
-    image: postgres:12
-    ports:
-      - 5432:5432
-    volumes:
-      - ./postgres/data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_DB=mlc
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+
   frontend:
     stdin_open: true
     build:

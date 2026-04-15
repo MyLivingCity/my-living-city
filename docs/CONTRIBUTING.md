@@ -13,6 +13,15 @@ Check if NPM is available: `npm --version`
 [Install using NVM](https://github.com/nvm-sh/nvm?tab=readme-ov-file#installing-and-updating)\
 [Install using NVM for Windows](https://github.com/coreybutler/nvm-windows)
 
+### PostgreSQL CLI tools
+
+> [!IMPORTANT]
+> Currently, this application uses PostgreSQL version 11.
+> To follow along with this document, we only need to install 
+> PostgreSQL for its CLI utilities. Install version 11, 12, or 13. 
+
+[Install PostgreSQL](https://www.postgresql.org/download/)
+
 ## Setup
 
 In each of the following directories, copy and rename `.env.example` -> `.env` (no file extension):
@@ -32,6 +41,15 @@ In each of the following directories, copy and rename `.env.example` -> `.env` (
 Assume all values are **required** unless otherwise specified.\
 <ins>Use your own or development/sandbox API credentials. **DO NOT** use 
     production environment credentials.</ins>
+
+### Database
+
+When running your development environment as described [here](#development), your
+local postgres instance will be automatically seeded based on a database restore file.
+
+Refer to off-repo project documentation for database connection info and 
+run the following command after replacing `<...>` with appropriate values:\
+`pg_dump -U postgres -h <hostname-or-ip> -p <port> -W -F t <dbname> > db/db_init.tar`
 
 ## Development
 

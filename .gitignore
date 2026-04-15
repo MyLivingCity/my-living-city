@@ -8,6 +8,9 @@
 .env*
 !.env.example
 
+# Automatic database init tar
+db/db_init.tar
+
 # misc
 .DS_Store
 .prettierrc

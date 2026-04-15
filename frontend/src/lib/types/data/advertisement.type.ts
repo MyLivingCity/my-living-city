@@ -1,5 +1,3 @@
-
-
 export type AdvertisementType = 'PAID' | 'COMPLIMENTARY';
 
 

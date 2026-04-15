@@ -1,4 +1,3 @@
-
 // Extension to Idea state
 export interface IProject {
   id: number;

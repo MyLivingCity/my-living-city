@@ -1,4 +1,3 @@
-
 import React, { useContext } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { UserProfileContext } from '../contexts/UserProfile.Context';

@@ -1,10 +1,10 @@
-FROM node:12
+FROM node:16
 
 RUN mkdir -p /opt/app
 WORKDIR /opt/app
 
 COPY package*.json /opt/app/
-RUN npm install
+RUN npm ci --legacy-peer-deps
 
 COPY . /opt/app/
 

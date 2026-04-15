@@ -1,4 +1,3 @@
-
 // WARNING: If schema changes and names are changed this will have to be changed as well
 export interface IIdeaOrderByAggregate {
   id?: SortOrder

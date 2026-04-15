@@ -50,6 +50,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
   frontend:
+    stdin_open: true
     build:
       context: ./frontend
       dockerfile: ./Dockerfile
@@ -58,7 +59,24 @@ services:
     depends_on:
       server:
         condition: service_healthy
-    volumes:
-      - ./frontend/src:/opt/app/src
-      - ./frontend/public:/opt/app/public
-    stdin_open: true
+    develop:
+      watch:
+        - action: rebuild
+          path: ./frontend
+          include:
+            - .env
+            - "Dockerfile*"
+            - package-lock.json
+
+        - action: sync
+          path: ./frontend
+          target: /opt/app
+          ignore:
+            - "Dockerfile*"
+            - .vs/
+            - .vscode/
+            - node_modules/
+            - dist/
+            - "*.log"
+            - package.json
+            - package-lock.json

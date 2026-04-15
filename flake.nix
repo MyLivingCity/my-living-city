@@ -24,6 +24,9 @@
           config.allowUnfreePredicate =
             pkg:
             builtins.elem (nixpkgs.lib.getName pkg) [
+              "code"
+              "vscode"
+              "vscode-fhs"
             ];
         };
       in
@@ -33,6 +36,8 @@
           nativeBuildInputs = with pkgs; [ zsh ];
 
           buildInputs = with pkgs; [
+            vscode-fhs
+
             # Libs and shared objects
             gmp
           ];

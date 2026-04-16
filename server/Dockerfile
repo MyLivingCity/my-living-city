@@ -1,8 +1,8 @@
 # Server Dockerfile
 
-# https://stackoverflow.com/questions/59574047/how-to-use-optional-chaining-in-node-js-12
-# Stage 1 - set Environment Must use node 14! Optional chaining is used in backend "?."
-FROM node:18-bullseye-slim
+# Stage 1 - set Environment 
+# Must use node >=14! Optional chaining is used in backend "?."
+FROM node:20-bullseye-slim
 
 # Create Directory to store backend API
 WORKDIR /usr/src/app/server

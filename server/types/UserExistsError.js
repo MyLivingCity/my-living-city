@@ -1,4 +1,4 @@
- class UserExistsError extends Error {
+class UserExistsError extends Error {
   constructor(message) {
     super(message);
     this.name = 'UserExistsError';

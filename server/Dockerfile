@@ -2,7 +2,7 @@
 
 # Stage 1 - set Environment 
 # Must use node >=14! Optional chaining is used in backend "?."
-FROM node:20-bullseye-slim
+FROM node:22-bullseye-slim
 
 # Create Directory to store backend API
 WORKDIR /usr/src/app/server

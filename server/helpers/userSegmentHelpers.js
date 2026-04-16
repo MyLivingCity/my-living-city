@@ -1,4 +1,4 @@
-    const prisma = require('../lib/prismaClient');
+const prisma = require('../lib/prismaClient');
 
     /**
      * Cleans an address by removing leading numbers and spaces.

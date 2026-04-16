@@ -1,4 +1,3 @@
-
 const express = require('express');
 const prisma = require('../lib/prismaClient');
 const roleRouter = express.Router();

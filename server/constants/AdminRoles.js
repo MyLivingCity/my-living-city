@@ -1,4 +1,4 @@
- const ADMIN_ROLES = [
+const ADMIN_ROLES = [
   "SUPER_ADMIN",
   "ADMIN",
   "MOD",

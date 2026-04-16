@@ -1,4 +1,3 @@
-
 /**
  * Array.prototype.sort predicate that will only sort commentObjects from prisma 
  * 

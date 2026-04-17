@@ -36,6 +36,7 @@
           nativeBuildInputs = with pkgs; [ zsh ];
 
           buildInputs = with pkgs; [
+            pnpm
             vscode-fhs
 
             # Libs and shared objects

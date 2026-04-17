@@ -1,5 +1,5 @@
 {
-  "name": "@mlc/frontend",
+  "name": "@mlc/config",
   "version": "0.0.1",
   "description": "",
   "main": "index.js",
@@ -10,10 +10,10 @@
   "author": "",
   "license": "ISC",
   "packageManager": "pnpm@10.33.0",
-  "devDependencies": {
-    "typescript": "^5.9.3"
+  "exports": {
+    "./tsconfig": "./tsconfig/tsconfig.base.json"
   },
   "dependencies": {
-    "@mlc/config": "workspace:*"
+    "@tsconfig/strictest": "^2.0.8"
   }
 }

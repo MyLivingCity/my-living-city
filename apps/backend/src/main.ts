@@ -1,3 +1,4 @@
+import { exampleFunction } from "@mlc/lib/example";
 import { readFile } from "fs";
 
 readFile("./package.json", "utf-8", (err, data) => {
@@ -8,3 +9,4 @@ readFile("./package.json", "utf-8", (err, data) => {
 });
 
 console.log("Successfully ran backend entrypoint!");
+console.log(exampleFunction("value from backend main"));

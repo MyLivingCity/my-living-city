@@ -5,7 +5,6 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "paths": {
-      "@mlc/lib": ["../../packages/lib/src/index.ts"],
       "@mlc/lib/*": ["../../packages/lib/src/*"]
     }
   },

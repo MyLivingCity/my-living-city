@@ -1,7 +1,7 @@
 {
   "extends": "@mlc/config/tsconfig",
   "compilerOptions": {
-    "module": "es2023",
+    "module": "es2020",
     "moduleResolution": "bundler",
     "verbatimModuleSyntax": true,
     "declaration": true,

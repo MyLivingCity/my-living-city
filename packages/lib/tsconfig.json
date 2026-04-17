@@ -1,0 +1,4 @@
+{
+  "extends": "@mlc/config/tsconfig",
+  "include": ["src/**/*"]
+}

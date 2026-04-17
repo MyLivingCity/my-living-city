@@ -1,0 +1,7 @@
+{
+  "extends": "@mlc/config/tsconfig",
+  "compilerOptions": {
+    "outDir": "./dist",
+  },
+  "include": ["src/**/*"]
+}

@@ -13,6 +13,9 @@ importers:
       '@mlc/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@mlc/lib':
+        specifier: workspace:*
+        version: link:../../packages/lib
     devDependencies:
       nodemon:
         specifier: ^3.1.14
@@ -29,6 +32,9 @@ importers:
       '@mlc/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@mlc/lib':
+        specifier: workspace:*
+        version: link:../../packages/lib
     devDependencies:
       typescript:
         specifier: ^5.9.3

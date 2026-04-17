@@ -1,4 +1,12 @@
 {
   "extends": "@mlc/config/tsconfig",
+  "compilerOptions": {
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "noEmit": false
+  },
   "include": ["src/**/*"]
 }

@@ -4,6 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "compose": "docker compose -f compose.new.yml",
+    "compose:old": "docker compose -f compose.old.yml",
+    "compose:both": "docker compose -f compose.old.yml -f compose.new.yml",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

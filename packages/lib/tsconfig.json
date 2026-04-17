@@ -1,12 +1,17 @@
 {
   "extends": "@mlc/config/tsconfig",
   "compilerOptions": {
-    "composite": true,
+    "module": "es2023",
+    "moduleResolution": "bundler",
+    "verbatimModuleSyntax": true,
     "declaration": true,
     "declarationMap": true,
+
     "outDir": "./dist",
     "rootDir": "./src",
-    "noEmit": false
+
+    "noEmit": false,
+    "composite": true
   },
   "include": ["src/**/*"]
 }

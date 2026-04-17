@@ -2,14 +2,15 @@
   "extends": "@mlc/config/tsconfig",
   "compilerOptions": {
     "baseUrl": ".",
-    "rootDir": "./src",
+    "rootDir": ".",
     "paths": {
-      "@mlc/lib": ["../../packages/lib/src/index.ts"],
-      "@mlc/lib/*": ["../../packages/lib/src/*"]
+      "@mlc/lib/*": ["../../packages/lib/dist/*"]
     }
   },
+  // "files": [],
   "references": [
-    { "path": "../../packages/lib" }
+    { "path": "../../packages/lib" },
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
   ],
-  "include": ["src/**/*"]
 }

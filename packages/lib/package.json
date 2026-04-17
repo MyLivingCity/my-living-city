@@ -6,10 +6,6 @@
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
-      "development": "./src/index.ts",
-      "default": "./dist/index.js"
-    },
-    "./*": {
       "development": "./src/*.ts",
       "default": "./dist/*.js"
     }

@@ -6,12 +6,14 @@
 
 [Install Docker](https://docs.docker.com/engine/install/)
 
-### Node/NPM
+### Node/NPM/PNPM
 
-Check if NPM is available: `npm --version`
+Check if NPM is available: `npm --version`\
+Check if PNPM is available: `pnpm --version`
 
-[Install using NVM](https://github.com/nvm-sh/nvm?tab=readme-ov-file#installing-and-updating)\
-[Install using NVM for Windows](https://github.com/coreybutler/nvm-windows)
+[Install Node using NVM](https://github.com/nvm-sh/nvm?tab=readme-ov-file#installing-and-updating)\
+[Install Node using NVM for Windows](https://github.com/coreybutler/nvm-windows)\
+[Install PNPM](https://pnpm.io/installation)
 
 ### PostgreSQL CLI tools
 
@@ -26,13 +28,12 @@ Check if NPM is available: `npm --version`
 
 In each of the following directories, copy and rename `.env.example` -> `.env` (no file extension):
 > `server/` \
-> `frontend/`
+> `frontend/` \
+> `apps/frontend/` \
+> `apps/backend/` 
 
 ```
 .
-├── frontend
-│   ├── .env.example
-│   └── .env <-
 ├── server
 │   ├── .env.example
 │   └── .env <-
@@ -58,29 +59,45 @@ development environment.
 
 ### Development using Docker
 
-Run `docker compose watch` in a terminal/cmd/shell at the project root to start the 
+> [!IMPORTANT]
+> During the major refactor, both the pre-refactor and refactor applications can 
+> be composed as demonstrated in this section. By default, `pnpm compose ...`
+> targets the new in-development application, whereas `pnpm compose:old ...`
+> targets the pre-refactor application. Use `pnpm compose:both ...` to compose,
+> develop, and interact with both applications.
+
+Run `pnpm compose watch` in a terminal/cmd/shell at the project root to start the 
 development environment and watch for code changes.
 
-To view application console output, run `docker compose logs -f` in a terminal/cmd/shell.\
+To view application console output, run `pnpm compose logs -f` in a terminal/cmd/shell.\
 If you are using a Linux terminal or git bash on Windows, `grep` can be used to 
 filter console output to a specific container or pattern by using \
-`docker compose logs -f | grep ^<frontend|server|postgres>` or \
-`docker compose logs -f | grep <pattern>`.
+`pnpm compose logs -f | grep ^<container-name>` or \
+`pnpm compose logs -f | grep <pattern>`.
+
+> [!NOTE]
+> When filtering container logs for a specific container, the container's name 
+> depends on which application environment it is a part of.
+> ex. in the legacy env the backend api is named `server` but in the new env it
+> is named `mlc-backend`.
 
 ex.\
-`docker compose logs -f | grep ^server` to watch only server console output. \
-`docker compose logs -f | grep error` to watch for console output that contains 
+`pnpm compose logs -f | grep ^server` to watch only server console output. \
+`pnpm compose logs -f | grep error` to watch for console output that contains 
 `error`.
 
-Visit `http://localhost:3000` to view changes to the application as you work. 
+#### Frontend access
+New application `pnpm compose`: `http://localhost:4000`.\
+Pre-refactor `pnpm compose:old`: `http://localhost:3000`.
 
 > [!IMPORTANT]
-> When you are not working, run `docker compose down` to ensure development
+> When you are not working, run `pnpm compose:both down` to ensure development
 > containers are shut down and not taking resources/battery.
 
 If your docker containers do not start for whatever reason, try first tearing
-them down using `docker compose down --remove-orphans` and then running
-`docker compose build --no-cache` to rebuild them.
+them down using `pnpm compose:both down --remove-orphans` and then running
+`pnpm compose:both build --no-cache` to rebuild them.
+
 
 ## Contribution Guidelines
 

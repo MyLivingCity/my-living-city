@@ -2,12 +2,9 @@
   "extends": "@mlc/config/tsconfig",
   "compilerOptions": {
     "baseUrl": ".",
-    "rootDir": ".",
-    "paths": {
-      "@mlc/lib/*": ["../../packages/lib/dist/*"]
-    }
+    "rootDir": "."
   },
-  // "files": [],
+  "files": [],
   "references": [
     { "path": "../../packages/lib" },
     { "path": "./tsconfig.app.json" },

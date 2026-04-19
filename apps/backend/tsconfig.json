@@ -3,10 +3,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "outDir": "./dist",
-    "rootDir": "./src",
-    "paths": {
-      "@mlc/lib/*": ["../../packages/lib/src/*"]
-    }
+    "rootDir": "./src"
   },
   "references": [
     { "path": "../../packages/lib" }

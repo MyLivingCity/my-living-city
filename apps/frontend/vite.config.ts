@@ -11,4 +11,16 @@ export default defineConfig({
   resolve: {
     tsconfigPaths: true
   },
+  server: {
+    fs: {
+      allow: [".."],
+    },
+    watch: {
+      usePolling: true,
+      interval: 150,
+    }
+  },
+  optimizeDeps: {
+    exclude: ['@mlc/lib'],
+  },
 })

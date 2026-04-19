@@ -27,17 +27,17 @@ services:
             - "Dockerfile*"
 
         - action: sync
+          path: ./packages
+          target: /opt/mlc/packages
+
+        - action: sync
           path: ./apps/backend
           target: /opt/mlc/apps/backend
           ignore:
             - "Dockerfile*"
-            - .vs/
-            - .vscode/
-            - node_modules/
             - dist/
             - "*.log"
             - package.json
-            - package-lock.json
 
   mlc-frontend:
     stdin_open: true
@@ -58,14 +58,14 @@ services:
             - "Dockerfile*"
 
         - action: sync
+          path: ./packages
+          target: /opt/mlc/packages
+
+        - action: sync
           path: ./apps/frontend
           target: /opt/mlc/apps/frontend
           ignore:
             - "Dockerfile*"
-            - .vs/
-            - .vscode/
-            - node_modules/
             - dist/
             - "*.log"
             - package.json
-            - package-lock.json

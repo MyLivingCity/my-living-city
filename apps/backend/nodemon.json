@@ -1,0 +1,14 @@
+{
+  "watch": [
+    "src",
+    "*.ts",
+    "node_modules/@mlc"
+  ],
+  "ext": "ts,js,json",
+  "legacyWatch": true,
+  "pollingInterval": 150,
+  "ignoreRoot": [".git"],
+  "ignore": [
+    "node_modules/!(@mlc)"
+  ]
+}

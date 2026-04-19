@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/main.js",
   "scripts": {
-    "dev": "NODE_OPTIONS='--conditions=development' nodemon --watch 'src/**/*.ts' --watch '*.ts' --exec 'tsx' ./src/main.ts",
+    "dev": "NODE_OPTIONS='--conditions=development' nodemon --exec tsx ./src/main.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

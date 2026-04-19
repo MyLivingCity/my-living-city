@@ -9,6 +9,7 @@
   "pollingInterval": 150,
   "ignoreRoot": [".git"],
   "ignore": [
-    "node_modules/!(@mlc)"
+    "node_modules/!(@mlc)",
+    "node_modules/@mlc/**/node_modules"
   ]
 }

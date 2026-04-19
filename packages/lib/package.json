@@ -6,8 +6,10 @@
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
-      "development": "./src/*.ts",
-      "default": "./dist/*.js"
+      "types": "./dist/index.d.ts",
+      "development": "./src/index.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     }
   },
   "scripts": {

@@ -1,4 +1,4 @@
-import { exampleFunction } from "@mlc/lib/example";
+import { exampleFunction } from "@mlc/lib";
 import { readFile } from "fs";
 
 readFile("./package.json", "utf-8", (err, data) => {

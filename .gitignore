@@ -23,4 +23,7 @@ node_modules
 ignore_me
 
 dbbackup
-.gitignore
+
+# Build artefacts and temporary output
+*.tsbuildinfo
+**/src/**/*.d.ts

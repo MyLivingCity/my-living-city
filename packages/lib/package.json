@@ -3,16 +3,16 @@
   "version": "0.0.1",
   "description": "",
   "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "types": "src/index.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
+      "types": "./src/index.ts",
       "development": "./src/index.ts",
       "import": "./dist/index.js",
       "default": "./dist/index.js"
     },
     "./api": {
-      "types": "./dist/api/index.d.ts",
+      "types": "./src/api/index.ts",
       "development": "./src/api/index.ts",
       "import": "./dist/api/index.js",
       "default": "./dist/api/index.js"

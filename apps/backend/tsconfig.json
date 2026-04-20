@@ -1,7 +1,6 @@
 {
   "extends": "@mlc/config/tsconfig",
   "compilerOptions": {
-    "baseUrl": ".",
     "outDir": "./dist",
     "rootDir": "./src",
     "types": ["vitest/globals"],

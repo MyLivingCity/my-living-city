@@ -1,1 +1,13 @@
-{}
+{
+  "tasks": {
+    "test": {
+      "dependsOn": []
+    },
+    "@mlc/frontend#test": {
+      "dependsOn": ["@mlc/lib#test"]
+    },
+    "@mlc/backend#test": {
+      "dependsOn": ["@mlc/lib#test"]
+    }
+  }
+}

@@ -10,6 +10,12 @@
       "development": "./src/index.ts",
       "import": "./dist/index.js",
       "default": "./dist/index.js"
+    },
+    "./api": {
+      "types": "./dist/api/index.d.ts",
+      "development": "./src/api/index.ts",
+      "import": "./dist/api/index.js",
+      "default": "./dist/api/index.js"
     }
   },
   "scripts": {
@@ -25,6 +31,8 @@
     "vitest": "^4.1.4"
   },
   "dependencies": {
-    "@mlc/config": "workspace:*"
+    "@mlc/config": "workspace:*",
+    "@ts-rest/core": "^3.52.1",
+    "zod": "^3.25.76"
   }
 }

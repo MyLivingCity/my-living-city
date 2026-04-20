@@ -1,5 +1,8 @@
-describe("lib example test", () => {
-  it("true should be true", () => {
-    expect(true).toBe(true);
+import { exampleFunction } from "../example";
+
+describe("exampleFunction", () => {
+  it("should display string parameter", () => {
+    const testString = "this is a test";
+    expect(exampleFunction(testString)).toContain(testString);
   });
 });

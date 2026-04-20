@@ -4,7 +4,11 @@
     "baseUrl": ".",
     "outDir": "./dist",
     "rootDir": "./src",
-    "types": ["vitest/globals"]
+    "types": ["vitest/globals"],
+    "paths": {
+      "@mlc/lib": ["../../packages/lib/src/index.ts"],
+      "@mlc/lib/*": ["../../packages/lib/src/*"]
+    }
   },
   "references": [
     { "path": "../../packages/lib" }

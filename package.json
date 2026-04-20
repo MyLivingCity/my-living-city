@@ -16,15 +16,18 @@
   "license": "ISC",
   "packageManager": "pnpm@10.33.0",
   "devDependencies": {
+    "@eslint/js": "^9.39.4",
     "@mlc/config": "workspace:*",
     "@types/node": "^24.12.2",
-    "turbo": "^2.9.6",
-    "@eslint/js": "^9.39.4",
     "eslint": "^9.39.4",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.5",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.4.0",
     "jiti": "^2.6.1",
+    "prettier": "^3.8.3",
+    "turbo": "^2.9.6",
     "typescript-eslint": "^8.58.0"
   }
 }

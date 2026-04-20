@@ -14,8 +14,9 @@
   "dependencies": {
     "@mlc/config": "workspace:*",
     "@mlc/lib": "workspace:*",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4"
+    "react": "^18.3.1",
+    "react-compiler-runtime": "^1.0.0",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@babel/core": "^7.29.0",

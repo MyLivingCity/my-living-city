@@ -25,5 +25,20 @@ ignore_me
 dbbackup
 
 # Build artefacts and temporary output
+**/.turbo
 *.tsbuildinfo
 **/src/**/*.d.ts
+
+#######
+# TEMP
+#######
+database
+documentation
+frontend
+server
+
+!apps/*
+!packages/*
+#######
+# TEMP
+#######

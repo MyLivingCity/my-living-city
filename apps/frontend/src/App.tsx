@@ -3,13 +3,30 @@ import reactLogo from "./assets/react.svg";
 import viteLogo from "./assets/vite.svg";
 import heroImg from "./assets/hero.png";
 import "./App.css";
+import { initClient } from "@ts-rest/core";
 
 import { exampleFunction } from "@mlc/lib";
+import { pokemonContract } from "@mlc/lib/api";
+
+const client = initClient(pokemonContract, {
+  baseUrl: "http://localhost:4001",
+  baseHeaders: {},
+});
 
 function App() {
   const [count, setCount] = useState(0);
 
   exampleFunction();
+
+  client
+    .getPokemon({
+      params: {
+        id: "1",
+      },
+    })
+    .then((...temp) => {
+      console.log(temp);
+    });
 
   return (
     <>

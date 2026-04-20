@@ -1,3 +1,3 @@
 export * from "./exampleContract";
-export * from "./users";
-export * from "./ideas";
+export * from "./contracts/users";
+export * from "./contracts/ideas";

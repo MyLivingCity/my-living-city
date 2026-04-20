@@ -3,7 +3,7 @@ import z from "zod";
 
 const c = initContract();
 
-const UserSchema = z.object({
+export const UserSchema = z.object({
   adminmodEmail: z.string().nullable(),
   banned: z.boolean(),
   city: z.string(),

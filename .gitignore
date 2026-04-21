@@ -34,8 +34,8 @@ dbbackup
 #######
 database
 documentation
-frontend
-server
+/frontend
+/server
 
 !apps/*
 !packages/*

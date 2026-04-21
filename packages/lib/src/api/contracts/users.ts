@@ -3,6 +3,23 @@ import z from "zod";
 
 const c = initContract();
 
+export const UserType = z.enum([
+  "ADMIN",
+  "MOD",
+  "SEG_ADMIN",
+  "SEG_MOD",
+  "MUNICIPAL_SEG_ADMIN",
+  "BUSINESS",
+  "RESIDENTIAL",
+  "MUNICIPAL",
+  "WORKER",
+  "ASSOCIATE",
+  "DEVELOPER",
+  "COMMUNITY",
+  "IN_PROGRESS",
+  "SUPER_ADMIN",
+]);
+
 export const UserSchema = z.object({
   adminmodEmail: z.string().nullable(),
   banned: z.boolean(),
@@ -30,7 +47,7 @@ export const UserSchema = z.object({
   updatedAt: z.date(),
   userReach: z.array(z.unknown()), // TODO
   userSegment: z.array(z.unknown()), // TODO
-  userType: z.string(),
+  userType: UserType,
   verifiedToken: z.string(),
   verified: z.boolean(),
   // TODO

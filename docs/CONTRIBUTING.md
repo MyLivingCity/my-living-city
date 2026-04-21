@@ -26,7 +26,7 @@ Check if PNPM is available: `pnpm --version`
 
 ## Setup
 
-In each of the following directories, copy and rename `.env.example` -> `.env` (no file extension):
+#### 1. In each of the following directories, copy and rename `.env.example` -> `.env` (no file extension):
 > `server/` \
 > `frontend/` \
 > `apps/frontend/` \
@@ -42,6 +42,10 @@ In each of the following directories, copy and rename `.env.example` -> `.env` (
 Assume all values are **required** unless otherwise specified.\
 <ins>Use your own or development/sandbox API credentials. **DO NOT** use 
     production environment credentials.</ins>
+
+#### 2. In the project root, run
+* `pnpm install` to install all dependancies for the project,
+* `pnpm --filter @mlc/backend exec prisma generate` to generate a Prisma client.
 
 ### Database
 

@@ -60,6 +60,9 @@ export const userApiContracts = c.router(
       path: "/me",
       responses: {
         200: UserSchema.omit({ password: true }),
+        404: z.object({
+          message: z.string(),
+        }),
       },
       summary: "Get auth user's self",
     },

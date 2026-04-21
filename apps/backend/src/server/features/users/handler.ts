@@ -51,4 +51,63 @@
 //   - DELETE /:userId              revoke enhanced-member status
 // =============================================================================
 
-import { Router, type Request, type Response } from 'express';
+import { userApiContracts } from "@mlc/lib/api";
+import { initServer } from "@ts-rest/express";
+import { prisma } from "src/prisma/client";
+import * as passport from "passport";
+import { Handlers } from "src/server";
+
+const s = initServer();
+
+const getSelf = s.route(userApiContracts.getSelf, {
+  middleware: [passport.authenticate("jwt", { session: false })],
+  handler: async ({ req }) => {
+    const { id } = req.user as { id?: string };
+
+    if (!id) {
+      return {
+        status: 404,
+        body: {
+          message: "User could not be found or does not exist in the database.",
+        },
+      };
+    }
+
+    const foundUser = await prisma.user.findUnique({
+      where: { id },
+    });
+
+    if (!foundUser) {
+      return {
+        status: 404,
+        body: {
+          message: "User could not be found or does not exist in the database.",
+        },
+      };
+    }
+
+    return {
+      status: 200,
+      body: {
+        ...foundUser,
+
+        // TODO: fetch values for below
+        avatar: "",
+        city: "",
+        longitude: 0,
+        latitude: 0,
+        postalCode: "",
+        streetAddress: "",
+        userReach: [],
+        userSegment: [],
+      },
+    };
+  },
+});
+
+export default {
+  schema: userApiContracts,
+  router: {
+    getSelf,
+  },
+} as Handlers;

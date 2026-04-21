@@ -8,18 +8,18 @@ export const UserSchema = z.object({
   banned: z.boolean(),
   city: z.string(),
   createdAt: z.date(),
-  displayFName: z.string(),
-  displayLName: z.string(),
+  displayFName: z.string().nullable(),
+  displayLName: z.string().nullable(),
   email: z.string(),
-  fname: z.string(),
+  fname: z.string().nullable(),
   hasFlagged: z.number(),
   id: z.string(),
   imagePath: z.string().nullable(),
   latitude: z.number(),
-  lname: z.string(),
+  lname: z.string().nullable(),
   longitude: z.number(),
-  organizationName: z.string(),
-  passCode: z.string(),
+  organizationName: z.string().nullable(),
+  passCode: z.string().nullable(),
   password: z.string(),
   postalCode: z.string(),
   proposalLimit: z.unknown().nullable(), // TODO
@@ -31,7 +31,7 @@ export const UserSchema = z.object({
   userReach: z.array(z.unknown()), // TODO
   userSegment: z.array(z.unknown()), // TODO
   userType: z.string(),
-  verifiedToken: z.string(),
+  verifiedToken: z.string().nullable(),
   verified: z.boolean(),
   // TODO
   // Role: string

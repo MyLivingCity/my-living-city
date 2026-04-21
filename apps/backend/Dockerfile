@@ -23,5 +23,8 @@ COPY --from=prepare /tmp/out/json/ .
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install -r --prefer-frozen-lockfile
 
 COPY --from=prepare /tmp/out/full/ .
+COPY ./apps/backend/.env ./apps/backend/.env
+
+RUN pnpm --filter @mlc/backend exec prisma generate
 
 CMD ["pnpm", "run", "--filter", "@mlc/backend", "dev"]

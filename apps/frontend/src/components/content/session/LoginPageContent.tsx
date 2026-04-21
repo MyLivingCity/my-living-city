@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Image, Form, Button, Alert, Card } from "react-bootstrap";
+import { ROUTES } from "../../../lib/constants";
 import { useFormik } from "formik";
 
 export interface ILoginWithEmailAndPass {
@@ -94,7 +95,7 @@ export default function LoginPageContent() {
           </Form>
 
           <div className="w-100 text-center mt-2">
-            <a href="#">Don't have an account? Create one.</a>
+            <a href={ROUTES.REGISTER}>Don't have an account? Create one.</a>
           </div>
         </Card.Body>
       </Card>

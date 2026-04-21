@@ -4,8 +4,12 @@ import bodyParser from "body-parser";
 import { initServer } from "@ts-rest/express";
 import { createExpressEndpoints } from "@ts-rest/express";
 import { pokemonContract } from "@mlc/lib/api";
+import { strategyJwt } from "./lib/auth/strategy";
+import passport from "passport";
 
 const app = express();
+
+passport.use(strategyJwt);
 
 app.use(cors());
 app.options("*", cors());

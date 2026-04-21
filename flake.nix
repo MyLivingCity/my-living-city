@@ -38,6 +38,8 @@
           buildInputs = with pkgs; [
             pnpm
             vscode-fhs
+            prisma_6
+            prisma-engines_6
 
             # Libs and shared objects
             gmp

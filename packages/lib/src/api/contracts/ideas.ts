@@ -48,7 +48,7 @@ const IdeaSchema = z.object({
   segments: z.array(z.unknown()),
 });
 
-export const ideaContracts = c.router(
+export const ideaApiContracts = c.router(
   {
     getAll: {
       method: "GET",

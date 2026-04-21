@@ -53,7 +53,7 @@ const AuthFlowResponseSchema = z.object({
   token: z.string(),
 });
 
-export const userContracts = c.router(
+export const userApiContracts = c.router(
   {
     getSelf: {
       method: "GET",

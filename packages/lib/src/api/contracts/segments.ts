@@ -1,6 +1,7 @@
 import { initContract } from "@ts-rest/core";
 import z from "zod";
 import { IdeaSchema } from "./ideas";
+import { UserSchema } from "./users";
 
 const c = initContract();
 
@@ -38,6 +39,16 @@ export const SegmentSchema = z.union([
     },
   }),
 ]);
+
+export const UserSegmentRelationshipType = z.enum(["HOME", "WORK", "SCHOOL"]);
+
+export const UserSegmentSchema = z.object({
+  id: z.number(),
+  userId: z.string(),
+  userSegmentRelationship: UserSegmentRelationshipType,
+  segmentId: z.number(),
+  IdeaComment: z.array(z.unknown()), // TODO
+});
 
 export const segmentApiContracts = c.router(
   {

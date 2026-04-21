@@ -13,5 +13,5 @@
   "references": [
     { "path": "../../packages/lib" }
   ],
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "src/server"]
 }

@@ -4,7 +4,7 @@ import { UserSchema } from "./users";
 
 const c = initContract();
 
-const IdeaSchema = z.object({
+export const IdeaSchema = z.object({
   id: z.number(),
   authorId: z.string(),
   categoryId: z.number(),

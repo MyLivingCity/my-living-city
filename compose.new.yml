@@ -25,6 +25,7 @@ services:
           include:
             - .env
             - "Dockerfile*"
+            - package.json 
 
         - action: sync
           path: ./packages
@@ -58,6 +59,7 @@ services:
           include:
             - .env
             - "Dockerfile*"
+            - package.json 
 
         - action: sync
           path: ./packages

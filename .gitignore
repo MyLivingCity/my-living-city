@@ -35,7 +35,7 @@ dbbackup
 database
 documentation
 frontend
-server
+#server
 
 !apps/*
 !packages/*

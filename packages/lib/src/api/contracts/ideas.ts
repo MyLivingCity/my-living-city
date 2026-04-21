@@ -4,9 +4,11 @@ import { UserSchema } from "./users";
 
 const c = initContract();
 
+export const IdeaState = z.enum(["IDEA", "PROPOSAL", "PROJECT"]);
+
 export const IdeaSchema = z.object({
   id: z.number(),
-  authorId: z.string(),
+  authorId: UserSchema.shape.id,
   categoryId: z.number(),
   title: z.string(),
   description: z.string(),
@@ -15,7 +17,7 @@ export const IdeaSchema = z.object({
   artsImpact: z.string().nullable(),
   energyImpact: z.string().nullable(),
   manufacturingImpact: z.string().nullable(),
-  state: z.unknown(),
+  state: IdeaState,
   active: z.boolean(),
   createdAt: z.date(),
   updatedAt: z.date(),
@@ -31,21 +33,15 @@ export const IdeaSchema = z.object({
   proposal_role: z.string(),
   requirements: z.string(),
   PostBan: z.array(z.unknown()),
-  author: UserSchema.shape.id,
-  category: z.unknown(),
-  champion: UserSchema.shape.id.nullable(),
-  supportedProposal: z.unknown().nullable(),
   address: z.unknown().nullable(),
   comments: z.array(z.unknown()),
   flags: z.array(z.unknown()),
   geo: z.unknown().nullable(),
   ratings: z.array(z.unknown()),
   projectInfo: z.unknown().nullable(),
-  proposalInfo: z.unknown().nullable(),
   Quarantine_Notifications: z.array(z.unknown()),
   userIdeaEndorse: z.array(z.unknown()),
   userIdeaFollow: z.array(z.unknown()),
-  segments: z.array(z.unknown()),
 });
 
 export const ideaApiContracts = c.router(

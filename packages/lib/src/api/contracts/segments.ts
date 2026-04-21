@@ -4,6 +4,8 @@ import { IdeaSchema } from "./ideas";
 
 const c = initContract();
 
+export const SegmentType = z.enum(["segment", "superSegment", "subSegment"]);
+
 const SegmentSchemaBase = z.object({
   country: z.string().nullable(),
   createdAt: z.date(),
@@ -18,7 +20,7 @@ const SegmentSchemaBase = z.object({
   segId: z.number(),
   segmentAdPrice: z.unknown().nullable(), // TODO
   segmentSubGroups: z.array(z.unknown()), // TODO
-  segmentType: z.string(),
+  segmentType: SegmentType,
   subSegmentSubGroups: z.array(z.unknown()), // TODO
   updatedAt: z.date().nullable(),
   userReach: z.array(z.unknown()), // TODO
@@ -29,7 +31,7 @@ export const SegmentSchema = z.union([
   SegmentSchemaBase,
   z.object({
     get children() {
-      return z.array(SegmentSchemaBase.shape.segId);
+      return z.array(SegmentSchemaBase);
     },
     get parentSegment() {
       return SegmentSchemaBase;

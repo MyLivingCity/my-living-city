@@ -5,6 +5,7 @@ import { getAllSuperSegmentsByCountryProvince } from "../../lib/api/segmentRoute
 import { ISegment, ISuperSegment } from "../../lib/types/data/segment.type";
 import { capitalizeFirstLetterEachWord } from "src/lib/utilityFunctions";
 
+// Interface for component props, leverages React's Dispatch and SetStateAction for state management of country and province selections //
 interface SubgroupLocationSelectorProps {
   countryName: string;
   provName: string;
@@ -13,6 +14,7 @@ interface SubgroupLocationSelectorProps {
   segments: ISegment[] | undefined;
 }
 
+// Main component function leverages React's functional component syntax, accepts props for location selection and segment data //
 const SubgroupLocationSelector: React.FC<SubgroupLocationSelectorProps> = ({
   countryName,
   provName,
@@ -25,11 +27,11 @@ const SubgroupLocationSelector: React.FC<SubgroupLocationSelectorProps> = ({
   const [selectedSuperSegId, setSelectedSuperSegId] = useState<string>("");
   const [showForm, setShowForm] = useState(true);
 
-  // Normalize values once
+  // Intended to normalize the casing on provName and countryName once where it was previously set multiple times //
   const normalizedCountry = countryName.toLowerCase();
   const normalizedProv = provName.toLowerCase();
 
-  // Fetch super segments when location changes
+  // If a user's location changes, fetch the super segments //
   useEffect(() => {
     if (!normalizedCountry || !normalizedProv) return;
 
@@ -52,20 +54,22 @@ const SubgroupLocationSelector: React.FC<SubgroupLocationSelectorProps> = ({
     fetchSuperSegments();
   }, [normalizedCountry, normalizedProv]);
 
-  // Reset segment selection when location changes
+  // Reset segment selection to empty ("") when user's location changes
   useEffect(() => {
     setSegName("");
   }, [normalizedCountry, normalizedProv]);
 
-  // Filter segments safely
+  // Intended to filter segments safely and apply normalized casing //
   const filteredSegments = (segments ?? []).filter(
     (segment) =>
       segment.country.toLowerCase() === normalizedCountry &&
       segment.province.toLowerCase() === normalizedProv,
   );
 
+  // Hide form if showForm is false //
   if (!showForm) return null;
 
+  // Render the form for all other cases //
   return (
     <Row>
       <Col>
@@ -175,7 +179,7 @@ const SubgroupLocationSelector: React.FC<SubgroupLocationSelectorProps> = ({
                   </Form.Control>
                 </Col>
 
-                {/* SubSegment (future feature) */}
+                {/* SubSegment */}
                 <Col>
                   <Form.Label>SubSegment</Form.Label>
                   <Form.Control as="select" size="sm" disabled>

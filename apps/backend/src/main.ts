@@ -11,7 +11,13 @@ const passport = initStrategies();
 
 app.use(passport.initialize());
 
-app.use(cors());
+app.use(
+  cors({
+    origin: /http(s|):\/\/localhost:(3000|4000)/, // TODO - Implement env
+    methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+    credentials: true,
+  }),
+);
 app.options("*", cors());
 
 app.use(bodyParser.urlencoded({ extended: false }));

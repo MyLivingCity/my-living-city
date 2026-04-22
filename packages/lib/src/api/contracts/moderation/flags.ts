@@ -63,7 +63,7 @@ export const flagsContract = c.router(
         },
         falseFlagMany: {
           method: "PUT",
-          path: "/falseFlagMany/:ideaId",
+          path: "/false-flag-many/:ideaId",
           pathParams: z.object({ ideaId: z.coerce.number() }),
           body: z.object({ isFalse: z.boolean() }),
           responses: {
@@ -109,7 +109,7 @@ export const flagsContract = c.router(
         },
         falseFlagMany: {
           method: "PUT",
-          path: "/falseFlagMany/:commentId",
+          path: "/false-flag-many/:commentId",
           pathParams: z.object({ ideaId: z.coerce.number() }),
           body: z.object({ isFalse: z.boolean() }),
           responses: {

@@ -129,7 +129,7 @@ export const moderationApiContracts = c.router({
     }),
     body: z.object({}), // No body needed for this specific action
     responses: {
-      200: z.object({ message: z.string() }),
+      201: z.object({ message: z.string() }),
       404: z.object({ message: z.string() }),
     },
     summary: "Increments the bad post counter for an idea author",

@@ -38,8 +38,6 @@ export const flagsContract = c.router(
         //x	GET	  /getAll	                      get all idea flags
         //x	PUT	  /falseFlagMany/:ideaId	      mark all flags as false and update false-flag behavior
         //x	GET	  /getFlags/:ideaID	            get flag count for a specific idea
-        //  below, for routing accuracy
-        //x	GET	  /checkFlagBan/:userID	        check if user has a flag ban
         // ----------------------------------------------------------------------------
         getAll: {
           method: "GET",
@@ -122,17 +120,6 @@ export const flagsContract = c.router(
       },
       { pathPrefix: "/comments" },
     ),
-
-    // ----------------------------------------------------------------------------
-    // USER
-    // ----------------------------------------------------------------------------
-    checkFlagBan: {
-      method: "GET",
-      path: "/users/:userId/check-ban",
-      pathParams: z.object({ userId: z.coerce.number() }),
-      responses: { 200: z.object({ banned: z.boolean() }) },
-      summary: "Check if user has a flag ban",
-    },
   },
   {
     pathPrefix: "/flags",

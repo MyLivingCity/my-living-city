@@ -1,5 +1,12 @@
-//this contract is getting rather long...
+/* 
+//this contract is getting rather long...breaking into subcontracts
 
+shared/contracts/moderation/
+├── index.ts                # The main entry point (Barrel file)
+├── bans.contract.ts        # User, Post, and Comment bans
+├── flags.contract.ts       # Idea and Comment flagging
+└── reputation.contract.ts  # Bad behavior & false flagging stats 
+*/
 import { initContract } from "@ts-rest/core";
 import { z } from "zod";
 
@@ -42,7 +49,7 @@ export const CommentBanSchema = z.object({
   banReason: z.string(),
   createdAt: z.date(),
   id: z.number(),
-  notificationDismissed: z.boolean(), //needs a better name
+  notificationDismissed: z.boolean(), //z.transformed => isRead in bans.ts
   postId: z.number(),
 });
 

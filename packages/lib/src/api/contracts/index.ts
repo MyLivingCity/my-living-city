@@ -2,7 +2,7 @@ import { initContract } from "@ts-rest/core";
 import { userApiContracts } from "./users";
 import { ideaApiContracts } from "./ideas";
 import { segmentApiContracts } from "./segments";
-import { moderationApiContracts } from "./moderation";
+import { moderationApiContracts } from "./moderation/moderation";
 
 const c = initContract();
 

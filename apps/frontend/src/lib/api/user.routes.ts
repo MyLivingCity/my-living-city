@@ -5,11 +5,9 @@ import {
   type SegmentRequest,
 } from "../../components/content/session/types/register.types";
 
-export const getUserWithEmail = async (
-  email: string | undefined,
-): Promise<number> => {
+export const getUserWithEmail = async (email: string) => {
   const res = await axios.get(`${API_BASE_URL}/user/email/${email}`);
-  return res.status;
+  return res.data;
 };
 
 export const postRegisterUser = async (

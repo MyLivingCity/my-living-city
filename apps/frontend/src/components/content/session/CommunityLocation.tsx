@@ -220,15 +220,15 @@ const CommunityLocation = ({
     [setFieldValue],
   );
 
-  const segmentOptions = useMemo(
-    () =>
-      segments.map((seg) => (
-        <option key={seg.segId} value={seg.segId}>
-          {capitalize(seg.name)}
-        </option>
-      )),
-    [segments],
-  );
+  const segmentOptions = useMemo(() => {
+    if (!Array.isArray(segments)) return [];
+
+    return segments.map((seg) => (
+      <option key={seg.segId} value={seg.segId}>
+        {capitalize(seg.name)}
+      </option>
+    ));
+  }, [segments]);
 
   const subSegmentOptions = useMemo(() => {
     if (!subSegments.length || !segIds[0]) return null;

@@ -95,9 +95,20 @@ const emailPasswordSchema = Yup.object().shape({
   email: Yup.string()
     .email("Invalid email")
     .required("Email is required")
-    .test("Unique Email", "Email already in use", (value) =>
-      getUserWithEmail(value).then((res: number) => res !== 200),
-    ),
+    .test("Unique Email", "Email already in use", async (value) => {
+      if (!value) return true;
+
+      try {
+        const user = await getUserWithEmail(value);
+        return !user;
+      } catch (error) {
+        console.log(
+          "Error validating email uniqueness, assuming unique:",
+          error,
+        );
+        return true;
+      }
+    }),
   password: Yup.string()
     .min(8, "Password is too short, 8 characters minimum")
     .required("Password is required"),

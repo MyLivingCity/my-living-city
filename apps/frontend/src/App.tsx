@@ -1,6 +1,8 @@
 import { Route, Routes } from "react-router-dom";
-import Footer from "../../frontend/src/components/ui/Footer";
-import Header from "../../frontend/src/components/ui/Header";
+import { ROUTES } from "./lib/constants";
+import Footer from "./components/ui/misc/Footer";
+import Header from "./components/ui/misc/Header";
+import RegisterPage from "./pages/session/RegisterPage";
 
 // Pages
 import LoginPage from "./pages/session/LoginPage";
@@ -12,7 +14,8 @@ function App() {
 
       <div className="main-content">
         <Routes>
-          <Route path="/login" element={<LoginPage />} />
+          <Route path={ROUTES.LOGIN} element={<LoginPage />} />
+          <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
         </Routes>
       </div>
 

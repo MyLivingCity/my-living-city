@@ -20,7 +20,6 @@ export const UserSchema = z.object({
   longitude: z.number(),
   organizationName: z.string().nullable(),
   passCode: z.string().nullable(),
-  password: z.string(),
   postalCode: z.string(),
   proposalLimit: z.unknown().nullable(), // TODO
   reviewed: z.boolean(),
@@ -44,12 +43,18 @@ const CreateUserSchema = z.object({
 });
 
 const LoginUserSchema = z.union([
-  UserSchema.pick({ email: true }),
-  z.object({ password: z.string() }),
+  UserSchema.pick({
+    email: true,
+  }),
+  z.object({
+    password: z.string(),
+  }),
 ]);
 
+const AuthenticatedUserSchema = UserSchema;
+
 const AuthFlowResponseSchema = z.object({
-  user: UserSchema,
+  user: AuthenticatedUserSchema,
   token: z.string(),
 });
 
@@ -59,7 +64,7 @@ export const userApiContracts = c.router(
       method: "GET",
       path: "/me",
       responses: {
-        200: UserSchema.omit({ password: true }),
+        200: UserSchema,
         404: z.object({
           message: z.string(),
         }),
@@ -105,7 +110,6 @@ export const userApiContracts = c.router(
             lname: true,
             organizationName: true,
             passCode: true,
-            password: true,
             proposalLimit: true,
             reviewed: true,
             status: true,
@@ -150,6 +154,9 @@ export const userApiContracts = c.router(
       body: LoginUserSchema,
       responses: {
         200: AuthFlowResponseSchema,
+        400: z.object({
+          message: z.string(),
+        }),
       },
       summary: "Get user by email",
     },

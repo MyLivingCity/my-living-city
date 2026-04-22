@@ -3,12 +3,13 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import userApiHandlers from "./server/features/users/handler";
 import { addEndpoints } from "./server";
-import { strategyJwt } from "./lib/auth/strategy";
-import passport from "passport";
+import { initStrategies } from "./lib/auth/strategy";
 
 const app = express();
 
-passport.use(strategyJwt);
+const passport = initStrategies();
+
+app.use(passport.initialize());
 
 app.use(cors());
 app.options("*", cors());

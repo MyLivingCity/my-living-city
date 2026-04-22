@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Image, Form, Button, Alert, Card } from "react-bootstrap";
 import { ROUTES } from "../../../lib/constants";
 import { useFormik } from "formik";
+import { Link } from "react-router-dom";
 
 export interface ILoginWithEmailAndPass {
   email: string;
@@ -95,7 +96,7 @@ export default function LoginPageContent() {
           </Form>
 
           <div className="w-100 text-center mt-2">
-            <a href={ROUTES.REGISTER}>Don't have an account? Create one.</a>
+            <Link to={ROUTES.REGISTER}>Don't have an account? Create one.</Link>
           </div>
         </Card.Body>
       </Card>

@@ -109,6 +109,7 @@ const getSelf = s.route(userApiContracts.getSelf, {
 
     const foundUser = await prisma.user.findFirst({
       where: { id },
+      omit: { password: true },
     });
 
     if (!foundUser) {

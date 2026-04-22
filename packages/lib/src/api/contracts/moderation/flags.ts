@@ -36,8 +36,9 @@ export const flagsContract = c.router(
         // controllers/flag.js                  Idea flagging
         //x	POST	/create/:ideaId	              create a flag for a specific idea
         //x	GET	  /getAll	                      get all idea flags
-        //x	PUT	  /falseFlagMany/:ideaId	      mark many flags on an idea as false and update false-flag behavior
+        //x	PUT	  /falseFlagMany/:ideaId	      mark all flags as false and update false-flag behavior
         //x	GET	  /getFlags/:ideaID	            get flag count for a specific idea
+        //  below, for routing accuracy
         //x	GET	  /checkFlagBan/:userID	        check if user has a flag ban
         // ----------------------------------------------------------------------------
         getAll: {
@@ -57,8 +58,8 @@ export const flagsContract = c.router(
           method: "POST",
           path: "/create/:ideaId",
           pathParams: z.object({ ideaId: z.coerce.number() }),
-          body: IdeaFlagSchema,
-          responses: { 200: z.array(IdeaFlagSchema) },
+          body: IdeaFlagSchema.pick({ reason: true }),
+          responses: { 201: IdeaFlagSchema },
           summary: "Flag an Idea",
         },
         falseFlagMany: {
@@ -81,10 +82,10 @@ export const flagsContract = c.router(
         // ============================================================================
         // commentFlag.js
         // ============================================================================
-        //	POST	/create/:commentId	          create a flag for a specific comment
-        //	GET	  /getAll	                      get all comment flags
-        //	PUT	  /falseFlagMany/:commentId	    mark many flags on a comment as false and update false-flag behavior
-        //	GET	  /getFlags/:commentId	        get flag count for a specific comment
+        //x	POST	/create/:commentId	          create a flag for a specific comment
+        //x	GET	  /getAll	                      get all comment flags
+        //x	PUT	  /falseFlagMany/:commentId	    mark all flags as false and update false-flag behavior
+        //x	GET	  /getFlags/:commentId	        get flag count for a specific comment
         // ----------------------------------------------------------------------------
         getAll: {
           method: "GET",
@@ -95,22 +96,22 @@ export const flagsContract = c.router(
         getById: {
           method: "GET",
           path: "/:commentId",
-          pathParams: z.object({ ideaId: z.coerce.number() }),
+          pathParams: z.object({ commentId: z.coerce.number() }),
           responses: { 200: CommentFlagSchema },
           summary: "Get flags for comment id",
         },
         createFlag: {
           method: "POST",
           path: "/create/:commentId",
-          pathParams: z.object({ ideaId: z.coerce.number() }),
-          body: CommentFlagSchema,
-          responses: { 200: z.array(CommentFlagSchema) },
+          pathParams: z.object({ commentId: z.coerce.number() }),
+          body: CommentFlagSchema.pick({ reason: true }),
+          responses: { 201: CommentFlagSchema },
           summary: "Flag a comment",
         },
         falseFlagMany: {
           method: "PUT",
           path: "/false-flag-many/:commentId",
-          pathParams: z.object({ ideaId: z.coerce.number() }),
+          pathParams: z.object({ commentId: z.coerce.number() }),
           body: z.object({ isFalse: z.boolean() }),
           responses: {
             200: z.object({ message: z.string(), count: z.number() }),

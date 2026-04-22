@@ -160,6 +160,28 @@ export const userApiContracts = c.router(
       },
       summary: "Log-in user",
     },
+    tryUnbanSelf: {
+      method: "PATCH",
+      path: "/unbanMe",
+      body: z.undefined(),
+      responses: {
+        200: z.object({
+          message: z.string(),
+        }),
+        400: z.object({
+          message: z.string(),
+        }),
+        500: z.object({
+          message: z.string(),
+          details: z.object({
+            errorMessage: z.string(),
+            errorStack: z.string(),
+          }),
+        }),
+      },
+      summary:
+        "Evaluate user's ban condition, unban if expired/other conditions met.",
+    },
     deleteById: {
       method: "DELETE",
       path: "/:id",

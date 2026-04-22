@@ -171,10 +171,103 @@ const login = s.route(userApiContracts.login, {
   },
 });
 
+const tryUnbanSelf = s.route(userApiContracts.tryUnbanSelf, {
+  middleware: [passport.authenticate("jwt", { session: false })],
+  handler: async ({ req }) => {
+    try {
+      const { id } = (req.user ?? {}) as z.infer<typeof UserSchema>;
+
+      if (!id) {
+        return {
+          status: 400,
+          body: {
+            message: "No user",
+          },
+        };
+      }
+
+      const theUser = await prisma.user.findFirst({ where: { id: id } });
+
+      if (!theUser) {
+        return {
+          status: 400,
+          body: {
+            message: "No user",
+          },
+        };
+      }
+
+      if (!theUser.banned) {
+        return {
+          status: 200,
+          body: {
+            message: "You are not banned",
+          },
+        };
+      }
+
+      const ban = await prisma.userBan.findMany({
+        where: { userId: id },
+        orderBy: { id: "desc" },
+        distinct: ["userId"],
+      });
+
+      if (!ban) {
+        return {
+          status: 200,
+          body: {
+            message: "You are not banned",
+          },
+        };
+      }
+
+      const isExpired = ban.every((b) => b.banUntil <= new Date(Date.now()));
+      if (isExpired) {
+        await prisma.user.update({
+          where: { id: id },
+          data: {
+            banned: false,
+          },
+        });
+        await prisma.userBan.deleteMany({
+          where: { userId: theUser.id },
+        });
+
+        return {
+          status: 200,
+          body: {
+            message: "You are succesfully unbanned",
+          },
+        };
+      }
+
+      return {
+        status: 200,
+        body: {
+          message: "Your ban is still ongoing",
+        },
+      };
+    } catch (error) {
+      console.log(error);
+      return {
+        status: 500,
+        body: {
+          message: `An Error occured while trying to unban.`,
+          details: {
+            errorMessage: error.message,
+            errorStack: error.stack,
+          },
+        },
+      };
+    }
+  },
+});
+
 export default {
   schema: userApiContracts,
   router: {
     getSelf,
     login,
+    tryUnbanSelf,
   },
 } as Handlers;

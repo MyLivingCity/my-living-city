@@ -146,7 +146,7 @@ export const userApiContracts = c.router(
       responses: {
         200: AuthFlowResponseSchema,
       },
-      summary: "Get user by email",
+      summary: "Register user",
     },
     login: {
       method: "POST",
@@ -158,7 +158,7 @@ export const userApiContracts = c.router(
           message: z.string(),
         }),
       },
-      summary: "Get user by email",
+      summary: "Log-in user",
     },
     deleteById: {
       method: "DELETE",

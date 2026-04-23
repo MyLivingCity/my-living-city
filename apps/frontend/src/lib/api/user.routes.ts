@@ -1,9 +1,9 @@
 import axios from "axios";
-import { API_BASE_URL } from "../constants";
+import { API_BASE_URL } from "../constants/constants";
 import {
   type IRegisterInput,
   type SegmentRequest,
-} from "@components/content/session/types/register.types";
+} from "../../components/content/session/types/register.types";
 
 export const getUserWithEmail = async (email: string) => {
   const res = await axios.get(`${API_BASE_URL}/user/email/${email}`);

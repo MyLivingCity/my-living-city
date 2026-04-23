@@ -1,411 +1,173 @@
 import { Container, Col, Carousel, Modal, Collapse } from "react-bootstrap";
-import PlaceholderIdeaTile from "src/components/tiles/PlaceholderIdeaTile";
-import { IIdeaWithAggregations } from "../../../lib/types/data/idea.type";
+import PlaceholderIdeaTile from "../../tiles/PlaceholderIdeaTile";
+import { type IIdeaWithAggregations } from "src/lib/types/idea.types";
 import IdeaTile from "../../tiles/IdeaTile";
 import { BsFilter } from "react-icons/bs";
 import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
-import CSS from "csstype";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useCategories } from "src/hooks/categoryHooks";
 import { useAllProposals } from "src/hooks/proposalHooks";
-import { capitalizeFirstLetterEachWord } from "./../../../lib/utilityFunctions";
-import {
-  useAllSuperSegments,
-  useAllSegments,
-} from "./../../../hooks/segmentHooks";
+import { capitalize } from "src/lib/utils";
+import { useAllSuperSegments, useAllSegments } from "src/hooks/segmentHooks";
 import ProposalTile from "../../tiles/ProposalTile";
-import LoadingSpinner from "src/components/ui/LoadingSpinner";
-import ErrorMessage from "src/components/ui/ErrorMessage";
+import LoadingSpinner from "src/components/ui/misc/LoadingSpinner";
+import ErrorMessage from "src/components/ui/misc/ErrorMessage";
 
-interface IIdeaWithAggregationsWithNew extends IIdeaWithAggregations {
-  isNew?: boolean;
-}
+type IIdeaWithNew = IIdeaWithAggregations & { isNew?: boolean };
 
-interface NewAndTrendingProps {
-  topIdeas: IIdeaWithAggregationsWithNew[];
+type FilterConfig = {
+  endorsementFilter: "ratingFilter" | "viewsFilter" | "likesFilter" | "";
+  category: number[];
+  impactArea: string[];
+  superSeg: number[];
+  seg: number[];
+  status: string[];
+};
+
+const DEFAULT_FILTER: FilterConfig = {
+  endorsementFilter: "",
+  category: [],
+  impactArea: [],
+  superSeg: [],
+  seg: [],
+  status: [],
+};
+
+type NewAndTrendingProps = {
+  topIdeas: IIdeaWithNew[];
   postType?: string;
   isDashboard?: boolean;
   showCustomFilter?: boolean;
   isLoading?: boolean;
   isError?: boolean;
-}
+};
 
-const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
+const NEW_POST_DAYS = 10;
+
+const isIdeaNew = (idea: IIdeaWithNew): boolean => {
+  const daysDiff =
+    (Date.now() - new Date(idea.createdAt).getTime()) / (1000 * 3600 * 24);
+  return daysDiff <= NEW_POST_DAYS;
+};
+
+const calculateScore = (idea: IIdeaWithNew): number => {
+  const daysDiff =
+    (Date.now() - new Date(idea.createdAt).getTime()) / (1000 * 3600 * 24);
+  const decay = Math.max(0, 1 - daysDiff / NEW_POST_DAYS);
+  return (
+    (idea.ratingAvg ?? 0) * 1 +
+    (isIdeaNew(idea) ? 2.4 : 0) * decay +
+    (idea.posRatings ?? 0) * 1 -
+    (idea.negRatings ?? 0) * 1.5
+  );
+};
+
+const NewAndTrendingSection = ({
   topIdeas = [],
   postType,
   isDashboard,
   showCustomFilter,
   isLoading: sectionIsLoading,
   isError: sectionIsError,
-}) => {
-  const [showModal, setShowModal] = useState<boolean>(false);
-  const [filterConfig, setFilterConfig] = useState<any>({
-    endorsementFilter: "",
-    category: [],
-    impactArea: [],
-    superSeg: [],
-    seg: [],
-    status: [],
-  });
+}: NewAndTrendingProps) => {
+  const [showModal, setShowModal] = useState(false);
+  const [filterConfig, setFilterConfig] =
+    useState<FilterConfig>(DEFAULT_FILTER);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isCategoriesOpen, setCategoriesOpen] = useState(false);
+  const [isImpactOpen, setImpactOpen] = useState(false);
+  const [isSuperSegOpen, setSuperSegOpen] = useState(false);
+  const [isSegOpen, setSegOpen] = useState(false);
+  const [isPostStatusOpen, setPostStatusOpen] = useState(false);
+  const [isFilterOpen, setFilterOpen] = useState(true);
 
-  let topIdeasPages;
-  if (topIdeas) {
-    topIdeasPages = Math.ceil(topIdeas!.length / 3);
-  }
-
-  const [isCategoriesOpen, setCategoriesOpen] = useState<boolean>(false);
-  const [isImpactOpen, setImpactOpen] = useState<boolean>(false);
-  const [isSuperSegOpen, setSuperSegOpen] = useState<boolean>(false);
-  const [isSegOpen, setSegOpen] = useState<boolean>(false);
-  const [isPostStatusOpen, setPostStatusOpen] = useState<boolean>(false);
-  const [isFilterOpen, setFilterOpen] = useState<boolean>(true);
-
-  const handleModalCancel = () => {
-    setShowModal(false);
-  };
   const {
     data: categories,
     isLoading: categoriesLoading,
-    error,
     isError: categoriesIsError,
   } = useCategories();
   const { data: allSegments } = useAllSegments();
   const { data: allSuperSegments } = useAllSuperSegments();
   const { data: allProposals } = useAllProposals();
-  const postStatuses = ["IDEA", "PROPOSAL", "PROJECT"];
-
-  const handleEndorsementFilter = (e: any, value: any) => {
-    let configCopy = { ...filterConfig };
-    configCopy.endorsementFilter = "";
-    if (value === "ratingFilter") {
-      configCopy.endorsementFilter = "ratingFilter";
-    }
-    if (value === "viewsFilter") {
-      configCopy.endorsementFilter = "viewsFilter";
-    }
-    if (value === "likesFilter") {
-      configCopy.endorsementFilter = "likesFilter";
-    }
-    if (value === "noFilter") {
-      configCopy.endorsementFilter = "";
-    }
-    setFilterConfig(configCopy);
-  };
-
-  const handleCategory = (e: any, value: any) => {
-    let configCopy = { ...filterConfig };
-    if (e.target.checked) {
-      if (!configCopy.category.includes(value)) {
-        configCopy.category = [...configCopy.category, value];
-      }
-    } else {
-      if (configCopy.category.includes(value)) {
-        const indexOfValue = configCopy.category.indexOf(value);
-        if (indexOfValue > -1) {
-          configCopy.category.splice(indexOfValue, 1);
-        }
-      }
-    }
-    setFilterConfig(configCopy);
-  };
-
-  const handleImpactArea = (e: any, value: any) => {
-    let configCopy = { ...filterConfig };
-    if (e.target.checked) {
-      if (!configCopy.impactArea.includes(value)) {
-        configCopy.impactArea = [...configCopy.impactArea, value];
-      }
-    } else {
-      if (configCopy.impactArea.includes(value)) {
-        const indexOfValue = configCopy.impactArea.indexOf(value);
-        if (indexOfValue > -1) {
-          configCopy.impactArea.splice(indexOfValue, 1);
-        }
-      }
-    }
-    setFilterConfig(configCopy);
-  };
-
-  const handleSuperSeg = (e: any, value: any) => {
-    let configCopy = { ...filterConfig };
-    if (e.target.checked) {
-      if (!configCopy.superSeg.includes(value)) {
-        configCopy.superSeg = [...configCopy.superSeg, value];
-      }
-    } else {
-      if (configCopy.superSeg.includes(value)) {
-        const indexOfValue = configCopy.superSeg.indexOf(value);
-        if (indexOfValue > -1) {
-          configCopy.superSeg.splice(indexOfValue, 1);
-        }
-      }
-    }
-    setFilterConfig(configCopy);
-  };
-
-  const handleSeg = (e: any, value: any) => {
-    let configCopy = { ...filterConfig };
-    if (e.target.checked) {
-      if (!configCopy.seg.includes(value)) {
-        configCopy.seg = [...configCopy.seg, value];
-      }
-    } else {
-      if (configCopy.seg.includes(value)) {
-        const indexOfValue = configCopy.seg.indexOf(value);
-        if (indexOfValue > -1) {
-          configCopy.seg.splice(indexOfValue, 1);
-        }
-      }
-    }
-    setFilterConfig(configCopy);
-  };
-
-  const handlePostStatus = (e: any, value: any) => {
-    let configCopy = { ...filterConfig };
-    if (e.target.checked) {
-      if (!configCopy.status.includes(value)) {
-        configCopy.status = [...configCopy.status, value];
-      }
-    } else {
-      if (configCopy.status.includes(value)) {
-        const indexOfValue = configCopy.status.indexOf(value);
-        if (indexOfValue > -1) {
-          configCopy.status.splice(indexOfValue, 1);
-        }
-      }
-    }
-    setFilterConfig(configCopy);
-  };
-
-  const doesIdeaPassFilter = (idea: IIdeaWithAggregationsWithNew): boolean => {
-    if (
-      filterConfig.category.length !== 0 &&
-      !filterConfig.category.includes(idea.categoryId)
-    ) {
-      return false;
-    }
-    if (filterConfig.impactArea.length !== 0) {
-      let doesIdeaPassImpact = true;
-      filterConfig.impactArea.forEach((impactArea: string) => {
-        if (!idea[impactArea as keyof IIdeaWithAggregationsWithNew]) {
-          doesIdeaPassImpact = false;
-        }
-      });
-      if (!doesIdeaPassImpact) {
-        return false;
-      }
-    }
-    if (
-      filterConfig.superSeg.length !== 0 &&
-      !filterConfig.superSeg.includes(idea.superSegId)
-    ) {
-      return false;
-    }
-    if (
-      filterConfig.seg.length !== 0 &&
-      !filterConfig.seg.includes(idea.segId)
-    ) {
-      return false;
-    }
-    if (
-      filterConfig.status.length !== 0 &&
-      !filterConfig.status.includes(capitalizeFirstLetterEachWord(idea.state))
-    ) {
-      return false;
-    }
-    if (!idea.active) {
-      return false;
-    }
-    return true;
-  };
 
   const isLoading = sectionIsLoading || categoriesLoading;
   const isError = sectionIsError || categoriesIsError;
 
-  const titleStyle: CSS.Properties = {
-    display: "inline",
-    paddingInline: "2.5rem",
+  const postStatuses = ["IDEA", "PROPOSAL", "PROJECT"];
+  const itemsPerPage = 6;
+
+  const toggleArrayFilter = <T,>(arr: T[], value: T): T[] =>
+    arr.includes(value) ? arr.filter((v) => v !== value) : [...arr, value];
+
+  const doesIdeaPassFilter = (idea: IIdeaWithNew): boolean => {
+    if (!idea.active) return false;
+    if (
+      filterConfig.category.length &&
+      !filterConfig.category.includes(idea.categoryId)
+    )
+      return false;
+    if (
+      filterConfig.impactArea.length &&
+      !filterConfig.impactArea.every((area) => idea[area as keyof IIdeaWithNew])
+    )
+      return false;
+    if (
+      filterConfig.superSeg.length &&
+      !filterConfig.superSeg.includes(idea.superSegId ?? -1)
+    )
+      return false;
+    if (filterConfig.seg.length && !filterConfig.seg.includes(idea.segId ?? -1))
+      return false;
+    if (filterConfig.status.length && !filterConfig.status.includes(idea.state))
+      return false;
+    return true;
   };
 
-  const filterButtonStyle: CSS.Properties = {
-    float: "right",
-  };
-
-  const mouseHoverPointer = (e: any) => {
-    e.target.style.cursor = "pointer";
-  };
-
-  const modalSectionTitle: CSS.Properties = {
-    display: "inline",
-  };
-
-  const modalSectionIcon: CSS.Properties = {
-    float: "right",
-  };
-
-  const isIdeaNew = (idea: IIdeaWithAggregationsWithNew): boolean => {
-    const NEW_POST_DURATION = 10; // Number of days to consider a post as "new"
-
-    const currentTime = new Date().getTime();
-    const postTime = new Date(idea.createdAt).getTime();
-    const timeDiff = currentTime - postTime;
-    const daysDiff = timeDiff / (1000 * 3600 * 24); // Convert milliseconds to days
-
-    return daysDiff <= NEW_POST_DURATION;
-  };
-
-  const sortedIdeas = topIdeas.slice().sort((a, b) => {
-    const calculateTotalScore = (idea: IIdeaWithAggregationsWithNew) => {
-      const RATING_WEIGHT = 1;
-      const NEW_POST_WEIGHT = 2.4; //Depending on usage, this value may need to be updated to reflect new weight value
-      const LIKES_WEIGHT = 1;
-      const NEW_POST_DURATION = 10; // Number of days to consider a post as "new"
-      const NEG_RATINGS_WEIGHT = 1.5;
-
-      const ratingScore = idea.ratingAvg || 0;
-      const isNew = isIdeaNew(idea);
-      const newPostScore = isNew ? NEW_POST_WEIGHT : 0;
-      const likesScore = idea.posRatings || 0;
-      const negRatingsScore = idea.negRatings || 0;
-
-      // Calculate the duration since the post creation
-      const currentTime = new Date().getTime();
-      const postTime = new Date(idea.createdAt).getTime();
-      const timeDiff = currentTime - postTime;
-      const daysDiff = timeDiff / (1000 * 3600 * 24); // Convert milliseconds to days
-
-      // Calculate the decay factor for the new post score based on duration
-      const decayFactor = Math.max(0, 1 - daysDiff / NEW_POST_DURATION);
-
-      // Calculate the total score considering weights, decay factor, and negRatings
-      const totalScore =
-        ratingScore * RATING_WEIGHT +
-        newPostScore * decayFactor +
-        likesScore * LIKES_WEIGHT -
-        negRatingsScore * NEG_RATINGS_WEIGHT;
-
-      return totalScore;
-    };
-
-    const scoreA = calculateTotalScore(a);
-    const scoreB = calculateTotalScore(b);
-
-    if (scoreA > scoreB) {
-      return -1;
-    } else if (scoreA < scoreB) {
-      return 1;
-    } else {
-      const dateA = new Date(a.createdAt).getTime();
-      const dateB = new Date(b.createdAt).getTime();
-
-      return dateB - dateA;
-    }
+  const sortedIdeas = [...topIdeas].sort((a, b) => {
+    const diff = calculateScore(b) - calculateScore(a);
+    if (diff !== 0) return diff;
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   });
 
-  console.log("filter config endorsement", filterConfig.endorsementFilter);
-  if (filterConfig.endorsementFilter !== "") {
-    if (filterConfig.endorsementFilter === "ratingFilter") {
-      console.log("Rating Filter Applied");
-      sortedIdeas.sort((a, b) => {
-        return b.ratingAvg - a.ratingAvg;
-      });
-    }
-    if (filterConfig.endorsementFilter === "viewsFilter") {
-      console.log("Views Filter Applied");
-      sortedIdeas.sort((a, b) => {
-        return b.engagements - a.engagements;
-      });
-    }
-    if (filterConfig.endorsementFilter === "likesFilter") {
-      console.log("Likes Filter Applied");
-      sortedIdeas.sort((a, b) => {
-        const firstLikeRatio = a.posRatings / (a.posRatings + a.negRatings);
-        const secondLikeRatio = b.posRatings / (b.posRatings + b.negRatings);
-        return secondLikeRatio - firstLikeRatio;
-      });
-    }
+  if (filterConfig.endorsementFilter === "ratingFilter") {
+    sortedIdeas.sort((a, b) => b.ratingAvg - a.ratingAvg);
+  } else if (filterConfig.endorsementFilter === "viewsFilter") {
+    sortedIdeas.sort((a, b) => b.engagements - a.engagements);
+  } else if (filterConfig.endorsementFilter === "likesFilter") {
+    sortedIdeas.sort((a, b) => {
+      const ratioA = a.posRatings / (a.posRatings + a.negRatings) || 0;
+      const ratioB = b.posRatings / (b.posRatings + b.negRatings) || 0;
+      return ratioB - ratioA;
+    });
   }
-  const itemsPerPage = 6;
-  const filteredIdeas = sortedIdeas.filter(doesIdeaPassFilter);
-  const totalFilteredPages = Math.ceil(filteredIdeas.length / itemsPerPage);
-  const [activeIndex, setActiveIndex] = useState(0);
 
-  const handleSelect = (selectedIndex: number) => {
-    if (selectedIndex >= 0 && selectedIndex < totalFilteredPages) {
-      setActiveIndex(selectedIndex);
-    }
-  };
+  const filteredIdeas = sortedIdeas.filter(doesIdeaPassFilter);
+  const totalPages = Math.ceil(filteredIdeas.length / itemsPerPage);
 
   return (
     <Container className="system" id="hanging-icons">
-      <style>
-        {`
-        .carousel-item {
-        position: relative; /* Ensure controls are positioned within each item */
-        }
-        .carousel-control-next,
-        .carousel-control-prev {
-            position: absolute;
-            top: 50%; /* Center vertically within the carousel slide */
-            transform: translateY(-50%); /* Adjust for centering */
-            width: auto;
-            filter: invert(100%);
-        }
+      <style>{`
+        .carousel-control-next, .carousel-control-prev { position: absolute; top: 50%; transform: translateY(-50%); width: auto; filter: invert(100%); }
+        .carousel-item.active, .carousel-item-next, .carousel-item-prev { display: flex; flex-wrap: wrap; }
+        .carousel-indicators { display: none; }
+        .carousel-inner { padding: 1.5rem; }
+      `}</style>
 
-        .carousel-control-next {
-            right: 0rem; /* Adjust as needed */
-        }
+      <div
+        className={`pb-1 border-bottom display-6 ${isDashboard ? "" : "text-left"}`}
+      >
+        <h2 style={{ display: "inline", paddingInline: "2.5rem" }}>
+          New and Trending
+        </h2>
+        {showCustomFilter !== false && (
+          <BsFilter
+            style={{ float: "right", cursor: "pointer" }}
+            onClick={() => setShowModal(!showModal)}
+            size={30}
+          />
+        )}
+      </div>
 
-        .carousel-control-prev {
-            left: 0rem; /* Adjust as needed */
-            
-        }
-        .carousel-item.active, .carousel-item-next, .carousel-item-prev {
-          display: flex;
-          flex-wrap: wrap;
-        }
-        .container {
-          padding-left: 0;
-          padding-right: 0;
-        }
-        .carousel-indicators {
-          display: none;
-        }
-        .carousel-inner {
-            padding: 1.5rem;
-            }
-        `}
-      </style>
-
-      {isDashboard ? (
-        <div className="pb-1 border-bottom display-6">
-          <h2 style={titleStyle}>New and Trending</h2>
-          {showCustomFilter === false ? null : (
-            <BsFilter
-              onMouseOver={mouseHoverPointer}
-              style={filterButtonStyle}
-              onClick={() => {
-                setShowModal(!showModal);
-              }}
-              size={30}
-            />
-          )}
-        </div>
-      ) : (
-        <div className="pb-1 border-bottom display-6 text-left">
-          <h2 style={titleStyle}>New and Trending</h2>
-          {showCustomFilter === false ? null : (
-            <BsFilter
-              onMouseOver={mouseHoverPointer}
-              style={filterButtonStyle}
-              onClick={() => {
-                setShowModal(!showModal);
-              }}
-              size={30}
-            />
-          )}
-        </div>
-      )}
       {isLoading && <LoadingSpinner />}
       {!isLoading && isError && (
         <ErrorMessage message="There was an error loading the new and trending section." />
@@ -414,453 +176,313 @@ const NewAndTrendingSection: React.FC<NewAndTrendingProps> = ({
         <>
           <Carousel
             activeIndex={activeIndex}
-            onSelect={handleSelect}
-            controls={true}
+            onSelect={(i) => i >= 0 && i < totalPages && setActiveIndex(i)}
+            controls
             interval={null}
-            slide={true}
+            slide
             fade={false}
             nextIcon={
-              activeIndex >= totalFilteredPages - 1 ||
-              totalFilteredPages <= 1 ? null : (
-                <span
-                  aria-hidden="true"
-                  className="carousel-control-next-icon"
-                />
+              activeIndex >= totalPages - 1 || totalPages <= 1 ? null : (
+                <span aria-hidden className="carousel-control-next-icon" />
               )
             }
             prevIcon={
-              activeIndex === 0 || totalFilteredPages <= 1 ? null : (
-                <span
-                  aria-hidden="true"
-                  className="carousel-control-prev-icon"
-                />
+              activeIndex === 0 || totalPages <= 1 ? null : (
+                <span aria-hidden className="carousel-control-prev-icon" />
               )
             }
           >
-            {[...Array(topIdeasPages)].map((x, i) => (
-              <Carousel.Item key={i}>
-                {sortedIdeas && allProposals
-                  ? sortedIdeas.slice(i * 6, i * 6 + 6).map((idea) => {
-                      return doesIdeaPassFilter(idea) ? (
+            {[...Array(Math.ceil(topIdeas.length / itemsPerPage))].map(
+              (_, i) => (
+                <Carousel.Item key={i}>
+                  {sortedIdeas && allProposals
+                    ? sortedIdeas
+                        .slice(
+                          i * itemsPerPage,
+                          i * itemsPerPage + itemsPerPage,
+                        )
+                        .map((idea) =>
+                          doesIdeaPassFilter(idea) ? (
+                            <Col
+                              key={idea.id}
+                              md={6}
+                              lg={4}
+                              className="pt-3 align-items-stretch"
+                            >
+                              {idea.state === "IDEA" ? (
+                                <IdeaTile
+                                  ideaData={idea}
+                                  showFooter
+                                  postType="Idea"
+                                />
+                              ) : (
+                                <ProposalTile
+                                  proposalData={{
+                                    id:
+                                      allProposals.find(
+                                        (p) => p.ideaId === idea.id,
+                                      )?.id ?? 0,
+                                    ideaId: idea.id,
+                                    idea,
+                                  }}
+                                  showFooter
+                                  postType="Proposal"
+                                />
+                              )}
+                            </Col>
+                          ) : null,
+                        )
+                    : [...Array(12)].map((_, j) => (
                         <Col
-                          key={idea.id}
+                          key={j}
                           md={6}
                           lg={4}
                           className="pt-3 align-items-stretch"
                         >
-                          {idea.state === "IDEA" ? (
-                            <IdeaTile
-                              ideaData={idea}
-                              showFooter={true}
-                              postType={"Idea"}
-                            />
-                          ) : (
-                            <ProposalTile
-                              proposalData={{
-                                id:
-                                  allProposals.find(
-                                    (obj) => obj.ideaId === idea.id,
-                                  )?.id ?? 0, // 기본값 0 설정
-                                ideaId: idea.id,
-                                idea,
-                              }}
-                              showFooter={true}
-                              postType={"Proposal"}
-                            />
-                          )}
+                          <PlaceholderIdeaTile />
                         </Col>
-                      ) : null;
-                    })
-                  : [...Array(12)].map((x, i) => (
-                      <Col
-                        key={i}
-                        md={6}
-                        lg={4}
-                        className="pt-3 align-items-stretch"
-                      >
-                        <PlaceholderIdeaTile />
-                      </Col>
-                    ))}
-              </Carousel.Item>
-            ))}
+                      ))}
+                </Carousel.Item>
+              ),
+            )}
           </Carousel>
 
-          <Modal show={showModal} onHide={handleModalCancel} animation={false}>
+          <Modal
+            show={showModal}
+            onHide={() => setShowModal(false)}
+            animation={false}
+          >
             <Modal.Header closeButton>
               <Modal.Title>Customize New and Trending</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              {/* <h5 onClick={() => {setImpactOpen(!isImpactOpen)}} onMouseOver={mouseHoverPointer}>Impact Areas</h5> */}
+              {/* Filter section */}
               <div
-                onClick={() => {
-                  setFilterOpen(!isFilterOpen);
-                }}
-                onMouseOver={mouseHoverPointer}
+                onClick={() => setFilterOpen(!isFilterOpen)}
+                style={{ cursor: "pointer" }}
               >
-                <h5 style={modalSectionTitle}>Filter</h5>
-                <div style={modalSectionIcon}>
+                <h5 style={{ display: "inline" }}>Filter</h5>
+                <div style={{ float: "right" }}>
                   {isFilterOpen ? <IoIosArrowDown /> : <IoIosArrowUp />}
                 </div>
               </div>
               <hr />
               <Collapse in={isFilterOpen}>
                 <div>
-                  <div>
-                    <input
-                      defaultChecked={filterConfig.impactArea.includes(
-                        "noFilter",
-                      )}
-                      type="radio"
-                      id="endorsementFilter"
-                      name="endorsementFilter"
-                      value="noFilter"
-                      checked={filterConfig.endorsementFilter === ""}
-                      onClick={(e) => handleEndorsementFilter(e, "noFilter")}
-                    />
-                    <label
-                      style={{ paddingLeft: "10px" }}
-                      htmlFor="endorsementFilter"
-                    >
-                      No Filter
-                    </label>
-                  </div>
-                  <div>
-                    <input
-                      defaultChecked={filterConfig.impactArea.includes(
-                        "ratingFilter",
-                      )}
-                      type="radio"
-                      id="endorsementFilter"
-                      name="endorsementFilter"
-                      value="ratingFilter"
-                      checked={
-                        filterConfig.endorsementFilter === "ratingFilter"
-                      }
-                      onClick={(e) =>
-                        handleEndorsementFilter(e, "ratingFilter")
-                      }
-                    />
-                    <label
-                      style={{ paddingLeft: "10px" }}
-                      htmlFor="endorsementFilter"
-                    >
-                      By Star Rating
-                    </label>
-                  </div>
-                  <div>
-                    <input
-                      defaultChecked={filterConfig.impactArea.includes(
-                        "viewsFilter",
-                      )}
-                      type="radio"
-                      id="endorsementFilter"
-                      name="endorsementFilter"
-                      value="viewsFilter"
-                      checked={filterConfig.endorsementFilter === "viewsFilter"}
-                      onClick={(e) => handleEndorsementFilter(e, "viewsFilter")}
-                    />
-                    <label
-                      style={{ paddingLeft: "10px" }}
-                      htmlFor="endorsementFilter"
-                    >
-                      By Views
-                    </label>
-                  </div>
-                  <div>
-                    <input
-                      defaultChecked={filterConfig.impactArea.includes(
-                        "likesFilter",
-                      )}
-                      type="radio"
-                      id="endorsementFilter"
-                      name="endorsementFilter"
-                      value="likesFilter"
-                      checked={filterConfig.endorsementFilter === "likesFilter"}
-                      onClick={(e) => handleEndorsementFilter(e, "likesFilter")}
-                    />
-                    <label
-                      style={{ paddingLeft: "10px" }}
-                      htmlFor="endorsementFilter"
-                    >
-                      By Like:Dislike Ratio
-                    </label>
-                  </div>
+                  {(
+                    ["", "ratingFilter", "viewsFilter", "likesFilter"] as const
+                  ).map((val) => (
+                    <div key={val}>
+                      <input
+                        type="radio"
+                        name="endorsementFilter"
+                        value={val}
+                        checked={filterConfig.endorsementFilter === val}
+                        onChange={() =>
+                          setFilterConfig((prev) => ({
+                            ...prev,
+                            endorsementFilter: val,
+                          }))
+                        }
+                      />
+                      <label style={{ paddingLeft: 10 }}>
+                        {val === ""
+                          ? "No Filter"
+                          : val === "ratingFilter"
+                            ? "By Star Rating"
+                            : val === "viewsFilter"
+                              ? "By Views"
+                              : "By Like:Dislike Ratio"}
+                      </label>
+                    </div>
+                  ))}
                 </div>
               </Collapse>
               <br />
 
+              {/* Categories */}
               <div
-                onClick={() => {
-                  setCategoriesOpen(!isCategoriesOpen);
-                }}
-                onMouseOver={mouseHoverPointer}
+                onClick={() => setCategoriesOpen(!isCategoriesOpen)}
+                style={{ cursor: "pointer" }}
               >
-                <h5 style={modalSectionTitle}>Categories</h5>
-                <div style={modalSectionIcon}>
+                <h5 style={{ display: "inline" }}>Categories</h5>
+                <div style={{ float: "right" }}>
                   {isCategoriesOpen ? <IoIosArrowDown /> : <IoIosArrowUp />}
                 </div>
               </div>
               <hr />
               <Collapse in={isCategoriesOpen}>
                 <div>
-                  {categories &&
-                    categories.map((category, i) => {
-                      return (
-                        <div key={i}>
-                          <input
-                            defaultChecked={filterConfig.category.includes(
-                              category.id,
-                            )}
-                            type="checkbox"
-                            id={category.title}
-                            name={category.title}
-                            value={category.id}
-                            onClick={(e) => handleCategory(e, category.id)}
-                          />
-                          <label
-                            style={{ paddingLeft: "10px" }}
-                            htmlFor={category.title}
-                          >
-                            {capitalizeFirstLetterEachWord(category.title)}
-                          </label>
-                        </div>
-                      );
-                    })}
+                  {categories?.map((cat) => (
+                    <div key={cat.id}>
+                      <input
+                        type="checkbox"
+                        id={cat.title}
+                        checked={filterConfig.category.includes(cat.id)}
+                        onChange={() =>
+                          setFilterConfig((prev) => ({
+                            ...prev,
+                            category: toggleArrayFilter(prev.category, cat.id),
+                          }))
+                        }
+                      />
+                      <label style={{ paddingLeft: 10 }} htmlFor={cat.title}>
+                        {capitalize(cat.title)}
+                      </label>
+                    </div>
+                  ))}
                 </div>
               </Collapse>
               <br />
 
-              {/* <h5 onClick={() => {setImpactOpen(!isImpactOpen)}} onMouseOver={mouseHoverPointer}>Impact Areas</h5> */}
+              {/* Impact Areas */}
               <div
-                onClick={() => {
-                  setImpactOpen(!isImpactOpen);
-                }}
-                onMouseOver={mouseHoverPointer}
+                onClick={() => setImpactOpen(!isImpactOpen)}
+                style={{ cursor: "pointer" }}
               >
-                <h5 style={modalSectionTitle}>Impact Areas</h5>
-                <div style={modalSectionIcon}>
+                <h5 style={{ display: "inline" }}>Impact Areas</h5>
+                <div style={{ float: "right" }}>
                   {isImpactOpen ? <IoIosArrowDown /> : <IoIosArrowUp />}
                 </div>
               </div>
               <hr />
               <Collapse in={isImpactOpen}>
                 <div>
-                  <div>
-                    <input
-                      defaultChecked={filterConfig.impactArea.includes(
-                        "communityImpact",
-                      )}
-                      type="checkbox"
-                      id="communityAndPlace"
-                      name="communityAndPlace"
-                      value="communityImpact"
-                      onClick={(e) => handleImpactArea(e, "communityImpact")}
-                    />
-                    <label
-                      style={{ paddingLeft: "10px" }}
-                      htmlFor="communityAndPlace"
-                    >
-                      Community and Place
-                    </label>
-                  </div>
-                  <div>
-                    <input
-                      defaultChecked={filterConfig.impactArea.includes(
-                        "natureImpact",
-                      )}
-                      type="checkbox"
-                      id="natureAndFoodSecurity"
-                      name="natureAndFoodSecurity"
-                      value="natureImpact"
-                      onClick={(e) => handleImpactArea(e, "natureImpact")}
-                    />
-                    <label
-                      style={{ paddingLeft: "10px" }}
-                      htmlFor="natureAndFoodSecurity"
-                    >
-                      Nature and Food Security
-                    </label>
-                  </div>
-                  <div>
-                    <input
-                      defaultChecked={filterConfig.impactArea.includes(
-                        "artsImpact",
-                      )}
-                      type="checkbox"
-                      id="artsCultureAndEducation"
-                      name="artsCultureAndEducation"
-                      value="artsImpact"
-                      onClick={(e) => handleImpactArea(e, "artsImpact")}
-                    />
-                    <label
-                      style={{ paddingLeft: "10px" }}
-                      htmlFor="artsCultureAndEducation"
-                    >
-                      Arts, Culture, and Education
-                    </label>
-                  </div>
-                  <div>
-                    <input
-                      defaultChecked={filterConfig.impactArea.includes(
-                        "energyImpact",
-                      )}
-                      type="checkbox"
-                      id="waterAndEnergy"
-                      name="waterAndEnergy"
-                      value="energyImpact"
-                      onClick={(e) => handleImpactArea(e, "energyImpact")}
-                    />
-                    <label
-                      style={{ paddingLeft: "10px" }}
-                      htmlFor="waterAndEnergy"
-                    >
-                      Water and Energy
-                    </label>
-                  </div>
-                  <div>
-                    <input
-                      defaultChecked={filterConfig.impactArea.includes(
-                        "manufacturingImpact",
-                      )}
-                      type="checkbox"
-                      id="manufacturingAndWaste"
-                      name="manufacturingAndWaste"
-                      value="manufacturingImpact"
-                      onClick={(e) =>
-                        handleImpactArea(e, "manufacturingImpact")
-                      }
-                    />
-                    <label
-                      style={{ paddingLeft: "10px" }}
-                      htmlFor="manufacturingAndWaste"
-                    >
-                      Manufacturing and Waste
-                    </label>
-                  </div>
+                  {[
+                    { id: "communityImpact", label: "Community and Place" },
+                    { id: "natureImpact", label: "Nature and Food Security" },
+                    { id: "artsImpact", label: "Arts, Culture, and Education" },
+                    { id: "energyImpact", label: "Water and Energy" },
+                    {
+                      id: "manufacturingImpact",
+                      label: "Manufacturing and Waste",
+                    },
+                  ].map(({ id, label }) => (
+                    <div key={id}>
+                      <input
+                        type="checkbox"
+                        id={id}
+                        checked={filterConfig.impactArea.includes(id)}
+                        onChange={() =>
+                          setFilterConfig((prev) => ({
+                            ...prev,
+                            impactArea: toggleArrayFilter(prev.impactArea, id),
+                          }))
+                        }
+                      />
+                      <label style={{ paddingLeft: 10 }} htmlFor={id}>
+                        {label}
+                      </label>
+                    </div>
+                  ))}
                 </div>
               </Collapse>
               <br />
 
-              {/* <h5 onClick={() => {setSuperSegOpen(!isSuperSegOpen)}} onMouseOver={mouseHoverPointer}>District</h5> */}
+              {/* District */}
               <div
-                onClick={() => {
-                  setSuperSegOpen(!isSuperSegOpen);
-                }}
-                onMouseOver={mouseHoverPointer}
+                onClick={() => setSuperSegOpen(!isSuperSegOpen)}
+                style={{ cursor: "pointer" }}
               >
-                <h5 style={modalSectionTitle}>District</h5>
-                <div style={modalSectionIcon}>
+                <h5 style={{ display: "inline" }}>District</h5>
+                <div style={{ float: "right" }}>
                   {isSuperSegOpen ? <IoIosArrowDown /> : <IoIosArrowUp />}
                 </div>
               </div>
               <hr />
               <Collapse in={isSuperSegOpen}>
                 <div>
-                  {allSuperSegments &&
-                    allSuperSegments.map((superSeg, i) => {
-                      return (
-                        <div key={i}>
-                          <input
-                            defaultChecked={filterConfig.superSeg.includes(
-                              superSeg.superSegId,
-                            )}
-                            type="checkbox"
-                            id={superSeg.name}
-                            name={superSeg.name}
-                            value={superSeg.superSegId}
-                            onClick={(e) =>
-                              handleSuperSeg(e, superSeg.superSegId)
-                            }
-                          />
-                          <label
-                            style={{ paddingLeft: "10px" }}
-                            htmlFor={superSeg.name}
-                          >
-                            {capitalizeFirstLetterEachWord(superSeg.name)}
-                          </label>
-                        </div>
-                      );
-                    })}
+                  {allSuperSegments?.map((ss) => (
+                    <div key={ss.superSegId}>
+                      <input
+                        type="checkbox"
+                        id={ss.name}
+                        checked={filterConfig.superSeg.includes(ss.superSegId)}
+                        onChange={() =>
+                          setFilterConfig((prev) => ({
+                            ...prev,
+                            superSeg: toggleArrayFilter(
+                              prev.superSeg,
+                              ss.superSegId,
+                            ),
+                          }))
+                        }
+                      />
+                      <label style={{ paddingLeft: 10 }} htmlFor={ss.name}>
+                        {capitalize(ss.name)}
+                      </label>
+                    </div>
+                  ))}
                 </div>
               </Collapse>
               <br />
 
-              {/* <h5 onClick={() => {setSegOpen(!isSegOpen)}} onMouseOver={mouseHoverPointer}>Sector</h5> */}
+              {/* Sector */}
               <div
-                onClick={() => {
-                  setSegOpen(!isSegOpen);
-                }}
-                onMouseOver={mouseHoverPointer}
+                onClick={() => setSegOpen(!isSegOpen)}
+                style={{ cursor: "pointer" }}
               >
-                <h5 style={modalSectionTitle}>Sector</h5>
-                <div style={modalSectionIcon}>
+                <h5 style={{ display: "inline" }}>Sector</h5>
+                <div style={{ float: "right" }}>
                   {isSegOpen ? <IoIosArrowDown /> : <IoIosArrowUp />}
                 </div>
               </div>
               <hr />
               <Collapse in={isSegOpen}>
                 <div>
-                  {allSegments &&
-                    allSegments.map((seg, i) => {
-                      return (
-                        <div key={i}>
-                          <input
-                            defaultChecked={filterConfig.seg.includes(
-                              seg.segId,
-                            )}
-                            type="checkbox"
-                            id={seg.name}
-                            name={seg.name}
-                            value={seg.segId}
-                            onClick={(e) => handleSeg(e, seg.segId)}
-                          />
-                          <label
-                            style={{ paddingLeft: "10px" }}
-                            htmlFor={seg.name}
-                          >
-                            {capitalizeFirstLetterEachWord(seg.name)}
-                          </label>
-                        </div>
-                      );
-                    })}
+                  {allSegments?.map((seg) => (
+                    <div key={seg.segId}>
+                      <input
+                        type="checkbox"
+                        id={seg.name}
+                        checked={filterConfig.seg.includes(seg.segId)}
+                        onChange={() =>
+                          setFilterConfig((prev) => ({
+                            ...prev,
+                            seg: toggleArrayFilter(prev.seg, seg.segId),
+                          }))
+                        }
+                      />
+                      <label style={{ paddingLeft: 10 }} htmlFor={seg.name}>
+                        {capitalize(seg.name)}
+                      </label>
+                    </div>
+                  ))}
                 </div>
               </Collapse>
               <br />
 
-              {/* <h5 onClick={() => {setPostStatusOpen(!isPostStatusOpen)}} onMouseOver={mouseHoverPointer}>Status</h5> */}
+              {/* Status */}
               <div
-                onClick={() => {
-                  setPostStatusOpen(!isPostStatusOpen);
-                }}
-                onMouseOver={mouseHoverPointer}
+                onClick={() => setPostStatusOpen(!isPostStatusOpen)}
+                style={{ cursor: "pointer" }}
               >
-                <h5 style={modalSectionTitle}>Status</h5>
-                <div style={modalSectionIcon}>
+                <h5 style={{ display: "inline" }}>Status</h5>
+                <div style={{ float: "right" }}>
                   {isPostStatusOpen ? <IoIosArrowDown /> : <IoIosArrowUp />}
                 </div>
               </div>
               <hr />
               <Collapse in={isPostStatusOpen}>
                 <div>
-                  {postStatuses.map((status, i) => {
-                    return (
-                      <div key={i}>
-                        <input
-                          defaultChecked={filterConfig.status.includes(
-                            capitalizeFirstLetterEachWord(status),
-                          )}
-                          type="checkbox"
-                          id={status}
-                          name={status}
-                          value={status}
-                          onClick={(e) => handlePostStatus(e, status)}
-                        />
-                        <label style={{ paddingLeft: "10px" }} htmlFor={status}>
-                          {capitalizeFirstLetterEachWord(status)}
-                        </label>
-                      </div>
-                    );
-                  })}
+                  {postStatuses.map((status) => (
+                    <div key={status}>
+                      <input
+                        type="checkbox"
+                        id={status}
+                        checked={filterConfig.status.includes(status)}
+                        onChange={() =>
+                          setFilterConfig((prev) => ({
+                            ...prev,
+                            status: toggleArrayFilter(prev.status, status),
+                          }))
+                        }
+                      />
+                      <label style={{ paddingLeft: 10 }} htmlFor={status}>
+                        {capitalize(status)}
+                      </label>
+                    </div>
+                  ))}
                 </div>
               </Collapse>
             </Modal.Body>

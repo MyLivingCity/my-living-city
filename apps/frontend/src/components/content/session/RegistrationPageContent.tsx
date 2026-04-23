@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { ROUTES, USER_TYPES } from "@/lib/constants";
+import { ROUTES, USER_TYPES } from "@/lib/constants/constants";
 import { Form } from "formik";
 import { FormikStep } from "@components/ui/session/FormikStep";
 import * as Yup from "yup";
 import { Alert, Form as BForm, Card } from "react-bootstrap";
 import { CheckboxTree } from "@components/ui/session/CheckboxTree";
-import type { CheckBoxItem } from "@types/segment.types";
+import type { CheckBoxItem } from "@/lib/types/segment.types";
 import FormikStepper from "./FormikStepper";
 import RegistrationNavButtons from "./RegistrationNavButtons";
 import RegisterHeader from "@components/ui/session/RegisterHeader";
@@ -14,7 +14,7 @@ import CommunityLocation from "./CommunityLocation";
 import "@/styles/ui/_other.scss";
 import EmailPasswordForm from "./EmailPasswordForm";
 import { getUserWithEmail, postRegisterUser } from "@lib/api/user.routes";
-import { type ISegment } from "@types/segment.types";
+import { type ISegment } from "@/lib/types/segment.types";
 import { getAllSegmentsWithSuperSegId } from "@lib/api/segment.routes";
 import {
   type IRegisterInput,

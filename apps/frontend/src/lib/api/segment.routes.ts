@@ -1,6 +1,6 @@
 import axios from "axios";
-import { API_BASE_URL } from "../constants";
-import { type ISegment, type ISubSegment } from "@types/segment.types";
+import { API_BASE_URL } from "../constants/constants";
+import { type ISegment, type ISubSegment } from "@/lib/types/segment.types";
 
 export const getAllSegments = async (): Promise<ISegment[]> => {
   const res = await axios.get<ISegment[]>(`${API_BASE_URL}/segment/getall`);

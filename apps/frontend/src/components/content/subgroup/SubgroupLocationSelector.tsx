@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Row, Col, Form, Card, Button } from "react-bootstrap";
-import { COUNTRIES, PROVINCES } from "src/lib/constants";
-import { getAllSuperSegmentsByCountryProvince } from "../../lib/api/segmentRoutes";
-import { ISegment, ISuperSegment } from "../../lib/types/data/segment.type";
-import { capitalizeFirstLetterEachWord } from "src/lib/utilityFunctions";
+import { COUNTRIES, PROVINCES } from @/lib/constants";
+import { getAllSuperSegmentsByCountryProvince } from "@lib/api/segmentRoutes";
+import { ISegment, ISuperSegment } from "@lib/types/data/segment.type";
+import { capitalizeFirstLetterEachWord } from @/lib/utilityFunctions";
 
 // Interface for component props, leverages React's Dispatch and SetStateAction for state management of country and province selections //
 interface SubgroupLocationSelectorProps {

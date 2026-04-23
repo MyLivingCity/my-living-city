@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Image, Form, Button, Alert, Card } from "react-bootstrap";
-import { ROUTES } from "../../../lib/constants";
+import { ROUTES } from "@lib/constants";
 import { useFormik } from "formik";
 import { Link } from "react-router-dom";
 

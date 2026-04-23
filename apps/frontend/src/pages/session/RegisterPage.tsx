@@ -1,4 +1,4 @@
-import RegistrationPageContent from "../../components/content/session/RegistrationPageContent";
+import RegistrationPageContent from "@components/content/session/RegistrationPageContent";
 
 export default function RegisterPage() {
   return (

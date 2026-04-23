@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { initContract } from "@ts-rest/core";
+import { ErrorResponseSchema, SimpleMessageResponseSchema } from "../../common";
 
 const baseFlagShape = {
   id: z.number(),
@@ -17,7 +18,9 @@ export const IdeaFlagSchema = z.object({
   ...baseFlagShape,
   ideaId: z.number(),
 });
-
+// ----------------------------------------------------------------------------
+//  Routers
+// ----------------------------------------------------------------------------
 const c = initContract();
 
 export const flagsContract = c.router(
@@ -34,34 +37,43 @@ export const flagsContract = c.router(
         getAll: {
           method: "GET",
           path: "/",
-          responses: { 200: z.array(IdeaFlagSchema) },
+          responses: {
+            200: z.array(IdeaFlagSchema),
+            400: ErrorResponseSchema,
+          },
           summary: "Get all Idea flags",
         },
         getById: {
           method: "GET",
           path: "/:ideaId",
           pathParams: z.object({ ideaId: z.coerce.number() }),
-          responses: { 200: IdeaFlagSchema },
-          summary: "Get flags for Idea id",
+          responses: {
+            200: IdeaFlagSchema,
+            400: ErrorResponseSchema,
+          },
+          summary: "Get flags for ideaId",
         },
         createFlag: {
           method: "POST",
-          path: "/create/:ideaId",
+          path: "/:ideaId/create",
           pathParams: z.object({ ideaId: z.coerce.number() }),
           body: IdeaFlagSchema.pick({ reason: true }),
-          responses: { 201: IdeaFlagSchema },
+          responses: {
+            201: IdeaFlagSchema,
+            400: ErrorResponseSchema,
+          },
           summary: "Flag an Idea",
         },
         falseFlagMany: {
           method: "PUT",
-          path: "/false-flag-many/:ideaId",
+          path: "/:ideaId/false-flag-many",
           pathParams: z.object({ ideaId: z.coerce.number() }),
           body: z.object({ isFalse: z.boolean() }),
           responses: {
-            200: z.object({ message: z.string(), count: z.number() }),
-            400: z.object({ message: z.string() }),
+            200: SimpleMessageResponseSchema,
+            400: ErrorResponseSchema,
           },
-          summary: "Set all flags as false for Idea id",
+          summary: "Set all flags as false for ideaId",
         },
       },
       { pathPrefix: "/ideas" },
@@ -85,25 +97,31 @@ export const flagsContract = c.router(
           method: "GET",
           path: "/:commentId",
           pathParams: z.object({ commentId: z.coerce.number() }),
-          responses: { 200: CommentFlagSchema },
+          responses: {
+            200: CommentFlagSchema,
+            400: ErrorResponseSchema,
+          },
           summary: "Get flags for comment id",
         },
         createFlag: {
           method: "POST",
-          path: "/create/:commentId",
+          path: "/:commentId/create",
           pathParams: z.object({ commentId: z.coerce.number() }),
           body: CommentFlagSchema.pick({ reason: true }),
-          responses: { 201: CommentFlagSchema },
+          responses: {
+            201: CommentFlagSchema,
+            400: ErrorResponseSchema,
+          },
           summary: "Flag a comment",
         },
         falseFlagMany: {
           method: "PUT",
-          path: "/false-flag-many/:commentId",
+          path: "/:commentId/false-flag-many",
           pathParams: z.object({ commentId: z.coerce.number() }),
           body: z.object({ isFalse: z.boolean() }),
           responses: {
-            200: z.object({ message: z.string(), count: z.number() }),
-            400: z.object({ message: z.string() }),
+            200: SimpleMessageResponseSchema,
+            400: ErrorResponseSchema,
           },
           summary: "Set all flags as false for :commentId",
         },

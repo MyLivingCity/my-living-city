@@ -2,11 +2,9 @@ import { z } from "zod";
 import { initContract } from "@ts-rest/core";
 import {
   DateTimeString,
-  //DecimalLikeSchema,
   ErrorResponseSchema,
   SimpleMessageResponseSchema,
 } from "../../common";
-//import { UserSchema } from "../users";
 
 export const BanTypeSchema = z.enum(["USER", "POST", "COMMENT"]);
 export type BanType = z.infer<typeof BanTypeSchema>;

@@ -23,6 +23,15 @@ export interface ISubSegment {
   updatedAt: Date;
 }
 
+export interface ISuperSegment {
+  superSegId: number;
+  name: string;
+  country: string;
+  province: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export type CheckBoxItem = {
   label: string | undefined;
   value: number | "SuperSeg";

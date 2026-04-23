@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Row, Col, Form, Card, Button } from "react-bootstrap";
 import { COUNTRIES, PROVINCES } from "@/lib/constants";
-import { getAllSuperSegmentsByCountryProvince } from "@lib/api/segmentRoutes";
-import { ISegment, ISuperSegment } from "@lib/types/data/segment.type";
-import { capitalizeFirstLetterEachWord } from "@lib/utilityFunctions";
+import { getAllSuperSegmentsByCountryProvince } from "src/lib/api/segment.routes";
+import { type ISegment, type ISuperSegment } from "src/types/segment.types";
+import { capitalize } from "@src/lib/utils";
 
 // Interface for component props, leverages React's Dispatch and SetStateAction for state management of country and province selections //
 interface SubgroupLocationSelectorProps {
@@ -146,7 +146,7 @@ const SubgroupLocationSelector: React.FC<SubgroupLocationSelectorProps> = ({
                             key={superSeg.superSegId}
                             value={String(superSeg.superSegId)}
                           >
-                            {capitalizeFirstLetterEachWord(superSeg.name)}
+                            {capitalize(superSeg.name)}
                           </option>
                         ))}
                       </>
@@ -171,7 +171,7 @@ const SubgroupLocationSelector: React.FC<SubgroupLocationSelectorProps> = ({
                         <option value="">All</option>
                         {filteredSegments.map((segment) => (
                           <option key={segment.segId} value={segment.name}>
-                            {capitalizeFirstLetterEachWord(segment.name)}
+                            {capitalize(segment.name)}
                           </option>
                         ))}
                       </>

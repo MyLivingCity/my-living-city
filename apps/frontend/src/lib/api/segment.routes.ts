@@ -25,3 +25,10 @@ export const getAllSegmentsWithSuperSegId = async (
   );
   return res.data;
 };
+
+export const getAllSuperSegmentsByCountryProvince = async (country: string, province: string) => {
+    const res = await axios.get(`${API_BASE_URL}/superSegment/getByCountryProvince`, {
+        params: { country, province }
+    });
+    return res.data;
+};

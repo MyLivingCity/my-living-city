@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { initContract } from "@ts-rest/core";
 
 export const BanTypeSchema = z.enum(["USER", "POST", "COMMENT"]);
 export type BanType = z.infer<typeof BanTypeSchema>;
@@ -62,8 +63,6 @@ export const AnyBanSchema = z
 // ==========================================
 // 4. ROUTERS
 // ==========================================
-
-import { initContract } from "@ts-rest/core";
 
 const c = initContract();
 

@@ -47,7 +47,7 @@ export const reputationContract = c.router(
 
         incrementBadPostCount: {
           method: "POST",
-          path: "/add/:ideaId",
+          path: "/:ideaId/add",
           pathParams: z.object({
             ideaId: z.coerce.number(),
           }),
@@ -140,22 +140,56 @@ export const reputationContract = c.router(
         //falseFlaggingBehaviour
         //=============================================================================
         // controllers/falseFlaggingBehavior.js → apiRouter.use('/falseFlaggingBehavior', ...)
-
-        //   NOTE: verify whether any routes are actually implemented before migrating
-
         //	GET	  /getAll	                      get all users in false-flagging behavior table
         //  GET   /getById/:userId              get user false-flagging behavior
         //	GET	  /checkFalseFlaggingBehavior	  apply false-flag threshold checks and set flag bans
-        //=============================================================================
+        // ----------------------------------------------------------------------------
         //  taken from flag.js:
         //x	GET	  /checkFlagBan/:userID	        check if user has a flag ban
-        // ----------------------------------------------------------------------------
+        //=============================================================================
+        checkFalseFlaggingBehavior: {
+          method: "POST",
+          path: "/check-ban",
+          body: z.object({}),
+          responses: { 200: z.object({ message: z.string() }) },
+          summary:
+            "Trigger a review of the false-flagging table and ban eligible users",
+        },
+
         checkFlagBan: {
           method: "GET",
-          path: "/user/:userId/check-ban",
+          path: "/:userId/check-ban",
           pathParams: z.object({ userId: z.coerce.number() }),
           responses: { 200: z.object({ banned: z.boolean() }) },
           summary: "Check if user has a flag ban",
+        },
+        getAll: {
+          method: "GET",
+          path: "/",
+          responses: {
+            200: z.array(
+              UserSchema.pick({
+                id: true,
+                email: true,
+                banned: true,
+              }),
+            ),
+            404: z.object({ message: z.string() }),
+          },
+          summary: "Get all users from false-flagging behavior table",
+        },
+        getById: {
+          method: "GET",
+          path: "/:userId",
+          responses: {
+            200: UserSchema.pick({
+              id: true,
+              email: true,
+              banned: true,
+            }),
+            404: z.object({ message: z.string() }),
+          },
+          summary: "Get false-flagging behavior for authenticated user",
         },
       },
       { pathPrefix: "/false-flag" },

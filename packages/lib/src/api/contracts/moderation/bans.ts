@@ -66,4 +66,30 @@ export const AnyBanSchema = z
 
 const c = initContract();
 
-export const bansContract = c.router({});
+export const bansContract = c.router({
+  // banCommentRouter.js
+  //POST    /create                                 Create a new ban for a specific comment and log to history
+  //GET     /getUndismissedNotification/:userId     Retrieve all undismissed comment ban notifications for a user
+  //GET     /getByCommentId/:banCommentId           Fetch ban details for a specific comment ID
+  //PUT     /dismissNotification/:banCommentId      Mark a comment ban notification as dismissed
+  //DELETE  /delete/:banCommentId                   Remove a ban entry associated with a comment ID
+  commentBans: c.router({}),
+
+  // banPostRouter.js
+  //POST    /create                                 Create a new ban for a post and log it to ban history
+  //GET     /getUndismissedNotification/:userId     Retrieve all undismissed post ban notifications for a user
+  //GET     /getByPostId/:banPostId                 Fetch ban details for a specific post ID
+  //PUT     /dismissNotification/:banPostId         Mark a post ban notification as dismissed
+  //DELETE  /delete/:banPostId                      Remove a ban entry associated with a post ID
+  postBans: c.router({}),
+
+  // banUserRouter.js
+  //POST    /create                                 Ban a user, set duration, and log to ban history
+  //GET     /getAll                                 Retrieve all user ban records
+  //GET     /get/:userId                            Retrieve all ban records for a specific user ID
+  //GET     /getMostRecent/:userId                  Retrieve only the most recent ban record for a user
+  //GET     /getMostRecentWithToken                 Retrieve the most recent ban for the currently authenticated user
+  //PUT     /update/:userId                         Update the most recent ban record for a specific user
+  //DELETE  /delete/:userId                         Remove a ban record for a specific user (commented-out)
+  userBans: c.router({}),
+});

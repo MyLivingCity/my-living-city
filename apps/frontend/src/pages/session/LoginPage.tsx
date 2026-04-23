@@ -1,4 +1,4 @@
-import LoginPageContent from "../../components/content/session/LoginPageContent";
+import LoginPageContent from "@components/content/session/LoginPageContent";
 
 export default function LoginPage() {
   return (

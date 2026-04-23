@@ -1,11 +1,11 @@
 import { Route, Routes } from "react-router-dom";
-import { ROUTES } from "./lib/constants";
-import Footer from "./components/ui/misc/Footer";
-import Header from "./components/ui/misc/Header";
-import RegisterPage from "./pages/session/RegisterPage";
+import { ROUTES } from "@lib/constants";
+import Footer from "@components/ui/misc/Footer";
+import Header from "@components/ui/misc/Header";
+import RegisterPage from "@pages/session/RegisterPage";
 
 // Pages
-import LoginPage from "./pages/session/LoginPage";
+import LoginPage from "@pages/session/LoginPage";
 
 function App() {
   return (

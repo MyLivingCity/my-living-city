@@ -2,7 +2,14 @@
   "extends": "@mlc/config/tsconfig",
   "compilerOptions": {
     "baseUrl": ".",
-    "rootDir": "."
+    "rootDir": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@components/*": ["./src/components/*"],
+      "@lib/*": ["./src/lib/*"],
+      "@pages/*": ["./src/pages/*"],
+      "@types/*": ["./src/types/*"]
+    },
   },
   "files": [],
   "references": [

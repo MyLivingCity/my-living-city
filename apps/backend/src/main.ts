@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
 import userApiHandlers from "./server/features/users/handler";
+import ideaApiHandlers from "./server/features/ideas/handler";
 import { addEndpoints } from "./server";
 import { initStrategies } from "./lib/auth/strategy";
 
@@ -24,6 +25,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 addEndpoints(app, userApiHandlers);
+addEndpoints(app, ideaApiHandlers);
 
 const port = process.env["port"] || 3001;
 app.listen(port, () => {

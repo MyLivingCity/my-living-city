@@ -11,5 +11,5 @@ export const allApiContracts = c.router({
   ideas: ideaApiContracts,
   moderation: moderationApiContracts,
   segments: segmentApiContracts,
-  subgroups: subgroupApiContracts,
+  //subgroups: subgroupApiContracts,
 });

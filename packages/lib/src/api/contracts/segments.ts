@@ -1,53 +1,59 @@
 import { initContract } from "@ts-rest/core";
 import z from "zod";
-import { IdeaSchema } from "./ideas";
-import { UserSchema } from "./users";
+import {
+  DateTimeString,
+  DecimalLikeSchema,
+  ErrorResponseSchema,
+  SimpleMessageResponseSchema,
+} from "../common";
 
 const c = initContract();
 
 export const SegmentType = z.enum(["segment", "superSegment", "subSegment"]);
 
-const SegmentSchemaBase = z.object({
+const SegmentParentSchema = z.object({
   country: z.string().nullable(),
-  createdAt: z.date(),
-  ideas: z.array(IdeaSchema.shape.id),
-  lat: z.number().nullable(),
-  lon: z.number().nullable(),
+  name: z.string(),
+  province: z.string().nullable(),
+  segId: z.number(),
+  segmentType: SegmentType,
+});
+
+const SegmentBaseSchema = z.object({
+  country: z.string().nullable(),
+  createdAt: DateTimeString,
+  lat: DecimalLikeSchema.nullable(),
+  lon: DecimalLikeSchema.nullable(),
   name: z.string(),
   parentId: z.number().nullable(),
   province: z.string().nullable(),
-  radius: z.number().nullable(),
-  regionSubGroups: z.array(z.unknown()), // TODO
+  radius: DecimalLikeSchema.nullable(),
   segId: z.number(),
-  segmentAdPrice: z.unknown().nullable(), // TODO
-  segmentSubGroups: z.array(z.unknown()), // TODO
   segmentType: SegmentType,
-  subSegmentSubGroups: z.array(z.unknown()), // TODO
-  updatedAt: z.date().nullable(),
-  userReach: z.array(z.unknown()), // TODO
-  userSegment: z.array(z.unknown()), // TODO
+  updatedAt: DateTimeString.nullable(),
 });
 
-export const SegmentSchema = z.union([
-  SegmentSchemaBase,
-  z.object({
-    get children() {
-      return z.array(SegmentSchemaBase);
-    },
-    get parentSegment() {
-      return SegmentSchemaBase;
-    },
-  }),
-]);
+export const SegmentSchema = SegmentBaseSchema.extend({
+  children: z.array(SegmentBaseSchema).optional(),
+  parentSegment: SegmentParentSchema.optional(),
+});
 
-export const UserSegmentRelationshipType = z.enum(["HOME", "WORK", "SCHOOL"]);
+const UserSegmentRelationshipType = z.enum(["HOME", "WORK", "SCHOOL"]);
 
 export const UserSegmentSchema = z.object({
   id: z.number(),
+  segmentId: z.number(),
   userId: z.string(),
   userSegmentRelationship: UserSegmentRelationshipType,
-  segmentId: z.number(),
-  IdeaComment: z.array(z.unknown()), // TODO
+  IdeaComment: z.array(z.unknown()).optional(),
+});
+
+const CreateSegmentBodySchema = z.object({
+  country: z.string(),
+  name: z.string(),
+  parentSuperSegId: z.union([z.number(), z.string()]).optional(),
+  province: z.string(),
+  superSegId: z.union([z.number(), z.string()]).optional(),
 });
 
 export const segmentApiContracts = c.router(
@@ -55,9 +61,11 @@ export const segmentApiContracts = c.router(
     create: {
       method: "POST",
       path: "/create",
-      body: SegmentSchema,
+      body: CreateSegmentBodySchema,
       responses: {
         200: SegmentSchema,
+        400: ErrorResponseSchema,
+        403: ErrorResponseSchema,
       },
       summary: "Create a segment",
     },
@@ -66,6 +74,7 @@ export const segmentApiContracts = c.router(
       path: "/getAll",
       responses: {
         200: z.array(SegmentSchema),
+        400: ErrorResponseSchema,
       },
       summary: "Get all segments",
     },
@@ -74,14 +83,32 @@ export const segmentApiContracts = c.router(
       path: "/getBySegmentId/:segmentId",
       responses: {
         200: SegmentSchema,
+        400: z.union([SimpleMessageResponseSchema, ErrorResponseSchema]),
       },
       summary: "Get segment by id",
+    },
+    getBySuperSegId: {
+      method: "GET",
+      path: "/getBySuperSegId/:superSegId",
+      responses: {
+        200: z.array(SegmentSchema),
+        400: z.union([z.string(), ErrorResponseSchema]),
+        404: z.string(),
+      },
+      summary: "Get segments by super segment id",
     },
     getByType: {
       method: "GET",
       path: "/getByType/:type",
       responses: {
         200: z.array(SegmentSchema),
+        400: z.union([
+          z.object({
+            message: z.string(),
+            validTypes: z.array(SegmentType),
+          }),
+          ErrorResponseSchema,
+        ]),
       },
       summary: "Get all segments by type",
     },
@@ -90,6 +117,8 @@ export const segmentApiContracts = c.router(
       path: "/getChildren/:parentId",
       responses: {
         200: z.array(SegmentSchema),
+        400: ErrorResponseSchema.or(SimpleMessageResponseSchema),
+        404: SimpleMessageResponseSchema,
       },
       summary: "Get all child segments of parent",
     },

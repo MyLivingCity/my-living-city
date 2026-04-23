@@ -1,6 +1,7 @@
 import { initContract } from "@ts-rest/core";
 import z from "zod";
 import { UserSchema } from "./users";
+import { SimpleMessageResponseSchema } from "../common";
 
 const c = initContract();
 
@@ -16,10 +17,6 @@ const ErrorDetailsSchema = z.object({
 const ErrorResponseSchema = z.object({
   message: z.string(),
   details: ErrorDetailsSchema,
-});
-
-const MessageResponseSchema = z.object({
-  message: z.string(),
 });
 
 const SegmentReferenceSchema = z.object({
@@ -154,8 +151,8 @@ export const subgroupApiContracts = c.router(
       body: z.undefined(),
       responses: {
         201: AddSubGroupMemberResponseSchema,
-        400: MessageResponseSchema.or(ErrorResponseSchema),
-        404: MessageResponseSchema,
+        400: SimpleMessageResponseSchema.or(ErrorResponseSchema),
+        404: SimpleMessageResponseSchema,
       },
       summary: "Add a user to a subgroup",
     },
@@ -171,8 +168,8 @@ export const subgroupApiContracts = c.router(
       }),
       responses: {
         200: UpdateSubGroupMemberResponseSchema,
-        400: MessageResponseSchema.or(ErrorResponseSchema),
-        404: MessageResponseSchema,
+        400: SimpleMessageResponseSchema.or(ErrorResponseSchema),
+        404: SimpleMessageResponseSchema,
       },
       summary: "Update a user's subgroup membership status",
     },
@@ -189,7 +186,7 @@ export const subgroupApiContracts = c.router(
           data: DeleteResultSchema,
         }),
         400: ErrorResponseSchema,
-        404: MessageResponseSchema,
+        404: SimpleMessageResponseSchema,
       },
       summary: "Remove a user from a subgroup",
     },
@@ -206,7 +203,7 @@ export const subgroupApiContracts = c.router(
           data: SubGroupMemberSchema,
         }),
         400: ErrorResponseSchema,
-        404: MessageResponseSchema,
+        404: SimpleMessageResponseSchema,
       },
       summary: "Remove a rejected subgroup membership request",
     },

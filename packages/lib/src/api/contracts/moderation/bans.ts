@@ -1,5 +1,12 @@
 import { z } from "zod";
 import { initContract } from "@ts-rest/core";
+import {
+  DateTimeString,
+  //DecimalLikeSchema,
+  ErrorResponseSchema,
+  SimpleMessageResponseSchema,
+} from "../../common";
+//import { UserSchema } from "../users";
 
 export const BanTypeSchema = z.enum(["USER", "POST", "COMMENT"]);
 export type BanType = z.infer<typeof BanTypeSchema>;
@@ -13,11 +20,11 @@ export type BanUserType = z.infer<typeof BanTypeSchema>;
  */
 const baseBanShape = {
   id: z.number(),
-  createdAt: z.date(),
+  createdAt: DateTimeString,
   bannedBy: z.string(),
   banReason: z.string(),
   banMessage: z.string(),
-  banUntil: z.date(),
+  banUntil: DateTimeString,
   notificationDismissed: z.boolean(),
 };
 // ----------------------------------------------------------------------------
@@ -25,7 +32,7 @@ const UserBanRaw = z.object({
   ...baseBanShape,
   type: z.literal(BanTypeSchema.enum.USER),
   userId: z.number(),
-  banDuration: z.number(),
+  banDuration: DateTimeString,
   banType: BanUserTypeSchema,
 });
 const PostBanRaw = z.object({
@@ -57,39 +64,268 @@ export const UserBanSchema = UserBanRaw.transform(withNotificationFix);
 export const PostBanSchema = PostBanRaw.transform(withNotificationFix);
 export const CommentBanSchema = CommentBanRaw.transform(withNotificationFix);
 // ----------------------------------------------------------------------------
-export const AnyBanSchema = z
-  .discriminatedUnion("type", [UserBanRaw, PostBanRaw, CommentBanRaw])
-  .transform(withNotificationFix);
-// ==========================================
-// 4. ROUTERS
-// ==========================================
+export const AnyBanRaw = z.discriminatedUnion("type", [
+  UserBanRaw,
+  PostBanRaw,
+  CommentBanRaw,
+]);
 
+export const AnyBanSchema = AnyBanRaw.transform(withNotificationFix);
+// ----------------------------------------------------------------------------
+//  Routers
+// ----------------------------------------------------------------------------
 const c = initContract();
 
-export const bansContract = c.router({
-  // banCommentRouter.js
-  //POST    /create                                 Create a new ban for a specific comment and log to history
-  //GET     /getUndismissedNotification/:userId     Retrieve all undismissed comment ban notifications for a user
-  //GET     /getByCommentId/:banCommentId           Fetch ban details for a specific comment ID
-  //PUT     /dismissNotification/:banCommentId      Mark a comment ban notification as dismissed
-  //DELETE  /delete/:banCommentId                   Remove a ban entry associated with a comment ID
-  commentBans: c.router({}),
-
-  // banPostRouter.js
-  //POST    /create                                 Create a new ban for a post and log it to ban history
-  //GET     /getUndismissedNotification/:userId     Retrieve all undismissed post ban notifications for a user
-  //GET     /getByPostId/:banPostId                 Fetch ban details for a specific post ID
-  //PUT     /dismissNotification/:banPostId         Mark a post ban notification as dismissed
-  //DELETE  /delete/:banPostId                      Remove a ban entry associated with a post ID
-  postBans: c.router({}),
-
-  // banUserRouter.js
-  //POST    /create                                 Ban a user, set duration, and log to ban history
-  //GET     /getAll                                 Retrieve all user ban records
-  //GET     /get/:userId                            Retrieve all ban records for a specific user ID
-  //GET     /getMostRecent/:userId                  Retrieve only the most recent ban record for a user
-  //GET     /getMostRecentWithToken                 Retrieve the most recent ban for the currently authenticated user
-  //PUT     /update/:userId                         Update the most recent ban record for a specific user
-  //DELETE  /delete/:userId                         Remove a ban record for a specific user (commented-out)
-  userBans: c.router({}),
-});
+export const bansContract = c.router(
+  {
+    // ----------------------------------------------------------------------------
+    // banCommentRouter.js
+    //xPOST     /create                                 Create a new ban for a specific comment and log to history
+    //xGET      /:userId/getUndismissedNotification     Retrieve all undismissed comment ban notifications for a user
+    //xGET      /:commentBanId/getByCommentId           Fetch ban details for a specific comment ID
+    //xPOST     /:commentBanId/dismissNotification      Mark a comment ban notification as dismissed
+    //xDELETE   /:commentBanId/delete                   Remove a ban entry associated with a comment ID
+    // ----------------------------------------------------------------------------
+    commentBans: c.router(
+      {
+        getAll: {
+          method: "GET",
+          path: "/all",
+          responses: {
+            200: z.array(CommentBanSchema),
+            400: ErrorResponseSchema,
+            401: z.string(),
+          },
+          summary: "Get all banned comments",
+        },
+        getById: {
+          method: "GET",
+          path: "/:commentBanId",
+          pathParams: z.object({ commentBanId: z.coerce.number() }),
+          responses: {
+            200: CommentBanSchema,
+            400: ErrorResponseSchema,
+          },
+          summary: "Get banned comment by id",
+        },
+        getUndismissedNotifications: {
+          method: "GET",
+          path: "/:userId",
+          pathParams: z.object({ userId: z.coerce.number() }),
+          responses: {
+            200: z.array(CommentBanSchema),
+            400: ErrorResponseSchema,
+          },
+          summary:
+            "Retrieve all undismissed comment ban notifications for a user",
+        },
+        create: {
+          method: "POST",
+          path: "/create",
+          body: CommentBanRaw.pick({
+            commentId: true,
+            banReason: true,
+            banMessage: true,
+          }).extend({
+            banDuration: z.number().positive(),
+          }),
+          responses: {
+            201: SimpleMessageResponseSchema,
+            400: ErrorResponseSchema,
+          },
+          summary: "Create a new ban for a specific comment and log to history",
+        },
+        dismissNotification: {
+          method: "POST",
+          path: "/:commentBanId/dismissNotification",
+          pathParams: z.object({ commentBanId: z.coerce.number() }),
+          body: z.object({}), // Explicitly empty
+          responses: {
+            200: SimpleMessageResponseSchema,
+          },
+          summary: "Dismiss a comment ban notification",
+        },
+        deleteById: {
+          method: "DELETE",
+          path: "/:commentBanId",
+          pathParams: z.object({ commentBanId: z.coerce.number() }),
+          responses: {
+            200: SimpleMessageResponseSchema,
+            400: ErrorResponseSchema,
+          },
+          summary: "Delete comment ban by id",
+        },
+      },
+      { pathPrefix: "/comments" },
+    ),
+    // ----------------------------------------------------------------------------
+    // banPostRouter.js
+    //xPOST    /create                                 Create a new ban for a post and log it to ban history
+    //xGET     /getUndismissedNotification/:userId     Retrieve all undismissed post ban notifications for a user
+    //xGET     /getByPostId/:postBanId                 Fetch ban details for a specific post ID
+    //xPOST     /dismissNotification/:banPostId         Mark a post ban notification as dismissed
+    //xDELETE  /delete/:banPostId                      Remove a ban entry associated with a post ID
+    // ----------------------------------------------------------------------------
+    postBans: c.router(
+      {
+        getAll: {
+          method: "GET",
+          path: "/all",
+          responses: {
+            200: z.array(PostBanSchema),
+            400: ErrorResponseSchema,
+            401: z.string(),
+          },
+          summary: "Get all banned posts",
+        },
+        getById: {
+          method: "GET",
+          path: "/:postBanId",
+          pathParams: z.object({ postBanId: z.coerce.number() }),
+          responses: {
+            200: PostBanSchema,
+            400: ErrorResponseSchema,
+          },
+          summary: "Get banned post by id",
+        },
+        getUndismissedNotifications: {
+          method: "GET",
+          path: "/:userId",
+          pathParams: z.object({ userId: z.coerce.number() }),
+          responses: {
+            200: z.array(PostBanSchema),
+            400: ErrorResponseSchema,
+          },
+          summary: "Retrieve all undismissed post ban notifications for a user",
+        },
+        create: {
+          method: "POST",
+          path: "/create",
+          body: PostBanRaw.pick({
+            postId: true,
+            authorId: true,
+          }).extend({
+            banDuration: z.number().positive(),
+          }),
+          responses: {
+            201: SimpleMessageResponseSchema,
+            400: ErrorResponseSchema,
+          },
+          summary: "Create a new ban for a specific post and log to history",
+        },
+        dismissNotification: {
+          method: "POST",
+          path: "/:postBanId/dismissNotification",
+          pathParams: z.object({ postBanId: z.coerce.number() }),
+          body: z.object({}),
+          responses: {
+            200: SimpleMessageResponseSchema,
+          },
+          summary: "Dismiss a post ban notification",
+        },
+        deleteById: {
+          method: "DELETE",
+          path: "/:postBanId/delete",
+          pathParams: z.object({ postBanId: z.coerce.number() }),
+          responses: {
+            200: SimpleMessageResponseSchema,
+            400: ErrorResponseSchema,
+          },
+          summary: "Delete post ban by id",
+        },
+      },
+      { pathPrefix: "/posts" },
+    ),
+    // ----------------------------------------------------------------------------
+    // banUserRouter.js
+    //xPOST     /create                                 Ban a user, set duration, and log to ban history
+    //xGET      /getAll                                 Retrieve all user ban records
+    //xGET      /:userId/get                            Retrieve all ban records for a specific user ID
+    //xGET      /:userId/getMostRecent                  Retrieve only the most recent ban record for a user
+    //xGET      /getMostRecentWithToken                 Retrieve the most recent ban for the currently authenticated user
+    //xPATCH    /:userId/update                         Update the most recent ban record for a specific user
+    //xDELETE   /:userId/delete                         Remove a ban record for a specific user (commented-out)
+    // ----------------------------------------------------------------------------
+    userBans: c.router(
+      {
+        create: {
+          method: "POST",
+          path: "/create",
+          body: UserBanRaw.pick({
+            userId: true,
+            banType: true,
+          }).extend({
+            banDuration: z.number().positive(),
+          }),
+          responses: {
+            201: SimpleMessageResponseSchema,
+            400: ErrorResponseSchema,
+          },
+          summary: "Ban a user, set duration, and log to ban history",
+        },
+        getAll: {
+          method: "GET",
+          path: "/all",
+          responses: {
+            200: z.array(UserBanSchema),
+            400: ErrorResponseSchema,
+            401: z.string(),
+          },
+          summary: "Get all user ban records",
+        },
+        getById: {
+          method: "GET",
+          path: "/:userId",
+          pathParams: z.object({ userId: z.coerce.number() }),
+          responses: {
+            200: z.array(UserBanSchema),
+            400: ErrorResponseSchema,
+          },
+          summary: "Get ban records by userId",
+        },
+        getMostRecent: {
+          method: "GET",
+          path: "/:userId/getMostRecent",
+          pathParams: z.object({ userId: z.coerce.number() }),
+          responses: {
+            200: UserBanSchema,
+            400: ErrorResponseSchema,
+          },
+          summary: "Get only the most recent ban record for a user",
+        },
+        getMostRecentWithToken: {
+          method: "GET",
+          path: "/getMostRecent",
+          responses: {
+            200: UserBanSchema,
+            400: ErrorResponseSchema,
+          },
+          summary: "Get only the most recent ban record for a user",
+        },
+        updateUserBan: {
+          method: "PATCH",
+          path: "/:userId/update",
+          body: UserBanSchema,
+          responses: {
+            200: SimpleMessageResponseSchema,
+            400: ErrorResponseSchema,
+          },
+          summary: "Update the most recent ban record for a specific user",
+        },
+        deleteById: {
+          method: "DELETE",
+          path: "/:userId/delete",
+          pathParams: z.object({ userId: z.coerce.number() }),
+          responses: {
+            200: SimpleMessageResponseSchema,
+            400: ErrorResponseSchema,
+          },
+          summary:
+            "Remove a ban record for a specific user (commented-out in existing)",
+        },
+      },
+      { pathPrefix: "/users" },
+    ),
+  },
+  { pathPrefix: "/bans" },
+);

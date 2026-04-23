@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Modal, Form, Button, Toast } from "react-bootstrap";
 import { useFormik } from "formik";
-import { COUNTRIES, PROVINCES, TEXT_INPUT_LIMIT } from @/lib/constants";
+import { COUNTRIES, PROVINCES, TEXT_INPUT_LIMIT } from "@lib/constants";
 
 interface IRequestSegment {
   country: string;

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { initContract } from "@ts-rest/core";
 
 const baseFlagShape = {
   id: z.number(),
@@ -17,28 +18,19 @@ export const IdeaFlagSchema = z.object({
   ideaId: z.number(),
 });
 
-// ==========================================
-// ROUTER
-// ==========================================
-
-import { initContract } from "@ts-rest/core";
-
 const c = initContract();
 
 export const flagsContract = c.router(
   {
+    // ----------------------------------------------------------------------------
+    // flag.js                              Idea flagging
+    //x	POST	/create/:ideaId	              create a flag for a specific idea
+    //x	GET	  /getAll	                      get all idea flags
+    //x	PUT	  /falseFlagMany/:ideaId	      mark all flags as false and update false-flag behavior
+    //x	GET	  /getFlags/:ideaID	            get flag count for a specific idea
+    // ----------------------------------------------------------------------------
     ideas: c.router(
       {
-        // ============================================================================
-        // flag.js
-        // ============================================================================
-        // ----------------------------------------------------------------------------
-        // controllers/flag.js                  Idea flagging
-        //x	POST	/create/:ideaId	              create a flag for a specific idea
-        //x	GET	  /getAll	                      get all idea flags
-        //x	PUT	  /falseFlagMany/:ideaId	      mark all flags as false and update false-flag behavior
-        //x	GET	  /getFlags/:ideaID	            get flag count for a specific idea
-        // ----------------------------------------------------------------------------
         getAll: {
           method: "GET",
           path: "/",
@@ -74,17 +66,15 @@ export const flagsContract = c.router(
       },
       { pathPrefix: "/ideas" },
     ),
-    // ============================================================================
+    // ----------------------------------------------------------------------------
+    // commentFlag.js
+    //x	POST	/create/:commentId	          create a flag for a specific comment
+    //x	GET	  /getAll	                      get all comment flags
+    //x	PUT	  /falseFlagMany/:commentId	    mark all flags as false and update false-flag behavior
+    //x	GET	  /getFlags/:commentId	        get flag count for a specific comment
+    // ----------------------------------------------------------------------------
     comments: c.router(
       {
-        // ============================================================================
-        // commentFlag.js
-        // ============================================================================
-        //x	POST	/create/:commentId	          create a flag for a specific comment
-        //x	GET	  /getAll	                      get all comment flags
-        //x	PUT	  /falseFlagMany/:commentId	    mark all flags as false and update false-flag behavior
-        //x	GET	  /getFlags/:commentId	        get flag count for a specific comment
-        // ----------------------------------------------------------------------------
         getAll: {
           method: "GET",
           path: "/",

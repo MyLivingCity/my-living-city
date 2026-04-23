@@ -4,6 +4,7 @@ import bodyParser from "body-parser";
 import userApiHandlers from "./server/features/users/handler";
 import ideaApiHandlers from "./server/features/ideas/handler";
 import segmentApiHandlers from "./server/features/segments/handler";
+import userSegmentApiHandlers from "./server/features/userSegments/handler";
 import { addEndpoints } from "./server";
 import { initStrategies } from "./lib/auth/strategy";
 
@@ -28,6 +29,7 @@ app.use(bodyParser.json());
 addEndpoints(app, userApiHandlers);
 addEndpoints(app, ideaApiHandlers);
 addEndpoints(app, segmentApiHandlers);
+addEndpoints(app, userSegmentApiHandlers);
 
 const port = process.env["port"] || 3001;
 app.listen(port, () => {

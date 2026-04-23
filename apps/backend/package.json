@@ -4,6 +4,7 @@
   "description": "",
   "main": "dist/main.js",
   "scripts": {
+    "postinstall": "pnpm exec prisma generate || exit 0",
     "dev": "NODE_OPTIONS='--conditions=development' nodemon --exec tsx ./src/main.ts",
     "test": "vitest --run",
     "test:watch": "vitest --watch"

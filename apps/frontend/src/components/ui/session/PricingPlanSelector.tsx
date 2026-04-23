@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { USER_TYPES } from @/lib/constants";
+import { USER_TYPES } from "@lib/constants";
 
 type PlanConfig = {
   header: string;

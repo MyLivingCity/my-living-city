@@ -9,8 +9,8 @@ import {
 import { RequestSegmentModal } from "@components/ui/session/RequestSegmentModal";
 import { type ISegment, type ISubSegment } from "@types/segment.types";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { USER_TYPES } from @/lib/constants";
-import { capitalize } from @/lib/utils";
+import { USER_TYPES } from "@/lib/constants";
+import { capitalize } from "@/lib/utils";
 
 type BusinessWorkDetails = {
   streetAddress: string;

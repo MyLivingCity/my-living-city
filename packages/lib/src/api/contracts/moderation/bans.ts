@@ -1,86 +1,66 @@
 import { z } from "zod";
 
-// ==========================================
-// 1. RAW SHAPES (Reusable Building Blocks)
-// ==========================================
+export const BanTypeSchema = z.enum(["USER", "POST", "COMMENT"]);
+export type BanType = z.infer<typeof BanTypeSchema>;
 
-const auditShape = {
-  id: z.number(),
-  createdAt: z.date(),
-};
+export const BanUserTypeSchema = z.enum(["WARNING", "POST_BAN", "SYS_BAN"]);
+export type BanUserType = z.infer<typeof BanTypeSchema>;
 
 /**
  * baseBanShape: The core fields shared by all ban-related tables.
  * We keep this as a plain object so we can use spread ... syntax later.
  */
 const baseBanShape = {
-  ...auditShape,
+  id: z.number(),
+  createdAt: z.date(),
   bannedBy: z.string(),
   banReason: z.string(),
   banMessage: z.string(),
   banUntil: z.date(),
   notificationDismissed: z.boolean(),
 };
-
-// ==========================================
-// 2. TRANSFORM HELPER
-// ==========================================
-
-/**
- * Reusable logic to map messy DB names to clean API names.
- * Maps 'notificationDismissed' -> 'isRead'
- */
+// ----------------------------------------------------------------------------
+const UserBanRaw = z.object({
+  ...baseBanShape,
+  type: z.literal(BanTypeSchema.enum.USER),
+  userId: z.number(),
+  banDuration: z.number(),
+  banType: BanUserTypeSchema,
+});
+const PostBanRaw = z.object({
+  ...baseBanShape,
+  type: z.literal(BanTypeSchema.enum.POST),
+  postId: z.number(),
+  authorId: z.number(),
+});
+const CommentBanRaw = z.object({
+  ...baseBanShape,
+  type: z.literal(BanTypeSchema.enum.COMMENT),
+  commentId: z.number(),
+  postId: z.number(),
+  authorId: z.number(),
+});
+// ----------------------------------------------------------------------------
+// Transform 'notificationDismissed' -> 'isRead'
+// ----------------------------------------------------------------------------
 const withNotificationFix = <T extends { notificationDismissed: boolean }>(
   data: T,
 ) => {
   const { notificationDismissed, ...rest } = data;
   return { ...rest, isRead: notificationDismissed };
 };
-
-// ==========================================
-// 3. EXPORTED BAN SCHEMAS
-// ==========================================
-
-export const UserBanSchema = z
-  .object({
-    ...baseBanShape,
-    userId: z.number(),
-    banDuration: z.number(),
-    banType: z.string(),
-  })
+// ----------------------------------------------------------------------------
+//  Apply rename for exports
+// ----------------------------------------------------------------------------
+export const UserBanSchema = UserBanRaw.transform(withNotificationFix);
+export const PostBanSchema = PostBanRaw.transform(withNotificationFix);
+export const CommentBanSchema = CommentBanRaw.transform(withNotificationFix);
+// ----------------------------------------------------------------------------
+export const AnyBanSchema = z
+  .discriminatedUnion("type", [UserBanRaw, PostBanRaw, CommentBanRaw])
   .transform(withNotificationFix);
-
-export const PostBanSchema = z
-  .object({
-    ...baseBanShape,
-    postId: z.number(),
-    authorId: z.number(),
-    // Add any specific fields unique to PostBan here
-  })
-  .transform(withNotificationFix);
-
-export const CommentBanSchema = z
-  .object({
-    ...baseBanShape,
-    commentId: z.number(),
-    postId: z.number(),
-    authorId: z.number(),
-  })
-  .transform(withNotificationFix);
-
 // ==========================================
-// 4. TYPES
-// ==========================================
-
-/**
- * Use z.output to get the type AFTER the transform (including 'isRead').
- */
-export type UserBan = z.output<typeof UserBanSchema>;
-export type PostBan = z.output<typeof PostBanSchema>;
-export type CommentBan = z.output<typeof CommentBanSchema>;
-
-// ==========================================
-// 4. ROUTER
+// 4. ROUTERS
 // ==========================================
 
 import { initContract } from "@ts-rest/core";

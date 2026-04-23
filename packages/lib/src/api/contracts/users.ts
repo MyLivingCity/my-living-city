@@ -33,7 +33,7 @@ export const UserSchema = z.object({
   avatar: z.string().optional(),
   banned: z.boolean(),
   city: z.string().optional(),
-  createdAt: DateTimeString,
+  createdAt: z.date(),
   displayFName: z.string().nullable(),
   displayLName: z.string().nullable(),
   email: z.string(),
@@ -53,7 +53,7 @@ export const UserSchema = z.object({
   status: z.boolean(),
   streetAddress: z.string().optional(),
   totalFlagged: z.number(),
-  updatedAt: DateTimeString,
+  updatedAt: z.date(),
   userReach: z.array(z.unknown()).optional(),
   userSegment: z.array(z.unknown()).optional(),
   userType: UserTypeSchema,
@@ -253,7 +253,7 @@ export const userApiContracts = c.router(
       body: z.undefined(),
       responses: {
         200: z.union([z.string(), SimpleMessageResponseSchema]),
-        400: ErrorResponseSchema,
+        400: SimpleMessageResponseSchema,
         500: ErrorResponseSchema,
       },
       summary:

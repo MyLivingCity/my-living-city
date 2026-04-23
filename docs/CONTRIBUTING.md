@@ -44,8 +44,8 @@ Assume all values are **required** unless otherwise specified.\
     production environment credentials.</ins>
 
 #### 2. In the project root, run
-* `pnpm install` to install all dependancies for the project,
-* `pnpm --filter @mlc/backend exec prisma generate` to generate a Prisma client.
+* `pnpm install` to install all dependancies for the project and generate \
+the prisma client.
 
 ### Database
 

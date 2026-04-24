@@ -5,13 +5,8 @@ import { reputationContract } from "./reputation";
 
 const c = initContract();
 
-export const moderationApiContracts = c.router(
-  {
-    bans: bansContract,
-    flags: flagsContract,
-    reputation: reputationContract,
-  },
-  {
-    pathPrefix: "/moderation",
-  },
-);
+export const moderationApiContracts = c.router({
+  bans: bansContract,
+  flags: flagsContract,
+  reputation: reputationContract,
+});

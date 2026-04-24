@@ -98,7 +98,7 @@ export const bansContract = c.router(
         },
         getById: {
           method: "GET",
-          path: "/:commentBanId",
+          path: "/getByCommentId/:commentBanId",
           pathParams: z.object({ commentBanId: z.coerce.number() }),
           responses: {
             200: CommentBanSchema,
@@ -108,7 +108,7 @@ export const bansContract = c.router(
         },
         getUndismissedNotifications: {
           method: "GET",
-          path: "/:userId",
+          path: "/getUndismissedNotification/:userId",
           pathParams: z.object({ userId: z.coerce.number() }),
           responses: {
             200: z.array(CommentBanSchema),
@@ -135,7 +135,7 @@ export const bansContract = c.router(
         },
         dismissNotification: {
           method: "POST",
-          path: "/:commentBanId/dismissNotification",
+          path: "/dismissNotification/:commentBanId",
           pathParams: z.object({ commentBanId: z.coerce.number() }),
           body: z.object({}), // Explicitly empty
           responses: {
@@ -145,7 +145,7 @@ export const bansContract = c.router(
         },
         deleteById: {
           method: "DELETE",
-          path: "/:commentBanId",
+          path: "/delete/:commentBanId",
           pathParams: z.object({ commentBanId: z.coerce.number() }),
           responses: {
             200: SimpleMessageResponseSchema,
@@ -154,7 +154,7 @@ export const bansContract = c.router(
           summary: "Delete comment ban by id",
         },
       },
-      { pathPrefix: "/comments" },
+      { pathPrefix: "/banComment" },
     ),
     // ----------------------------------------------------------------------------
     // banPostRouter.js
@@ -232,7 +232,7 @@ export const bansContract = c.router(
           summary: "Delete post ban by id",
         },
       },
-      { pathPrefix: "/posts" },
+      //{ pathPrefix: "/posts" },
     ),
     // ----------------------------------------------------------------------------
     // banUserRouter.js

@@ -3,8 +3,7 @@ import { FormControl, Form as BForm } from "react-bootstrap";
 import { FormikStep } from "@components/ui/session/FormikStep";
 import { getUserWithEmail } from "@lib/api/user.routes";
 import * as Yup from "yup";
-import { USER_TYPES } from @/lib/constants";
-import { TEXT_INPUT_LIMIT } from @/lib/constants";
+import { USER_TYPES, TEXT_INPUT_LIMIT } from "src/lib/constants/constants";
 
 type BusinessWorkDetails = {
   streetAddress: string;

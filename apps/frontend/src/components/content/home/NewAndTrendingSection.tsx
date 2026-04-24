@@ -1,17 +1,17 @@
 import { Container, Col, Carousel, Modal, Collapse } from "react-bootstrap";
-import PlaceholderIdeaTile from "../../tiles/PlaceholderIdeaTile";
-import { type IIdeaWithAggregations } from "src/lib/types/idea.types";
-import IdeaTile from "../../tiles/IdeaTile";
 import { BsFilter } from "react-icons/bs";
 import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
 import { useState } from "react";
 import { useCategories } from "src/hooks/categoryHooks";
 import { useAllProposals } from "src/hooks/proposalHooks";
-import { capitalize } from "src/lib/utils";
 import { useAllSuperSegments, useAllSegments } from "src/hooks/segmentHooks";
-import ProposalTile from "../../tiles/ProposalTile";
+import PlaceholderIdeaTile from "src/components/tiles/PlaceholderIdeaTile";
+import ProposalTile from "src/components/tiles/ProposalTile";
+import IdeaTile from "src/components/tiles/IdeaTile";
 import LoadingSpinner from "src/components/ui/misc/LoadingSpinner";
 import ErrorMessage from "src/components/ui/misc/ErrorMessage";
+import { type IIdeaWithAggregations } from "@/lib/types/ideas/idea.types";
+import { capitalize } from "src/lib/utils";
 
 type IIdeaWithNew = IIdeaWithAggregations & { isNew?: boolean };
 

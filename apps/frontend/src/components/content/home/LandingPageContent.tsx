@@ -1,11 +1,11 @@
 import React from "react";
 import { Container, Row } from "react-bootstrap";
-import { IIdeaWithAggregations } from "../../lib/types/data/idea.type";
+import { type IIdeaWithAggregations } from "@/lib/types/ideas/idea.types";
 import { IFetchError } from "../../lib/types/types";
-import CategoriesSection from "../partials/LandingContent/CategoriesSection";
-import DescriptionSection from "../partials/LandingContent/DescriptionSection";
-import HeroBannerSection from "../partials/LandingContent/HeroBannerSection";
-import NewAndTrendingSection from "../partials/LandingContent/NewAndTrendingSection";
+import CategoriesSection from "./CategoriesSection";
+import DescriptionSection from "./DescriptionSection";
+import HeroBannerSection from "./HeroBannerSection";
+import NewAndTrendingSection from "./NewAndTrendingSection";
 
 import { AdsSectionPage } from "src/pages/AdsSectionPage";
 

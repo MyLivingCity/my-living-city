@@ -166,19 +166,19 @@ export const bansContract = c.router(
     // ----------------------------------------------------------------------------
     postBans: c.router(
       {
-        getAll: {
+        // getAll: {
+        //   method: "GET",
+        //   path: "/all",
+        //   responses: {
+        //     200: z.array(PostBanSchema),
+        //     400: ErrorResponseSchema,
+        //     401: z.string(),
+        //   },
+        //   summary: "Get all banned posts",
+        // },
+        getByPostId: {
           method: "GET",
-          path: "/all",
-          responses: {
-            200: z.array(PostBanSchema),
-            400: ErrorResponseSchema,
-            401: z.string(),
-          },
-          summary: "Get all banned posts",
-        },
-        getById: {
-          method: "GET",
-          path: "/:postBanId",
+          path: "'/getUndismissedNotification/:postBanId",
           pathParams: z.object({ postBanId: z.coerce.number() }),
           responses: {
             200: PostBanSchema,
@@ -188,7 +188,7 @@ export const bansContract = c.router(
         },
         getUndismissedNotifications: {
           method: "GET",
-          path: "/:userId",
+          path: "/getUndismissedNotification/:userId",
           pathParams: z.object({ userId: z.coerce.number() }),
           responses: {
             200: z.array(PostBanSchema),
@@ -213,7 +213,7 @@ export const bansContract = c.router(
         },
         dismissNotification: {
           method: "POST",
-          path: "/:postBanId/dismissNotification",
+          path: "/dismissNotification/:postBanId",
           pathParams: z.object({ postBanId: z.coerce.number() }),
           body: z.object({}),
           responses: {
@@ -223,7 +223,7 @@ export const bansContract = c.router(
         },
         deleteById: {
           method: "DELETE",
-          path: "/:postBanId/delete",
+          path: "/delete/:postBanId",
           pathParams: z.object({ postBanId: z.coerce.number() }),
           responses: {
             200: SimpleMessageResponseSchema,
@@ -232,7 +232,7 @@ export const bansContract = c.router(
           summary: "Delete post ban by id",
         },
       },
-      //{ pathPrefix: "/posts" },
+      { pathPrefix: "/banPost" },
     ),
     // ----------------------------------------------------------------------------
     // banUserRouter.js

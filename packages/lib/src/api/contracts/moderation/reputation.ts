@@ -107,16 +107,16 @@ export const reputationContract = c.router(
           },
           summary: "Get all users from bad posting behavior table",
         },
-        getById: {
-          method: "GET",
-          path: "/checkUser/:userId",
-          responses: {
-            200: UserSchema,
-            400: ErrorResponseSchema,
-          },
-          //note: this originally hits Bad_Posting_Behavior
-          summary: "Get bad posting behavior for authenticated user",
-        },
+        // getById: {
+        //   method: "GET",
+        //   path: "/checkUser/:userId",
+        //   responses: {
+        //     200: UserSchema,
+        //     400: ErrorResponseSchema,
+        //   },
+        //   //note: this originally hits Bad_Posting_Behavior
+        //   summary: "Get bad posting behavior for authenticated user",
+        // },
         getBadPostingBehavior: {
           method: "GET",
           path: "/getBadPostingBehavior",

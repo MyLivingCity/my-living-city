@@ -175,7 +175,7 @@ export default {
   schema: moderationApiContracts,
   router: {
     reputation: {
-      banPosts: {
+      badPosts: {
         incrementBadPostCount,
       },
     },

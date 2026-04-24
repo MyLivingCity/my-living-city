@@ -7,7 +7,8 @@
     "types": ["vitest/globals"],
     "paths": {
       "@mlc/lib": ["../../packages/lib/src/index.ts"],
-      "@mlc/lib/*": ["../../packages/lib/src/*"]
+      "@mlc/lib/*": ["../../packages/lib/src/*"],
+      "#prisma/client": ["node_modules/.prisma/client/client"]
     }
   },
   "references": [

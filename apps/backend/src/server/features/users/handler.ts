@@ -1,5 +1,6 @@
 import { userApiContracts, UserSchema } from "@mlc/lib/api";
-import { UserType } from "@prisma/client";
+import { UserType } from "#prisma/client";
+import { prisma } from "src/prisma/client";
 import { initServer } from "@ts-rest/express";
 import { NextFunction, Request, Response } from "express";
 import * as passport from "passport";

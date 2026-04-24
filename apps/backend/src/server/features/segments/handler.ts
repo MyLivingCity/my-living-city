@@ -1,5 +1,6 @@
 import { segmentApiContracts } from "@mlc/lib/api";
-import { Prisma, SegmentType, UserType } from "@prisma/client";
+import { Prisma, SegmentType, UserType } from "#prisma/client";
+import { prisma } from "src/prisma/client";
 import { initServer } from "@ts-rest/express";
 import * as passport from "passport";
 import { prisma } from "src/prisma/client";

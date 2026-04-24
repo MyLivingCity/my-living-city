@@ -3,7 +3,7 @@ import {
   Prisma,
   SegmentType,
   UserSegmentRelationShipType,
-} from "@prisma/client";
+} from "#prisma/client";
 import { initServer } from "@ts-rest/express";
 import * as passport from "passport";
 import { prisma } from "src/prisma/client";

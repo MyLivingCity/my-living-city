@@ -43,7 +43,7 @@ export const reputationContract = c.router(
       {
         incrementBadPostCount: {
           method: "POST",
-          path: "/:ideaId/add",
+          path: "/incrementBadPostCount/:ideaId",
           pathParams: z.object({
             ideaId: z.coerce.number(),
           }),
@@ -58,7 +58,7 @@ export const reputationContract = c.router(
         },
         incrementPostFlagCount: {
           method: "POST",
-          path: "/:ideaId",
+          path: "/incrementPostFlagCount/:ideaId",
           pathParams: z.object({
             ideaId: z.coerce.number(),
           }),
@@ -72,29 +72,29 @@ export const reputationContract = c.router(
         },
         resetBadPostCount: {
           method: "POST",
-          path: "/:userId/reset",
-          pathParams: z.object({ userId: z.coerce.number() }),
+          path: "/resetBadPostCount/:ideaId",
+          pathParams: z.object({ ideaId: z.coerce.number() }),
           body: z.object({}),
           responses: {
             200: SimpleMessageResponseSchema,
             404: ErrorResponseSchema,
           },
-          summary: "Reset user's bad post and post flag counts",
+          summary: "Reset ideaId.author's bad post and post flag counts",
         },
         checkUser: {
           method: "POST",
-          path: "/:userId/check",
+          path: "/checkUser/:userId",
           pathParams: z.object({ userId: z.coerce.number() }),
           body: z.object({}),
           responses: {
             200: SimpleMessageResponseSchema,
             404: ErrorResponseSchema,
           },
-          summary: "Check thresholds and post-ban user if exceeded",
+          summary: "Check ban thresholds and post-ban user if exceeded",
         },
         getAll: {
           method: "GET",
-          path: "/",
+          path: "/getAll",
           responses: {
             200: z.array(
               UserSchema.pick({
@@ -109,16 +109,28 @@ export const reputationContract = c.router(
         },
         getById: {
           method: "GET",
-          path: "/:userId",
+          path: "/checkUser/:userId",
           responses: {
             200: UserSchema,
             404: ErrorResponseSchema,
           },
+          //note: this originally hits Bad_Posting_Behavior
           summary: "Get bad posting behavior for authenticated user",
+        },
+        getBadPostingBehavior: {
+          method: "GET",
+          path: "/getBadPostingBehavior",
+          responses: {
+            200: UserSchema,
+            404: ErrorResponseSchema,
+          },
+          //note: this originally hits Bad_Posting_Behavior
+          summary: "Get bad posting behavior for current user",
         },
         checkThreshold: {
           method: "POST",
-          path: "/users/check",
+          //find the threshhold in threshhold table with the id of 3
+          path: "/checkThreshold",
           body: z.object({}),
           responses: {
             200: SimpleMessageResponseSchema,
@@ -127,7 +139,8 @@ export const reputationContract = c.router(
           summary: "Check thresholds and post-ban users who exceeded",
         },
       },
-      { pathPrefix: "bad-posts" },
+      { pathPrefix: "/badPostingBehavior" },
+      //{ pathPrefix: "bad-posts" },
     ),
     // ----------------------------------------------------------------------------
     //falseFlaggingBehaviour
@@ -150,16 +163,17 @@ export const reputationContract = c.router(
           summary:
             "Trigger a review of the false-flagging table and ban eligible users",
         },
-        checkFlagBan: {
-          method: "GET",
-          path: "/:userId/check-ban",
-          pathParams: z.object({ userId: z.coerce.number() }),
-          responses: {
-            200: z.object({ banned: z.boolean() }),
-            404: ErrorResponseSchema,
-          },
-          summary: "Check if user has a flag ban",
-        },
+        // put back into flags to satisfy existing routes
+        // checkFlagBan: {
+        //   method: "GET",
+        //   path: "/:userId/check-ban",
+        //   pathParams: z.object({ userId: z.coerce.number() }),
+        //   responses: {
+        //     200: z.object({ banned: z.boolean() }),
+        //     404: ErrorResponseSchema,
+        //   },
+        //   summary: "Check if user has a flag ban",
+        // },
         getAll: {
           method: "GET",
           path: "/",
@@ -192,5 +206,5 @@ export const reputationContract = c.router(
       { pathPrefix: "/false-flag" },
     ),
   },
-  { pathPrefix: "/reputation" },
+  //{ pathPrefix: "/reputation" },
 );

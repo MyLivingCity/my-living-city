@@ -41,6 +41,7 @@ services:
             - dist/
             - "*.log"
             - package.json
+            - node_modules
 
   mlc-frontend:
     stdin_open: true
@@ -75,3 +76,4 @@ services:
             - dist/
             - "*.log"
             - package.json
+            - node_modules

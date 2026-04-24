@@ -23,7 +23,7 @@ const main = async () => {
 	app.use(
 		cors({
 			credentials: true,
-			origin: CORS_ORIGIN
+     origin: /http(s|):\/\/localhost:(4|3)000/,
 		})
 	);
 

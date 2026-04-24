@@ -1,5 +1,9 @@
 {
   "tasks": {
+    "postinstall": {
+      "dependsOn": []
+    },
+
     "test": {
       "dependsOn": []
     },

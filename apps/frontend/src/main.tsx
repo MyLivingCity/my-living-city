@@ -1,7 +1,18 @@
+<<<<<<< HEAD
 import React from "react";
 import ReactDOM from "react-dom/client"; // ✅ important change
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
+=======
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { BrowserRouter } from "react-router-dom"; // ✅ add this
+
+import "./styles/base.scss";
+import "./index.css";
+
+import App from "./App.tsx";
+>>>>>>> refactor
 
 import "@/styles/ui/_other.scss";
 

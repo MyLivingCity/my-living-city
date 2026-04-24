@@ -28,72 +28,113 @@ const ThresholdSchema = z.object({
 // ----------------------------------------------------------------------------
 const c = initContract();
 
-export const adminApiContracts = c.router(
-  {
-    dashboard: c.router(
-      {
-        getAllNotifications: {
-          method: "GET",
-          path: "/",
-          responses: {
-            200: z.array(QNotificationSchema),
-          },
-          summary: "Get all unseen notifications",
+export const adminApiContracts = c.router({
+  dashboard: c.router(
+    {
+      getAllNotifications: {
+        method: "GET",
+        path: "/getAllNotifications",
+        responses: {
+          200: z.array(QNotificationSchema),
         },
-        dismissNotification: {
-          method: "PUT",
-          path: "/:notificationId/dismiss",
-          pathParams: z.object({
-            id: z.coerce.number(),
-          }),
-          body: z.object({}),
-          responses: {
-            200: QNotificationSchema,
-          },
+        summary: "Get all unseen notifications",
+      },
+      dismissNotification: {
+        method: "PUT",
+        path: "/dismiss/:notificationId",
+        pathParams: z.object({
+          id: z.coerce.number(),
+        }),
+        body: z.object({}),
+        responses: {
+          200: QNotificationSchema,
         },
       },
-      { pathPrefix: "/dashboard" },
-    ),
-    admin: c.router(
-      {
-        getThreshold: {
-          method: "GET",
-          path: "/:id", // Use :id to handle 1, 2, or 3 in one route
-          pathParams: z.object({ id: z.coerce.number() }),
-          responses: {
-            200: ThresholdSchema,
-          },
-          summary: "Get existing ban threshold",
+    },
+    { pathPrefix: "/dashboard" },
+  ),
+  threshhold: c.router(
+    {
+      getBanThreshold: {
+        method: "GET",
+        path: "/get",
+        responses: {
+          200: ThresholdSchema,
         },
-        updateThreshold: {
-          method: "PUT",
-          path: "/:id/:num",
-          pathParams: z.object({
-            id: z.coerce.number(),
-            num: z.coerce.number(),
-          }),
-          body: z.object({}),
-          responses: {
-            200: z.object({
-              message: z.string(),
-              updatedThresh: ThresholdSchema,
-            }),
-          },
-          summary: "Set existing ban threshold",
-        },
-        createThreshold: {
-          method: "POST",
-          path: "/:num",
-          pathParams: z.object({ num: z.coerce.number() }),
-          body: z.object({}),
-          responses: {
-            201: z.object({ message: z.string(), newThresh: ThresholdSchema }),
-          },
-          summary: "Create a new ban threshold",
-        },
+        summary: "Get existing ban threshold",
       },
-      { pathPrefix: "/threshold" },
-    ),
-  },
-  { pathPrefix: "/admin" },
-);
+      updateBanThreshold: {
+        method: "PUT",
+        path: "/update/:num",
+        pathParams: z.object({
+          num: z.coerce.number(),
+        }),
+        body: z.object({}),
+        responses: {
+          200: z.object({
+            message: z.string(),
+            updatedThresh: ThresholdSchema,
+          }),
+        },
+        summary: "Set existing ban threshold",
+      },
+      createThreshold: {
+        method: "POST",
+        path: "/create/:num",
+        pathParams: z.object({ num: z.coerce.number() }),
+        body: z.object({}),
+        responses: {
+          201: z.object({ message: z.string(), newThresh: ThresholdSchema }),
+        },
+        summary: "Create a new ban threshold",
+      },
+      getFalseFlagThreshold: {
+        method: "GET",
+        path: "/getFalseFlag",
+        responses: {
+          200: ThresholdSchema,
+        },
+        summary: "Get existing false-flag threshold",
+      },
+      updateFalseFlagThreshold: {
+        method: "PUT",
+        path: "/updateFalseFlag/:num",
+        pathParams: z.object({
+          num: z.coerce.number(),
+        }),
+        body: z.object({}),
+        responses: {
+          200: z.object({
+            message: z.string(),
+            updatedThresh: ThresholdSchema,
+          }),
+        },
+        summary: "Set existing false-flag ban threshold",
+      },
+      getBadPostingThreshold: {
+        method: "GET",
+        path: "/getBadPosting",
+        responses: {
+          200: ThresholdSchema,
+        },
+        summary: "Get existing bad posting ban threshold",
+      },
+      updateBadPostingThreshold: {
+        method: "PUT",
+        path: "/updateBadPosting/:num",
+        pathParams: z.object({
+          num: z.coerce.number(),
+        }),
+        body: z.object({}),
+        responses: {
+          200: z.object({
+            message: z.string(),
+            updatedThresh: ThresholdSchema,
+          }),
+        },
+        summary: "Set existing bad posting ban threshold",
+      },
+    },
+    { pathPrefix: "/threshhold" },
+  ),
+});

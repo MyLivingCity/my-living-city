@@ -50,7 +50,7 @@ export const reputationContract = c.router(
           body: z.object({}),
           responses: {
             200: SimpleMessageResponseSchema,
-            404: ErrorResponseSchema,
+            400: ErrorResponseSchema,
           },
           summary:
             //when post is removed by admin:
@@ -65,7 +65,7 @@ export const reputationContract = c.router(
           body: z.object({}),
           responses: {
             200: SimpleMessageResponseSchema,
-            404: ErrorResponseSchema,
+            400: ErrorResponseSchema,
           },
           //when another user flags author's post:
           summary: "Increments the post flag counter for an idea author",
@@ -77,7 +77,7 @@ export const reputationContract = c.router(
           body: z.object({}),
           responses: {
             200: SimpleMessageResponseSchema,
-            404: ErrorResponseSchema,
+            400: ErrorResponseSchema,
           },
           summary: "Reset ideaId.author's bad post and post flag counts",
         },
@@ -88,7 +88,7 @@ export const reputationContract = c.router(
           body: z.object({}),
           responses: {
             200: SimpleMessageResponseSchema,
-            404: ErrorResponseSchema,
+            400: ErrorResponseSchema,
           },
           summary: "Check ban thresholds and post-ban user if exceeded",
         },
@@ -103,7 +103,7 @@ export const reputationContract = c.router(
                 banned: true,
               }),
             ),
-            404: z.object({ message: z.string() }),
+            400: z.object({ message: z.string() }),
           },
           summary: "Get all users from bad posting behavior table",
         },
@@ -112,7 +112,7 @@ export const reputationContract = c.router(
           path: "/checkUser/:userId",
           responses: {
             200: UserSchema,
-            404: ErrorResponseSchema,
+            400: ErrorResponseSchema,
           },
           //note: this originally hits Bad_Posting_Behavior
           summary: "Get bad posting behavior for authenticated user",
@@ -122,7 +122,7 @@ export const reputationContract = c.router(
           path: "/getBadPostingBehavior",
           responses: {
             200: UserSchema,
-            404: ErrorResponseSchema,
+            400: ErrorResponseSchema,
           },
           //note: this originally hits Bad_Posting_Behavior
           summary: "Get bad posting behavior for current user",
@@ -134,7 +134,7 @@ export const reputationContract = c.router(
           body: z.object({}),
           responses: {
             200: SimpleMessageResponseSchema,
-            404: ErrorResponseSchema,
+            400: ErrorResponseSchema,
           },
           summary: "Check thresholds and post-ban users who exceeded",
         },

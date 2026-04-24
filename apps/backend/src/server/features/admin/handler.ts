@@ -18,16 +18,15 @@
 //   - GET  /                        get current moderation thresholds
 //   - PUT  /                        update thresholds (admin only)
 //   - POST /reset                   reset thresholds to defaults
-// =============================================================================
-// This needs prisma connection
-// =============================================================================
+// ----------------------------------------------------------------------------
+
 import { initServer } from "@ts-rest/express";
-import { apiContract } from "@mlc/lib/api/contracts/admin";
-//import prisma from "";
+import { adminApiContracts } from "@mlc/lib/api/contracts/admin";
+import { prisma } from "src/prisma/client";
 
 const s = initServer();
 
-export const adminRouter = s.router(apiContract.admin, {
+export const adminRouter = s.router(adminApiContracts, {
   getThreshold: async ({ params }) => {
     const threshold = await prisma.threshhold.findUnique({
       where: { id: params.id },

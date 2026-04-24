@@ -36,16 +36,16 @@ export const flagsContract = c.router(
       {
         getAll: {
           method: "GET",
-          path: "/",
+          path: "/getAll",
           responses: {
             200: z.array(IdeaFlagSchema),
             400: ErrorResponseSchema,
           },
           summary: "Get all Idea flags",
         },
-        getById: {
+        getFlagsById: {
           method: "GET",
-          path: "/:ideaId",
+          path: "getFlags/:ideaId",
           pathParams: z.object({ ideaId: z.coerce.number() }),
           responses: {
             200: IdeaFlagSchema,
@@ -55,7 +55,7 @@ export const flagsContract = c.router(
         },
         createFlag: {
           method: "POST",
-          path: "/:ideaId/create",
+          path: "/create/:ideaId",
           pathParams: z.object({ ideaId: z.coerce.number() }),
           body: IdeaFlagSchema.pick({ reason: true }),
           responses: {
@@ -66,7 +66,7 @@ export const flagsContract = c.router(
         },
         falseFlagMany: {
           method: "PUT",
-          path: "/:ideaId/false-flag-many",
+          path: "/falseFlagMany/:ideaId",
           pathParams: z.object({ ideaId: z.coerce.number() }),
           body: z.object({ isFalse: z.boolean() }),
           responses: {
@@ -75,8 +75,19 @@ export const flagsContract = c.router(
           },
           summary: "Set all flags as false for ideaId",
         },
+        checkFlagBan: {
+          method: "GET",
+          path: "checkFlagBan/:userId",
+          pathParams: z.object({ userId: z.coerce.number() }),
+          responses: {
+            200: z.array(IdeaFlagSchema),
+            400: ErrorResponseSchema,
+          },
+          summary: "Get idea flags for userId",
+        },
       },
-      { pathPrefix: "/ideas" },
+      { pathPrefix: "/flag" },
+      //{ pathPrefix: "/ideas" },
     ),
     // ----------------------------------------------------------------------------
     // commentFlag.js
@@ -127,9 +138,10 @@ export const flagsContract = c.router(
         },
       },
       { pathPrefix: "/comments" },
+      //{ pathPrefix: "/commentFlag" },
     ),
   },
-  {
-    pathPrefix: "/flags",
-  },
+  // {
+  //   pathPrefix: "/flags",
+  // },
 );

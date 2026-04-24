@@ -3,15 +3,27 @@ import { initContract } from "@ts-rest/core";
 import { UserSchema } from "../users";
 import { ErrorResponseSchema, SimpleMessageResponseSchema } from "../../common";
 
-export const BadPostingBehaviourSchema = z.object({
-  bad_post_count: z.number(),
-  bannedAt: z.date(),
-  bannedUntil: z.date(),
-  id: z.number(),
-  postCommentBan: z.boolean(),
-  postFlagCount: z.number(),
-  userId: z.number(),
-});
+export const BadPostingBehaviourSchema = z
+  .object({
+    id: z.number().default(0),
+    userId: z.string().cuid().default(""),
+    bad_post_count: z.number().default(0),
+    postFlagCount: z.number().default(0),
+    postCommentBan: z.boolean().default(false),
+    // For dates, we typically use a "Unix Epoch" or null-equivalent
+    // depending on how your frontend handles empty states
+    bannedAt: z.date().default(new Date(0)),
+    bannedUntil: z.date().default(new Date(0)),
+  })
+  .default({
+    id: 0,
+    userId: "",
+    bad_post_count: 0,
+    postFlagCount: 0,
+    postCommentBan: false,
+    bannedAt: new Date(0),
+    bannedUntil: new Date(0),
+  });
 
 export const FalseFlagSchema = z.object({
   bannedAt: z.boolean(),
@@ -19,7 +31,7 @@ export const FalseFlagSchema = z.object({
   flagBan: z.boolean(),
   flagCount: z.number(),
   id: z.number(),
-  userId: z.number(),
+  userId: z.string().cuid(),
 });
 // ----------------------------------------------------------------------------
 //  Routers
@@ -84,7 +96,7 @@ export const reputationContract = c.router(
         checkUser: {
           method: "POST",
           path: "/checkUser/:userId",
-          pathParams: z.object({ userId: z.coerce.number() }),
+          pathParams: z.object({ userId: z.string().cuid() }),
           body: z.object({}),
           responses: {
             200: SimpleMessageResponseSchema,
@@ -96,13 +108,7 @@ export const reputationContract = c.router(
           method: "GET",
           path: "/getAll",
           responses: {
-            200: z.array(
-              UserSchema.pick({
-                id: true,
-                email: true,
-                banned: true,
-              }),
-            ),
+            200: z.array(z.string().cuid()),
             400: z.object({ message: z.string() }),
           },
           summary: "Get all users from bad posting behavior table",
@@ -121,7 +127,7 @@ export const reputationContract = c.router(
           method: "GET",
           path: "/getBadPostingBehavior",
           responses: {
-            200: UserSchema,
+            200: BadPostingBehaviourSchema,
             400: ErrorResponseSchema,
           },
           //note: this originally hits Bad_Posting_Behavior

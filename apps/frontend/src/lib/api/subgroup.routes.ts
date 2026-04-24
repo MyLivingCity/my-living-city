@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getAxiosJwtRequestOption } from './axiosRequestOptions';
+import { getAxiosJwtRequestOption } from '@lib/api/axiosRequestOptions';
 
 // Constants
 import { API_BASE_URL } from '../constants';

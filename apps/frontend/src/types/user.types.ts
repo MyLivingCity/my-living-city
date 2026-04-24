@@ -4,7 +4,7 @@ import type { IAddress } from 'src/types/address.type';
 import type { IComment } from 'src/types/comment.type';
 import type { IUserRole } from 'src/types/userRole.type';
 import type { IUserSegment } from 'src/types/segment.types';
-import type { IUserHandle } from 'src/types/userHandleType';
+import type { IUserHandle } from '@/types/userHandle.type';
 //'ADMIN' | 'MOD' | 'SEG_ADMIN' | 'SEG_MOD' | 'MUNICIPAL_SEG_ADMIN' | 'BUSINESS' | 'NORMAL';
 export interface IUser {
   id: string;

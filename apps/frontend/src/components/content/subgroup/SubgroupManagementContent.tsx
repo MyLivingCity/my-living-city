@@ -44,7 +44,7 @@ const SubGroupManagementContent: React.FC<SubGroupManagementContentProps> = ({
     const { data: usersInSubGroup, isLoading: userInSubGroupLoading, refetch: refetchUsersInSubGroup  } = useGetUserInSubGroup(token, selectedSubGroup?.id || '');
 
     // Filter users based on their member status
-    const currentMembers = usersInSubGroup ? usersInSubGroup.filter((user) => user.status === 'APPROVED') : [];
+    const currentMembers = usersInSubGroup ? usersInSubGroup!.filter((user) => user.status === 'APPROVED') : [];
     const joinRequests = usersInSubGroup ? usersInSubGroup.filter((user) => user.status === 'PENDING') : [];
     const rejectedUsers = usersInSubGroup ? usersInSubGroup.filter((user) => user.status === 'REJECTED') : [];
 

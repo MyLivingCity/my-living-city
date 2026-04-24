@@ -1,6 +1,6 @@
-import { IIdea } from './idea.type';
-import { IUserHandle } from './userHandle.type';
-import { IParsedSegment} from './segment.type';
+import type { IIdea } from 'src/types/idea.type';
+import type { IUserHandle } from 'src/types/userHandle.type';
+import type { IParsedSegment} from 'src/types/segment.types';
 
 
 export interface ICommentLikeAndDislikeAggregation {

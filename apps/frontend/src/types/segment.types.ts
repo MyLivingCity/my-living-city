@@ -32,6 +32,22 @@ export interface ISuperSegment {
   updatedAt: Date;
 }
 
+export interface IUserSegment {
+  id: number;
+  userId: string;
+  userSegmentRelationship: UserSegmentRelationshipEnum;
+  segmentId: number;
+  segment?: ISegment;
+}
+
+export interface IParsedSegment {
+  segId: number;
+  name: string;
+  segmentType: 'subSegment' | 'segment' | 'superSegment';
+}
+
+export type UserSegmentRelationshipEnum = 'HOME' | 'SCHOOL' | 'WORK';
+
 export type CheckBoxItem = {
   label: string | undefined;
   value: number | "SuperSeg";

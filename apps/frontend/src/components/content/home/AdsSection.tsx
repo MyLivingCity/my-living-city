@@ -7,11 +7,12 @@ export const AdsSection = () => {
   const { data: ads } = usePublishedAds();
 
   const activeAds = useMemo(() => {
-    if (!ads) return [];
+    if (!Array.isArray(ads)) return [];
+
     const today = new Date();
+
     return ads.filter((ad: IAdvertisement) => {
-      if (!ad.duration) return false;
-      return new Date(ad.duration) > today;
+      return ad.duration && new Date(ad.duration) > today;
     });
   }, [ads]);
 

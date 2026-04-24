@@ -120,7 +120,7 @@ const ProposalTile: React.FC<proposalTileProps> = ({
           <div className="text-right">
             <small className="text-muted user-select-none">
               {idea.subSegmentName
-                ? ` ${capitalizeString(idea.segmentName)}\/${capitalizeString(idea.subSegmentName)}`
+                ? ` ${capitalizeString(idea.segmentName)}/${capitalizeString(idea.subSegmentName)}`
                 : idea.segmentName
                   ? ` ${capitalizeString(idea.segmentName)}`
                   : superSegmentName

@@ -7,3 +7,7 @@ export interface IFetchErrorDetails {
   errorMessage: string;
   errorStack: string;
 }
+
+export type ApiError = {
+  message: string;
+};

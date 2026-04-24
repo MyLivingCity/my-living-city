@@ -39,12 +39,6 @@ const PlaceholderIdeaTile = () => {
               <p className="mb-0 user-select-none"></p>
             </div>
             <div className="px-2 text-muted d-flex flex-column justify-content-center align-items-center">
-              {/* Could possible have thumbs up and thumbs down but found heart to be clearer */}
-              {/* <div className="">
-                <FaRegThumbsUp />
-                /
-                <FaRegThumbsDown />
-              </div> */}
               <BsHeartHalf />
               <p className="mb-0 user-select-none"></p>
             </div>

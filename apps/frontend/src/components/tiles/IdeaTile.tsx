@@ -27,30 +27,13 @@ const IdeaTile: React.FC<ideaTileProps> = ({
     segmentName,
     subSegmentName,
     firstName,
-    streetAddress,
     updatedAt,
     ratingAvg = 0,
     ratingCount = 0,
     commentCount = 0,
     posRatings = 0,
     negRatings = 0,
-    ratings,
-    comments,
   } = ideaData;
-
-  let numRatings = 0;
-  let numComments = 0;
-  let ratingRatio = 0;
-
-  if (ratings) {
-    ratings?.forEach((rate: any) => {
-      if (rate.rating > 0) {
-        ratingRatio += 1;
-      } else if (rate.rating < 0) {
-        ratingRatio += 1;
-      }
-    });
-  }
 
   const oneWeek = 604800000;
   const postDate = new Date(updatedAt);
@@ -145,7 +128,7 @@ const IdeaTile: React.FC<ideaTileProps> = ({
           <div className="text-right">
             <small className="text-muted user-select-none">
               {subSegmentName
-                ? ` ${capitalizeString(segmentName || "")}\/${capitalizeString(subSegmentName || "")}`
+                ? ` ${capitalizeString(segmentName || "")}/${capitalizeString(subSegmentName || "")}`
                 : segmentName
                   ? ` ${capitalizeString(segmentName || "")}`
                   : superSegmentName

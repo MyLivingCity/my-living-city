@@ -1,9 +1,11 @@
 import axios from "axios";
+import { type AxiosRequestConfig } from "axios";
 import { API_BASE_URL } from "../constants/constants";
 import {
   type IRegisterInput,
   type SegmentRequest,
 } from "../../components/content/session/types/register.types";
+import { type IUser } from "../types/user/user.types";
 
 export const getUserWithEmail = async (email: string) => {
   const res = await axios.get(`${API_BASE_URL}/user/email/${email}`);
@@ -52,3 +54,36 @@ const postAvatarImage = async (avatar: File, token: string): Promise<void> => {
     headers: { "x-auth-token": token },
   });
 };
+
+export const getUserWithJWT = async ({
+  jwtAuthToken,
+}: GetUserWithJWTInput): Promise<IUser> => {
+  const res = await axios.get<IUser>(
+    `${API_BASE_URL}/user/me`,
+    getAxiosJwtRequestOption(jwtAuthToken),
+  );
+  return res.data;
+};
+
+export const getAxiosJwtRequestOption = (
+  jwtToken: string,
+): AxiosRequestConfig => {
+  const options: AxiosRequestConfig = {
+    headers: {
+      "x-auth-token": jwtToken,
+      "Access-Control-Allow-Origin": "*",
+    },
+    withCredentials: true,
+  };
+
+  return options;
+};
+
+export interface GetUserWithJWTInput {
+  jwtAuthToken: string;
+}
+
+export interface UseUserWithJwtInput {
+  shouldTrigger: boolean;
+  jwtAuthToken: string;
+}

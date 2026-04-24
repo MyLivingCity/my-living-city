@@ -77,36 +77,40 @@
 import { initServer } from "@ts-rest/express";
 import { moderationApiContracts } from "@mlc/lib/api";
 
-import { prisma } from "../../../prisma/client";
+import { prisma } from "src/prisma/client";
+import { Handlers } from "src/server";
 
 const s = initServer();
 
-export const moderationRouter = s.router(moderationApiContracts, {
-  incrementBadPostCount: async ({ params }) => {
-    const foundIdea = await prisma.idea.findUnique({
-      where: { id: params.ideaId },
-    });
+const incrementBadPostCount = s.route(
+  moderationApiContracts.reputation.badPosts.incrementBadPostCount,
+  {
+    handler: async () => {
+      const foundIdea = await prisma.idea.findUnique({
+        where: { id: params.ideaId },
+      });
 
-    if (!foundIdea) {
-      return { status: 404, body: { message: "Idea not found" } };
-    }
+      if (!foundIdea) {
+        return { status: 404, body: { message: "Idea not found" } };
+      }
 
-    await prisma.bad_Posting_Behavior.upsert({
-      where: { userId: foundIdea.authorId },
-      update: {
-        bad_post_count: { increment: 1 },
-      },
-      create: {
-        userId: foundIdea.authorId,
-        bad_post_count: 1,
-      },
-    });
-    return {
-      status: 200,
-      body: { message: "Bad post count updated" },
-    };
+      await prisma.bad_Posting_Behavior.upsert({
+        where: { userId: foundIdea.authorId },
+        update: {
+          bad_post_count: { increment: 1 },
+        },
+        create: {
+          userId: foundIdea.authorId,
+          bad_post_count: 1,
+        },
+      });
+      return {
+        status: 200,
+        body: { message: "Bad post count updated" },
+      };
+    },
   },
-});
+);
 
 /* 
 import { createServerResponse } from "@ts-rest/server"; // Optional helper
@@ -166,3 +170,12 @@ export const moderationRouter = (s: any) => s.router(moderationContract, {
   // Add other handlers here...
 });
 */
+
+export default {
+  schema: moderationApiContracts,
+  router: {
+    bans: {
+      incrementBadPostCount,
+    },
+  },
+} as Handlers;

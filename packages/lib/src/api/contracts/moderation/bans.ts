@@ -263,7 +263,7 @@ export const bansContract = c.router(
         },
         getAll: {
           method: "GET",
-          path: "/all",
+          path: "/getAll",
           responses: {
             200: z.array(UserBanSchema),
             400: ErrorResponseSchema,
@@ -273,7 +273,7 @@ export const bansContract = c.router(
         },
         getById: {
           method: "GET",
-          path: "/:userId",
+          path: "/get/:userId",
           pathParams: z.object({ userId: z.coerce.number() }),
           responses: {
             200: z.array(UserBanSchema),
@@ -283,7 +283,7 @@ export const bansContract = c.router(
         },
         getMostRecent: {
           method: "GET",
-          path: "/:userId/getMostRecent",
+          path: "/getMostRecent/:userId",
           pathParams: z.object({ userId: z.coerce.number() }),
           responses: {
             200: UserBanSchema,
@@ -293,7 +293,7 @@ export const bansContract = c.router(
         },
         getMostRecentWithToken: {
           method: "GET",
-          path: "/getMostRecent",
+          path: "/getMostRecentWithToken",
           responses: {
             200: UserBanSchema,
             400: ErrorResponseSchema,
@@ -302,7 +302,7 @@ export const bansContract = c.router(
         },
         updateUserBan: {
           method: "PATCH",
-          path: "/:userId/update",
+          path: "/update/:userId",
           body: UserBanSchema,
           responses: {
             200: SimpleMessageResponseSchema,
@@ -312,7 +312,7 @@ export const bansContract = c.router(
         },
         deleteById: {
           method: "DELETE",
-          path: "/:userId/delete",
+          path: "/delete/:userId",
           pathParams: z.object({ userId: z.coerce.number() }),
           responses: {
             200: SimpleMessageResponseSchema,
@@ -321,9 +321,28 @@ export const bansContract = c.router(
           summary:
             "Remove a ban record for a specific user (commented-out in existing)",
         },
+        getAllPassedDate: {
+          method: "GET",
+          path: "/getAllPassedDate",
+          responses: {
+            200: z.array(UserBanSchema),
+            400: ErrorResponseSchema,
+          },
+          summary: "Check banned users eligible for reinstatement",
+        },
+        deletePassedBanDate: {
+          method: "DELETE",
+          path: "/deletePassedBanDate",
+          pathParams: z.object({ userId: z.coerce.number() }),
+          responses: {
+            200: SimpleMessageResponseSchema,
+            400: ErrorResponseSchema,
+          },
+          summary: "Remove users from ban table if their ban is over",
+        },
       },
-      { pathPrefix: "/users" },
+      { pathPrefix: "/banUser" },
     ),
   },
-  { pathPrefix: "/bans" },
+  //{ pathPrefix: "/bans" },
 );

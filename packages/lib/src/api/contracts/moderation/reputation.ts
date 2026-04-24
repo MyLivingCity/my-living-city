@@ -39,7 +39,7 @@ export const reputationContract = c.router(
     //	GET	    /:userId/getBadPostingBehavior			get bad posting behavior for authenticated user
     //	POST	  /checkThreshhold				            apply threshold checks and set post_comment_ban
     // ----------------------------------------------------------------------------
-    badPosts: c.router(
+    badPostingBehavior: c.router(
       {
         incrementBadPostCount: {
           method: "POST",
@@ -153,11 +153,11 @@ export const reputationContract = c.router(
     //  taken from flag.js:
     //x	GET	  /checkFlagBan/:userID	        check if user has a flag ban
     // ----------------------------------------------------------------------------
-    falseFlag: c.router(
+    falseFlaggingBehavior: c.router(
       {
         checkFalseFlaggingBehavior: {
           method: "POST",
-          path: "/check-ban",
+          path: "/checkFalseFlaggingBehavior",
           body: z.object({}),
           responses: { 200: z.object({ message: z.string() }) },
           summary:
@@ -176,7 +176,7 @@ export const reputationContract = c.router(
         // },
         getAll: {
           method: "GET",
-          path: "/",
+          path: "/getAll",
           responses: {
             200: z.array(
               UserSchema.pick({
@@ -189,21 +189,21 @@ export const reputationContract = c.router(
           },
           summary: "Get all users from false-flagging behavior table",
         },
-        getById: {
-          method: "GET",
-          path: "/:userId",
-          responses: {
-            200: UserSchema.pick({
-              id: true,
-              email: true,
-              banned: true,
-            }),
-            404: ErrorResponseSchema,
-          },
-          summary: "Get false-flagging behavior for authenticated user",
-        },
+        // getById: {
+        //   method: "GET",
+        //   path: "/:userId",
+        //   responses: {
+        //     200: UserSchema.pick({
+        //       id: true,
+        //       email: true,
+        //       banned: true,
+        //     }),
+        //     404: ErrorResponseSchema,
+        //   },
+        //   summary: "Get false-flagging behavior for authenticated user",
+        // },
       },
-      { pathPrefix: "/false-flag" },
+      { pathPrefix: "/falseFlaggingBehavior" },
     ),
   },
   //{ pathPrefix: "/reputation" },

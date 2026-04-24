@@ -1,5 +1,6 @@
 import { ideaApiContracts } from "@mlc/lib/api";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "#prisma/client";
+import { prisma } from "src/prisma/client";
 import { initServer } from "@ts-rest/express";
 import { Handlers } from "src/server";
 import { prisma } from "src/prisma/client";

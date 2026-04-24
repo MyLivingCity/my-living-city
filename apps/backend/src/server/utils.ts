@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { Prisma } from "#prisma/client";
 
 export const toErrorDetails = (error: unknown) => {
   if (error instanceof Error) {

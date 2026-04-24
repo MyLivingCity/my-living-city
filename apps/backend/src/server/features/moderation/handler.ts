@@ -174,8 +174,10 @@ export const moderationRouter = (s: any) => s.router(moderationContract, {
 export default {
   schema: moderationApiContracts,
   router: {
-    bans: {
-      incrementBadPostCount,
+    reputation: {
+      banPosts: {
+        incrementBadPostCount,
+      },
     },
   },
 } as Handlers;

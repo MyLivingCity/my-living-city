@@ -157,8 +157,11 @@ importers:
         specifier: ^1.15.2
         version: 1.15.2
       bootstrap:
-        specifier: ^4.6.2
+        specifier: ^4
         version: 4.6.2(jquery@3.7.1)(popper.js@1.16.1)
+      bootstrap-icons:
+        specifier: ^1.13.1
+        version: 1.13.1
       formik:
         specifier: ^2.4.9
         version: 2.4.9(@types/react@19.2.14)(react@18.3.1)
@@ -180,6 +183,9 @@ importers:
       react-router-dom:
         specifier: ^7.14.1
         version: 7.14.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      sass:
+        specifier: ^1.99.0
+        version: 1.99.0
       yup:
         specifier: ^1.7.1
         version: 1.7.1
@@ -1337,6 +1343,9 @@ packages:
   body-parser@2.2.2:
     resolution: {integrity: sha512-oP5VkATKlNwcgvxi0vM0p/D3n2C3EReYVX+DNYs5TjZFn/oQt2j+4sVJtSMr18pdRr8wjTcBl6LoV+FUwzPmNA==}
     engines: {node: '>=18'}
+
+  bootstrap-icons@1.13.1:
+    resolution: {integrity: sha512-ijombt4v6bv5CLeXvRWKy7CuM3TRTuPEuGaGKvTV5cz65rQSY8RQ2JcHt6b90cBBAC7s8fsf2EkQDldzCoXUjw==}
 
   bootstrap@4.6.2:
     resolution: {integrity: sha512-51Bbp/Uxr9aTuy6ca/8FbFloBUJZLHwnhTcnjIeRn2suQWsWzcuJhGjKDB5eppVte/8oCdOL3VuwxvZDUggwGQ==}
@@ -4135,6 +4144,8 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  bootstrap-icons@1.13.1: {}
+
   bootstrap@4.6.2(jquery@3.7.1)(popper.js@1.16.1):
     dependencies:
       jquery: 3.7.1
@@ -4220,7 +4231,6 @@ snapshots:
   chokidar@4.0.3:
     dependencies:
       readdirp: 4.1.2
-    optional: true
 
   chokidar@5.0.0:
     dependencies:
@@ -5305,8 +5315,7 @@ snapshots:
     dependencies:
       picomatch: 2.3.2
 
-  readdirp@4.1.2:
-    optional: true
+  readdirp@4.1.2: {}
 
   readdirp@5.0.0: {}
 
@@ -5443,7 +5452,6 @@ snapshots:
       source-map-js: 1.2.1
     optionalDependencies:
       '@parcel/watcher': 2.5.6
-    optional: true
 
   scheduler@0.23.2:
     dependencies:

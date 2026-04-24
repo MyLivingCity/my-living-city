@@ -1,6 +1,10 @@
 import axios from "axios";
 import { API_BASE_URL } from "../constants/constants";
-import { type ISegment, type ISubSegment } from "@/lib/types/segment.types";
+import {
+  type SegmentNameQuery,
+  type ISegment,
+  type ISubSegment,
+} from "@/lib/types/segment.types";
 
 export const getAllSegments = async (): Promise<ISegment[]> => {
   const res = await axios.get<ISegment[]>(`${API_BASE_URL}/segment/getall`);
@@ -14,7 +18,7 @@ export const getSingleSegmentBySegmentId = async (segmentId: number) => {
   return res.data;
 };
 
-export const getAllSubSegmentsWithId = async (segId: any) => {
+export const getAllSubSegmentsWithId = async (segId: number) => {
   const res = await axios.get<ISubSegment[]>(
     `${API_BASE_URL}/segment/getChildren/${segId}`,
   );
@@ -86,7 +90,7 @@ export const findSubsegmentsBySegmentId = async (
   return res.data;
 };
 
-export const findSegmentByName = async (segData: any) => {
+export const findSegmentByName = async (segData: SegmentNameQuery) => {
   if (!segData.segName || !segData.province || !segData.country) {
     throw new Error("location parameters are needed");
   }

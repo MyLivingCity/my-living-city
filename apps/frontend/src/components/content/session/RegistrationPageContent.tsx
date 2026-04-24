@@ -158,36 +158,36 @@ function RegistrationPageContent() {
             validationSchema={
               step === 2
                 ? Yup.object().shape({
-                  email: Yup.string()
-                    .email("Invalid email")
-                    .required("Email is required")
-                    .test(
-                      "Unique Email",
-                      "Email already in use",
-                      function (value: string) {
-                        return new Promise((resolve) => {
-                          getUserWithEmail(value).then((res: number) => {
-                            resolve(res === 200 ? false : true);
+                    email: Yup.string()
+                      .email("Invalid email")
+                      .required("Email is required")
+                      .test(
+                        "Unique Email",
+                        "Email already in use",
+                        function (value: string) {
+                          return new Promise((resolve) => {
+                            getUserWithEmail(value).then((res: number) => {
+                              resolve(res === 200 ? false : true);
+                            });
                           });
-                        });
-                      },
-                    ),
-                  password: Yup.string()
-                    .min(8, "Password is too short, 8 characters minimum")
-                    .required("Password is required"),
-                  confirmPassword: Yup.string()
-                    .oneOf([Yup.ref("password")], "Passwords must match")
-                    .required("Confirm Password is required"),
-                })
+                        },
+                      ),
+                    password: Yup.string()
+                      .min(8, "Password is too short, 8 characters minimum")
+                      .required("Password is required"),
+                    confirmPassword: Yup.string()
+                      .oneOf([Yup.ref("password")], "Passwords must match")
+                      .required("Confirm Password is required"),
+                  })
                 : step === 3
                   ? Yup.object().shape({
-                    homeSegmentId: Yup.number()
-                      .typeError("Please select a municipality")
-                      .required("Please select a municipality"),
-                    communityType: Yup.string().required(
-                      "Please select a community relationship",
-                    ),
-                  })
+                      homeSegmentId: Yup.number()
+                        .typeError("Please select a municipality")
+                        .required("Please select a municipality"),
+                      communityType: Yup.string().required(
+                        "Please select a community relationship",
+                      ),
+                    })
                   : undefined
             }
           >
@@ -239,62 +239,62 @@ function RegistrationPageContent() {
                 (step === 5 &&
                   (userType === USER_TYPES.BUSINESS ||
                     userType === USER_TYPES.COMMUNITY))) && (
-                  <FormikStep>
-                    <>
-                      <p>
-                        It takes a lot to bring an idea to form, and as a user on
-                        the MLC Community Discussion Platform the following
-                        agreements will enable the interactions that turn ideas
-                        into reality:
-                      </p>
-                      <p>
-                        <strong>
-                          1. Ideas, comments and people are treated with respect;
-                        </strong>
-                      </p>
-                      <p>
-                        <strong>
-                          2. Commenting on an idea is designed to flesh it out in
-                          more detail to get as much constructive feedback and
-                          viewpoints from the community.
-                        </strong>
-                      </p>
-                      <p> The following works when commenting:</p>
-                      <p className="ml-4">
-                        a. Emphasize what you see that works about the idea and
-                        what is the value that it brings;
-                      </p>
-                      <p className="ml-4">
-                        b. Identify areas that don’t work and suggest how they can
-                        be improved;
-                      </p>
-                      <p className="ml-4">
-                        c. Opinions and judgments don’t add value to the
-                        conversation; and
-                      </p>
-                      <p className="ml-4">
-                        d. Share about where else this idea can go or what new
-                        angle can be added to make it even better for the whole
-                        community.
-                      </p>
-                      <p>
-                        <strong>
-                          3. Your ideas and experience is valuable and we want to
-                          hear from everyone how to make this an actual project
-                          that works in the community.
-                        </strong>
-                      </p>
-                      <p>By clicking next you confirm:</p>
-                      <p className="ml-4">
-                        a. Your acceptance to follow these community guidelines;
-                      </p>
-                      <p className="ml-4">
-                        b. That MyLivingCity has the right to store and process
-                        your personal information shared with the platform.
-                      </p>
-                    </>
-                  </FormikStep>
-                )}
+                <FormikStep>
+                  <>
+                    <p>
+                      It takes a lot to bring an idea to form, and as a user on
+                      the MLC Community Discussion Platform the following
+                      agreements will enable the interactions that turn ideas
+                      into reality:
+                    </p>
+                    <p>
+                      <strong>
+                        1. Ideas, comments and people are treated with respect;
+                      </strong>
+                    </p>
+                    <p>
+                      <strong>
+                        2. Commenting on an idea is designed to flesh it out in
+                        more detail to get as much constructive feedback and
+                        viewpoints from the community.
+                      </strong>
+                    </p>
+                    <p> The following works when commenting:</p>
+                    <p className="ml-4">
+                      a. Emphasize what you see that works about the idea and
+                      what is the value that it brings;
+                    </p>
+                    <p className="ml-4">
+                      b. Identify areas that don’t work and suggest how they can
+                      be improved;
+                    </p>
+                    <p className="ml-4">
+                      c. Opinions and judgments don’t add value to the
+                      conversation; and
+                    </p>
+                    <p className="ml-4">
+                      d. Share about where else this idea can go or what new
+                      angle can be added to make it even better for the whole
+                      community.
+                    </p>
+                    <p>
+                      <strong>
+                        3. Your ideas and experience is valuable and we want to
+                        hear from everyone how to make this an actual project
+                        that works in the community.
+                      </strong>
+                    </p>
+                    <p>By clicking next you confirm:</p>
+                    <p className="ml-4">
+                      a. Your acceptance to follow these community guidelines;
+                    </p>
+                    <p className="ml-4">
+                      b. That MyLivingCity has the right to store and process
+                      your personal information shared with the platform.
+                    </p>
+                  </>
+                </FormikStep>
+              )}
               {step === 4 &&
                 (userType === USER_TYPES.BUSINESS ||
                   userType === USER_TYPES.COMMUNITY) && (
@@ -312,14 +312,14 @@ function RegistrationPageContent() {
                 (userType === USER_TYPES.BUSINESS ||
                   userType === USER_TYPES.COMMUNITY)) ||
                 (step === 5 && userType === USER_TYPES.RESIDENTIAL)) && (
-                  <FormikStep>
-                    {submitError && <Alert variant="danger">{submitError}</Alert>}
-                    <h3>
-                      To complete registration press submit! Make sure to check
-                      your email for a verification code!
-                    </h3>
-                  </FormikStep>
-                )}
+                <FormikStep>
+                  {submitError && <Alert variant="danger">{submitError}</Alert>}
+                  <h3>
+                    To complete registration press submit! Make sure to check
+                    your email for a verification code!
+                  </h3>
+                </FormikStep>
+              )}
               {step === 7 &&
                 (userType === USER_TYPES.BUSINESS ||
                   userType === USER_TYPES.COMMUNITY) && (

@@ -2,7 +2,7 @@ import { type IGeo } from "src/lib/types/user/geo.types";
 import { type IUserRole } from "src/lib/types/user/userRole.types";
 import { type IAddress } from "src/lib/types/user/address.types";
 import { type IComment } from "src/lib/types/user/comment.types";
-import { type IUserSegment } from "src/lib/types/segment.types";
+import { type IUserSegment } from "@/lib/types/segment.types";
 import { type IUserHandle } from "src/lib/types/user/userHandle.types";
 import { USER_TYPES } from "src/lib/constants/constants";
 

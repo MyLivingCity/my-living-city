@@ -74,6 +74,18 @@ export interface ISegmentUserInfo {
   students: IUser[];
 }
 
+export interface IParsedSegment {
+  segId: number;
+  name: string;
+  segmentType: "subSegment" | "segment" | "superSegment";
+}
+
+export type SegmentNameQuery = {
+  segName: string;
+  province: string;
+  country: string;
+};
+
 export type CheckBoxItem = {
   label: string | undefined;
   value: number | "SuperSeg";

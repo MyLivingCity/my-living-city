@@ -1,7 +1,7 @@
 import type { ICategory } from "../home/category.types";
-import type { IRating } from "./rating.types";
-import type { IComment } from "./comment.types";
-import type { IUser } from "./user.types";
+import type { IRating } from "src/lib/types/ideas/rating.types";
+import type { IComment } from "src/lib/types/user/comment.types";
+import type { IUser } from "src/lib/types/user/user.types";
 import type { IProposalWithAggregations } from "./proposal.types";
 import type { ISegment } from "../segment.types";
 

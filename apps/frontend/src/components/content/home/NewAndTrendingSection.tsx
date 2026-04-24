@@ -64,7 +64,6 @@ const calculateScore = (idea: IIdeaWithNew): number => {
 
 const NewAndTrendingSection = ({
   topIdeas = [],
-  postType,
   isDashboard,
   showCustomFilter,
   isLoading: sectionIsLoading,

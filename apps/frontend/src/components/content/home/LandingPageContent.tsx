@@ -1,13 +1,12 @@
 import React from "react";
 import { Container, Row } from "react-bootstrap";
-import { type IIdeaWithAggregations } from "@/lib/types/ideas/idea.types";
-import { IFetchError } from "../../lib/types/types";
 import CategoriesSection from "./CategoriesSection";
 import DescriptionSection from "./DescriptionSection";
 import HeroBannerSection from "./HeroBannerSection";
 import NewAndTrendingSection from "./NewAndTrendingSection";
-
-import { AdsSectionPage } from "src/pages/AdsSectionPage";
+import { AdsSection } from "./AdsSection";
+import { type IIdeaWithAggregations } from "@/lib/types/ideas/idea.types";
+import { type IFetchError } from "src/lib/types/general/error.types";
 
 interface LandingPageContentProps {
   topIdeas: IIdeaWithAggregations[] | undefined;
@@ -40,7 +39,7 @@ const LandingPageContent: React.FC<LandingPageContentProps> = ({
       </Row>
 
       <Row className="d-none d-md-block">
-        <AdsSectionPage />
+        <AdsSection />
       </Row>
 
       <Row as="article" className="description" style={{ margin: "0" }}>

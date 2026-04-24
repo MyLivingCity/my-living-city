@@ -8,7 +8,7 @@ import {
   getSegmentAgggregateInfo,
   findSegmentByName,
   getSegmentUsersInfo,
-  getAllSubSegmentsWithId
+  getAllSubSegmentsWithId,
 } from "src/lib/api/segment.routes";
 import { type IFetchError } from "src/lib/types/general/error.types";
 import {
@@ -18,7 +18,8 @@ import {
   type ISuperSegment,
   type ISegmentAggregateInfo,
   type ISegmentUserInfo,
-} from "src/lib/types/segment.types";
+  type SegmentNameQuery,
+} from "@/lib/types/segment.types";
 
 export const useAllSegments = () => {
   return useQuery<ISegment[], IFetchError>("segments", getAllSegments);
@@ -31,7 +32,7 @@ export const useAllSuperSegments = () => {
   );
 };
 
-export const useAllSubSegmentsWithId = (segId: string) => {
+export const useAllSubSegmentsWithId = (segId: number) => {
   return useQuery<ISubSegment[]>(["subSegments", segId], () =>
     getAllSubSegmentsWithId(segId),
   );
@@ -71,8 +72,11 @@ export const useSegmentsUsers = (segmentId: number) => {
   );
 };
 
-export const useSingleSegmentByName = (data: any, trigger: boolean) => {
-  return useQuery<any, IFetchError>(
+export const useSingleSegmentByName = (
+  data: SegmentNameQuery,
+  trigger: boolean,
+) => {
+  return useQuery<SegmentNameQuery, IFetchError>(
     "segment-by-segment-name",
     () => findSegmentByName(data),
     {

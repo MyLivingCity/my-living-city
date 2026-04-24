@@ -1,11 +1,11 @@
-import { ICategory } from "./category.type";
-import { IAddress } from "./address.type";
-import { IGeo } from "./geo.type";
+import { type ICategory } from "src/lib/types/home/category.types";
+import { type IAddress } from "src/lib/types/user/address.types";
+import { type IGeo } from "src/lib/types/user/geo.types";
 
-import { IProject } from "./project.type";
-import { IRating } from "./rating.type";
-import { IComment } from "./comment.type";
-import { IUser } from "./user.type";
+import { type IProject } from "src/lib/types/ideas/project.types";
+import { type IRating } from "src/lib/types/ideas/rating.types";
+import { type IComment } from "src/lib/types/user/comment.types";
+import { type IUser } from "src/lib/types/user/user.types";
 import {
   type ISegment,
   type ISubSegment,
@@ -15,6 +15,17 @@ import { type IIdeaWithAggregations } from "./idea.types";
 
 export type ProposalState = "IDEA" | "PROPOSAL" | "PROJECT";
 
+export type CreateProposalInput = {
+  ideaId: number;
+  needCollaborators: boolean;
+  needVolunteers: boolean;
+  needDonations: boolean;
+  needFeedback: boolean;
+  needSuggestions: boolean;
+  location: string;
+  feedback: string[];
+  feedbackRatingType: string[];
+};
 
 export interface IProposal {
   id: number;

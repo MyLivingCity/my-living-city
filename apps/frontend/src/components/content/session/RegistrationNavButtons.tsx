@@ -1,5 +1,5 @@
 import { useFormikContext } from "formik";
-import { USER_TYPES } from @/lib/constants";
+import { USER_TYPES } from "src/lib/constants/constants";
 import { Form as BForm, Button } from "react-bootstrap";
 
 interface RegistrationNavButtonsProps {

@@ -1,6 +1,9 @@
 import axios from "axios";
 import { API_BASE_URL } from "src/lib/constants/constants";
-import { type IProposalWithAggregations } from "src/lib/types/ideas/proposal.types";
+import {
+  type CreateProposalInput,
+  type IProposalWithAggregations,
+} from "src/lib/types/ideas/proposal.types";
 
 export const getDirectProposal = async () => {
   const res = await axios.get(`${API_BASE_URL}/proposal/`);
@@ -16,7 +19,7 @@ export const getAllProposals = async () => {
 
 export const postAllProposalsWithBreakdown = async (take?: number) => {
   let reqBody = {};
-  if (!!take) {
+  if (!take) {
     reqBody = {
       take,
     };
@@ -39,7 +42,7 @@ export const getSingleProposalByIdeaId = async (ideaId: string) => {
 };
 
 export const postCreateProposal = async (
-  proposal: any,
+  proposal: CreateProposalInput,
   banned: boolean,
   token: string | null,
 ) => {
@@ -55,7 +58,7 @@ export const postCreateProposal = async (
     feedbackRatingType,
   } = proposal;
 
-  let formBody = {
+  const formBody = {
     ideaId: ideaId.toString(),
     needCollaborators: needCollaborators.toString(),
     needVolunteers: needVolunteers.toString(),
@@ -63,16 +66,16 @@ export const postCreateProposal = async (
     needFeedback: needFeedback.toString(),
     needSuggestions: needSuggestions.toString(),
     location: location.toString(),
-    feedback1: feedback[0].toString(),
-    feedback2: feedback[1].toString(),
-    feedback3: feedback[2].toString(),
-    feedback4: feedback[3].toString(),
-    feedback5: feedback[4].toString(),
-    feedbackType1: feedbackRatingType[0].toString(),
-    feedbackType2: feedbackRatingType[1].toString(),
-    feedbackType3: feedbackRatingType[2].toString(),
-    feedbackType4: feedbackRatingType[3].toString(),
-    feedbackType5: feedbackRatingType[4].toString(),
+    feedback1: (feedback[0] ?? "").toString(),
+    feedback2: (feedback[1] ?? "").toString(),
+    feedback3: (feedback[2] ?? "").toString(),
+    feedback4: (feedback[3] ?? "").toString(),
+    feedback5: (feedback[4] ?? "").toString(),
+    feedbackType1: (feedbackRatingType[0] ?? "").toString(),
+    feedbackType2: (feedbackRatingType[1] ?? "").toString(),
+    feedbackType3: (feedbackRatingType[2] ?? "").toString(),
+    feedbackType4: (feedbackRatingType[3] ?? "").toString(),
+    feedbackType5: (feedbackRatingType[4] ?? "").toString(),
   };
 
   const res = await axios({

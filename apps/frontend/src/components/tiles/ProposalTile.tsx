@@ -4,7 +4,7 @@ import { BsPeople, BsHeartHalf } from "react-icons/bs";
 import { AiOutlineStar } from "react-icons/ai";
 import { timeDifference, truncateString } from "src/lib/utils";
 import { getAllSuperSegments } from "src/lib/api/segment.routes";
-import { type ISuperSegment } from "src/lib/types/segment.types";
+import { type ISuperSegment } from "@/lib/types/segment.types";
 import { type IProposalWithAggregations } from "src/lib/types/ideas/proposal.types";
 
 const capitalizeString = (s: string | null | undefined) => {

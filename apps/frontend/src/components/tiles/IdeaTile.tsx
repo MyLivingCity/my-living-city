@@ -3,7 +3,7 @@ import { Button, Card } from "react-bootstrap";
 import { BsPeople, BsHeartHalf } from "react-icons/bs";
 import { AiOutlineStar } from "react-icons/ai";
 import { type IIdeaWithAggregations } from "@/lib/types/ideas/idea.types";
-import { type ISuperSegment } from "src/lib/types/segment.types";
+import { type ISuperSegment } from "@/lib/types/segment.types";
 import { timeDifference, truncateString } from "src/lib/utils";
 import { getAllSuperSegments } from "src/lib/api/segment.routes";
 

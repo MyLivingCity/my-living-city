@@ -100,13 +100,13 @@ export const flagsContract = c.router(
       {
         getAll: {
           method: "GET",
-          path: "/",
+          path: "/getAll",
           responses: { 200: z.array(CommentFlagSchema) },
           summary: "Get all comment flags",
         },
         getById: {
           method: "GET",
-          path: "/:commentId",
+          path: "getFlags/:commentId",
           pathParams: z.object({ commentId: z.coerce.number() }),
           responses: {
             200: CommentFlagSchema,
@@ -116,18 +116,18 @@ export const flagsContract = c.router(
         },
         createFlag: {
           method: "POST",
-          path: "/:commentId/create",
+          path: "/create/:commentId",
           pathParams: z.object({ commentId: z.coerce.number() }),
           body: CommentFlagSchema.pick({ reason: true }),
           responses: {
-            201: CommentFlagSchema,
+            201: SimpleMessageResponseSchema,
             400: ErrorResponseSchema,
           },
           summary: "Flag a comment",
         },
         falseFlagMany: {
           method: "PUT",
-          path: "/:commentId/false-flag-many",
+          path: "/falseFlagMany/:commentId",
           pathParams: z.object({ commentId: z.coerce.number() }),
           body: z.object({ isFalse: z.boolean() }),
           responses: {
@@ -137,8 +137,8 @@ export const flagsContract = c.router(
           summary: "Set all flags as false for :commentId",
         },
       },
-      { pathPrefix: "/comments" },
-      //{ pathPrefix: "/commentFlag" },
+      //{ pathPrefix: "/comments" },
+      { pathPrefix: "/commentFlag" },
     ),
   },
   // {

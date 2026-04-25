@@ -1,11 +1,11 @@
 // =============================================================================
 // features/moderation/handler.ts
 // =============================================================================
+// ----------------------------------------------------------------------------
 // Source controllers to refactor into this file:
 //
 // controllers/badPostingBehavior.js        → apiRouter.use('/badPostingBehavior', ...)
 //
-//  POST  /                                 record a bad-posting-behavior event
 //  GET   /:userId                          get bad behavior history for user
 //  POST  /incrementPostFlagCount/:ideaId   +1 flag to Idea
 //  POST  /resetBadPostCount/:ideaId        resets both badPost and postFlag(?)
@@ -75,109 +75,338 @@
 // =============================================================================
 
 import { initServer } from "@ts-rest/express";
+import passport from "passport";
 import { moderationApiContracts } from "@mlc/lib/api";
+import { toErrorDetails } from "src/server/utils";
 
 import { prisma } from "src/prisma/client";
-import { Handlers } from "src/server";
+import { BadPostingBehaviourSchema } from "@mlc/lib/api/contracts/moderation/reputation";
 
 const s = initServer();
 
-const incrementBadPostCount = s.route(
-  moderationApiContracts.reputation.badPosts.incrementBadPostCount,
-  {
-    handler: async () => {
-      const foundIdea = await prisma.idea.findUnique({
-        where: { id: params.ideaId },
-      });
-
-      if (!foundIdea) {
-        return { status: 404, body: { message: "Idea not found" } };
-      }
-
-      await prisma.bad_Posting_Behavior.upsert({
-        where: { userId: foundIdea.authorId },
-        update: {
-          bad_post_count: { increment: 1 },
-        },
-        create: {
-          userId: foundIdea.authorId,
-          bad_post_count: 1,
-        },
-      });
-      return {
-        status: 200,
-        body: { message: "Bad post count updated" },
-      };
-    },
-  },
-);
-
-/* 
-import { createServerResponse } from "@ts-rest/server"; // Optional helper
-import { moderationContract } from "./contract"; // wherever your contract is
-import { prisma } from "../../lib/prisma";
-
-// ==========================================
-// SERVICE LOGIC (The "Internal" work)
-// ==========================================
-const handleFalseFlagging = async (ideaId: number, isFalse: boolean, userId: number) => {
-  const updateResult = await prisma.ideaFlag.updateMany({
-    where: { ideaId },
-    data: { falseFlag: isFalse },
+// ----------------------------------------------------------------------------
+//  SERVICES
+// ----------------------------------------------------------------------------
+const incrementUserBadPostStats = async (authorId: string) => {
+  const behaviorRecord = await prisma.bad_Posting_Behavior.findFirst({
+    where: { userId: authorId },
   });
 
-  await prisma.false_Flagging_Behavior.upsert({
-    where: { userId }, 
-    update: { flag_count: { increment: 1 } },
-    create: { userId, flag_count: 1 },
-  });
-
-  const threshold = await prisma.threshhold.findUnique({ where: { id: 2 } });
-  if (threshold) {
-    await prisma.false_Flagging_Behavior.updateMany({
-      where: { flag_count: { gte: threshold.number } },
-      data: { flag_ban: true },
+  if (behaviorRecord) {
+    return await prisma.bad_Posting_Behavior.update({
+      where: { id: behaviorRecord.id },
+      data: { bad_post_count: { increment: 1 } },
     });
   }
 
-  return updateResult.count;
+  return await prisma.bad_Posting_Behavior.create({
+    data: {
+      userId: authorId,
+      bad_post_count: 1,
+    },
+  });
 };
+// ----------------------------------------------------------------------------
+const incrementUserFlagStats = async (authorId: string) => {
+  const record = await prisma.bad_Posting_Behavior.findFirst({
+    where: { userId: authorId },
+  });
 
-// ==========================================
-// ROUTER IMPLEMENTATION
-// ==========================================
-export const moderationRouter = (s: any) => s.router(moderationContract, {
-  falseFlagMany: async ({ params: { ideaId }, body: { isFalse }, req }) => {
-    try {
-      const { id: userId } = req.user;
-      const count = await handleFalseFlagging(ideaId, isFalse, userId);
+  if (record) {
+    return await prisma.bad_Posting_Behavior.update({
+      where: { id: record.id },
+      data: { post_flag_count: { increment: 1 } },
+    });
+  }
 
-      return {
-        status: 200,
-        body: { 
-          message: `False flags successfully updated under Idea ${ideaId}`, 
-          count 
+  return await prisma.bad_Posting_Behavior.create({
+    data: {
+      userId: authorId,
+      post_flag_count: 1,
+    },
+  });
+};
+// ----------------------------------------------------------------------------
+const getAuthorFromIdea = async (ideaId: number) => {
+  const idea = await prisma.idea.findUnique({
+    where: { id: ideaId },
+    select: { authorId: true },
+  });
+
+  if (!idea) {
+    return {
+      error: {
+        status: 400 as const,
+        body: {
+          message: "Idea not found",
+          details: { errorMessage: "Idea not found", errorStack: "" },
         },
-      };
-    } catch (error) {
-      return {
-        status: 400,
-        body: { message: "An error occurred while updating flags" },
-      };
-    }
-  },
-  
-  // Add other handlers here...
-});
-*/
+      },
+    };
+  }
+  return { authorId: idea.authorId };
+};
+// ----------------------------------------------------------------------------
+const resetUserBadPostStats = async (userId: string) => {
+  return await prisma.bad_Posting_Behavior.updateMany({
+    where: { userId },
+    data: {
+      bad_post_count: 0,
+      post_flag_count: 0,
+    },
+  });
+};
+// ----------------------------------------------------------------------------
+const evaluateAndApplyUserBan = async (userId: string): Promise<boolean> => {
+  const behavior = await prisma.bad_Posting_Behavior.findFirst({
+    where: { userId },
+  });
 
-export default {
-  schema: moderationApiContracts,
-  router: {
-    reputation: {
-      badPosts: {
-        incrementBadPostCount,
+  // 1. Check if record exists and if either threshold is hit
+  if (
+    behavior &&
+    (behavior.bad_post_count >= 3 || behavior.post_flag_count >= 3)
+  ) {
+    // 2. Update the specific record found using its unique ID
+    await prisma.bad_Posting_Behavior.update({
+      where: { id: behavior.id },
+      data: { post_comment_ban: true },
+    });
+
+    return true; // Successfully applied ban
+  }
+
+  return false; // Criteria not met or user record not found
+};
+// ----------------------------------------------------------------------------
+const getIdsFromBehaviorTable = async (): Promise<string[]> => {
+  const records = await prisma.bad_Posting_Behavior.findMany({
+    select: { userId: true },
+  });
+
+  // Extract the flat list of string IDs from the objects
+  return records.map((record) => record.userId);
+};
+// ----------------------------------------------------------------------------
+// const getUserBehaviorRecord = async (userId: string) => {
+//   return await prisma.bad_Posting_Behavior.findFirst({
+//     where: { userId },
+//   });
+// };
+// ----------------------------------------------------------------------------
+
+const syncAllUsersToThreshold = async () => {
+  // 1. Fetch the threshold (ID 3 per legacy requirements)
+  const thresholdRecord = await prisma.threshhold.findUnique({
+    where: { id: 3 },
+  });
+
+  if (!thresholdRecord) {
+    throw new Error("Global threshold configuration (ID: 3) not found.");
+  }
+
+  /**
+   * 2. Batch Update
+   * We can't do math (A + B >= C) inside a standard Prisma updateMany easily
+   * without raw SQL, so we fetch the IDs that need updating first.
+   */
+  const offenders = await prisma.bad_Posting_Behavior.findMany({
+    where: {
+      post_comment_ban: false, // Only check those not already banned
+    },
+  });
+
+  const idsToBan = offenders
+    .filter(
+      (u) => u.bad_post_count + u.post_flag_count >= thresholdRecord.number,
+    )
+    .map((u) => u.userId);
+
+  if (idsToBan.length > 0) {
+    await prisma.bad_Posting_Behavior.updateMany({
+      where: { userId: { in: idsToBan } },
+      data: { post_comment_ban: true },
+    });
+  }
+
+  return idsToBan.length;
+};
+// ----------------------------------------------------------------------------
+//  ROUTES
+// ----------------------------------------------------------------------------
+
+export const badPostHandlers = s.router(
+  moderationApiContracts.reputation.badPostingBehavior,
+  {
+    incrementPostFlagCount: {
+      middleware: [passport.authenticate("jwt", { session: false })],
+      handler: async ({ params }) => {
+        const result = await getAuthorFromIdea(params.ideaId);
+        if ("error" in result) return result.error;
+
+        try {
+          await incrementUserFlagStats(result.authorId);
+          return { status: 200, body: { message: "Post flag count updated" } };
+        } catch (error) {
+          return {
+            status: 400,
+            body: {
+              message: error instanceof Error ? error.message : String(error),
+              details: toErrorDetails(error),
+            },
+          };
+        }
+      },
+    },
+
+    incrementBadPostCount: {
+      middleware: [passport.authenticate("jwt", { session: false })],
+      handler: async ({ params }) => {
+        const result = await getAuthorFromIdea(params.ideaId);
+        if ("error" in result) return result.error;
+
+        try {
+          await incrementUserBadPostStats(result.authorId);
+          return { status: 200, body: { message: "Bad post count updated" } };
+        } catch (error) {
+          return {
+            status: 400,
+            body: { message: "Update failed", details: toErrorDetails(error) },
+          };
+        }
+      },
+    },
+    resetBadPostCount: {
+      middleware: [passport.authenticate("jwt", { session: false })],
+      handler: async ({ params }) => {
+        const result = await getAuthorFromIdea(params.ideaId);
+        if ("error" in result) return result.error;
+
+        try {
+          // The legacy code used findFirst then updateMany;
+          // updateMany is safe even if the record doesn't exist yet.
+          await resetUserBadPostStats(result.authorId);
+
+          return {
+            status: 200,
+            body: { message: "Bad post count and post flag count reset" },
+          };
+        } catch (error) {
+          return {
+            status: 400,
+            body: {
+              message: "Bad post count and post flag count not reset",
+              details: toErrorDetails(error),
+            },
+          };
+        }
+      },
+    },
+    checkUser: {
+      middleware: [passport.authenticate("jwt", { session: false })],
+      handler: async ({ params }) => {
+        try {
+          const isBanned = await evaluateAndApplyUserBan(params.userId);
+
+          return {
+            status: 200,
+            body: {
+              message: isBanned ? "User banned" : "User not banned",
+            },
+          };
+        } catch (error) {
+          return {
+            status: 400,
+            body: {
+              message:
+                "User has too many bad/flagged posts. Post was NOT submittted.",
+              details: toErrorDetails(error),
+            },
+          };
+        }
+      },
+    },
+    //TODO: in the legacy version, this returns the entire Bad_Posting_Behavior table
+    getAll: {
+      middleware: [passport.authenticate("jwt", { session: false })],
+      handler: async () => {
+        try {
+          const users = await getIdsFromBehaviorTable();
+
+          return {
+            status: 200,
+            body: users,
+          };
+        } catch (error) {
+          return {
+            status: 400,
+            body: {
+              message: "Users not found",
+              details: toErrorDetails(error),
+            },
+          };
+        }
+      },
+    },
+
+    getBadPostingBehavior: {
+      middleware: [passport.authenticate("jwt", { session: false })],
+      handler: async ({ req }) => {
+        try {
+          // 1. Cast the passport user
+          const user = req.user as { id: string };
+
+          // 2. Fetch from DB
+          const behavior = await prisma.bad_Posting_Behavior.findFirst({
+            where: { userId: user.id },
+          });
+
+          /**
+           * 3. Apply Defaults
+           * If 'behavior' is null, .parse(undefined) triggers the schema-level .default().
+           * This ensures the frontend always gets an object, never null.
+           */
+          const safeBody = BadPostingBehaviourSchema.parse(
+            behavior ?? undefined,
+          );
+
+          return {
+            status: 200,
+            body: safeBody,
+          };
+        } catch (error) {
+          return {
+            status: 400,
+            body: {
+              message: "User behavior record could not be retrieved",
+              details: toErrorDetails(error),
+            },
+          };
+        }
+      },
+    },
+    checkThreshold: {
+      // No auth in legacy, but consider adding it since this is a heavy op
+      handler: async () => {
+        try {
+          const bannedCount = await syncAllUsersToThreshold();
+
+          return {
+            status: 200,
+            body: {
+              message: `Threshold check complete. ${bannedCount} users updated.`,
+            },
+          };
+        } catch (error) {
+          return {
+            status: 400,
+            body: {
+              message: "checkBadPostingThreshhold failed",
+              details: toErrorDetails(error),
+            },
+          };
+        }
       },
     },
   },
-} as Handlers;
+);

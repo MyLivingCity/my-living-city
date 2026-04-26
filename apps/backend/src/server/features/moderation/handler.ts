@@ -677,7 +677,123 @@ export default {
 // ----------------------------------------------------------------------------
 //  SERVICES
 // ----------------------------------------------------------------------------
+const processFalseFlaggingBans = async () => {
+  const thresholdRecord = await prisma.threshhold.findUnique({
+    where: { id: 2 },
+  });
 
+  if (!thresholdRecord) {
+    throw new Error(
+      "False flagging threshold configuration (ID: 2) not found.",
+    );
+  }
+
+  const behaviors = await prisma.false_Flagging_Behavior.findMany();
+
+  const updates = behaviors
+    .filter((user) => user.flag_count >= thresholdRecord.number)
+    .map((user) =>
+      prisma.false_Flagging_Behavior.update({
+        where: { id: user.id },
+        data: { flag_ban: true },
+      }),
+    );
+
+  await Promise.all(updates);
+  return updates.length;
+};
+// ----------------------------------------------------------------------------
+import { Prisma } from "../../../../node_modules/prisma";
+// const fetchAllFalseFlaggingRecords = async () => {
+//   return await prisma.false_Flagging_Behavior.findMany();
+// };
+const fetchAllFalseFlaggingRecords = async (): Promise<
+  Prisma.false_Flagging_BehaviorGetPayload<{}>[]
+> => {
+  return await prisma.false_Flagging_Behavior.findMany();
+};
 // ----------------------------------------------------------------------------
 //  ROUTES
 // ----------------------------------------------------------------------------
+const checkFalseFlaggingBehavior = s.route(
+  moderationApiContracts.reputation.falseFlaggingBehavior
+    .checkFalseFlaggingBehavior,
+  {
+    middleware: [passport.authenticate("jwt", { session: false })],
+    handler: async () => {
+      try {
+        await processFalseFlaggingBans();
+
+        return {
+          status: 200,
+          body: {
+            message: "checkFalseFlaggingBehavior complete",
+          },
+        };
+      } catch (error) {
+        return {
+          status: 400,
+          body: {
+            message:
+              "An error occurred while trying to check false flagging behavior",
+            details: toErrorDetails(error),
+          },
+        };
+      }
+    },
+  },
+);
+const getAllFalseFlagging = s.route(
+  moderationApiContracts.reputation.falseFlaggingBehavior.getAll,
+  {
+    middleware: [passport.authenticate("jwt", { session: false })],
+    handler: async () => {
+      try {
+        const users = await fetchAllFalseFlaggingRecords();
+
+        return {
+          status: 200,
+          body: users.map((user) => ({
+            id: user.id,
+            email: user.email,
+            banned: user.flag_ban, // Mapping flag_ban from legacy to banned in contract
+          })),
+        };
+      } catch (error) {
+        return {
+          status: 400,
+          body: {
+            message:
+              "An error occurred while trying to get all users from false flagging behavior table",
+            details: toErrorDetails(error),
+          },
+        };
+      }
+    },
+  },
+);
+// ----------------------------------------------------------------------------
+//  EXPORTS
+// ----------------------------------------------------------------------------
+export default {
+  schema: moderationApiContracts,
+  router: {
+    //reputation
+    badPostingBehavior: {
+      incrementPostFlagCount,
+      incrementBadPostCount,
+      resetBadPostCount,
+      checkUser,
+      getAll: getAllBadPosting,
+      getBadPostingBehavior,
+      checkThreshold,
+    },
+    falseFlaggingBehavior: {
+      checkFalseFlaggingBehavior,
+      getAll: getAllFalseFlagging,
+    },
+    //bans
+
+    //flags
+  },
+} as unknown as Handlers;

@@ -20,7 +20,6 @@
 //	GET	  /getByCommentId/:banCommentId	          get ban record by comment id
 //	PUT	  /dismissNotification/:banCommentId	    dismiss a comment-ban notification
 //	DEL   /delete/:banCommentId	                  delete a comment ban by comment id
-
 // ----------------------------------------------------------------------------
 // controllers/banPost.js         → apiRouter.use('/banPost', banPostRouter)
 //	POST	/create	                              create a post ban
@@ -28,7 +27,6 @@
 //	GET	  /getByPostId/:banPostId	              get ban record by post id
 //	PUT	  /dismissNotification/:banPostId	      dismiss a post-ban notification
 //	DEL	  /delete/:banPostId	                  delete a post ban by post id
-
 // ----------------------------------------------------------------------------
 // controllers/banUser.js         → apiRouter.use('/banUser', banUserRouter)
 //	POST	/create	                  create a user ban
@@ -40,23 +38,18 @@
 //	GET	  /getAllPassedDate	        get banned users whose ban date has passed
 //	DEL   /deletePassedBanDate	    delete bans with passed ban date
 //  DEL   /delete/:userId           remove a userId from UserBan (commented code is wrong)
-
 // ----------------------------------------------------------------------------
 // controllers/commentFlag.js     → apiRouter.use('/commentFlag', commentFlagRouter)
 //	POST	/create/:commentId	          create a flag for a specific comment
 //	GET	  /getAll	                      get all comment flags
 //	PUT	  /falseFlagMany/:commentId	    mark many flags on a comment as false and update false-flag behavior
 //	GET	  /getFlags/:commentId	        get flag count for a specific comment
-
 // ----------------------------------------------------------------------------
 // controllers/falseFlaggingBehavior.js → apiRouter.use('/falseFlaggingBehavior', ...)
-
 //   NOTE: verify whether any routes are actually implemented before migrating
-
 //	GET	  /getAll	                      get all users in false-flagging behavior table
 //  GET   /getById/:userId              get user false-flagging behavior
 //	GET	  /checkFalseFlaggingBehavior	  apply false-flag threshold checks and set flag bans
-
 // ----------------------------------------------------------------------------
 // controllers/flag.js                  Idea flagging
 //	POST	/create/:ideaId	              create a flag for a specific idea
@@ -64,16 +57,8 @@
 //	PUT	  /falseFlagMany/:ideaId	      mark many flags on an idea as false and update false-flag behavior
 //	GET	  /getFlags/:ideaID	            get flag count for a specific idea
 //	GET	  /checkFlagBan/:userID	        check if user has a flag ban
-
 // ----------------------------------------------------------------------------
-// controllers/report.js          → apiRouter.use('/report', reportRouter)
-//	GET	  /	                        welcome stub
-//	GET	  /getall	                  get all reports (admin only)
-//	POST	/create	                  create a report
-//	DEL	  /delete/:reportId	        delete a report by id (admin only)
-
 // =============================================================================
-
 import { initServer } from "@ts-rest/express";
 import * as passport from "passport";
 import { moderationApiContracts } from "@mlc/lib/api";
@@ -84,7 +69,6 @@ import { BadPostingBehaviourSchema } from "@mlc/lib/api/contracts/moderation/rep
 import { Handlers } from "src/server";
 
 const s = initServer();
-
 // ============================================================================
 //  badPostingBehavior
 // ============================================================================

@@ -19,7 +19,14 @@
 //   - PUT  /                        update thresholds (admin only)
 //   - POST /reset                   reset thresholds to defaults
 // ----------------------------------------------------------------------------
-
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//  MOVE TO ADMIN AREA FOR NOW
+// controllers/report.js          → apiRouter.use('/report', reportRouter)
+//	GET	  /	                        welcome stub
+//	GET	  /getall	                  get all reports (admin only)
+//	POST	/create	                  create a report
+//	DEL	  /delete/:reportId	        delete a report by id (admin only)
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 import { initServer } from "@ts-rest/express";
 import { adminApiContracts } from "@mlc/lib/api/contracts/admin";
 import { prisma } from "src/prisma/client";

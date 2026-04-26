@@ -402,6 +402,7 @@ const checkThreshold = s.route(
   moderationApiContracts.reputation.badPostingBehavior.checkThreshold,
   {
     // No auth in legacy, but consider adding it since this is a heavy op
+    middleware: [passport.authenticate("jwt", { session: false })],
     handler: async () => {
       try {
         const bannedCount = await syncAllUsersToThreshold();

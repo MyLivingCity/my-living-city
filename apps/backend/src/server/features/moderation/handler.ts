@@ -442,14 +442,12 @@ const processFalseFlaggingBans = async () => {
   return updates.length;
 };
 // ----------------------------------------------------------------------------
-import { Prisma } from "../../../../node_modules/prisma";
-// const fetchAllFalseFlaggingRecords = async () => {
-//   return await prisma.false_Flagging_Behavior.findMany();
-// };
-const fetchAllFalseFlaggingRecords = async (): Promise<
-  Prisma.false_Flagging_BehaviorGetPayload<{}>[]
-> => {
-  return await prisma.false_Flagging_Behavior.findMany();
+const fetchAllFalseFlaggingWithUsers = async () => {
+  return await prisma.false_Flagging_Behavior.findMany({
+    include: {
+      user: true, // This brings in the related User object
+    },
+  });
 };
 // ----------------------------------------------------------------------------
 //  ROUTES
@@ -488,14 +486,14 @@ const getAllFalseFlagging = s.route(
     middleware: [passport.authenticate("jwt", { session: false })],
     handler: async () => {
       try {
-        const users = await fetchAllFalseFlaggingRecords();
+        const records = await fetchAllFalseFlaggingWithUsers();
 
         return {
           status: 200,
-          body: users.map((user) => ({
-            id: user.id,
-            email: user.email,
-            banned: user.flag_ban, // Mapping flag_ban from legacy to banned in contract
+          body: records.map((record) => ({
+            id: record.user.id,
+            email: record.user.email,
+            banned: record.flag_ban,
           })),
         };
       } catch (error) {
@@ -503,7 +501,7 @@ const getAllFalseFlagging = s.route(
           status: 400,
           body: {
             message:
-              "An error occurred while trying to get all users from false flagging behavior table",
+              "An error occurred while fetching false flagging behavior records",
             details: toErrorDetails(error),
           },
         };

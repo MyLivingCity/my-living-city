@@ -85,6 +85,9 @@ import { Handlers } from "src/server";
 
 const s = initServer();
 
+// ============================================================================
+//  badPostingBehavior
+// ============================================================================
 // ----------------------------------------------------------------------------
 //  SERVICES
 // ----------------------------------------------------------------------------
@@ -235,8 +238,6 @@ const syncAllUsersToThreshold = async () => {
 // ----------------------------------------------------------------------------
 //  ROUTES
 // ----------------------------------------------------------------------------
-//const deleteById = s.route(userApiContracts.deleteById, {
-
 const incrementPostFlagCount = s.route(
   moderationApiContracts.reputation.badPostingBehavior.incrementPostFlagCount,
   {
@@ -401,7 +402,7 @@ const getBadPostingBehavior = s.route(
 const checkThreshold = s.route(
   moderationApiContracts.reputation.badPostingBehavior.checkThreshold,
   {
-    // No auth in legacy, but consider adding it since this is a heavy op
+    // No auth in legacy, but adding it
     middleware: [passport.authenticate("jwt", { session: false })],
     handler: async () => {
       try {
@@ -425,7 +426,6 @@ const checkThreshold = s.route(
     },
   },
 );
-
 export default {
   schema: moderationApiContracts,
   router: {
@@ -438,3 +438,13 @@ export default {
     checkThreshold,
   },
 } as unknown as Handlers;
+// ============================================================================
+// falseFlaggingBehavior
+// ============================================================================
+// ----------------------------------------------------------------------------
+//  SERVICES
+// ----------------------------------------------------------------------------
+
+// ----------------------------------------------------------------------------
+//  ROUTES
+// ----------------------------------------------------------------------------

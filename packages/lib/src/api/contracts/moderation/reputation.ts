@@ -191,7 +191,7 @@ export const reputationContract = c.router(
                 banned: true,
               }),
             ),
-            404: ErrorResponseSchema,
+            400: ErrorResponseSchema,
           },
           summary: "Get all users from false-flagging behavior table",
         },

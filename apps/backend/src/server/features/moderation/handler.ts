@@ -75,12 +75,13 @@
 // =============================================================================
 
 import { initServer } from "@ts-rest/express";
-import passport from "passport";
+import * as passport from "passport";
 import { moderationApiContracts } from "@mlc/lib/api";
 import { toErrorDetails } from "src/server/utils";
 
 import { prisma } from "src/prisma/client";
 import { BadPostingBehaviourSchema } from "@mlc/lib/api/contracts/moderation/reputation";
+import { Handlers } from "src/server";
 
 const s = initServer();
 
@@ -234,179 +235,205 @@ const syncAllUsersToThreshold = async () => {
 // ----------------------------------------------------------------------------
 //  ROUTES
 // ----------------------------------------------------------------------------
+//const deleteById = s.route(userApiContracts.deleteById, {
 
-export const badPostHandlers = s.router(
-  moderationApiContracts.reputation.badPostingBehavior,
+const incrementPostFlagCount = s.route(
+  moderationApiContracts.reputation.badPostingBehavior.incrementPostFlagCount,
   {
-    incrementPostFlagCount: {
-      middleware: [passport.authenticate("jwt", { session: false })],
-      handler: async ({ params }) => {
-        const result = await getAuthorFromIdea(params.ideaId);
-        if ("error" in result) return result.error;
+    middleware: [passport.authenticate("jwt", { session: false })],
+    handler: async ({ params }) => {
+      const result = await getAuthorFromIdea(params.ideaId);
+      if ("error" in result) return result.error;
 
-        try {
-          await incrementUserFlagStats(result.authorId);
-          return { status: 200, body: { message: "Post flag count updated" } };
-        } catch (error) {
-          return {
-            status: 400,
-            body: {
-              message: error instanceof Error ? error.message : String(error),
-              details: toErrorDetails(error),
-            },
-          };
-        }
-      },
-    },
-
-    incrementBadPostCount: {
-      middleware: [passport.authenticate("jwt", { session: false })],
-      handler: async ({ params }) => {
-        const result = await getAuthorFromIdea(params.ideaId);
-        if ("error" in result) return result.error;
-
-        try {
-          await incrementUserBadPostStats(result.authorId);
-          return { status: 200, body: { message: "Bad post count updated" } };
-        } catch (error) {
-          return {
-            status: 400,
-            body: { message: "Update failed", details: toErrorDetails(error) },
-          };
-        }
-      },
-    },
-    resetBadPostCount: {
-      middleware: [passport.authenticate("jwt", { session: false })],
-      handler: async ({ params }) => {
-        const result = await getAuthorFromIdea(params.ideaId);
-        if ("error" in result) return result.error;
-
-        try {
-          // The legacy code used findFirst then updateMany;
-          // updateMany is safe even if the record doesn't exist yet.
-          await resetUserBadPostStats(result.authorId);
-
-          return {
-            status: 200,
-            body: { message: "Bad post count and post flag count reset" },
-          };
-        } catch (error) {
-          return {
-            status: 400,
-            body: {
-              message: "Bad post count and post flag count not reset",
-              details: toErrorDetails(error),
-            },
-          };
-        }
-      },
-    },
-    checkUser: {
-      middleware: [passport.authenticate("jwt", { session: false })],
-      handler: async ({ params }) => {
-        try {
-          const isBanned = await evaluateAndApplyUserBan(params.userId);
-
-          return {
-            status: 200,
-            body: {
-              message: isBanned ? "User banned" : "User not banned",
-            },
-          };
-        } catch (error) {
-          return {
-            status: 400,
-            body: {
-              message:
-                "User has too many bad/flagged posts. Post was NOT submittted.",
-              details: toErrorDetails(error),
-            },
-          };
-        }
-      },
-    },
-    //TODO: in the legacy version, this returns the entire Bad_Posting_Behavior table
-    getAll: {
-      middleware: [passport.authenticate("jwt", { session: false })],
-      handler: async () => {
-        try {
-          const users = await getIdsFromBehaviorTable();
-
-          return {
-            status: 200,
-            body: users,
-          };
-        } catch (error) {
-          return {
-            status: 400,
-            body: {
-              message: "Users not found",
-              details: toErrorDetails(error),
-            },
-          };
-        }
-      },
-    },
-
-    getBadPostingBehavior: {
-      middleware: [passport.authenticate("jwt", { session: false })],
-      handler: async ({ req }) => {
-        try {
-          // 1. Cast the passport user
-          const user = req.user as { id: string };
-
-          // 2. Fetch from DB
-          const behavior = await prisma.bad_Posting_Behavior.findFirst({
-            where: { userId: user.id },
-          });
-
-          /**
-           * 3. Apply Defaults
-           * If 'behavior' is null, .parse(undefined) triggers the schema-level .default().
-           * This ensures the frontend always gets an object, never null.
-           */
-          const safeBody = BadPostingBehaviourSchema.parse(
-            behavior ?? undefined,
-          );
-
-          return {
-            status: 200,
-            body: safeBody,
-          };
-        } catch (error) {
-          return {
-            status: 400,
-            body: {
-              message: "User behavior record could not be retrieved",
-              details: toErrorDetails(error),
-            },
-          };
-        }
-      },
-    },
-    checkThreshold: {
-      // No auth in legacy, but consider adding it since this is a heavy op
-      handler: async () => {
-        try {
-          const bannedCount = await syncAllUsersToThreshold();
-
-          return {
-            status: 200,
-            body: {
-              message: `Threshold check complete. ${bannedCount} users updated.`,
-            },
-          };
-        } catch (error) {
-          return {
-            status: 400,
-            body: {
-              message: "checkBadPostingThreshhold failed",
-              details: toErrorDetails(error),
-            },
-          };
-        }
-      },
+      try {
+        await incrementUserFlagStats(result.authorId);
+        return { status: 200, body: { message: "Post flag count updated" } };
+      } catch (error) {
+        return {
+          status: 400,
+          body: {
+            message: error instanceof Error ? error.message : String(error),
+            details: toErrorDetails(error),
+          },
+        };
+      }
     },
   },
 );
+const incrementBadPostCount = s.route(
+  moderationApiContracts.reputation.badPostingBehavior.incrementBadPostCount,
+  {
+    middleware: [passport.authenticate("jwt", { session: false })],
+    handler: async ({ params }) => {
+      const result = await getAuthorFromIdea(params.ideaId);
+      if ("error" in result) return result.error;
+
+      try {
+        await incrementUserBadPostStats(result.authorId);
+        return { status: 200, body: { message: "Bad post count updated" } };
+      } catch (error) {
+        return {
+          status: 400,
+          body: { message: "Update failed", details: toErrorDetails(error) },
+        };
+      }
+    },
+  },
+);
+const resetBadPostCount = s.route(
+  moderationApiContracts.reputation.badPostingBehavior.resetBadPostCount,
+  {
+    middleware: [passport.authenticate("jwt", { session: false })],
+    handler: async ({ params }) => {
+      const result = await getAuthorFromIdea(params.ideaId);
+      if ("error" in result) return result.error;
+
+      try {
+        // The legacy code used findFirst then updateMany;
+        // updateMany is safe even if the record doesn't exist yet.
+        await resetUserBadPostStats(result.authorId);
+
+        return {
+          status: 200,
+          body: { message: "Bad post count and post flag count reset" },
+        };
+      } catch (error) {
+        return {
+          status: 400,
+          body: {
+            message: "Bad post count and post flag count not reset",
+            details: toErrorDetails(error),
+          },
+        };
+      }
+    },
+  },
+);
+const checkUser = s.route(
+  moderationApiContracts.reputation.badPostingBehavior.checkUser,
+  {
+    middleware: [passport.authenticate("jwt", { session: false })],
+    handler: async ({ params }) => {
+      try {
+        const isBanned = await evaluateAndApplyUserBan(params.userId);
+
+        return {
+          status: 200,
+          body: {
+            message: isBanned ? "User banned" : "User not banned",
+          },
+        };
+      } catch (error) {
+        return {
+          status: 400,
+          body: {
+            message:
+              "User has too many bad/flagged posts. Post was NOT submittted.",
+            details: toErrorDetails(error),
+          },
+        };
+      }
+    },
+  },
+);
+//TODO: in the legacy version, this returns the entire Bad_Posting_Behavior table
+const getAll = s.route(
+  moderationApiContracts.reputation.badPostingBehavior.getAll,
+  {
+    middleware: [passport.authenticate("jwt", { session: false })],
+    handler: async () => {
+      try {
+        const users = await getIdsFromBehaviorTable();
+
+        return {
+          status: 200,
+          body: users,
+        };
+      } catch (error) {
+        return {
+          status: 400,
+          body: {
+            message: "Users not found",
+            details: toErrorDetails(error),
+          },
+        };
+      }
+    },
+  },
+);
+const getBadPostingBehavior = s.route(
+  moderationApiContracts.reputation.badPostingBehavior.getBadPostingBehavior,
+  {
+    middleware: [passport.authenticate("jwt", { session: false })],
+    handler: async ({ req }) => {
+      try {
+        // 1. Cast the passport user
+        const user = req.user as { id: string };
+
+        // 2. Fetch from DB
+        const behavior = await prisma.bad_Posting_Behavior.findFirst({
+          where: { userId: user.id },
+        });
+
+        /**
+         * 3. Apply Defaults
+         * If 'behavior' is null, .parse(undefined) triggers the schema-level .default().
+         * This ensures the frontend always gets an object, never null.
+         */
+        const safeBody = BadPostingBehaviourSchema.parse(behavior ?? undefined);
+
+        return {
+          status: 200,
+          body: safeBody,
+        };
+      } catch (error) {
+        return {
+          status: 400,
+          body: {
+            message: "User behavior record could not be retrieved",
+            details: toErrorDetails(error),
+          },
+        };
+      }
+    },
+  },
+);
+const checkThreshold = s.route(
+  moderationApiContracts.reputation.badPostingBehavior.checkThreshold,
+  {
+    // No auth in legacy, but consider adding it since this is a heavy op
+    handler: async () => {
+      try {
+        const bannedCount = await syncAllUsersToThreshold();
+
+        return {
+          status: 200,
+          body: {
+            message: `Threshold check complete. ${bannedCount} users updated.`,
+          },
+        };
+      } catch (error) {
+        return {
+          status: 400,
+          body: {
+            message: "checkBadPostingThreshhold failed",
+            details: toErrorDetails(error),
+          },
+        };
+      }
+    },
+  },
+);
+
+export default {
+  schema: moderationApiContracts,
+  router: {
+    incrementPostFlagCount,
+    incrementBadPostCount,
+    resetBadPostCount,
+    checkUser,
+    getAll,
+    getBadPostingBehavior,
+    checkThreshold,
+  },
+} as unknown as Handlers;

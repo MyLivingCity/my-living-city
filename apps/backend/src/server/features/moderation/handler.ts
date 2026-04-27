@@ -537,6 +537,8 @@ const executeCommentBan = async (data: {
   moderatorId: string;
   ideaId: number;
 }) => {
+  const createdAt = new Date();
+
   // We use a transaction to ensure both logs are created or neither are
   return await prisma.$transaction(async (tx) => {
     const createdBan = await tx.commentBan.create({
@@ -546,6 +548,7 @@ const executeCommentBan = async (data: {
         banReason: data.banReason,
         banMessage: data.banMessage,
         bannedBy: data.moderatorId,
+        createdAt: createdAt,
       },
     });
 
@@ -558,6 +561,7 @@ const executeCommentBan = async (data: {
         commentId: data.commentId,
         modId: data.moderatorId,
         message: data.banMessage,
+        createdAt: createdAt,
       },
     });
 
@@ -683,7 +687,7 @@ const createCommentBan = s.route(
     },
   },
 );
-const dismissNotification = s.route(
+const dismissCommentBanNotification = s.route(
   moderationApiContracts.bans.banComment.dismissNotification,
   {
     middleware: [passport.authenticate("jwt", { session: false })],
@@ -756,7 +760,7 @@ const getCommentBanById = s.route(
             commentId: foundBan.commentId,
             banMessage: foundBan.banMessage ?? "",
             bannedBy: foundBan.bannedBy,
-            createdAt: foundBan.createdAt.toISOString(),
+            createdAt: foundBan.createdAt,
             notificationDismissed: foundBan.notificationDismissed,
             authorId: foundBan.authorId,
             banReason: foundBan.banReason,
@@ -774,7 +778,7 @@ const getCommentBanById = s.route(
     },
   },
 );
-const getUndismissedNotifications = s.route(
+const getUndismissedCommentBanNotifications = s.route(
   moderationApiContracts.bans.banComment.getUndismissedNotifications,
   {
     middleware: [passport.authenticate("jwt", { session: false })],
@@ -796,7 +800,7 @@ const getUndismissedNotifications = s.route(
           banMessage: ban.banMessage ?? "",
           authorId: ban.comment.authorId,
           commentId: ban.commentId,
-          createdAt: ban.createdAt.toISOString(),
+          createdAt: ban.createdAt,
         }));
 
         return {
@@ -854,6 +858,385 @@ const deleteCommentBan = s.route(
     },
   },
 );
+// ============================================================================
+// banPost
+// ============================================================================
+// ----------------------------------------------------------------------------
+//  SERVICES
+// ----------------------------------------------------------------------------
+const fetchPostBanByPostId = async (postId: number) => {
+  return await prisma.postBan.findFirst({
+    where: { postId },
+  });
+};
+// ----------------------------------------------------------------------------
+
+const fetchUndismissedPostBans = async (authorId: string) => {
+  return await prisma.postBan.findMany({
+    where: {
+      notificationDismissed: false,
+      authorId: authorId,
+    },
+    include: {
+      post: true,
+    },
+  });
+};
+// ----------------------------------------------------------------------------
+const executePostBan = async (data: {
+  postId: number;
+  authorId: string;
+  banReason: string;
+  banMessage: string;
+  moderatorId: string;
+}) => {
+  const createdAt = new Date(); // Internal timestamping
+
+  return await prisma.$transaction(async (tx) => {
+    const createdBan = await tx.postBan.create({
+      data: {
+        postId: data.postId,
+        authorId: data.authorId,
+        banReason: data.banReason,
+        banMessage: data.banMessage,
+        bannedBy: data.moderatorId,
+        createdAt,
+      },
+    });
+
+    await tx.ban_History.create({
+      data: {
+        userId: data.authorId,
+        type: "IDEA", // Mapping BanType.IDEA per legacy ctrl
+        reason: data.banReason,
+        ideaId: data.postId,
+        modId: data.moderatorId,
+        message: data.banMessage,
+        createdAt,
+      },
+    });
+
+    return createdBan;
+  });
+};
+// ----------------------------------------------------------------------------
+const updatePostNotificationStatus = async (postBanId: number) => {
+  return await prisma.postBan.update({
+    where: { id: postBanId },
+    data: { notificationDismissed: true },
+  });
+};
+// ----------------------------------------------------------------------------
+const removePostBanByPostId = async (postId: number) => {
+  const foundBan = await prisma.postBan.findFirst({
+    where: { postId },
+  });
+
+  if (!foundBan) return null;
+
+  return await prisma.postBan.delete({
+    where: { id: foundBan.id },
+  });
+};
+// ----------------------------------------------------------------------------
+//  ROUTES
+// ----------------------------------------------------------------------------
+const createPostBan = s.route(moderationApiContracts.bans.banPost.create, {
+  middleware: [passport.authenticate("jwt", { session: false })],
+  handler: async ({ body, req }) => {
+    try {
+      const moderatorId = (req.user as User).id;
+      const { postId, authorId } = body;
+
+      // Note: The legacy ctrl uses req.body for reason/message but your
+      // contract pick() didn't include them. Assuming they come from the body.
+      const banReason = body.banReason ?? "No reason provided";
+      const banMessage = body.banMessage ?? "";
+
+      // 1. Check if post exists
+      const foundPost = await prisma.idea.findUnique({
+        where: { id: postId },
+      });
+
+      if (!foundPost) {
+        return {
+          status: 400,
+          body: {
+            message: `The post (${postId}) does not exist.`,
+            details: toErrorDetails(new Error("No post found")),
+          },
+        };
+      }
+
+      // 2. Check if already banned
+      const alreadyBanned = await prisma.postBan.findFirst({
+        where: { postId },
+      });
+
+      if (alreadyBanned) {
+        return {
+          status: 400,
+          body: {
+            message: "This post is already banned.",
+            details: toErrorDetails(
+              new Error("A post can only be banned once."),
+            ),
+          },
+        };
+      }
+
+      // 3. Execute Transaction
+      await executePostBan({
+        postId,
+        authorId,
+        banReason,
+        banMessage,
+        moderatorId,
+      });
+
+      return {
+        status: 201,
+        body: {
+          message: `Successfully banned post: ${postId}`,
+        },
+      };
+    } catch (error) {
+      return {
+        status: 400,
+        body: {
+          message: `Error occurred when trying to ban post: ${body.postId}`,
+          details: toErrorDetails(error),
+        },
+      };
+    }
+  },
+});
+const dismissPostNotification = s.route(
+  moderationApiContracts.bans.banPost.dismissNotification,
+  {
+    middleware: [passport.authenticate("jwt", { session: false })],
+    handler: async ({ params }) => {
+      const { postBanId } = params;
+
+      try {
+        // 1. Verify the ban exists
+        const foundBan = await prisma.postBan.findUnique({
+          where: { id: postBanId },
+        });
+
+        if (!foundBan) {
+          return {
+            status: 400,
+            body: {
+              message: `The ban (${postBanId}) does not exist.`,
+              details: toErrorDetails(new Error("Record not found")),
+            },
+          };
+        }
+
+        // 2. Perform the update
+        await updatePostNotificationStatus(postBanId);
+
+        return {
+          status: 200,
+          body: {
+            message: `Successfully dismissed notification for ban: ${postBanId}`,
+          },
+        };
+      } catch (error) {
+        return {
+          status: 400,
+          body: {
+            message: "Error occurred when trying to dismiss notification",
+            details: toErrorDetails(error),
+          },
+        };
+      }
+    },
+  },
+);
+const getPostBanById = s.route(
+  moderationApiContracts.bans.banPost.getByPostId,
+  {
+    // No auth in legacy ctrl
+    handler: async ({ params }) => {
+      const { postBanId } = params;
+
+      try {
+        const foundBan = await fetchPostBanByPostId(postBanId);
+
+        if (!foundBan) {
+          return {
+            status: 400,
+            body: {
+              message: `The ban (${postBanId}) does not exist.`,
+              details: toErrorDetails(new Error("Record not found")),
+            },
+          };
+        }
+
+        /**
+         * Mapping to PostBanRaw:
+         * 1. Injects 'type' discriminator.
+         * 2. Coalesces null fields to satisfy Zod schema.
+         * 3. 'isRead' transformation is handled by the Schema's .transform()
+         */
+        return {
+          status: 200,
+          body: {
+            ...foundBan,
+            type: BanTypeSchema.enum.IDEA,
+            banMessage: foundBan.banMessage ?? "",
+            createdAt: foundBan.createdAt.toISOString(),
+          },
+        };
+      } catch (error) {
+        return {
+          status: 400,
+          body: {
+            message: "Error occurred when trying to get banned post",
+            details: toErrorDetails(error),
+          },
+        };
+      }
+    },
+  },
+);
+const getUndismissedPostNotifications = s.route(
+  moderationApiContracts.bans.banPost.getUndismissedNotifications,
+  {
+    middleware: [passport.authenticate("jwt", { session: false })],
+    handler: async ({ params }) => {
+      const { userId } = params;
+
+      try {
+        const bans = await fetchUndismissedPostBans(userId);
+
+        /**
+         * Mapping to PostBanRaw:
+         * 1. Injects 'type' for the discriminated union.
+         * 2. Maps 'postId' from the included post record.
+         * 3. Relies on schema coercion/pipes for date formatting.
+         */
+        const formattedBans = bans.map((ban) => ({
+          ...ban,
+          type: BanTypeSchema.enum.IDEA,
+          postId: ban.post.id,
+          banMessage: ban.banMessage ?? "",
+        }));
+
+        return {
+          status: 200,
+          body: formattedBans,
+        };
+      } catch (error) {
+        return {
+          status: 400,
+          body: {
+            message:
+              "Error occurred when trying to get undismissed notifications",
+            details: toErrorDetails(error),
+          },
+        };
+      }
+    },
+  },
+);
+const deletePostBan = s.route(
+  moderationApiContracts.bans.banPost.delete, // Correcting 'deleteById' to 'delete' per your contract
+  {
+    middleware: [passport.authenticate("jwt", { session: false })],
+    handler: async ({ params }) => {
+      const { postBanId } = params;
+
+      try {
+        const deletedRecord = await removePostBanByPostId(postBanId);
+
+        if (!deletedRecord) {
+          return {
+            status: 400,
+            body: {
+              message: `The ban (${postBanId}) does not exist.`,
+              details: toErrorDetails(new Error("Record not found")),
+            },
+          };
+        }
+
+        return {
+          status: 200,
+          body: {
+            message: `Successfully deleted ban: ${postBanId}`,
+          },
+        };
+      } catch (error) {
+        return {
+          status: 400,
+          body: {
+            message: "Error occurred when trying to delete ban",
+            details: toErrorDetails(error),
+          },
+        };
+      }
+    },
+  },
+);
+// ============================================================================
+// banUser
+// ============================================================================
+// ----------------------------------------------------------------------------
+//  SERVICES
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+//  ROUTES
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+// controllers/banUser.js         → apiRouter.use('/banUser', banUserRouter)
+//	POST	/create	                  create a user ban
+//	GET	  /getAll	                  get all user bans
+//	GET	  /get/:userId	            get all bans for a specific user
+//	GET	  /getMostRecent/:userId	  get most recent ban for a specific user
+//	GET	  /getMostRecentWithToken	  get most recent ban for authenticated user
+//	PUT	  /update/:userId	          update the most recent ban for a specific user
+//	GET	  /getAllPassedDate	        get banned users whose ban date has passed
+//	DEL   /deletePassedBanDate	    delete bans with passed ban date
+//  DEL   /delete/:userId           remove a userId from UserBan (commented code is wrong)
+// ----------------------------------------------------------------------------
+// ============================================================================
+// Flags
+// ============================================================================
+// ============================================================================
+// commentFlag
+// ============================================================================
+// ----------------------------------------------------------------------------
+//  SERVICES
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+//  ROUTES
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+// controllers/commentFlag.js     → apiRouter.use('/commentFlag', commentFlagRouter)
+//	POST	/create/:commentId	          create a flag for a specific comment
+//	GET	  /getAll	                      get all comment flags
+//	PUT	  /falseFlagMany/:commentId	    mark many flags on a comment as false and update false-flag behavior
+//	GET	  /getFlags/:commentId	        get flag count for a specific comment
+// ----------------------------------------------------------------------------
+// ============================================================================
+// flag
+// ============================================================================
+// ----------------------------------------------------------------------------
+//  SERVICES
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+//  ROUTES
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+// controllers/flag.js                  Idea flagging
+//	POST	/create/:ideaId	              create a flag for a specific idea
+//	GET	  /getAll	                      get all idea flags
+//	PUT	  /falseFlagMany/:ideaId	      mark many flags on an idea as false and update false-flag behavior
+//	GET	  /getFlags/:ideaID	            get flag count for a specific idea
+//	GET	  /checkFlagBan/:userID	        check if user has a flag ban
+// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 //  EXPORTS
 // ----------------------------------------------------------------------------
@@ -877,11 +1260,29 @@ export default {
     //bans
     banComment: {
       create: createCommentBan,
-      dismissNotification,
+      dismissNotification: dismissCommentBanNotification,
       getById: getCommentBanById,
-      getUndismissedNotifications,
+      getUndismissedNotifications: getUndismissedCommentBanNotifications,
       delete: deleteCommentBan,
     },
+    banPost: {
+      create: createPostBan,
+      dismissNotification: dismissPostNotification,
+      getById: getPostBanById,
+      getUndismissedNotifications: getUndismissedPostNotifications,
+      delete: deletePostBan,
+    } /* 
+    banUser: {
+      create: createUserBan,
+      getAll: getAllUserBans,
+      getById: getUserBanById,
+      getMostRecent,
+      getMostRecentWithToken,
+      update: updateUserBan,
+      delete: deleteUserBan,
+      getAllPassedDate,
+      deletePassedBanDate,
+    }, */,
     //flags
   },
 } as unknown as Handlers;

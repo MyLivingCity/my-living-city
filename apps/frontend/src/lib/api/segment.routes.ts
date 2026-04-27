@@ -5,24 +5,23 @@ import {
   type ISegment,
   type ISubSegment,
 } from "@/lib/types/segment.types";
+import { mlcApiClient } from "../mlcApiClient";
 
 export const getAllSegments = async (): Promise<ISegment[]> => {
-  const res = await axios.get<ISegment[]>(`${API_BASE_URL}/segment/getall`);
-  return res.data;
+  const res = await mlcApiClient.segments.getAll();
+  return res.body;
 };
 
 export const getSingleSegmentBySegmentId = async (segmentId: number) => {
-  const res = await axios.get<ISegment>(
-    `${API_BASE_URL}/segment/getBySegmentId/${segmentId}`,
-  );
-  return res.data;
+  const res = await mlcApiClient.segments.getById({ params: { segmentId } });
+  return res.body;
 };
 
 export const getAllSubSegmentsWithId = async (segId: number) => {
-  const res = await axios.get<ISubSegment[]>(
-    `${API_BASE_URL}/segment/getChildren/${segId}`,
-  );
-  return res.data;
+  const res = await mlcApiClient.segments.getChildrenOfParent({
+    params: { parentId: segId },
+  });
+  return res.body;
 };
 
 export const getSingleSubSegmentBySubSegmentId = async (
@@ -53,9 +52,9 @@ export const getSegmentUsersInfo = async (segmentId: number) => {
 export const getAllSegmentsWithSuperSegId = async (
   superSegId: number | undefined,
 ): Promise<ISegment[]> => {
-  const res = await axios.get<ISegment[]>(
-    `${API_BASE_URL}/segment/getBySuperSegId/${superSegId}`,
-  );
+  const res = await mlcApiClient.segments.getBySuperSegId({
+    params: { superSegId },
+  });
   return res.data;
 };
 
@@ -73,11 +72,10 @@ export const getAllSuperSegmentsByCountryProvince = async (
 };
 
 export const getAllSuperSegments = async () => {
-  const res = await axios({
-    method: "get",
-    url: `${API_BASE_URL}/segment/getByType/superSegment`,
+  const res = await mlcApiClient.segments.getByType({
+    params: { type: "superSegment" },
   });
-  return res.data;
+  return res.body;
 };
 
 export const findSubsegmentsBySegmentId = async (

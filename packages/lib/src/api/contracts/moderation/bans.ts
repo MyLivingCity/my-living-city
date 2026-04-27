@@ -28,7 +28,7 @@ const baseBanShape = {
 const UserBanRaw = z.object({
   ...baseBanShape,
   type: z.literal(BanTypeSchema.enum.USER),
-  userId: z.number(),
+  userId: z.string().cuid(),
   banDuration: DateTimeString,
   banType: BanUserTypeSchema,
   banUntil: DateTimeString,
@@ -110,7 +110,7 @@ export const bansContract = c.router(
         getUndismissedNotifications: {
           method: "GET",
           path: "/getUndismissedNotification/:userId",
-          pathParams: z.object({ userId: z.coerce.number() }),
+          pathParams: z.object({ userId: z.string().cuid() }),
           responses: {
             200: z.array(CommentBanSchema),
             400: ErrorResponseSchema,
@@ -285,7 +285,7 @@ export const bansContract = c.router(
         getMostRecent: {
           method: "GET",
           path: "/getMostRecent/:userId",
-          pathParams: z.object({ userId: z.coerce.number() }),
+          pathParams: z.object({ userId: z.string().cuid() }),
           responses: {
             200: UserBanSchema,
             400: ErrorResponseSchema,
@@ -314,7 +314,7 @@ export const bansContract = c.router(
         deleteById: {
           method: "DELETE",
           path: "/delete/:userId",
-          pathParams: z.object({ userId: z.coerce.number() }),
+          pathParams: z.object({ userId: z.string().cuid() }),
           responses: {
             200: SimpleMessageResponseSchema,
             400: ErrorResponseSchema,
@@ -334,7 +334,7 @@ export const bansContract = c.router(
         deletePassedBanDate: {
           method: "DELETE",
           path: "/deletePassedBanDate",
-          pathParams: z.object({ userId: z.coerce.number() }),
+          pathParams: z.object({ userId: z.string().cuid() }),
           responses: {
             200: SimpleMessageResponseSchema,
             400: ErrorResponseSchema,

@@ -68,6 +68,7 @@ import { prisma } from "src/prisma/client";
 import { BadPostingBehaviourSchema } from "@mlc/lib/api/contracts/moderation/reputation";
 import { UserSchema } from "@mlc/lib/api";
 import { Handlers } from "src/server";
+import { BanTypeSchema } from "@mlc/lib/api/contracts/moderation/bans";
 
 type User = z.infer<typeof UserSchema>;
 
@@ -578,14 +579,38 @@ const fetchCommentBanByCommentId = async (commentId: number) => {
   });
 };
 // ----------------------------------------------------------------------------
+const fetchUndismissedBans = async (authorId: string) => {
+  return await prisma.commentBan.findMany({
+    where: {
+      notificationDismissed: false,
+      authorId: authorId,
+    },
+    include: {
+      comment: true, // Includes the related IdeaComment
+    },
+  });
+};
+// ----------------------------------------------------------------------------
+const deleteCommentBanByCommentId = async (commentId: number) => {
+  const foundBan = await prisma.commentBan.findFirst({
+    where: { commentId },
+  });
+
+  if (!foundBan) return null;
+
+  return await prisma.commentBan.delete({
+    where: { id: foundBan.id },
+  });
+};
+// ----------------------------------------------------------------------------
 //  ROUTES
 // ----------------------------------------------------------------------------
 // controllers/banComment.js                      → apiRouter.use('/banComment', banCommentRouter)
 //x	POST  /create	                                create a comment ban
-//	GET   /getUndismissedNotification/:userId	    get undismissed ban notifications for a user
-//	GET	  /getByCommentId/:banCommentId	          get ban record by comment id
+//x	GET   /getUndismissedNotification/:userId	    get undismissed ban notifications for a user
+//x	GET	  /getByCommentId/:banCommentId	          get ban record by comment id
 //x	POST  /dismissNotification/:banCommentId	    dismiss a comment-ban notification
-//	DEL   /delete/:banCommentId	                  delete a comment ban by comment id
+//x	DEL   /delete/:banCommentId	                  delete a comment ban by comment id
 // ----------------------------------------------------------------------------
 const createCommentBan = s.route(
   moderationApiContracts.bans.banComment.create,
@@ -733,7 +758,7 @@ const getCommentBanById = s.route(
             bannedBy: foundBan.bannedBy,
             createdAt: foundBan.createdAt.toISOString(),
             notificationDismissed: foundBan.notificationDismissed,
-            authorId: Number(foundBan.authorId),
+            authorId: foundBan.authorId,
             banReason: foundBan.banReason,
           },
         };
@@ -742,6 +767,86 @@ const getCommentBanById = s.route(
           status: 400,
           body: {
             message: "Error occurred when trying to get banned comment",
+            details: toErrorDetails(error),
+          },
+        };
+      }
+    },
+  },
+);
+const getUndismissedNotifications = s.route(
+  moderationApiContracts.bans.banComment.getUndismissedNotifications,
+  {
+    middleware: [passport.authenticate("jwt", { session: false })],
+    handler: async ({ params }) => {
+      const { userId } = params;
+
+      try {
+        const bans = await fetchUndismissedBans(userId);
+
+        /**
+         * Mapping to CommentBanRaw:
+         * 1. Injects the 'type' discriminator.
+         * 2. Maps the related comment's authorId.
+         * 3. Ensures 'banMessage' has a default to avoid Zod issues if null in DB.
+         */
+        const formattedBans = bans.map((ban) => ({
+          ...ban,
+          type: BanTypeSchema.enum.COMMENT,
+          banMessage: ban.banMessage ?? "",
+          authorId: ban.comment.authorId,
+          commentId: ban.commentId,
+          createdAt: ban.createdAt.toISOString(),
+        }));
+
+        return {
+          status: 200,
+          body: formattedBans,
+        };
+      } catch (error) {
+        return {
+          status: 400,
+          body: {
+            message:
+              "Error occurred when trying to get undismissed comment notifications",
+            details: toErrorDetails(error),
+          },
+        };
+      }
+    },
+  },
+);
+const deleteCommentBan = s.route(
+  moderationApiContracts.bans.banComment.deleteById,
+  {
+    middleware: [passport.authenticate("jwt", { session: false })],
+    handler: async ({ params }) => {
+      const { commentBanId } = params;
+
+      try {
+        const deletedRecord = await deleteCommentBanByCommentId(commentBanId);
+
+        if (!deletedRecord) {
+          return {
+            status: 400,
+            body: {
+              message: `The ban (${commentBanId}) does not exist.`,
+              details: toErrorDetails(new Error("Resource not found")),
+            },
+          };
+        }
+
+        return {
+          status: 200,
+          body: {
+            message: `Successfully deleted comment ban: ${commentBanId}`,
+          },
+        };
+      } catch (error) {
+        return {
+          status: 400,
+          body: {
+            message: "Error occurred when trying to delete comment ban",
             details: toErrorDetails(error),
           },
         };
@@ -774,6 +879,8 @@ export default {
       create: createCommentBan,
       dismissNotification,
       getById: getCommentBanById,
+      getUndismissedNotifications,
+      delete: deleteCommentBan,
     },
     //flags
   },

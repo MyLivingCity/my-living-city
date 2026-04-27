@@ -1,4 +1,4 @@
-export const API_BASE_URL = "http://localhost:4000";
+export const API_BASE_URL = "http://localhost:3001";
 
 // Basic styles
 export const MLC_COLOUR_THEME = {

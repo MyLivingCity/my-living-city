@@ -6,7 +6,7 @@ import {
   SimpleMessageResponseSchema,
 } from "../../common";
 
-export const BanTypeSchema = z.enum(["USER", "POST", "COMMENT"]);
+export const BanTypeSchema = z.enum(["USER", "IDEA", "COMMENT"]);
 export type BanType = z.infer<typeof BanTypeSchema>;
 
 export const BanUserTypeSchema = z.enum(["WARNING", "POST_BAN", "SYS_BAN"]);
@@ -18,7 +18,11 @@ export type BanUserType = z.infer<typeof BanTypeSchema>;
  */
 const baseBanShape = {
   id: z.number(),
-  createdAt: DateTimeString,
+  //'safe coercion' of Date => String
+  createdAt: z.preprocess((val) => {
+    if (val instanceof Date) return val.toISOString();
+    return val;
+  }, DateTimeString),
   bannedBy: z.string(),
   banReason: z.string(),
   banMessage: z.string().default(""),
@@ -35,7 +39,7 @@ const UserBanRaw = z.object({
 });
 const PostBanRaw = z.object({
   ...baseBanShape,
-  type: z.literal(BanTypeSchema.enum.POST),
+  type: z.literal(BanTypeSchema.enum.IDEA),
   postId: z.number(),
   authorId: z.string(),
 });
@@ -165,7 +169,7 @@ export const bansContract = c.router(
     //xPOST     /dismissNotification/:banPostId         Mark a post ban notification as dismissed
     //xDELETE  /delete/:banPostId                      Remove a ban entry associated with a post ID
     // ----------------------------------------------------------------------------
-    postBans: c.router(
+    banPost: c.router(
       {
         // getAll: {
         //   method: "GET",
@@ -179,7 +183,7 @@ export const bansContract = c.router(
         // },
         getByPostId: {
           method: "GET",
-          path: "'/getUndismissedNotification/:postBanId",
+          path: "'/getByPostId/:postBanId",
           pathParams: z.object({ postBanId: z.coerce.number() }),
           responses: {
             200: PostBanSchema,
@@ -190,7 +194,7 @@ export const bansContract = c.router(
         getUndismissedNotifications: {
           method: "GET",
           path: "/getUndismissedNotification/:userId",
-          pathParams: z.object({ userId: z.coerce.number() }),
+          pathParams: z.object({ userId: z.string().cuid() }),
           responses: {
             200: z.array(PostBanSchema),
             400: ErrorResponseSchema,
@@ -203,6 +207,8 @@ export const bansContract = c.router(
           body: PostBanRaw.pick({
             postId: true,
             authorId: true,
+            banReason: true,
+            banMessage: true,
           }).extend({
             banDuration: z.number().positive(),
           }),
@@ -222,7 +228,7 @@ export const bansContract = c.router(
           },
           summary: "Dismiss a post ban notification",
         },
-        deleteById: {
+        delete: {
           method: "DELETE",
           path: "/delete/:postBanId",
           pathParams: z.object({ postBanId: z.coerce.number() }),
@@ -245,7 +251,7 @@ export const bansContract = c.router(
     //xPATCH    /:userId/update                         Update the most recent ban record for a specific user
     //xDELETE   /:userId/delete                         Remove a ban record for a specific user (commented-out)
     // ----------------------------------------------------------------------------
-    userBans: c.router(
+    banUser: c.router(
       {
         create: {
           method: "POST",
@@ -275,7 +281,7 @@ export const bansContract = c.router(
         getById: {
           method: "GET",
           path: "/get/:userId",
-          pathParams: z.object({ userId: z.coerce.number() }),
+          pathParams: z.object({ userId: z.string().cuid() }),
           responses: {
             200: z.array(UserBanSchema),
             400: ErrorResponseSchema,
@@ -311,7 +317,7 @@ export const bansContract = c.router(
           },
           summary: "Update the most recent ban record for a specific user",
         },
-        deleteById: {
+        delete: {
           method: "DELETE",
           path: "/delete/:userId",
           pathParams: z.object({ userId: z.string().cuid() }),

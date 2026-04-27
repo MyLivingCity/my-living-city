@@ -564,17 +564,31 @@ const executeCommentBan = async (data: {
   });
 };
 // ----------------------------------------------------------------------------
+const updateNotificationStatus = async (banCommentId: number) => {
+  return await prisma.commentBan.update({
+    where: { id: banCommentId },
+    data: { notificationDismissed: true },
+  });
+};
+// ----------------------------------------------------------------------------
+
+const fetchCommentBanByCommentId = async (commentId: number) => {
+  return await prisma.commentBan.findFirst({
+    where: { commentId },
+  });
+};
+// ----------------------------------------------------------------------------
 //  ROUTES
 // ----------------------------------------------------------------------------
 // controllers/banComment.js                      → apiRouter.use('/banComment', banCommentRouter)
-//	POST  /create	                                create a comment ban
+//x	POST  /create	                                create a comment ban
 //	GET   /getUndismissedNotification/:userId	    get undismissed ban notifications for a user
 //	GET	  /getByCommentId/:banCommentId	          get ban record by comment id
-//	PUT	  /dismissNotification/:banCommentId	    dismiss a comment-ban notification
+//x	POST  /dismissNotification/:banCommentId	    dismiss a comment-ban notification
 //	DEL   /delete/:banCommentId	                  delete a comment ban by comment id
 // ----------------------------------------------------------------------------
 const createCommentBan = s.route(
-  moderationApiContracts.bans.commentBans.create,
+  moderationApiContracts.bans.banComment.create,
   {
     middleware: [passport.authenticate("jwt", { session: false })],
     handler: async ({ body, req }) => {
@@ -644,6 +658,97 @@ const createCommentBan = s.route(
     },
   },
 );
+const dismissNotification = s.route(
+  moderationApiContracts.bans.banComment.dismissNotification,
+  {
+    middleware: [passport.authenticate("jwt", { session: false })],
+    handler: async ({ params }) => {
+      const { commentBanId } = params;
+
+      try {
+        // 1. Check if the ban exists
+        const foundBan = await prisma.commentBan.findUnique({
+          where: { id: commentBanId },
+        });
+
+        if (!foundBan) {
+          return {
+            status: 400,
+            body: {
+              message: `The ban (${commentBanId}) does not exist.`,
+              details: toErrorDetails(new Error("Resource not found")),
+            },
+          };
+        }
+
+        // 2. Perform update
+        await updateNotificationStatus(commentBanId);
+
+        return {
+          status: 200,
+          body: {
+            message: `Successfully dismissed notification for comment ban: ${commentBanId}`,
+          },
+        };
+      } catch (error) {
+        return {
+          status: 400,
+          body: {
+            message:
+              "Error occurred when trying to dismiss comment notification",
+            details: toErrorDetails(error),
+          },
+        };
+      }
+    },
+  },
+);
+const getCommentBanById = s.route(
+  moderationApiContracts.bans.banComment.getById,
+  {
+    middleware: [passport.authenticate("jwt", { session: false })],
+    handler: async ({ params }) => {
+      const { commentBanId } = params;
+
+      try {
+        const foundBan = await fetchCommentBanByCommentId(commentBanId);
+
+        if (!foundBan) {
+          return {
+            status: 400,
+            body: {
+              message: `The ban for comment (${commentBanId}) does not exist.`,
+              details: toErrorDetails(new Error("Record not found")),
+            },
+          };
+        }
+
+        return {
+          status: 200,
+          body: {
+            type: "COMMENT",
+            id: foundBan.id,
+            commentId: foundBan.commentId,
+            banMessage: foundBan.banMessage ?? "",
+            bannedBy: foundBan.bannedBy,
+            createdAt: foundBan.createdAt.toISOString(),
+            notificationDismissed: foundBan.notificationDismissed,
+            authorId: Number(foundBan.authorId),
+            banReason: foundBan.banReason,
+          },
+        };
+      } catch (error) {
+        return {
+          status: 400,
+          body: {
+            message: "Error occurred when trying to get banned comment",
+            details: toErrorDetails(error),
+          },
+        };
+      }
+    },
+  },
+);
 // ----------------------------------------------------------------------------
 //  EXPORTS
 // ----------------------------------------------------------------------------
@@ -667,6 +772,8 @@ export default {
     //bans
     banComment: {
       create: createCommentBan,
+      dismissNotification,
+      getById: getCommentBanById,
     },
     //flags
   },

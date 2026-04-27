@@ -1,3 +1,4 @@
+import { BanUserType } from "./../../../../../../packages/lib/src/api/contracts/moderation/bans";
 // =============================================================================
 // features/moderation/handler.ts
 // =============================================================================
@@ -1167,12 +1168,69 @@ const deletePostBan = s.route(moderationApiContracts.bans.banPost.delete, {
 // ----------------------------------------------------------------------------
 //  SERVICES
 // ----------------------------------------------------------------------------
+const executeUserBan = async (data: {
+  userId: string;
+  banType: BanUserType;
+  banDurationDays: number;
+  banReason: string;
+  banMessage: string;
+  moderatorId: string;
+}) => {
+  const createdAt = new Date();
+  // Equivalent to legacy logic: duration in days -> ms
+  const banUntil = new Date(
+    createdAt.getTime() + data.banDurationDays * 24 * 60 * 60 * 1000,
+  );
+
+  return await prisma.$transaction(async (tx) => {
+    // 1. Create the active ban record
+    const createdBan = await tx.userBan.create({
+      data: {
+        userId: data.userId,
+        banType: data.banType,
+        banReason: data.banReason,
+        banMessage: data.banMessage,
+        bannedBy: data.moderatorId,
+        banDuration: data.banDurationDays,
+        banUntil: banUntil,
+        createdAt: createdAt,
+      },
+    });
+
+    // 2. Log to ban history (using "USER" type for the audit trail)
+    await tx.ban_History.create({
+      data: {
+        userId: data.userId,
+        type: BanTypeSchema.enum.USER,
+        reason: data.banReason,
+        userBanType: data.banType,
+        userBannedUntil: banUntil,
+        modId: data.moderatorId,
+        message: data.banMessage,
+        createdAt: createdAt,
+      },
+    });
+
+    // 3. Update the User model status
+    await tx.user.update({
+      where: { id: data.userId },
+      data: { banned: true },
+    });
+
+    return createdBan;
+  });
+};
+// ----------------------------------------------------------------------------
+
+const fetchAllUserBans = async () => {
+  return await prisma.userBan.findMany();
+};
 // ----------------------------------------------------------------------------
 //  ROUTES
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 // controllers/banUser.js         → apiRouter.use('/banUser', banUserRouter)
-//	POST	/create	                  create a user ban
+//x	POST	/create	                  create a user ban
 //	GET	  /getAll	                  get all user bans
 //	GET	  /get/:userId	            get all bans for a specific user
 //	GET	  /getMostRecent/:userId	  get most recent ban for a specific user
@@ -1182,6 +1240,107 @@ const deletePostBan = s.route(moderationApiContracts.bans.banPost.delete, {
 //	DEL   /deletePassedBanDate	    delete bans with passed ban date
 //  DEL   /delete/:userId           remove a userId from UserBan (commented code is wrong)
 // ----------------------------------------------------------------------------
+const createUserBan = s.route(moderationApiContracts.bans.banUser.create, {
+  middleware: [passport.authenticate("jwt", { session: false })],
+  handler: async ({ body, req }) => {
+    try {
+      const moderatorId = (req.user as User).id;
+      const { userId, banType, banDuration } = body;
+
+      // Legacy body allowed reason/message but contract pick() may vary
+      const banReason = body.banReason ?? "Terms of Service Violation";
+      const banMessage = body.banMessage ?? "";
+
+      // 1. Validate user existence
+      const foundUser = await prisma.user.findUnique({ where: { id: userId } });
+      if (!foundUser) {
+        return {
+          status: 400,
+          body: {
+            message: "User not found",
+            details: toErrorDetails(
+              new Error(
+                `The user with that listed ID (${userId}) does not exist.`,
+              ),
+            ),
+          },
+        };
+      }
+
+      // 2. Prevent duplicate active bans
+      if (foundUser.banned) {
+        return {
+          status: 400,
+          body: {
+            message: "This user is already banned.",
+            details: toErrorDetails(
+              new Error("A user can only be banned once."),
+            ),
+          },
+        };
+      }
+
+      // 3. Execute Transaction
+      await executeUserBan({
+        userId,
+        banType,
+        banDurationDays: banDuration,
+        banReason,
+        banMessage,
+        moderatorId,
+      });
+
+      return {
+        status: 201,
+        body: {
+          message: `Successfully banned user ${userId}`,
+        },
+      };
+    } catch (error) {
+      return {
+        status: 400,
+        body: {
+          message: `Error occurred when trying to ban user ${body.userId}`,
+          details: toErrorDetails(error),
+        },
+      };
+    }
+  },
+});
+const getAllUserBans = s.route(moderationApiContracts.bans.banUser.getAll, {
+  middleware: [passport.authenticate("jwt", { session: false })],
+  handler: async () => {
+    try {
+      const bans = await fetchAllUserBans();
+
+      /**
+       * Mapping to UserBanRaw:
+       * 1. Injects 'type' for the discriminated union.
+       * 2. Relies on schema coercion/pipes for Date -> ISO string conversion.
+       * 3. ensures banMessage matches the schema default.
+       */
+      const formattedBans = bans.map((ban) => ({
+        ...ban,
+        type: BanTypeSchema.enum.USER,
+        banMessage: ban.banMessage ?? "",
+        // Note: banUntil and createdAt will be auto-formatted by the schema pipe
+      }));
+
+      return {
+        status: 200,
+        body: formattedBans,
+      };
+    } catch (error) {
+      return {
+        status: 400,
+        body: {
+          message: "Error occurred when trying to get all banned users",
+          details: toErrorDetails(error),
+        },
+      };
+    }
+  },
+});
 // ============================================================================
 // Flags
 // ============================================================================
@@ -1252,18 +1411,18 @@ export default {
       getById: getPostBanById,
       getUndismissedNotifications: getUndismissedPostNotifications,
       delete: deletePostBan,
-    } /* 
+    },
     banUser: {
       create: createUserBan,
       getAll: getAllUserBans,
-      getById: getUserBanById,
-      getMostRecent,
-      getMostRecentWithToken,
-      update: updateUserBan,
-      delete: deleteUserBan,
-      getAllPassedDate,
-      deletePassedBanDate,
-    }, */,
+      // getById: getUserBanById,
+      // getMostRecent,
+      // getMostRecentWithToken,
+      // update: updateUserBan,
+      // delete: deleteUserBan,
+      // getAllPassedDate,
+      // deletePassedBanDate,
+    },
     //flags
   },
 } as unknown as Handlers;

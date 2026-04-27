@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { initContract } from "@ts-rest/core";
 import {
-  DateTimeString,
+  SafeDateFormat,
   ErrorResponseSchema,
   SimpleMessageResponseSchema,
 } from "../../common";
@@ -10,7 +10,7 @@ export const BanTypeSchema = z.enum(["USER", "IDEA", "COMMENT"]);
 export type BanType = z.infer<typeof BanTypeSchema>;
 
 export const BanUserTypeSchema = z.enum(["WARNING", "POST_BAN", "SYS_BAN"]);
-export type BanUserType = z.infer<typeof BanTypeSchema>;
+export type BanUserType = z.infer<typeof BanUserTypeSchema>;
 
 /**
  * baseBanShape: The core fields shared by all ban-related tables.
@@ -19,10 +19,7 @@ export type BanUserType = z.infer<typeof BanTypeSchema>;
 const baseBanShape = {
   id: z.number(),
   //'safe coercion' of Date => String
-  createdAt: z.preprocess((val) => {
-    if (val instanceof Date) return val.toISOString();
-    return val;
-  }, DateTimeString),
+  createdAt: SafeDateFormat,
   bannedBy: z.string(),
   banReason: z.string(),
   banMessage: z.string().default(""),
@@ -33,9 +30,9 @@ const UserBanRaw = z.object({
   ...baseBanShape,
   type: z.literal(BanTypeSchema.enum.USER),
   userId: z.string().cuid(),
-  banDuration: DateTimeString,
+  banDuration: z.number(),
   banType: BanUserTypeSchema,
-  banUntil: DateTimeString,
+  banUntil: SafeDateFormat,
 });
 const PostBanRaw = z.object({
   ...baseBanShape,
@@ -259,6 +256,8 @@ export const bansContract = c.router(
           body: UserBanRaw.pick({
             userId: true,
             banType: true,
+            banReason: true,
+            banMessage: true,
           }).extend({
             banDuration: z.number().positive(),
           }),
@@ -274,7 +273,7 @@ export const bansContract = c.router(
           responses: {
             200: z.array(UserBanSchema),
             400: ErrorResponseSchema,
-            401: z.string(),
+            //401: z.string(),
           },
           summary: "Get all user ban records",
         },

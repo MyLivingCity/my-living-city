@@ -1,6 +1,13 @@
 import z from "zod";
 
 export const DateTimeString = z.string().datetime();
+
+// EXTENDS DateTimeString
+export const SafeDateFormat = z.preprocess((val: unknown) => {
+  if (val instanceof Date) return val.toISOString();
+  return val;
+}, DateTimeString);
+
 export const DecimalLikeSchema = z.union([z.number(), z.string()]);
 
 export const SimpleMessageResponseSchema = z.object({

@@ -281,8 +281,6 @@ const resetBadPostCount = s.route(
       if ("error" in result) return result.error;
 
       try {
-        // The legacy code used findFirst then updateMany;
-        // updateMany is safe even if the record doesn't exist yet.
         await resetUserBadPostStats(result.authorId);
 
         return {
@@ -449,10 +447,12 @@ const processFalseFlaggingBans = async () => {
   return updates.length;
 };
 // ----------------------------------------------------------------------------
-const fetchAllFalseFlaggingWithUsers = async () => {
+// TODO: determine if further fields should be SELECTed
+// keeping it lean to start to minimize database load
+const fetchFalseFlaggingIds = async () => {
   return await prisma.false_Flagging_Behavior.findMany({
-    include: {
-      user: true, // This brings in the related User object
+    select: {
+      userId: true,
     },
   });
 };
@@ -493,14 +493,12 @@ const getAllFalseFlagging = s.route(
     middleware: [passport.authenticate("jwt", { session: false })],
     handler: async () => {
       try {
-        const records = await fetchAllFalseFlaggingWithUsers();
+        const records = await fetchFalseFlaggingIds();
 
         return {
           status: 200,
           body: records.map((record) => ({
-            id: record.user.id,
-            email: record.user.email,
-            banned: record.flag_ban,
+            id: record.userId,
           })),
         };
       } catch (error) {
@@ -948,8 +946,6 @@ const createPostBan = s.route(moderationApiContracts.bans.banPost.create, {
       const moderatorId = (req.user as User).id;
       const { postId, authorId } = body;
 
-      // Note: The legacy ctrl uses req.body for reason/message but your
-      // contract pick() didn't include them. Assuming they come from the body.
       const banReason = body.banReason ?? "No reason provided";
       const banMessage = body.banMessage ?? "";
 
@@ -1075,12 +1071,6 @@ const getPostBanById = s.route(
           };
         }
 
-        /**
-         * Mapping to PostBanRaw:
-         * 1. Injects 'type' discriminator.
-         * 2. Coalesces null fields to satisfy Zod schema.
-         * 3. 'isRead' transformation is handled by the Schema's .transform()
-         */
         return {
           status: 200,
           body: {
@@ -1112,12 +1102,6 @@ const getUndismissedPostNotifications = s.route(
       try {
         const bans = await fetchUndismissedPostBans(userId);
 
-        /**
-         * Mapping to PostBanRaw:
-         * 1. Injects 'type' for the discriminated union.
-         * 2. Maps 'postId' from the included post record.
-         * 3. Relies on schema coercion/pipes for date formatting.
-         */
         const formattedBans = bans.map((ban) => ({
           ...ban,
           type: BanTypeSchema.enum.IDEA,
@@ -1142,44 +1126,41 @@ const getUndismissedPostNotifications = s.route(
     },
   },
 );
-const deletePostBan = s.route(
-  moderationApiContracts.bans.banPost.delete, // Correcting 'deleteById' to 'delete' per your contract
-  {
-    middleware: [passport.authenticate("jwt", { session: false })],
-    handler: async ({ params }) => {
-      const { postBanId } = params;
+const deletePostBan = s.route(moderationApiContracts.bans.banPost.delete, {
+  middleware: [passport.authenticate("jwt", { session: false })],
+  handler: async ({ params }) => {
+    const { postBanId } = params;
 
-      try {
-        const deletedRecord = await removePostBanByPostId(postBanId);
+    try {
+      const deletedRecord = await removePostBanByPostId(postBanId);
 
-        if (!deletedRecord) {
-          return {
-            status: 400,
-            body: {
-              message: `The ban (${postBanId}) does not exist.`,
-              details: toErrorDetails(new Error("Record not found")),
-            },
-          };
-        }
-
-        return {
-          status: 200,
-          body: {
-            message: `Successfully deleted ban: ${postBanId}`,
-          },
-        };
-      } catch (error) {
+      if (!deletedRecord) {
         return {
           status: 400,
           body: {
-            message: "Error occurred when trying to delete ban",
-            details: toErrorDetails(error),
+            message: `The ban (${postBanId}) does not exist.`,
+            details: toErrorDetails(new Error("Record not found")),
           },
         };
       }
-    },
+
+      return {
+        status: 200,
+        body: {
+          message: `Successfully deleted ban: ${postBanId}`,
+        },
+      };
+    } catch (error) {
+      return {
+        status: 400,
+        body: {
+          message: "Error occurred when trying to delete ban",
+          details: toErrorDetails(error),
+        },
+      };
+    }
   },
-);
+});
 // ============================================================================
 // banUser
 // ============================================================================

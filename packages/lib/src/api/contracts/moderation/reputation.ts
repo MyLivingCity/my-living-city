@@ -187,8 +187,6 @@ export const reputationContract = c.router(
             200: z.array(
               UserSchema.pick({
                 id: true,
-                email: true,
-                banned: true,
               }),
             ),
             400: ErrorResponseSchema,

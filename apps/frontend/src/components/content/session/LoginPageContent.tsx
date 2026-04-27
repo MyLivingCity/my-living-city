@@ -1,8 +1,14 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Image, Form, Button, Alert, Card } from "react-bootstrap";
 import { ROUTES } from "@/lib/constants/constants";
 import { useFormik } from "formik";
 import { Link } from "react-router-dom";
+import { loginUser } from "@/lib/api/user.routes";
+import { UserProfileContext } from "@/contexts/UserProfileContext";
+import {
+  storeTokenExpiryInLocalStorage,
+  storeUserAndTokenInLocalStorage,
+} from "@/lib/utils";
 
 export interface ILoginWithEmailAndPass {
   email: string;
@@ -10,6 +16,7 @@ export interface ILoginWithEmailAndPass {
 }
 
 export default function LoginPageContent() {
+  const { setToken, setUser } = useContext(UserProfileContext);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [showError, setShowError] = useState(true);
@@ -19,11 +26,25 @@ export default function LoginPageContent() {
       email: "",
       password: "",
     },
-    onSubmit: async () => {
+    onSubmit: async (values: ILoginWithEmailAndPass) => {
       try {
         setIsLoading(true);
         setError(null);
 
+        const loginAttempt = await loginUser(values);
+        if (loginAttempt.status !== 200) {
+          throw new Error();
+        }
+
+        const { token, user } = loginAttempt.body;
+        console.log({ token, user });
+
+        storeUserAndTokenInLocalStorage(token, user);
+        storeTokenExpiryInLocalStorage();
+        setToken(token);
+        setUser(user);
+        // remove previous errors
+        setError(null);
         formik.resetForm();
       } catch (err: unknown) {
         console.error("Error logging in user:", err);

@@ -1,3 +1,5 @@
+import { env } from "./env";
+
 export const capitalize = (str: string) =>
   str.replace(/\b\w/g, (c) => c.toUpperCase());
 
@@ -88,4 +90,29 @@ export const retrieveStoredTokenExpiryInLocalStorage = (): Date | null => {
   }
 
   return new Date(retrievedDateString);
+};
+
+/**
+ * A utility function that stores a given user object and token in local storage
+ * @param token A valid token retrieved from register or login and stored in memory
+ * @param user A user object that will be stored in memory
+ */
+export const storeUserAndTokenInLocalStorage = (
+  token: string,
+  user: IUser,
+): void => {
+  storeObjectInLocalStorage("logged-user", user);
+  localStorage.setItem("token", token);
+};
+
+/**
+ * Stores the token expiry time in localstorage to compare defaults to TOKEN_EXPIRY
+ * @param minutesOffset The number of minutes it takes for the token to expire from the current time
+ */
+export const storeTokenExpiryInLocalStorage = (
+  minutesOffset: number = env.TOKEN_EXPIRY_IN_MINUTES,
+) => {
+  const tokenExpiry = new Date();
+  tokenExpiry.setMinutes(tokenExpiry.getMinutes() + minutesOffset);
+  localStorage.setItem("token-expiry", tokenExpiry.toISOString());
 };

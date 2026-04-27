@@ -8,7 +8,13 @@ import { retrieveStoredTokenExpiryInLocalStorage } from "src/lib/utils";
 const getUserFromLocalStorage = (): IUser | null => {
   const stringifiedUser = localStorage.getItem("logged-user");
   if (!stringifiedUser) return null;
-  return JSON.parse(stringifiedUser) as IUser;
+  try {
+    const parsedUser = JSON.parse(stringifiedUser) as IUser;
+    return parsedUser;
+  } catch {
+    localStorage.removeItem("logged-user");
+    return null;
+  }
 };
 
 const UserProfileProvider: React.FC<React.PropsWithChildren> = ({

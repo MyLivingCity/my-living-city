@@ -63,12 +63,18 @@ import { initServer } from "@ts-rest/express";
 import * as passport from "passport";
 import { moderationApiContracts } from "@mlc/lib/api";
 import { toErrorDetails } from "src/server/utils";
-
+import { z } from "zod";
 import { prisma } from "src/prisma/client";
 import { BadPostingBehaviourSchema } from "@mlc/lib/api/contracts/moderation/reputation";
+import { UserSchema } from "@mlc/lib/api";
 import { Handlers } from "src/server";
 
+type User = z.infer<typeof UserSchema>;
+
 const s = initServer();
+// ============================================================================
+// REPUTATION
+// ============================================================================
 // ============================================================================
 //  badPostingBehavior
 // ============================================================================
@@ -509,6 +515,135 @@ const getAllFalseFlagging = s.route(
     },
   },
 );
+// ============================================================================
+// BANS
+// ============================================================================
+// ============================================================================
+// banComment
+// ============================================================================
+// ----------------------------------------------------------------------------
+//  SERVICES
+// ----------------------------------------------------------------------------
+/**
+ * Logic extracted for service.ts.
+ * Handles the double-write to CommentBan and Ban_History.
+ */
+const executeCommentBan = async (data: {
+  commentId: number;
+  authorId: string;
+  banReason: string;
+  banMessage: string;
+  moderatorId: string;
+  ideaId: number;
+}) => {
+  // We use a transaction to ensure both logs are created or neither are
+  return await prisma.$transaction(async (tx) => {
+    const createdBan = await tx.commentBan.create({
+      data: {
+        commentId: data.commentId,
+        authorId: data.authorId,
+        banReason: data.banReason,
+        banMessage: data.banMessage,
+        bannedBy: data.moderatorId,
+      },
+    });
+
+    await tx.ban_History.create({
+      data: {
+        userId: data.authorId,
+        type: "COMMENT", // Assuming BanType.COMMENT string value
+        reason: data.banReason,
+        ideaId: data.ideaId,
+        commentId: data.commentId,
+        modId: data.moderatorId,
+        message: data.banMessage,
+      },
+    });
+
+    return createdBan;
+  });
+};
+// ----------------------------------------------------------------------------
+//  ROUTES
+// ----------------------------------------------------------------------------
+// controllers/banComment.js                      → apiRouter.use('/banComment', banCommentRouter)
+//	POST  /create	                                create a comment ban
+//	GET   /getUndismissedNotification/:userId	    get undismissed ban notifications for a user
+//	GET	  /getByCommentId/:banCommentId	          get ban record by comment id
+//	PUT	  /dismissNotification/:banCommentId	    dismiss a comment-ban notification
+//	DEL   /delete/:banCommentId	                  delete a comment ban by comment id
+// ----------------------------------------------------------------------------
+const createCommentBan = s.route(
+  moderationApiContracts.bans.commentBans.create,
+  {
+    middleware: [passport.authenticate("jwt", { session: false })],
+    handler: async ({ body, req }) => {
+      try {
+        const moderatorId = (req.user as User).id;
+        const { commentId, banReason, banMessage } = body;
+
+        // 1. Check if comment exists & get ideaId for history
+        const foundComment = await prisma.ideaComment.findUnique({
+          where: { id: commentId },
+        });
+
+        if (!foundComment) {
+          return {
+            status: 400,
+            body: {
+              message: "Action Prohibited",
+              details: toErrorDetails(
+                new Error(`The comment (${commentId}) does not exist.`),
+              ),
+            },
+          };
+        }
+
+        // 2. Check for existing ban
+        const alreadyBanned = await prisma.commentBan.findFirst({
+          where: { commentId },
+        });
+
+        if (alreadyBanned) {
+          return {
+            status: 400,
+            body: {
+              message: "Action Prohibited", // The high-level summary
+              details: toErrorDetails(
+                new Error("A comment can only be banned once."),
+              ),
+            },
+          };
+        }
+
+        // 3. Execute ban and history log
+        await executeCommentBan({
+          commentId,
+          authorId: foundComment.authorId, // Taking author from the found comment
+          banReason,
+          banMessage,
+          moderatorId,
+          ideaId: foundComment.ideaId,
+        });
+
+        return {
+          status: 201,
+          body: {
+            message: `Successfully banned comment ${commentId}`,
+          },
+        };
+      } catch (error) {
+        return {
+          status: 400,
+          body: {
+            message: `Error occurred when trying to ban comment ${body.commentId}`,
+            details: toErrorDetails(error),
+          },
+        };
+      }
+    },
+  },
+);
 // ----------------------------------------------------------------------------
 //  EXPORTS
 // ----------------------------------------------------------------------------
@@ -530,7 +665,9 @@ export default {
       getAll: getAllFalseFlagging,
     },
     //bans
-
+    banComment: {
+      create: createCommentBan,
+    },
     //flags
   },
 } as unknown as Handlers;

@@ -37,13 +37,13 @@ const PostBanRaw = z.object({
   ...baseBanShape,
   type: z.literal(BanTypeSchema.enum.POST),
   postId: z.number(),
-  authorId: z.number(),
+  authorId: z.string(),
 });
 const CommentBanRaw = z.object({
   ...baseBanShape,
   type: z.literal(BanTypeSchema.enum.COMMENT),
   commentId: z.number(),
-  authorId: z.number(),
+  authorId: z.string(),
 });
 // ----------------------------------------------------------------------------
 // Transform 'notificationDismissed' -> 'isRead'

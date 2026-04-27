@@ -65,6 +65,15 @@ export const getUserWithJWT = async ({
   return res.data;
 };
 
+export const loginUser = async (loginData: LoginData) => {
+  const res = await mlcApiClient.users.login({
+    body: {
+      ...loginData,
+    },
+  });
+  return res;
+};
+
 export const getAxiosJwtRequestOption = (
   jwtToken: string,
 ): AxiosRequestConfig => {

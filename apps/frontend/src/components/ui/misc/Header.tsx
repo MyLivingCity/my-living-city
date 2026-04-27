@@ -1,7 +1,9 @@
-import { memo, useState } from "react";
+import { UserProfileContext } from "@/contexts/UserProfileContext";
+import { memo, useContext, useState } from "react";
 import { NavDropdown, Nav, Navbar } from "react-bootstrap";
 
 function Header() {
+  const { logout, user, token } = useContext(UserProfileContext);
   const [stripeStatus] = useState("");
 
   return (
@@ -62,7 +64,13 @@ function Header() {
               Help
             </Nav.Link>
 
-            <Nav.Link href="/login">Login</Nav.Link>
+            {user ? (
+              <>
+                <Nav.Link onClick={() => logout()}>Log out</Nav.Link>
+              </>
+            ) : (
+              <Nav.Link href="/login">Login</Nav.Link>
+            )}
           </Nav>
         </Navbar.Collapse>
       </Navbar>

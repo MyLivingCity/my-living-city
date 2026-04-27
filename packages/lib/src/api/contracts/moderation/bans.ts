@@ -21,8 +21,7 @@ const baseBanShape = {
   createdAt: DateTimeString,
   bannedBy: z.string(),
   banReason: z.string(),
-  banMessage: z.string(),
-  banUntil: DateTimeString,
+  banMessage: z.string().default(""),
   notificationDismissed: z.boolean(),
 };
 // ----------------------------------------------------------------------------
@@ -32,6 +31,7 @@ const UserBanRaw = z.object({
   userId: z.number(),
   banDuration: DateTimeString,
   banType: BanUserTypeSchema,
+  banUntil: DateTimeString,
 });
 const PostBanRaw = z.object({
   ...baseBanShape,
@@ -43,7 +43,6 @@ const CommentBanRaw = z.object({
   ...baseBanShape,
   type: z.literal(BanTypeSchema.enum.COMMENT),
   commentId: z.number(),
-  postId: z.number(),
   authorId: z.number(),
 });
 // ----------------------------------------------------------------------------
@@ -84,18 +83,20 @@ export const bansContract = c.router(
     //xPOST     /:commentBanId/dismissNotification      Mark a comment ban notification as dismissed
     //xDELETE   /:commentBanId/delete                   Remove a ban entry associated with a comment ID
     // ----------------------------------------------------------------------------
-    commentBans: c.router(
+    banComment: c.router(
+      //commentBans: c.router(
       {
-        getAll: {
-          method: "GET",
-          path: "/all",
-          responses: {
-            200: z.array(CommentBanSchema),
-            400: ErrorResponseSchema,
-            401: z.string(),
-          },
-          summary: "Get all banned comments",
-        },
+        //DOESN'T EXIST IN LEGACY
+        // getAll: {
+        //   method: "GET",
+        //   path: "/all",
+        //   responses: {
+        //     200: z.array(CommentBanSchema),
+        //     400: ErrorResponseSchema,
+        //     401: z.string(),
+        //   },
+        //   summary: "Get all banned comments",
+        // },
         getById: {
           method: "GET",
           path: "/getByCommentId/:commentBanId",

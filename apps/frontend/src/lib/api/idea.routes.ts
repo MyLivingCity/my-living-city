@@ -1,17 +1,15 @@
-import axios from "axios";
-import { API_BASE_URL } from "src/lib/constants/constants";
-import { type IIdeaWithAggregations } from "src/lib/types/ideas/idea.types";
+import { mlcApiClient } from "../mlcApiClient";
 
 export const postAllIdeasWithBreakdown = async (take?: number) => {
-  let reqBody = {};
-  if (!take) {
-    reqBody = {
-      take,
-    };
-  }
-  const res = await axios.post<IIdeaWithAggregations[]>(
-    `${API_BASE_URL}/idea/getall/aggregations`,
-    reqBody,
-  );
-  return res.data;
+  const endpoint = mlcApiClient.ideas.getAllWithAggregations;
+  type Request = Required<Parameters<typeof endpoint>[0]>;
+
+  const request: Request = {
+    body: {
+      take: take ?? undefined,
+    },
+  };
+
+  const res = await endpoint({ body: request.body });
+  return res.body;
 };

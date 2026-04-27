@@ -7,10 +7,10 @@ import {
   findSubsegmentsBySegmentId,
 } from "@lib/api/segment.routes";
 import { RequestSegmentModal } from "@components/ui/session/RequestSegmentModal";
-import { type ISegment, type ISubSegment } from "@types/segment.types";
+import { type ISegment, type ISubSegment } from "@/lib/types/segment.types";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { USER_TYPES } from "@/lib/constants";
-import { capitalize } from "@/lib/utils";
+import { USER_TYPES } from "@/lib/constants/constants";
+import { capitalize } from "src/lib/utils";
 
 type BusinessWorkDetails = {
   streetAddress: string;

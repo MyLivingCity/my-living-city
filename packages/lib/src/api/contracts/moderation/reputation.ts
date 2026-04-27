@@ -3,15 +3,27 @@ import { initContract } from "@ts-rest/core";
 import { UserSchema } from "../users";
 import { ErrorResponseSchema, SimpleMessageResponseSchema } from "../../common";
 
-export const BadPostingBehaviourSchema = z.object({
-  bad_post_count: z.number(),
-  bannedAt: z.date(),
-  bannedUntil: z.date(),
-  id: z.number(),
-  postCommentBan: z.boolean(),
-  postFlagCount: z.number(),
-  userId: z.number(),
-});
+export const BadPostingBehaviourSchema = z
+  .object({
+    id: z.number().default(0),
+    userId: z.string().cuid().default(""),
+    bad_post_count: z.number().default(0),
+    postFlagCount: z.number().default(0),
+    postCommentBan: z.boolean().default(false),
+    // For dates, we typically use a "Unix Epoch" or null-equivalent
+    // depending on how your frontend handles empty states
+    bannedAt: z.date().default(new Date(0)),
+    bannedUntil: z.date().default(new Date(0)),
+  })
+  .default({
+    id: 0,
+    userId: "",
+    bad_post_count: 0,
+    postFlagCount: 0,
+    postCommentBan: false,
+    bannedAt: new Date(0),
+    bannedUntil: new Date(0),
+  });
 
 export const FalseFlagSchema = z.object({
   bannedAt: z.boolean(),
@@ -19,7 +31,7 @@ export const FalseFlagSchema = z.object({
   flagBan: z.boolean(),
   flagCount: z.number(),
   id: z.number(),
-  userId: z.number(),
+  userId: z.string().cuid(),
 });
 // ----------------------------------------------------------------------------
 //  Routers
@@ -39,18 +51,18 @@ export const reputationContract = c.router(
     //	GET	    /:userId/getBadPostingBehavior			get bad posting behavior for authenticated user
     //	POST	  /checkThreshhold				            apply threshold checks and set post_comment_ban
     // ----------------------------------------------------------------------------
-    badPosts: c.router(
+    badPostingBehavior: c.router(
       {
         incrementBadPostCount: {
           method: "POST",
-          path: "/:ideaId/add",
+          path: "/incrementBadPostCount/:ideaId",
           pathParams: z.object({
             ideaId: z.coerce.number(),
           }),
           body: z.object({}),
           responses: {
             200: SimpleMessageResponseSchema,
-            404: ErrorResponseSchema,
+            400: ErrorResponseSchema,
           },
           summary:
             //when post is removed by admin:
@@ -58,76 +70,83 @@ export const reputationContract = c.router(
         },
         incrementPostFlagCount: {
           method: "POST",
-          path: "/:ideaId",
+          path: "/incrementPostFlagCount/:ideaId",
           pathParams: z.object({
             ideaId: z.coerce.number(),
           }),
           body: z.object({}),
           responses: {
             200: SimpleMessageResponseSchema,
-            404: ErrorResponseSchema,
+            400: ErrorResponseSchema,
           },
           //when another user flags author's post:
           summary: "Increments the post flag counter for an idea author",
         },
         resetBadPostCount: {
           method: "POST",
-          path: "/:userId/reset",
-          pathParams: z.object({ userId: z.coerce.number() }),
+          path: "/resetBadPostCount/:ideaId",
+          pathParams: z.object({ ideaId: z.coerce.number() }),
           body: z.object({}),
           responses: {
             200: SimpleMessageResponseSchema,
-            404: ErrorResponseSchema,
+            400: ErrorResponseSchema,
           },
-          summary: "Reset user's bad post and post flag counts",
+          summary: "Reset ideaId.author's bad post and post flag counts",
         },
         checkUser: {
           method: "POST",
-          path: "/:userId/check",
-          pathParams: z.object({ userId: z.coerce.number() }),
+          path: "/checkUser/:userId",
+          pathParams: z.object({ userId: z.string().cuid() }),
           body: z.object({}),
           responses: {
             200: SimpleMessageResponseSchema,
-            404: ErrorResponseSchema,
+            400: ErrorResponseSchema,
           },
-          summary: "Check thresholds and post-ban user if exceeded",
+          summary: "Check ban thresholds and post-ban user if exceeded",
         },
         getAll: {
           method: "GET",
-          path: "/",
+          path: "/getAll",
           responses: {
-            200: z.array(
-              UserSchema.pick({
-                id: true,
-                email: true,
-                banned: true,
-              }),
-            ),
-            404: z.object({ message: z.string() }),
+            200: z.array(z.string().cuid()),
+            400: z.object({ message: z.string() }),
           },
           summary: "Get all users from bad posting behavior table",
         },
-        getById: {
+        // getById: {
+        //   method: "GET",
+        //   path: "/checkUser/:userId",
+        //   responses: {
+        //     200: UserSchema,
+        //     400: ErrorResponseSchema,
+        //   },
+        //   //note: this originally hits Bad_Posting_Behavior
+        //   summary: "Get bad posting behavior for authenticated user",
+        // },
+        getBadPostingBehavior: {
           method: "GET",
-          path: "/:userId",
+          path: "/getBadPostingBehavior",
           responses: {
-            200: UserSchema,
-            404: ErrorResponseSchema,
+            200: BadPostingBehaviourSchema,
+            400: ErrorResponseSchema,
           },
-          summary: "Get bad posting behavior for authenticated user",
+          //note: this originally hits Bad_Posting_Behavior
+          summary: "Get bad posting behavior for current user",
         },
         checkThreshold: {
           method: "POST",
-          path: "/users/check",
+          //find the threshhold in threshhold table with the id of 3
+          path: "/checkThreshold",
           body: z.object({}),
           responses: {
             200: SimpleMessageResponseSchema,
-            404: ErrorResponseSchema,
+            400: ErrorResponseSchema,
           },
           summary: "Check thresholds and post-ban users who exceeded",
         },
       },
-      { pathPrefix: "bad-posts" },
+      { pathPrefix: "/badPostingBehavior" },
+      //{ pathPrefix: "bad-posts" },
     ),
     // ----------------------------------------------------------------------------
     //falseFlaggingBehaviour
@@ -140,29 +159,30 @@ export const reputationContract = c.router(
     //  taken from flag.js:
     //x	GET	  /checkFlagBan/:userID	        check if user has a flag ban
     // ----------------------------------------------------------------------------
-    falseFlag: c.router(
+    falseFlaggingBehavior: c.router(
       {
         checkFalseFlaggingBehavior: {
           method: "POST",
-          path: "/check-ban",
+          path: "/checkFalseFlaggingBehavior",
           body: z.object({}),
           responses: { 200: z.object({ message: z.string() }) },
           summary:
             "Trigger a review of the false-flagging table and ban eligible users",
         },
-        checkFlagBan: {
-          method: "GET",
-          path: "/:userId/check-ban",
-          pathParams: z.object({ userId: z.coerce.number() }),
-          responses: {
-            200: z.object({ banned: z.boolean() }),
-            404: ErrorResponseSchema,
-          },
-          summary: "Check if user has a flag ban",
-        },
+        // put back into flags to satisfy existing routes
+        // checkFlagBan: {
+        //   method: "GET",
+        //   path: "/:userId/check-ban",
+        //   pathParams: z.object({ userId: z.coerce.number() }),
+        //   responses: {
+        //     200: z.object({ banned: z.boolean() }),
+        //     404: ErrorResponseSchema,
+        //   },
+        //   summary: "Check if user has a flag ban",
+        // },
         getAll: {
           method: "GET",
-          path: "/",
+          path: "/getAll",
           responses: {
             200: z.array(
               UserSchema.pick({
@@ -175,22 +195,22 @@ export const reputationContract = c.router(
           },
           summary: "Get all users from false-flagging behavior table",
         },
-        getById: {
-          method: "GET",
-          path: "/:userId",
-          responses: {
-            200: UserSchema.pick({
-              id: true,
-              email: true,
-              banned: true,
-            }),
-            404: ErrorResponseSchema,
-          },
-          summary: "Get false-flagging behavior for authenticated user",
-        },
+        // getById: {
+        //   method: "GET",
+        //   path: "/:userId",
+        //   responses: {
+        //     200: UserSchema.pick({
+        //       id: true,
+        //       email: true,
+        //       banned: true,
+        //     }),
+        //     404: ErrorResponseSchema,
+        //   },
+        //   summary: "Get false-flagging behavior for authenticated user",
+        // },
       },
-      { pathPrefix: "/false-flag" },
+      { pathPrefix: "/falseFlaggingBehavior" },
     ),
   },
-  { pathPrefix: "/reputation" },
+  //{ pathPrefix: "/reputation" },
 );

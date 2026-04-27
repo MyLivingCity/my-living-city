@@ -1,6 +1,6 @@
 import { Formik, type FormikConfig } from "formik";
 import { type ReactNode } from "react";
-import type { IRegisterInput } from "@types/register.types";
+import type { IRegisterInput } from "src/components/content/session/types/register.types";
 
 interface FormikStepperProps extends FormikConfig<
   IRegisterInput & { communityType: string }

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Row, Col, Form, Card, Button } from "react-bootstrap";
-import { COUNTRIES, PROVINCES } from "@/lib/constants";
+import { COUNTRIES, PROVINCES } from "src/lib/constants/constants";
 import { getAllSuperSegmentsByCountryProvince } from "src/lib/api/segment.routes";
-import { type ISegment, type ISuperSegment } from "src/types/segment.types";
+import { type ISegment, type ISuperSegment } from "src/lib/types/segment.types";
 import { capitalize } from "src/lib/utils";
 
 // Interface for component props, leverages React's Dispatch and SetStateAction for state management of country and province selections //

@@ -1,7 +1,7 @@
 import React from "react";
 import { Form } from "react-bootstrap";
-import { capitalize, removeDuplicates } from "@/lib/utils";
-import { type CheckBoxItem } from "@types/segment.types";
+import { capitalize, removeDuplicates } from "src/lib/utils";
+import { type CheckBoxItem } from "@/lib/types/segment.types";
 
 interface CheckboxTreeProps {
   data: CheckBoxItem[];

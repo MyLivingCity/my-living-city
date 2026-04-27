@@ -1,4 +1,4 @@
-import { USER_TYPES } from "@lib/constants";
+import { USER_TYPES } from "src/lib/constants/constants";
 
 type RegisterHeaderProps = {
   step: number;

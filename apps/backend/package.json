@@ -4,6 +4,7 @@
   "description": "",
   "main": "dist/main.js",
   "scripts": {
+    "postinstall": "pnpm exec prisma generate || exit 0",
     "dev": "NODE_OPTIONS='--conditions=development' nodemon --exec tsx ./src/main.ts",
     "test": "vitest --run",
     "test:watch": "vitest --watch"
@@ -21,7 +22,7 @@
     "@types/passport-jwt": "^4.0.1",
     "@types/passport-local": "^1.0.38",
     "nodemon": "^3.1.14",
-    "prisma": "6",
+    "prisma": "7.8.0",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "vitest": "^4.1.4"
@@ -29,7 +30,8 @@
   "dependencies": {
     "@mlc/config": "workspace:*",
     "@mlc/lib": "workspace:*",
-    "@prisma/client": "^6.19.3",
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
     "@ts-rest/core": "^3.52.1",
     "@ts-rest/express": "^3.52.1",
     "argon2": "^0.44.0",

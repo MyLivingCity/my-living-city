@@ -200,6 +200,20 @@ export const ideaApiContracts = c.router(
       },
       summary: "Get all ideas",
     },
+    getAllWithAggregations: {
+      method: "POST",
+      path: "/getall/aggregations",
+      body: z
+        .object({
+          take: z.number(),
+        })
+        .partial(),
+      responses: {
+        200: z.array(AggregatedIdeaSchema),
+        400: ErrorResponseSchema,
+      },
+      summary: "Get all ideas with aggregations",
+    },
     getAllWithSort: {
       method: "POST",
       path: "/getall/with-sort",

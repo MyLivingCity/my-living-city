@@ -58,9 +58,11 @@ const postAvatarImage = async (avatar: File, token: string): Promise<void> => {
   });
 };
 
-export const getUserWithJWT = async (jwtToken): Promise<IUser> => {
+export const getUserWithJWT = async ({
+  jwtAuthToken,
+}: GetUserWithJWTInput): Promise<IUser> => {
   const res = await mlcApiClient.users.getSelf({
-    ...fetchOptionsWithJwt(jwtToken),
+    ...fetchOptionsWithJwt(jwtAuthToken),
   });
   return res;
 };

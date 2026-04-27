@@ -6,9 +6,10 @@ import {
   type SegmentRequest,
 } from "../../components/content/session/types/register.types";
 import { type IUser } from "../types/user/user.types";
+import { mlcApiClient } from "@lib/mlcApiClient";
 
 export const getUserWithEmail = async (email: string) => {
-  const res = await axios.get(`${API_BASE_URL}/user/email/${email}`);
+  const res = await mlcApiClient.users.getByEmail({ params: { email } });
   return res.data;
 };
 
@@ -25,18 +26,20 @@ export const postRegisterUser = async (
 
   registerData.verified = !logUser;
 
-  const res = await axios.post(`${API_BASE_URL}/user/signup`, {
-    ...registerData,
-    userSegment: {
-      homeSegmentId: registerData.homeSegmentId,
-      workSegmentId: registerData.workSegmentId,
-      schoolSegmentId: registerData.schoolSegmentId,
-      homeSubSegmentId: registerData.homeSubSegmentId,
-      workSubSegmentId: registerData.workSubSegmentId,
-      schoolSubSegmentId: registerData.schoolSubSegmentId,
+  const res = await mlcApiClient.users.register({
+    body: {
+      ...registerData,
+      userSegment: {
+        homeSegmentId: registerData.homeSegmentId,
+        workSegmentId: registerData.workSegmentId,
+        schoolSegmentId: registerData.schoolSegmentId,
+        homeSubSegmentId: registerData.homeSubSegmentId,
+        workSubSegmentId: registerData.workSubSegmentId,
+        schoolSubSegmentId: registerData.schoolSubSegmentId,
+      },
+      segmentRequest: requestData,
+      userReach: registerData.reachSegmentIds,
     },
-    segmentRequest: requestData,
-    userReach: registerData.reachSegmentIds,
   });
 
   if (res.status !== 201) throw new Error("Failed to create user.");
@@ -55,14 +58,11 @@ const postAvatarImage = async (avatar: File, token: string): Promise<void> => {
   });
 };
 
-export const getUserWithJWT = async ({
-  jwtAuthToken,
-}: GetUserWithJWTInput): Promise<IUser> => {
-  const res = await axios.get<IUser>(
-    `${API_BASE_URL}/user/me`,
-    getAxiosJwtRequestOption(jwtAuthToken),
-  );
-  return res.data;
+export const getUserWithJWT = async (jwtToken): Promise<IUser> => {
+  const res = await mlcApiClient.users.getSelf({
+    ...fetchOptionsWithJwt(jwtToken),
+  });
+  return res;
 };
 
 export const loginUser = async (loginData: LoginData) => {
@@ -72,6 +72,16 @@ export const loginUser = async (loginData: LoginData) => {
     },
   });
   return res;
+};
+
+export const fetchOptionsWithJwt = (jwtToken: string) => {
+  const options = {
+    extraHeaders: {
+      "x-auth-token": jwtToken,
+    },
+  };
+
+  return options;
 };
 
 export const getAxiosJwtRequestOption = (
@@ -87,10 +97,6 @@ export const getAxiosJwtRequestOption = (
 
   return options;
 };
-
-export interface GetUserWithJWTInput {
-  jwtAuthToken: string;
-}
 
 export interface UseUserWithJwtInput {
   shouldTrigger: boolean;

@@ -68,7 +68,10 @@ import { prisma } from "src/prisma/client";
 import { BadPostingBehaviourSchema } from "@mlc/lib/api/contracts/moderation/reputation";
 import { UserSchema } from "@mlc/lib/api";
 import { Handlers } from "src/server";
-import { BanTypeSchema } from "@mlc/lib/api/contracts/moderation/bans";
+import {
+  BanTypeSchema,
+  BanUserType,
+} from "@mlc/lib/api/contracts/moderation/bans";
 
 type User = z.infer<typeof UserSchema>;
 
@@ -1748,16 +1751,59 @@ const deletePassedBanDate = s.route(
 // ----------------------------------------------------------------------------
 //  SERVICES
 // ----------------------------------------------------------------------------
+export const fetchAllCommentFlags = async () => {
+  return await prisma.commentFlag.findMany();
+};
+// ----------------------------------------------------------------------------
+
 // ----------------------------------------------------------------------------
 //  ROUTES
 // ----------------------------------------------------------------------------
+const getAllCommentFlags = s.route(
+  moderationApiContracts.flags.commentFlag.getAll,
+  {
+    middleware: [passport.authenticate("jwt", { session: false })],
+    handler: async () => {
+      try {
+        const allCommentFlags = await fetchAllCommentFlags();
+
+        /**
+         * Mapping Prisma output to CommentFlagSchema.
+         * Note: Prisma dates are naturally Date objects, so they
+         * satisfy the z.date() requirement in the schema.
+         */
+        const body = allCommentFlags.map((flag) => ({
+          id: flag.id,
+          flaggerId: flag.flaggerId,
+          falseFlag: flag.falseFlag,
+          flagReason: flag.flagReason,
+          commentId: flag.commentId,
+        }));
+
+        return {
+          status: 200,
+          body: body,
+        };
+      } catch (error) {
+        return {
+          status: 400,
+          body: {
+            message: "An error occured while trying to fetch comment flags.",
+            details: toErrorDetails(error),
+          },
+        };
+      }
+    },
+  },
+);
 // ----------------------------------------------------------------------------
 // controllers/commentFlag.js     → apiRouter.use('/commentFlag', commentFlagRouter)
 //	POST	/create/:commentId	          create a flag for a specific comment
-//	GET	  /getAll	                      get all comment flags
+//x	GET	  /getAll	                      get all comment flags
 //	PUT	  /falseFlagMany/:commentId	    mark many flags on a comment as false and update false-flag behavior
 //	GET	  /getFlags/:commentId	        get flag count for a specific comment
 // ----------------------------------------------------------------------------
+
 // ============================================================================
 // flag
 // ============================================================================
@@ -1822,5 +1868,8 @@ export default {
       deletePassedBanDate,
     },
     //flags
+    commentFlag: {
+      getAll: getAllCommentFlags,
+    },
   },
 } as unknown as Handlers;

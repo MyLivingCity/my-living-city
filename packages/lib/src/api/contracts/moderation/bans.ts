@@ -315,6 +315,7 @@ export const bansContract = c.router(
         updateUserBan: {
           method: "PATCH",
           path: "/update/:userId",
+          pathParams: z.object({ userId: z.string().cuid() }),
           body: UserBanSchema,
           responses: {
             200: SimpleMessageResponseSchema,

@@ -130,12 +130,36 @@ const VerboseUserSchema = UserSchema.extend({
   userSegments: z.array(UserSegmentWithSegmentSchema),
 });
 
-const CreateUserSchema = z
-  .object({
-    userType: UserTypeSchema,
-    verified: z.boolean(),
-  })
-  .passthrough();
+const CreateUserSchema = z.union([
+  UserSchema.pick({
+    displayFName: true,
+    displayLName: true,
+    email: true,
+    fname: true,
+    imagePath: true,
+    lname: true,
+    organizationName: true,
+    password: true,
+    userType: true,
+    verified: true,
+    userSegment: true,
+  }),
+  z.object({
+    address: z.string(),
+    confirmPassword: z.string(),
+    geo: z.any(), // TODO
+    homeSegmentId: z.number(),
+    homeSubSegmentId: z.number(),
+    reachSegmentIds: z.array(z.number()),
+    schoolDetails: z.any(), // TODO
+    schoolSegmentId: z.number(),
+    schoolSubSegmentId: z.number(),
+    userRoleId: z.number(),
+    workDetails: z.any(), // TODO
+    workSegmentId: z.number(),
+    workSubSegmentId: z.number(),
+  }),
+]);
 
 const LoginUserSchema = z.object({
   email: z.string(),

@@ -3,7 +3,6 @@ import { Prisma, SegmentType, UserType } from "#prisma/client";
 import { prisma } from "src/prisma/client";
 import { initServer } from "@ts-rest/express";
 import * as passport from "passport";
-import { prisma } from "src/prisma/client";
 import { Handlers } from "src/server";
 import { serializeForContract, toErrorDetails } from "src/server/utils";
 
@@ -49,23 +48,23 @@ const toSegmentSummary = (segment: {
 const toParentSegment = (
   parent:
     | {
-      segId: number;
-      country: string | null;
-      province: string | null;
-      name: string;
-      segmentType: SegmentType;
-    }
+        segId: number;
+        country: string | null;
+        province: string | null;
+        name: string;
+        segmentType: SegmentType;
+      }
     | null
     | undefined,
 ) =>
   parent
     ? {
-      segId: parent.segId,
-      country: parent.country,
-      province: parent.province,
-      name: parent.name,
-      segmentType: parent.segmentType,
-    }
+        segId: parent.segId,
+        country: parent.country,
+        province: parent.province,
+        name: parent.name,
+        segmentType: parent.segmentType,
+      }
     : undefined;
 
 const toSegmentResponse = (segment: {

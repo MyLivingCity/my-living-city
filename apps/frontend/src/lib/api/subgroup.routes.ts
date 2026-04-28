@@ -2,7 +2,7 @@ import axios from 'axios';
 import { getAxiosJwtRequestOption } from '@lib/api/axiosRequestOptions';
 
 // Constants
-import { API_BASE_URL } from '../constants';
+import { API_BASE_URL } from 'src/lib/constants/constants';
 
 // Types
 import type { IUser } from 'src/types/user.types';

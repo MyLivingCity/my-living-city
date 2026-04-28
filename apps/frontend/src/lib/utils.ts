@@ -1,4 +1,5 @@
 import { env } from "./env";
+import type { IUser } from 'src/types/user.types';
 
 export const capitalize = (str: string) =>
   str.replace(/\b\w/g, (c) => c.toUpperCase());

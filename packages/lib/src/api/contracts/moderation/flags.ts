@@ -34,7 +34,7 @@ export const flagsContract = c.router(
     //x	GET	  /getFlags/:ideaID	            get flag count for a specific idea
     //x	GET	  /checkFlagBan/:userID	        check if user has a flag ban
     // ----------------------------------------------------------------------------
-    ideas: c.router(
+    flag: c.router(
       {
         getAll: {
           method: "GET",
@@ -45,17 +45,17 @@ export const flagsContract = c.router(
           },
           summary: "Get all Idea flags",
         },
-        getFlagsById: {
+        getById: {
           method: "GET",
           path: "getFlags/:ideaId",
           pathParams: z.object({ ideaId: z.coerce.number() }),
           responses: {
-            200: IdeaFlagSchema,
+            200: z.number(),
             400: ErrorResponseSchema,
           },
           summary: "Get flags for ideaId",
         },
-        createFlag: {
+        create: {
           method: "POST",
           path: "/create/:ideaId",
           pathParams: z.object({ ideaId: z.coerce.number() }),

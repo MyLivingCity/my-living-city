@@ -10,7 +10,7 @@ import { USER_TYPES } from "src/lib/constants/constants";
 export interface IUser {
   id: string;
   userRoleId?: number;
-  userType: typeof USER_TYPES;
+  userType: (typeof USER_TYPES)[keyof typeof USER_TYPES];
   email: string;
   password?: string;
   organizationName?: string;

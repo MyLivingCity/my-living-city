@@ -74,10 +74,10 @@ export const postRegisterUser = async (
   });
 
   if (res.status !== 201) throw new Error("Failed to create user.");
-  if (avatar) await postAvatarImage(avatar, res.data.token);
+  if (avatar) await postAvatarImage(avatar, res.body.token);
   if (logUser) {
-    localStorage.setItem("token", res.data.token);
-    localStorage.setItem("user", JSON.stringify(res.data.user));
+    localStorage.setItem("token", res.body.token);
+    localStorage.setItem("user", JSON.stringify(res.body.user));
   }
 };
 
@@ -430,9 +430,9 @@ export const patchUserHandle = async (
   data: {
     handle: string;
     userSegmentRelationship:
-    | typeof UserSegmentRelationship.HOME
-    | typeof UserSegmentRelationship.WORK
-    | typeof UserSegmentRelationship.SCHOOL;
+      | typeof UserSegmentRelationship.HOME
+      | typeof UserSegmentRelationship.WORK
+      | typeof UserSegmentRelationship.SCHOOL;
   },
 ) => {
   if (!userId || !data) return;

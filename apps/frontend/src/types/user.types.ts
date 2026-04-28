@@ -10,7 +10,7 @@ import type { IUserHandle } from "@/types/userHandle.type";
 export interface IUser {
   id: string;
   userRoleId?: number;
-  userType: typeof USER_TYPES;
+  userType: (typeof USER_TYPES)[keyof typeof USER_TYPES];
   email: string;
   password?: string;
   organizationName?: string;

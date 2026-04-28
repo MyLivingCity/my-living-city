@@ -1221,24 +1221,139 @@ const executeUserBan = async (data: {
   });
 };
 // ----------------------------------------------------------------------------
-
 const fetchAllUserBans = async () => {
   return await prisma.userBan.findMany();
 };
+// ----------------------------------------------------------------------------
+const fetchUserBanHistory = async (userId: string) => {
+  return await prisma.userBan.findMany({
+    where: { userId },
+    orderBy: { id: "desc" },
+  });
+};
+// ----------------------------------------------------------------------------
+const fetchMostRecentUserBan = async (userId: string) => {
+  return await prisma.userBan.findFirst({
+    where: { userId },
+    orderBy: { id: "desc" },
+  });
+};
+// ----------------------------------------------------------------------------
+const fetchSelfBanRecord = async (userId: string) => {
+  return await prisma.userBan.findFirst({
+    where: { userId },
+    orderBy: { id: "desc" },
+  });
+};
+// ----------------------------------------------------------------------------
+const updateLatestUserBan = async (
+  userId: string,
+  data: Partial<Prisma.UserBanUpdateInput>,
+) => {
+  const latestBan = await prisma.userBan.findFirst({
+    where: { userId },
+    orderBy: { id: "desc" },
+  });
+
+  if (!latestBan) return null;
+
+  return await prisma.userBan.update({
+    where: { id: latestBan.id },
+    data,
+  });
+};
+// ----------------------------------------------------------------------------
+const executeUserUnban = async (userId: string) => {
+  return await prisma.$transaction(async (tx) => {
+    // 1. Remove all records from the userBan table for this user
+    const deleteResult = await tx.userBan.deleteMany({
+      where: { userId },
+    });
+
+    // 2. Update the main user record to lift the ban flag
+    await tx.user.update({
+      where: { id: userId },
+      data: { banned: false },
+    });
+
+    return deleteResult.count;
+  });
+};
+// ----------------------------------------------------------------------------
+const fetchExpiredUserBans = async () => {
+  // 1. Get IDs of all users currently flagged as 'banned'
+  const bannedUsers = await prisma.user.findMany({
+    where: { banned: true },
+    select: { id: true },
+  });
+
+  if (bannedUsers.length === 0) return [];
+
+  const bannedUserIds = bannedUsers.map((u) => u.id);
+
+  // 2. Find the single most recent ban for each of those users
+  const latestBans = await prisma.userBan.findMany({
+    where: {
+      userId: { in: bannedUserIds },
+    },
+    orderBy: { id: "desc" },
+    distinct: ["userId"],
+  });
+
+  // 3. Filter the set down to those that have actually passed their expiry date
+  const now = new Date();
+  return latestBans.filter(
+    (ban) => ban.banUntil !== null && ban.banUntil <= now,
+  );
+};
+// ----------------------------------------------------------------------------
+/**
+ * Service to batch-remove expired bans and restore user access.
+ * Handles the table cleanup and ensures the User 'banned' flag is reset.
+ */
+const cleanupExpiredBans = async () => {
+  const now = new Date();
+
+  return await prisma.$transaction(async (tx) => {
+    // 1. Identify which users are about to be unbanned (for the User table update)
+    const expiredBans = await tx.userBan.findMany({
+      where: { banUntil: { lte: now } },
+      select: { userId: true },
+    });
+
+    const userIdsToRestore = expiredBans.map((b) => b.userId);
+
+    // 2. Remove the expired records from UserBan
+    const deleteResult = await tx.userBan.deleteMany({
+      where: { banUntil: { lte: now } },
+    });
+
+    // 3. Set 'banned' to false for those users in the main User table
+    if (userIdsToRestore.length > 0) {
+      await tx.user.updateMany({
+        where: { id: { in: userIdsToRestore } },
+        data: { banned: false },
+      });
+    }
+
+    return deleteResult.count;
+  });
+};
+
 // ----------------------------------------------------------------------------
 //  ROUTES
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 // controllers/banUser.js         → apiRouter.use('/banUser', banUserRouter)
 //x	POST	/create	                  create a user ban
-//	GET	  /getAll	                  get all user bans
-//	GET	  /get/:userId	            get all bans for a specific user
-//	GET	  /getMostRecent/:userId	  get most recent ban for a specific user
-//	GET	  /getMostRecentWithToken	  get most recent ban for authenticated user
-//	PUT	  /update/:userId	          update the most recent ban for a specific user
+//x	GET	  /getAll	                  get all user bans
+//x	GET	  /get/:userId	            get all bans for a specific user
+//x	GET	  /getMostRecent/:userId	  get most recent ban for a specific user
+//x	GET	  /getMostRecentWithToken	  get most recent ban for authenticated user
+//x	PUT	  /update/:userId	          update the most recent ban for a specific user
 //	GET	  /getAllPassedDate	        get banned users whose ban date has passed
 //	DEL   /deletePassedBanDate	    delete bans with passed ban date
-//  DEL   /delete/:userId           remove a userId from UserBan (commented code is wrong)
+//x DEL   /delete/:userId           remove a userId from UserBan (commented code is wrong)
 // ----------------------------------------------------------------------------
 const createUserBan = s.route(moderationApiContracts.bans.banUser.create, {
   middleware: [passport.authenticate("jwt", { session: false })],
@@ -1341,6 +1456,290 @@ const getAllUserBans = s.route(moderationApiContracts.bans.banUser.getAll, {
     }
   },
 });
+const getUserBanById = s.route(moderationApiContracts.bans.banUser.getById, {
+  middleware: [passport.authenticate("jwt", { session: false })],
+  handler: async ({ params }) => {
+    const { userId } = params;
+
+    try {
+      const bans = await fetchUserBanHistory(userId);
+
+      // Note: Legacy used an 'if(userBan)' check on a findMany,
+      // which is always truthy ([]). We'll check length to match the intent.
+      if (bans.length === 0) {
+        return {
+          status: 400,
+          body: {
+            message: `The user with that listed ID (${userId}) has never been banned.`,
+            details: toErrorDetails(new Error("No records found")),
+          },
+        };
+      }
+
+      /**
+       * Mapping to UserBanRaw:
+       * 1. Injects 'USER' type for the union.
+       * 2. Handles null coalescing for the message.
+       * 3. Relies on your safeDateFormat pipe in the schema for dates.
+       */
+      const formattedBans = bans.map((ban) => ({
+        ...ban,
+        type: BanTypeSchema.enum.USER,
+        banMessage: ban.banMessage ?? "",
+      }));
+
+      return {
+        status: 200,
+        body: formattedBans,
+      };
+    } catch (error) {
+      return {
+        status: 400,
+        body: {
+          message: `Error occurred when trying to get banned user ${userId}`,
+          details: toErrorDetails(error),
+        },
+      };
+    }
+  },
+});
+
+const getMostRecent = s.route(
+  moderationApiContracts.bans.banUser.getMostRecent,
+  {
+    middleware: [passport.authenticate("jwt", { session: false })],
+    handler: async ({ params }) => {
+      const { userId } = params;
+
+      try {
+        const ban = await fetchMostRecentUserBan(userId);
+
+        /**
+         * Note: Legacy returned a 200 with a message if no ban was found.
+         * However, your contract expects a UserBanSchema (object) for 200.
+         * To avoid Zod validation errors, we return a 400 if the record is missing.
+         */
+        if (!ban) {
+          return {
+            status: 400,
+            body: {
+              message: `The user with ID (${userId}) has never been banned.`,
+              details: toErrorDetails(new Error("No ban history found")),
+            },
+          };
+        }
+
+        return {
+          status: 200,
+          body: {
+            ...ban,
+            type: BanTypeSchema.enum.USER,
+            banMessage: ban.banMessage ?? "",
+          },
+        };
+      } catch (error) {
+        return {
+          status: 400,
+          body: {
+            message: `Error occurred when trying to get most recent ban for ${userId}`,
+            details: toErrorDetails(error),
+          },
+        };
+      }
+    },
+  },
+);
+const getMostRecentWithToken = s.route(
+  moderationApiContracts.bans.banUser.getMostRecentWithToken,
+  {
+    middleware: [passport.authenticate("jwt", { session: false })],
+    handler: async ({ req }) => {
+      const userId = (req.user as User).id;
+
+      try {
+        const ban = await fetchSelfBanRecord(userId);
+
+        // HAPPY PATH: No ban record found.
+        // 204 No Content tells the frontend "You're good to go."
+        if (!ban) {
+          return {
+            status: 204,
+            body: undefined,
+          };
+        }
+
+        // SAD PATH: User has a ban history.
+        // 200 returns the record so the frontend can show why/for how long.
+        return {
+          status: 200,
+          body: {
+            ...ban,
+            type: BanTypeSchema.enum.USER,
+            banMessage: ban.banMessage ?? "",
+          },
+        };
+      } catch (error) {
+        return {
+          status: 400,
+          body: {
+            message: "Error checking session ban status",
+            details: toErrorDetails(error),
+          },
+        };
+      }
+    },
+  },
+);
+const updateUserBan = s.route(
+  moderationApiContracts.bans.banUser.updateUserBan,
+  {
+    middleware: [passport.authenticate("jwt", { session: false })],
+    handler: async ({ params, body }) => {
+      const { userId } = params;
+
+      try {
+        /**
+         * We extract the data fields from the body.
+         * Note: 'id', 'type', and 'createdAt' are usually immutable;
+         * we only pass through business-logic fields.
+         */
+        const { banReason, banMessage, banUntil, banType } = body;
+
+        const updated = await updateLatestUserBan(userId, {
+          banReason,
+          banMessage,
+          banUntil: banUntil ? new Date(banUntil) : undefined,
+          banType,
+        });
+
+        if (!updated) {
+          return {
+            status: 400,
+            body: {
+              message: `${userId} has no record of being banned.`,
+              details: toErrorDetails(new Error("Record not found")),
+            },
+          };
+        }
+
+        return {
+          status: 200,
+          body: {
+            message: `Successfully updated the most recent ban for user ${userId}`,
+          },
+        };
+      } catch (error) {
+        return {
+          status: 400,
+          body: {
+            message: "Error occurred when trying to update ban.",
+            details: toErrorDetails(error),
+          },
+        };
+      }
+    },
+  },
+);
+const deleteUserBan = s.route(moderationApiContracts.bans.banUser.delete, {
+  middleware: [passport.authenticate("jwt", { session: false })],
+  handler: async ({ params }) => {
+    const { userId } = params;
+
+    try {
+      // Legacy note: The commented-out code used 'delete', which fails if
+      // no record exists. Using 'executeUserUnban' with a check.
+      const deletedCount = await executeUserUnban(userId);
+
+      if (deletedCount === 0) {
+        return {
+          status: 400,
+          body: {
+            message: `User ${userId} has no active ban records to remove.`,
+            details: toErrorDetails(new Error("No records found")),
+          },
+        };
+      }
+
+      return {
+        status: 200,
+        body: {
+          message: `User ${userId} successfully removed from ban table`,
+        },
+      };
+    } catch (error) {
+      return {
+        status: 400,
+        body: {
+          message: `Error occurred when trying to unban user ${userId}`,
+          details: toErrorDetails(error),
+        },
+      };
+    }
+  },
+});
+const getAllPassedDate = s.route(
+  moderationApiContracts.bans.banUser.getAllPassedDate,
+  {
+    middleware: [passport.authenticate("jwt", { session: false })],
+    handler: async () => {
+      try {
+        const expiredBans = await fetchExpiredUserBans();
+
+        /**
+         * Note: The legacy controller returned only an array of userIds (strings).
+         * However, the contract specifies z.array(UserBanSchema).
+         * We must return the full objects to avoid Zod validation errors.
+         */
+        const body = expiredBans.map((ban) => ({
+          ...ban,
+          type: BanTypeSchema.enum.USER,
+          banMessage: ban.banMessage ?? "",
+          // Dates are auto-formatted by the schema's safeDateFormat pipe
+        }));
+
+        return {
+          status: 200,
+          body,
+        };
+      } catch (error) {
+        return {
+          status: 400,
+          body: {
+            message: "Error occurred when trying to get unban users",
+            details: toErrorDetails(error),
+          },
+        };
+      }
+    },
+  },
+);
+const deletePassedBanDate = s.route(
+  moderationApiContracts.bans.banUser.deletePassedBanDate,
+  {
+    middleware: [passport.authenticate("jwt", { session: false })],
+    handler: async () => {
+      try {
+        // Calls the service that handles both table cleanup and User flag reset
+        const count = await cleanupExpiredBans();
+
+        return {
+          status: 200,
+          body: {
+            message: `Cleanup complete. ${count} users successfully restored.`,
+          },
+        };
+      } catch (error) {
+        return {
+          status: 400,
+          body: {
+            message: "Error occurred when trying to cleanup expired bans",
+            details: toErrorDetails(error),
+          },
+        };
+      }
+    },
+  },
+);
 // ============================================================================
 // Flags
 // ============================================================================
@@ -1415,13 +1814,13 @@ export default {
     banUser: {
       create: createUserBan,
       getAll: getAllUserBans,
-      // getById: getUserBanById,
-      // getMostRecent,
-      // getMostRecentWithToken,
-      // update: updateUserBan,
-      // delete: deleteUserBan,
-      // getAllPassedDate,
-      // deletePassedBanDate,
+      getById: getUserBanById,
+      getMostRecent,
+      getMostRecentWithToken,
+      update: updateUserBan,
+      delete: deleteUserBan,
+      getAllPassedDate,
+      deletePassedBanDate,
     },
     //flags
   },

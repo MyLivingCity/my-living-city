@@ -93,6 +93,12 @@ export type CheckBoxItem = {
 };
 
 // ENUMS
+export const SegmentType = {
+  superSegment: "superSegment",
+  segment: "segment",
+  subSegment: "subSegment",
+};
+
 export const UserSegmentRelationship = {
   HOME: "HOME",
   SCHOOL: "SCHOOL",

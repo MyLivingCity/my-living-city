@@ -5,7 +5,7 @@ import {
   COUNTRIES,
   PROVINCES,
   TEXT_INPUT_LIMIT,
-} from "src/lib/constants/constants";
+} from "@lib/constants/constants";
 
 interface IRequestSegment {
   country: string;

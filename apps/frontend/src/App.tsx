@@ -7,6 +7,7 @@ import LandingPage from "@pages/home/LandingPage";
 
 // Pages
 import LoginPage from "@pages/session/LoginPage";
+import ProfilePage from "./pages/ProfilePage";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path={ROUTES.LOGIN} element={<LoginPage />} />
           <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
           <Route path={ROUTES.LANDING} element={<LandingPage />} />
+          <Route path={ROUTES.USER_PROFILE} element={<ProfilePage />} />
         </Routes>
       </div>
 

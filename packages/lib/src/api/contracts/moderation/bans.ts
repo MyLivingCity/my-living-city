@@ -297,14 +297,20 @@ export const bansContract = c.router(
           },
           summary: "Get only the most recent ban record for a user",
         },
+        /**
+         * Check if the current user is banned
+         * @returns 200: UserBan record found, login should be denied
+         * @returns 204: record not found, login accepted
+         */
         getMostRecentWithToken: {
           method: "GET",
           path: "/getMostRecentWithToken",
           responses: {
-            200: UserBanSchema,
+            200: UserBanSchema, //sad path: bad user, deny entry
+            204: z.undefined(), //this is the happy path: no ban record
             400: ErrorResponseSchema,
           },
-          summary: "Get only the most recent ban record for a user",
+          summary: "Check if the current user is banned",
         },
         updateUserBan: {
           method: "PATCH",
@@ -339,7 +345,6 @@ export const bansContract = c.router(
         deletePassedBanDate: {
           method: "DELETE",
           path: "/deletePassedBanDate",
-          pathParams: z.object({ userId: z.string().cuid() }),
           responses: {
             200: SimpleMessageResponseSchema,
             400: ErrorResponseSchema,

@@ -109,7 +109,7 @@ export const flagsContract = c.router(
           responses: { 200: z.array(CommentFlagSchema) },
           summary: "Get all comment flags",
         },
-        getById: {
+        getFlags: {
           method: "GET",
           path: "getFlags/:commentId",
           pathParams: z.object({ commentId: z.coerce.number() }),

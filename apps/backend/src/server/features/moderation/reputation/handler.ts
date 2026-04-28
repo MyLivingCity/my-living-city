@@ -18,6 +18,7 @@ import {
   processFalseFlaggingBans,
   fetchFalseFlaggingIds,
 } from "./service";
+import { RouterImplementation } from "@ts-rest/express/src/lib/types";
 
 const s = initServer();
 
@@ -268,7 +269,9 @@ const getAllFalseFlagging = s.route(
     },
   },
 );
-export const reputationRouter = s.router(moderationApiContracts.reputation, {
+export const reputationRouter: RouterImplementation<
+  typeof moderationApiContracts.reputation
+> = s.router(moderationApiContracts.reputation, {
   badPostingBehavior: {
     incrementPostFlagCount,
     incrementBadPostCount,

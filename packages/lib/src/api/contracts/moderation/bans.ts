@@ -145,7 +145,7 @@ export const bansContract = c.router(
           },
           summary: "Dismiss a comment ban notification",
         },
-        deleteById: {
+        delete: {
           method: "DELETE",
           path: "/delete/:commentBanId",
           pathParams: z.object({ commentBanId: z.coerce.number() }),
@@ -312,7 +312,7 @@ export const bansContract = c.router(
           },
           summary: "Check if the current user is banned",
         },
-        updateUserBan: {
+        update: {
           method: "PATCH",
           path: "/update/:userId",
           pathParams: z.object({ userId: z.string().cuid() }),

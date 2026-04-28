@@ -91,19 +91,25 @@ const postAvatarImage = async (avatar: File, token: string): Promise<void> => {
 
 export const getUserWithJWT = async ({
   jwtAuthToken,
-}: GetUserWithJWTInput): Promise<IUser> => {
+}: GetUserWithJWTInput): Promise<IUser | null> => {
   const res = await mlcApiClient.users.getSelf({
     ...fetchOptionsWithJwt(jwtAuthToken),
   });
-  return res.body?.user ?? undefined;
+
+  if (res.status !== 200) return null;
+
+  return res.body ?? undefined;
 };
 
 export const getUserWithJWTVerbose = async ({
   jwtAuthToken,
-}: GetUserWithJWTInput): Promise<IUser> => {
+}: GetUserWithJWTInput): Promise<IUser | null> => {
   const res = await mlcApiClient.users.getSelfVerbose({
     ...fetchOptionsWithJwt(jwtAuthToken),
   });
+
+  if (res.status !== 200) return null;
+
   return res.body;
 };
 
@@ -188,7 +194,7 @@ export const deleteUser = async (userId: string, token: string | null) => {
       },
     });
     return response.data;
-  } catch (error) {
+  } catch {
     throw new Error("Failed to delete user");
   }
 };
@@ -212,7 +218,7 @@ export const updateUserPassword = async (
       },
     );
     return response.data;
-  } catch (error) {
+  } catch {
     throw new Error("Failed to update user password");
   }
 };

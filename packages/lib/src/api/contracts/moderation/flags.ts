@@ -116,7 +116,7 @@ export const flagsContract = c.router(
           },
           summary: "Get flag count for comment id",
         },
-        createFlag: {
+        create: {
           method: "POST",
           path: "/create/:commentId",
           pathParams: z.object({ commentId: z.coerce.number() }),

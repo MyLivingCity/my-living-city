@@ -1,5 +1,9 @@
 import { useQuery } from "react-query";
-import { getUserWithJWT, type UseUserWithJwtInput } from "@lib/api/user.routes";
+import {
+  getUserWithJWT,
+  getUserWithJWTVerbose,
+  type UseUserWithJwtInput,
+} from "@lib/api/user.routes";
 import { AxiosError } from "axios";
 import { type IUser } from "@lib/types/user/user.types";
 
@@ -13,6 +17,20 @@ export const useUserWithJwt = ({
     {
       enabled: shouldTrigger,
       staleTime: 1000 * 60 * 10,
+    },
+  );
+};
+
+export const useUserWithJwtVerbose = ({
+  jwtAuthToken,
+  shouldTrigger,
+}: UseUserWithJwtInput) => {
+  return useQuery<IUser, AxiosError>(
+    "user-verbose",
+    () => getUserWithJWTVerbose({ jwtAuthToken }),
+    {
+      enabled: shouldTrigger,
+      staleTime: 1000 * 60 * 60, // 1 hour
     },
   );
 };

@@ -1,0 +1,208 @@
+import axios from "axios";
+import { API_BASE_URL } from "@lib/constants/constants";
+import {
+  type PublicCommunityBusinessProfile,
+  type PublicMunicipalProfile,
+  type PublicStandardProfile,
+} from "@/types/publicProfile.types";
+
+// Extended type for profiles with stats
+export interface PublicProfileWithStats {
+  id: string;
+  userId: string;
+  fname: string;
+  lname: string;
+  avatar?: string;
+  profileType: "community" | "municipal" | "residential" | "business";
+  location?: string;
+  endorsements?: number;
+  postsCount?: number;
+  businessName?: string;
+  municipalityName?: string;
+  userName?: string;
+  userType?: string;
+  profileVisibility?:
+  | "PUBLIC"
+  | "COMMUNITY_MEMBERS"
+  | "CONTACTS_ONLY"
+  | "PRIVATE";
+}
+
+export const getCommunityBusinessProfile = async (
+  userId: string | undefined,
+  token: string | null,
+) => {
+  const res = await axios({
+    method: "get",
+    url: `${API_BASE_URL}/publicProfile/communityBusinessProfile/${userId}`,
+    headers: {
+      "Content-Type": "application/json",
+      "x-auth-token": token,
+      "Access-Control-Allow-Origin": "*",
+    },
+  });
+
+  return res.data;
+};
+
+export const updateCommunityBusinessProfile = async (
+  publicProfileData: PublicCommunityBusinessProfile,
+  token: string | null,
+) => {
+  const res = await axios({
+    method: "put",
+    url:
+      `${API_BASE_URL}/publicProfile/communityBusinessProfile` +
+      `/${publicProfileData.userId}`,
+    data: publicProfileData,
+    headers: {
+      "Content-Type": "application/json",
+      "x-auth-token": token,
+      "Access-Control-Allow-Origin": "*",
+    },
+    withCredentials: true,
+  });
+  return res.data;
+};
+
+export const getCommunityBusinessLinks = async (
+  profileId: number | undefined,
+  token: string | null,
+) => {
+  const res = await axios({
+    method: "get",
+    url: `${API_BASE_URL}/publicProfile/communityBusinessProfile/${profileId}/links`,
+    headers: {
+      "Content-Type": "application/json",
+      "x-auth-token": token,
+      "Access-Control-Allow-Origin": "*",
+    },
+  });
+
+  return res.data;
+};
+
+export const getMunicipalProfile = async (
+  userId: string | undefined,
+  token: string | null,
+) => {
+  const res = await axios({
+    method: "get",
+    url: `${API_BASE_URL}/publicProfile/municipalProfile/${userId}`,
+    headers: {
+      "Content-Type": "application/json",
+      "x-auth-token": token,
+      "Access-Control-Allow-Origin": "*",
+    },
+  });
+
+  return res.data;
+};
+
+export const updateMunicipalProfile = async (
+  publicProfileData: PublicMunicipalProfile,
+  token: string | null,
+) => {
+  const res = await axios({
+    method: "put",
+    url:
+      `${API_BASE_URL}/publicProfile/municipalProfile` +
+      `/${publicProfileData.userId}`,
+    data: publicProfileData,
+    headers: {
+      "Content-Type": "application/json",
+      "x-auth-token": token,
+      "Access-Control-Allow-Origin": "*",
+    },
+    withCredentials: true,
+  });
+  return res.data;
+};
+
+export const getMunicipalLinks = async (
+  profileId: number | undefined,
+  token: string | null,
+) => {
+  const res = await axios({
+    method: "get",
+    url: `${API_BASE_URL}/publicProfile/municipalProfile/${profileId}/links`,
+    headers: {
+      "Content-Type": "application/json",
+      "x-auth-token": token,
+      "Access-Control-Allow-Origin": "*",
+    },
+  });
+
+  return res.data;
+};
+
+export const getStandardProfile = async (
+  userId: string | undefined,
+  token: string | null,
+) => {
+  const res = await axios({
+    method: "get",
+    url: `${API_BASE_URL}/publicProfile/standardProfile/${userId}`,
+    headers: {
+      "Content-Type": "application/json",
+      "x-auth-token": token,
+      "Access-Control-Allow-Origin": "*",
+    },
+  });
+
+  return res.data;
+};
+
+export const updateStandardProfile = async (
+  publicProfileData: PublicStandardProfile,
+  token: string | null,
+) => {
+  const res = await axios({
+    method: "put",
+    url:
+      `${API_BASE_URL}/publicProfile/standardProfile` +
+      `/${publicProfileData.id}`,
+    data: publicProfileData,
+    headers: {
+      "Content-Type": "application/json",
+      "x-auth-token": token,
+      "Access-Control-Allow-Origin": "*",
+    },
+    withCredentials: true,
+  });
+
+  return res.data;
+};
+
+export const getAllPublicProfiles = async (
+  search?: string,
+  profileType?: "all" | "community" | "municipal" | "residential",
+  communityId?: number,
+  neighbourhoodId?: number,
+  token?: string | null,
+): Promise<{
+  profiles: PublicProfileWithStats[];
+  totalCount: number;
+}> => {
+  const params = new URLSearchParams();
+
+  if (search) params.append("search", search);
+  if (profileType && profileType !== "all")
+    params.append("profileType", profileType);
+  if (communityId) params.append("communityId", String(communityId));
+  if (neighbourhoodId)
+    params.append("neighbourhoodId", String(neighbourhoodId));
+
+  const res = await axios({
+    method: "get",
+    url: `${API_BASE_URL}/publicProfile/all?${params.toString()}`,
+    headers: {
+      "Content-Type": "application/json",
+      ...(token && { "x-auth-token": token }),
+      "Access-Control-Allow-Origin": "*",
+    },
+  });
+
+  return res.data;
+};
+

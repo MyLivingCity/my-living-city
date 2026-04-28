@@ -1,15 +1,16 @@
-import { USER_TYPES } from 'src/lib/constants';
-import type { IGeo } from 'src/types/geo.type';
-import type { IAddress } from 'src/types/address.type';
-import type { IComment } from 'src/types/comment.type';
-import type { IUserRole } from 'src/types/userRole.type';
-import type { IUserSegment } from 'src/types/segment.types';
-import type { IUserHandle } from '@/types/userHandle.type';
+import { USER_TYPES } from "src/lib/constants/constants";
+import type { IGeo } from "src/types/geo.type";
+import type { IAddress } from "src/types/address.type";
+import type { IComment } from "src/types/comment.type";
+import type { IUserRole } from "src/types/userRole.type";
+import type { IUserSegment } from "src/types/segment.types";
+import type { IUserHandle } from "@/types/userHandle.type";
+
 //'ADMIN' | 'MOD' | 'SEG_ADMIN' | 'SEG_MOD' | 'MUNICIPAL_SEG_ADMIN' | 'BUSINESS' | 'NORMAL';
 export interface IUser {
   id: string;
   userRoleId?: number;
-  userType: USER_TYPES;
+  userType: typeof USER_TYPES;
   email: string;
   password?: string;
   organizationName?: string;
@@ -45,3 +46,4 @@ export interface IUser {
     segId: number;
   }[];
 }
+

@@ -43,13 +43,25 @@ export interface IUserSegment {
 export interface IParsedSegment {
   segId: number;
   name: string;
-  segmentType: 'subSegment' | 'segment' | 'superSegment';
+  segmentType: "subSegment" | "segment" | "superSegment";
 }
 
-export type UserSegmentRelationshipEnum = 'HOME' | 'SCHOOL' | 'WORK';
+export type UserSegmentRelationshipEnum = "HOME" | "SCHOOL" | "WORK";
 
 export type CheckBoxItem = {
   label: string | undefined;
   value: number | "SuperSeg";
   children?: CheckBoxItem[];
 };
+
+export interface SegmentGroup {
+  superSegment?: ISegment;
+  segment?: ISegment;
+  subSegment?: ISegment;
+}
+
+export interface SegmentsByRelation {
+  homeSegments: SegmentGroup;
+  workSegments: SegmentGroup;
+  schoolSegments: SegmentGroup;
+}

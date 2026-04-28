@@ -1968,52 +1968,60 @@ const getCommentFlagCount = s.route(
 export default {
   schema: moderationApiContracts,
   router: {
-    //reputation
-    badPostingBehavior: {
-      incrementPostFlagCount,
-      incrementBadPostCount,
-      resetBadPostCount,
-      checkUser,
-      getAll: getAllBadPosting,
-      getBadPostingBehavior,
-      checkThreshold,
+    reputation: {
+      badPostingBehavior: {
+        incrementPostFlagCount,
+        incrementBadPostCount,
+        resetBadPostCount,
+        checkUser,
+        getAll: getAllBadPosting,
+        getBadPostingBehavior,
+        checkThreshold,
+      },
+      falseFlaggingBehavior: {
+        checkFalseFlaggingBehavior,
+        getAll: getAllFalseFlagging,
+      },
     },
-    falseFlaggingBehavior: {
-      checkFalseFlaggingBehavior,
-      getAll: getAllFalseFlagging,
+    bans: {
+      banComment: {
+        create: createCommentBan,
+        dismissNotification: dismissCommentBanNotification,
+        getById: getCommentBanById,
+        getUndismissedNotifications: getUndismissedCommentBanNotifications,
+        delete: deleteCommentBan,
+      },
+      banPost: {
+        create: createPostBan,
+        dismissNotification: dismissPostNotification,
+        getById: getPostBanById,
+        getUndismissedNotifications: getUndismissedPostNotifications,
+        delete: deletePostBan,
+      },
+      banUser: {
+        create: createUserBan,
+        getAll: getAllUserBans,
+        getById: getUserBanById,
+        getMostRecent,
+        getMostRecentWithToken,
+        update: updateUserBan,
+        delete: deleteUserBan,
+        getAllPassedDate,
+        deletePassedBanDate,
+      },
     },
-    //bans
-    banComment: {
-      create: createCommentBan,
-      dismissNotification: dismissCommentBanNotification,
-      getById: getCommentBanById,
-      getUndismissedNotifications: getUndismissedCommentBanNotifications,
-      delete: deleteCommentBan,
-    },
-    banPost: {
-      create: createPostBan,
-      dismissNotification: dismissPostNotification,
-      getById: getPostBanById,
-      getUndismissedNotifications: getUndismissedPostNotifications,
-      delete: deletePostBan,
-    },
-    banUser: {
-      create: createUserBan,
-      getAll: getAllUserBans,
-      getById: getUserBanById,
-      getMostRecent,
-      getMostRecentWithToken,
-      update: updateUserBan,
-      delete: deleteUserBan,
-      getAllPassedDate,
-      deletePassedBanDate,
-    },
-    //flags
-    commentFlag: {
-      create: createCommentFlagHandler,
-      getAll: getAllCommentFlags,
-      falseFlagMany: falseFlagManyComments,
-      getFlags: getCommentFlagCount,
+    flags: {
+      commentFlag: {
+        create: createCommentFlagHandler,
+        getAll: getAllCommentFlags,
+        falseFlagMany: falseFlagManyComments,
+        getFlags: getCommentFlagCount,
+      },
+      flag: {
+        // create: createIdeaFlag,
+        // getAll: getAllIdeaFlags,
+        // getById: getIdeaFlagById,
+      },
     },
   },
 } as unknown as Handlers;

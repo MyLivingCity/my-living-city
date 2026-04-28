@@ -26,10 +26,10 @@ export const BadPostingBehaviourSchema = z
   });
 
 export const FalseFlagSchema = z.object({
-  bannedAt: z.boolean(),
+  bannedAt: z.date(),
   bannedUntil: z.date(), //banUntil elsewhere
-  flagBan: z.boolean(),
-  flagCount: z.number(),
+  flag_ban: z.boolean(),
+  flag_count: z.number(),
   id: z.number(),
   userId: z.string().cuid(),
 });

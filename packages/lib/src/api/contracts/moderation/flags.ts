@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { initContract } from "@ts-rest/core";
 import { ErrorResponseSchema, SimpleMessageResponseSchema } from "../../common";
+import { FalseFlagSchema } from "./reputation";
 
 const baseFlagShape = {
   id: z.number(),
@@ -45,7 +46,7 @@ export const flagsContract = c.router(
           },
           summary: "Get all Idea flags",
         },
-        getById: {
+        getFlags: {
           method: "GET",
           path: "getFlags/:ideaId",
           pathParams: z.object({ ideaId: z.coerce.number() }),
@@ -80,10 +81,11 @@ export const flagsContract = c.router(
         checkFlagBan: {
           method: "GET",
           path: "checkFlagBan/:userId",
-          pathParams: z.object({ userId: z.coerce.number() }),
+          pathParams: z.object({ userId: z.string().cuid() }),
           responses: {
-            200: z.array(IdeaFlagSchema),
+            200: FalseFlagSchema,
             400: ErrorResponseSchema,
+            404: ErrorResponseSchema,
           },
           summary: "Get idea flags for userId",
         },

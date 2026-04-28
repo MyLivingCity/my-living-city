@@ -1,7 +1,7 @@
 import { initContract } from "@ts-rest/core";
 import z from "zod";
 import { UserSchema } from "./users";
-import { SimpleMessageResponseSchema } from "../common";
+import { ErrorResponseSchema, SimpleMessageResponseSchema } from "../common";
 
 const c = initContract();
 
@@ -9,21 +9,30 @@ const MembershipStatusSchema = z.enum(["PENDING", "APPROVED", "REJECTED"]);
 const PrivacyFieldSchema = z.enum(["PUBLIC", "PRIVATE", "TEST"]);
 const TypeFieldSchema = z.enum(["VIRTUAL", "NESTED"]);
 
-const ErrorDetailsSchema = z.object({
-  error: z.string(),
-  errorStack: z.string(),
-});
-
-const ErrorResponseSchema = z.object({
+const ManagerErrorResponseSchema = z.object({
   message: z.string(),
-  details: ErrorDetailsSchema,
+  details: z.object({
+    error: z.string(),
+    errorStack: z.string(),
+  }),
 });
 
 const SegmentReferenceSchema = z.object({
   name: z.string(),
 });
 
-const SubGroupSchema = z.object({
+const FullUserSchema = z.object({}).passthrough();
+
+const SubGroupUserSummarySchema = z.object({
+  id: z.string(),
+  email: z.string(),
+  organizationName: z.string().nullable(),
+  fname: z.string().nullable(),
+  lname: z.string().nullable(),
+  userType: z.string(),
+});
+
+const ManagedSubGroupSchema = z.object({
   id: z.string(),
   name: z.string(),
   description: z.string().nullable(),
@@ -39,10 +48,30 @@ const SubGroupSchema = z.object({
   isVirtual: z.boolean(),
 });
 
-const ManagedSubGroupSchema = SubGroupSchema.extend({
+const BaseSubGroupSchema = ManagedSubGroupSchema.extend({
+  region: z.never().optional(),
+  segment: z.never().optional(),
+  subSegment: z.never().optional(),
+}).omit({
+  region: true,
+  segment: true,
+  subSegment: true,
+});
+
+const ManagedSubGroupWithRelationsSchema = BaseSubGroupSchema.extend({
   region: SegmentReferenceSchema.nullable(),
   segment: SegmentReferenceSchema.nullable(),
   subSegment: SegmentReferenceSchema.nullable(),
+});
+
+const FullSubGroupSchema = ManagedSubGroupWithRelationsSchema.extend({
+  manager: z.object({
+    id: z.string(),
+    email: z.string(),
+    adminmodEmail: z.string().nullable(),
+    fname: z.string().nullable(),
+    lname: z.string().nullable(),
+  }),
 });
 
 const SubGroupMemberSchema = z.object({
@@ -54,15 +83,6 @@ const SubGroupMemberSchema = z.object({
   updatedAt: z.date(),
 });
 
-const SubGroupUserSummarySchema = UserSchema.pick({
-  id: true,
-  email: true,
-  organizationName: true,
-  fname: true,
-  lname: true,
-  userType: true,
-});
-
 const SubGroupMemberWithUserSummarySchema = SubGroupMemberSchema.extend({
   user: SubGroupUserSummarySchema,
 });
@@ -71,51 +91,47 @@ const SubGroupMemberWithUserSchema = SubGroupMemberSchema.extend({
   user: UserSchema,
 });
 
-const AddSubGroupMemberResponseSchema = z.object({
-  message: z.string(),
-  data: SubGroupMemberSchema.extend({
-    user: UserSchema,
-    subGroup: SubGroupSchema,
-  }),
-  email: z.string(),
-  subGroupName: z.string(),
+const CreateSubGroupSchema = z.object({
+  name: z.string(),
+  description: z.string().nullable().optional(),
+  typeField: TypeFieldSchema,
+  privacyField: PrivacyFieldSchema,
+  regionId: z.number().nullable().optional(),
+  segmentId: z.number().nullable().optional(),
+  subSegmentId: z.number().nullable().optional(),
+  managerId: z.string(),
 });
 
-const UpdateSubGroupMemberResponseSchema = z.object({
-  message: z.string(),
-  data: SubGroupMemberWithUserSchema,
-  email: z.string(),
-});
+const UpdateSubGroupSchema = z
+  .object({
+    name: z.string().optional(),
+    description: z.string().nullable().optional(),
+    typeField: TypeFieldSchema.optional(),
+    privacyField: PrivacyFieldSchema.optional(),
+  })
+  .partial();
 
-const DeleteResultSchema = z.object({
-  count: z.number(),
-});
-
-export const subgroupApiContracts = c.router(
+const subgroupsContracts = c.router(
   {
     getIsSubGroupManager: {
       method: "GET",
       path: "/isSubGroupManager",
       responses: {
-        200: z.object({
-          isSubGroupManager: z.boolean(),
-        }),
-        500: ErrorResponseSchema,
+        200: z.object({ isSubGroupManager: z.boolean() }),
+        500: ManagerErrorResponseSchema,
       },
-      summary: "Get if the user is a subgroup manager",
     },
     getManagedSubgroups: {
       method: "GET",
-      path: "/",
+      path: "",
       responses: {
-        200: z.array(ManagedSubGroupSchema),
+        200: z.array(ManagedSubGroupWithRelationsSchema),
         204: z.object({
           message: z.string(),
           data: z.array(z.never()),
         }),
-        500: ErrorResponseSchema,
+        500: ManagerErrorResponseSchema,
       },
-      summary: "Get subgroups managed by the current user",
     },
     getSubgroupUsers: {
       method: "GET",
@@ -125,9 +141,8 @@ export const subgroupApiContracts = c.router(
       }),
       responses: {
         200: z.array(SubGroupMemberWithUserSummarySchema),
-        400: ErrorResponseSchema,
+        400: ManagerErrorResponseSchema,
       },
-      summary: "Get users in a specific subgroup",
     },
     getUsersNotInSubGroup: {
       method: "GET",
@@ -137,9 +152,8 @@ export const subgroupApiContracts = c.router(
       }),
       responses: {
         200: z.array(SubGroupUserSummarySchema),
-        400: ErrorResponseSchema,
+        400: ManagerErrorResponseSchema,
       },
-      summary: "Get users who are not in a specific subgroup",
     },
     addUserToSubGroup: {
       method: "POST",
@@ -150,11 +164,18 @@ export const subgroupApiContracts = c.router(
       }),
       body: z.undefined(),
       responses: {
-        201: AddSubGroupMemberResponseSchema,
-        400: SimpleMessageResponseSchema.or(ErrorResponseSchema),
+        201: z.object({
+          message: z.string(),
+          data: SubGroupMemberSchema.extend({
+            user: FullUserSchema,
+            subGroup: BaseSubGroupSchema,
+          }),
+          email: z.string(),
+          subGroupName: z.string(),
+        }),
+        400: z.union([SimpleMessageResponseSchema, ManagerErrorResponseSchema]),
         404: SimpleMessageResponseSchema,
       },
-      summary: "Add a user to a subgroup",
     },
     updateUserRequestInSubGroup: {
       method: "PATCH",
@@ -167,11 +188,14 @@ export const subgroupApiContracts = c.router(
         action: MembershipStatusSchema,
       }),
       responses: {
-        200: UpdateSubGroupMemberResponseSchema,
-        400: SimpleMessageResponseSchema.or(ErrorResponseSchema),
+        200: z.object({
+          message: z.string(),
+          data: SubGroupMemberWithUserSchema,
+          email: z.string(),
+        }),
+        400: z.union([SimpleMessageResponseSchema, ManagerErrorResponseSchema]),
         404: SimpleMessageResponseSchema,
       },
-      summary: "Update a user's subgroup membership status",
     },
     removeUserFromSubGroup: {
       method: "DELETE",
@@ -183,12 +207,13 @@ export const subgroupApiContracts = c.router(
       responses: {
         200: z.object({
           message: z.string(),
-          data: DeleteResultSchema,
+          data: z.object({
+            count: z.number(),
+          }),
         }),
-        400: ErrorResponseSchema,
+        400: ManagerErrorResponseSchema,
         404: SimpleMessageResponseSchema,
       },
-      summary: "Remove a user from a subgroup",
     },
     removeRejectedRequestFromSubGroup: {
       method: "DELETE",
@@ -202,13 +227,169 @@ export const subgroupApiContracts = c.router(
           message: z.string(),
           data: SubGroupMemberSchema,
         }),
-        400: ErrorResponseSchema,
+        400: ManagerErrorResponseSchema,
         404: SimpleMessageResponseSchema,
       },
-      summary: "Remove a rejected subgroup membership request",
     },
   },
   {
-    pathPrefix: "/subgroups",
+    pathPrefix: "/subGroups",
   },
 );
+
+const singularSubgroupContracts = c.router(
+  {
+    getAllSubgroups: {
+      method: "GET",
+      path: "/getAll",
+      responses: {
+        200: z.array(FullSubGroupSchema),
+        400: ErrorResponseSchema,
+      },
+    },
+    getSubgroupsByName: {
+      method: "GET",
+      path: "/getByName/:name",
+      pathParams: z.object({
+        name: z.string(),
+      }),
+      responses: {
+        200: z.array(BaseSubGroupSchema),
+        400: ErrorResponseSchema,
+        404: SimpleMessageResponseSchema,
+      },
+    },
+    createSubgroup: {
+      method: "POST",
+      path: "/create",
+      body: CreateSubGroupSchema,
+      responses: {
+        201: BaseSubGroupSchema.extend({
+          manager: FullUserSchema,
+        }),
+        400: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+      },
+    },
+    deleteSubgroup: {
+      method: "DELETE",
+      path: "/delete/:subGroupId",
+      pathParams: z.object({
+        subGroupId: z.string(),
+      }),
+      responses: {
+        204: z.undefined(),
+        400: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+        404: SimpleMessageResponseSchema,
+      },
+    },
+    updateSubgroup: {
+      method: "PATCH",
+      path: "/update/:subGroupId",
+      pathParams: z.object({
+        subGroupId: z.string(),
+      }),
+      body: UpdateSubGroupSchema,
+      responses: {
+        200: FullSubGroupSchema,
+        400: z.union([SimpleMessageResponseSchema, ErrorResponseSchema]),
+        403: ErrorResponseSchema,
+        404: SimpleMessageResponseSchema,
+      },
+    },
+    getEligibleManagers: {
+      method: "GET",
+      path: "/eligibleManagers",
+      responses: {
+        200: z.array(
+          z.object({
+            id: z.string(),
+            email: z.string(),
+            adminmodEmail: z.string().nullable(),
+            fname: z.string().nullable(),
+            lname: z.string().nullable(),
+          }),
+        ),
+        500: z.object({
+          message: z.string(),
+          details: z.string(),
+        }),
+      },
+    },
+  },
+  {
+    pathPrefix: "/subgroup",
+  },
+);
+
+const subgroupRequestContracts = c.router(
+  {
+    getAllRequests: {
+      method: "GET",
+      path: "/getAllRequest/:userId",
+      pathParams: z.object({
+        userId: z.string(),
+      }),
+      responses: {
+        200: z.array(
+          z.object({
+            id: z.string(),
+            subGroup: z.object({
+              name: z.string(),
+            }),
+            status: MembershipStatusSchema,
+            joinedAt: z.date(),
+          }),
+        ),
+        400: SimpleMessageResponseSchema,
+        500: SimpleMessageResponseSchema,
+      },
+    },
+    createRequest: {
+      method: "POST",
+      path: "/createRequest/:userId/:subGroupId",
+      pathParams: z.object({
+        userId: z.string(),
+        subGroupId: z.string(),
+      }),
+      body: z.undefined(),
+      responses: {
+        200: SubGroupMemberSchema,
+        400: SimpleMessageResponseSchema,
+        409: SimpleMessageResponseSchema,
+        500: SimpleMessageResponseSchema,
+      },
+    },
+  },
+  {
+    pathPrefix: "/subgroupRequest",
+  },
+);
+
+export const subgroupApiContracts = c.router({
+  subgroups: subgroupsContracts,
+  subgroup: singularSubgroupContracts,
+  subgroupRequest: subgroupRequestContracts,
+  getPublicSubgroups: {
+    method: "GET",
+    path: "/publicSubgroup/:userId",
+    pathParams: z.object({
+      userId: z.string(),
+    }),
+    responses: {
+      200: z.array(
+        z.object({
+          id: z.string(),
+          name: z.string(),
+          region: SegmentReferenceSchema.nullable(),
+          segment: SegmentReferenceSchema.nullable(),
+          subSegment: SegmentReferenceSchema.nullable(),
+          description: z.string().nullable(),
+        }),
+      ),
+      400: SimpleMessageResponseSchema,
+      500: SimpleMessageResponseSchema,
+    },
+  },
+});

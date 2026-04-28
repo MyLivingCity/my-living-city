@@ -6,6 +6,7 @@ import ideaApiHandlers from "./server/features/ideas/handler";
 import segmentApiHandlers from "./server/features/segments/handler";
 import userSegmentApiHandlers from "./server/features/userSegments/handler";
 import moderationApiHandlers from "./server/features/moderation/index";
+import subgroupApiHandlers from "./server/features/subgroups/handler";
 import { addEndpoints } from "./server";
 import { initStrategies } from "./lib/auth/strategy";
 
@@ -32,6 +33,7 @@ addEndpoints(app, ideaApiHandlers);
 addEndpoints(app, segmentApiHandlers);
 addEndpoints(app, userSegmentApiHandlers);
 addEndpoints(app, moderationApiHandlers);
+addEndpoints(app, subgroupApiHandlers);
 
 const port = process.env["port"] || 3001;
 app.listen(port, () => {

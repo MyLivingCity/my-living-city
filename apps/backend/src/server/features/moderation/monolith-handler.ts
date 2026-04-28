@@ -762,7 +762,7 @@ const getUndismissedCommentBanNotifications = s.route(
   },
 );
 const deleteCommentBan = s.route(
-  moderationApiContracts.bans.banComment.deleteById,
+  moderationApiContracts.bans.banComment.delete,
   {
     middleware: [passport.authenticate("jwt", { session: false })],
     handler: async ({ params }) => {
@@ -879,7 +879,7 @@ const removePostBanByPostId = async (postId: number) => {
     where: { id: foundBan.id },
   });
 };
-// ----------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
 //  ROUTES
 // ----------------------------------------------------------------------------
 const createPostBan = s.route(moderationApiContracts.bans.banPost.create, {
@@ -1532,56 +1532,53 @@ const getMostRecentWithToken = s.route(
     },
   },
 );
-const updateUserBan = s.route(
-  moderationApiContracts.bans.banUser.updateUserBan,
-  {
-    middleware: [passport.authenticate("jwt", { session: false })],
-    handler: async ({ params, body }) => {
-      const { userId } = params;
+const updateUserBan = s.route(moderationApiContracts.bans.banUser.update, {
+  middleware: [passport.authenticate("jwt", { session: false })],
+  handler: async ({ params, body }) => {
+    const { userId } = params;
 
-      try {
-        /**
-         * We extract the data fields from the body.
-         * Note: 'id', 'type', and 'createdAt' are usually immutable;
-         * we only pass through business-logic fields.
-         */
-        const { banReason, banMessage, banUntil, banType } = body;
+    try {
+      /**
+       * We extract the data fields from the body.
+       * Note: 'id', 'type', and 'createdAt' are usually immutable;
+       * we only pass through business-logic fields.
+       */
+      const { banReason, banMessage, banUntil, banType } = body;
 
-        const updated = await updateLatestUserBan(userId, {
-          banReason,
-          banMessage,
-          banUntil: banUntil,
-          banType,
-        });
+      const updated = await updateLatestUserBan(userId, {
+        banReason,
+        banMessage,
+        banUntil: banUntil,
+        banType,
+      });
 
-        if (!updated) {
-          return {
-            status: 400,
-            body: {
-              message: `${userId} has no record of being banned.`,
-              details: toErrorDetails(new Error("Record not found")),
-            },
-          };
-        }
-
-        return {
-          status: 200,
-          body: {
-            message: `Successfully updated the most recent ban for user ${userId}`,
-          },
-        };
-      } catch (error) {
+      if (!updated) {
         return {
           status: 400,
           body: {
-            message: "Error occurred when trying to update ban.",
-            details: toErrorDetails(error),
+            message: `${userId} has no record of being banned.`,
+            details: toErrorDetails(new Error("Record not found")),
           },
         };
       }
-    },
+
+      return {
+        status: 200,
+        body: {
+          message: `Successfully updated the most recent ban for user ${userId}`,
+        },
+      };
+    } catch (error) {
+      return {
+        status: 400,
+        body: {
+          message: "Error occurred when trying to update ban.",
+          details: toErrorDetails(error),
+        },
+      };
+    }
   },
-);
+});
 const deleteUserBan = s.route(moderationApiContracts.bans.banUser.delete, {
   middleware: [passport.authenticate("jwt", { session: false })],
   handler: async ({ params }) => {
@@ -1922,7 +1919,7 @@ const falseFlagManyComments = s.route(
   },
 );
 const getCommentFlagCount = s.route(
-  moderationApiContracts.flags.commentFlag.getById,
+  moderationApiContracts.flags.commentFlag.getFlags,
   {
     middleware: [passport.authenticate("jwt", { session: false })],
     handler: async ({ params }) => {

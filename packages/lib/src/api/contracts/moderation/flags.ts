@@ -4,9 +4,10 @@ import { ErrorResponseSchema, SimpleMessageResponseSchema } from "../../common";
 
 const baseFlagShape = {
   id: z.number(),
-  flaggerId: z.number(),
-  reason: z.string(),
-  createdAt: z.date(),
+  flaggerId: z.string().cuid(),
+  falseFlag: z.boolean(),
+  flagReason: z.string().nullable(),
+  //createdAt: SafeDateFormat,  for some reason these aren't timestamped
 };
 
 export const CommentFlagSchema = z.object({
@@ -57,7 +58,7 @@ export const flagsContract = c.router(
           method: "POST",
           path: "/create/:ideaId",
           pathParams: z.object({ ideaId: z.coerce.number() }),
-          body: IdeaFlagSchema.pick({ reason: true }),
+          body: IdeaFlagSchema.pick({ flagReason: true }),
           responses: {
             201: IdeaFlagSchema,
             400: ErrorResponseSchema,
@@ -96,7 +97,8 @@ export const flagsContract = c.router(
     //x	PUT	  /falseFlagMany/:commentId	    mark all flags as false and update false-flag behavior
     //x	GET	  /getFlags/:commentId	        get flag count for a specific comment
     // ----------------------------------------------------------------------------
-    comments: c.router(
+    //comments: c.router(
+    commentFlag: c.router(
       {
         getAll: {
           method: "GET",
@@ -109,16 +111,16 @@ export const flagsContract = c.router(
           path: "getFlags/:commentId",
           pathParams: z.object({ commentId: z.coerce.number() }),
           responses: {
-            200: CommentFlagSchema,
+            200: z.number(),
             400: ErrorResponseSchema,
           },
-          summary: "Get flags for comment id",
+          summary: "Get flag count for comment id",
         },
         createFlag: {
           method: "POST",
           path: "/create/:commentId",
           pathParams: z.object({ commentId: z.coerce.number() }),
-          body: CommentFlagSchema.pick({ reason: true }),
+          body: CommentFlagSchema.pick({ flagReason: true }),
           responses: {
             201: SimpleMessageResponseSchema,
             400: ErrorResponseSchema,

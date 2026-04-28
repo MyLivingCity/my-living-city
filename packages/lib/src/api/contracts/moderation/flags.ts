@@ -32,6 +32,7 @@ export const flagsContract = c.router(
     //x	GET	  /getAll	                      get all idea flags
     //x	PUT	  /falseFlagMany/:ideaId	      mark all flags as false and update false-flag behavior
     //x	GET	  /getFlags/:ideaID	            get flag count for a specific idea
+    //x	GET	  /checkFlagBan/:userID	        check if user has a flag ban
     // ----------------------------------------------------------------------------
     ideas: c.router(
       {

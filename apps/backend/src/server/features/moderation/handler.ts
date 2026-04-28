@@ -1755,10 +1755,146 @@ export const fetchAllCommentFlags = async () => {
   return await prisma.commentFlag.findMany();
 };
 // ----------------------------------------------------------------------------
+export const countCommentFlagsByCommentId = async (commentId: number) => {
+  return await prisma.commentFlag.count({
+    where: {
+      commentId,
+    },
+  });
+};
+// ----------------------------------------------------------------------------
+export const findIdeaCommentById = async (id: number) => {
+  return await prisma.ideaComment.findUnique({ where: { id } });
+};
+// ----------------------------------------------------------------------------
+export const findExistingCommentFlag = async (
+  flaggerId: string,
+  commentId: number,
+) => {
+  return await prisma.commentFlag.findFirst({
+    where: { flaggerId, commentId },
+  });
+};
+// ----------------------------------------------------------------------------
+export const createCommentFlag = async (data: {
+  flaggerId: string;
+  commentId: number;
+  flagReason: string;
+}) => {
+  return await prisma.commentFlag.create({ data });
+};
+// ----------------------------------------------------------------------------
+export const updateManyCommentFlags = async (
+  commentId: number,
+  isFalse: boolean,
+) => {
+  return await prisma.commentFlag.updateMany({
+    where: { commentId },
+    data: { falseFlag: isFalse },
+  });
+};
+// ----------------------------------------------------------------------------
+export const upsertFalseFlaggingBehavior = async (userId: string) => {
+  const behavior = await prisma.false_Flagging_Behavior.findFirst({
+    where: { userId },
+  });
 
+  if (behavior) {
+    return await prisma.false_Flagging_Behavior.update({
+      where: { id: behavior.id },
+      data: { flag_count: behavior.flag_count + 1 },
+    });
+  }
+
+  return await prisma.false_Flagging_Behavior.create({
+    data: { userId, flag_count: 1 },
+  });
+};
+// ----------------------------------------------------------------------------
+export const applyFalseFlaggingBans = async () => {
+  const threshold = await prisma.threshhold.findUnique({ where: { id: 2 } });
+  if (!threshold) return;
+
+  const usersAboveThreshold = await prisma.false_Flagging_Behavior.findMany({
+    where: { flag_count: { gte: threshold.number } },
+  });
+
+  await Promise.all(
+    usersAboveThreshold.map((user) =>
+      prisma.false_Flagging_Behavior.update({
+        where: { id: user.id },
+        data: { flag_ban: true },
+      }),
+    ),
+  );
+};
 // ----------------------------------------------------------------------------
 //  ROUTES
 // ----------------------------------------------------------------------------
+const createCommentFlagHandler = s.route(
+  moderationApiContracts.flags.commentFlag.create,
+  {
+    middleware: [passport.authenticate("jwt", { session: false })],
+    handler: async ({ params, body, req }) => {
+      try {
+        const loggedInUserId = (req.user as User).id;
+        const { commentId } = params;
+
+        // 1. Verify comment existence
+        const foundIdeaComment = await findIdeaCommentById(commentId);
+        if (!foundIdeaComment) {
+          return {
+            status: 400,
+            body: {
+              message: `The comment with that listed ID (${commentId}) does not exist.`,
+              details: toErrorDetails(new Error("Comment does not exist")),
+            },
+          };
+        }
+
+        // 2. Check for duplicate flags
+        const userAlreadyCreatedFlag = await findExistingCommentFlag(
+          loggedInUserId,
+          commentId,
+        );
+        if (userAlreadyCreatedFlag) {
+          return {
+            status: 400,
+            body: {
+              message:
+                "You have already flagged this comment. You cannot flag a comment twice.",
+              details: toErrorDetails(
+                new Error("A idea can only be flagged once."),
+              ),
+            },
+          };
+        }
+
+        // 3. Create flag
+        await createCommentFlag({
+          flaggerId: loggedInUserId,
+          commentId: commentId,
+          flagReason: body.flagReason ?? "No reason given",
+        });
+
+        return {
+          status: 201,
+          body: {
+            message: `Flag succesfully created under Idea ${commentId}`,
+          },
+        };
+      } catch (error) {
+        return {
+          status: 400,
+          body: {
+            message: `An error occured while trying to create a rating for idea ${params.commentId}.`,
+            details: toErrorDetails(error),
+          },
+        };
+      }
+    },
+  },
+);
 const getAllCommentFlags = s.route(
   moderationApiContracts.flags.commentFlag.getAll,
   {
@@ -1796,12 +1932,89 @@ const getAllCommentFlags = s.route(
     },
   },
 );
+const falseFlagManyComments = s.route(
+  moderationApiContracts.flags.commentFlag.falseFlagMany,
+  {
+    middleware: [passport.authenticate("jwt", { session: false })],
+    handler: async ({ params, body, req }) => {
+      try {
+        const loggedInUserId = (req.user as User).id;
+        const { commentId } = params;
+        const { isFalse } = body;
+
+        // 1. Verify comment existence
+        const foundComment = await findIdeaCommentById(commentId);
+        if (!foundComment) {
+          return {
+            status: 400,
+            body: {
+              message: "That comment id does not exist",
+              details: toErrorDetails(
+                new Error(`CommmentId: (${commentId}) does not exist.`),
+              ),
+            },
+          };
+        }
+
+        // 2. Update all flags for this comment
+        await updateManyCommentFlags(commentId, isFalse);
+
+        // 3. Update behavior tracking for the moderator/user performing the action
+        await upsertFalseFlaggingBehavior(loggedInUserId);
+
+        // 4. Evaluate thresholds and apply bans
+        await applyFalseFlaggingBans();
+
+        return {
+          status: 200,
+          body: {
+            message: `false flags succesfully updated under comment: ${commentId}`,
+          },
+        };
+      } catch (error) {
+        return {
+          status: 400,
+          body: {
+            message:
+              "An error occured while trying to update the commentFlags.",
+            details: toErrorDetails(error),
+          },
+        };
+      }
+    },
+  },
+);
+const getCommentFlagCount = s.route(
+  moderationApiContracts.flags.commentFlag.getById,
+  {
+    middleware: [passport.authenticate("jwt", { session: false })],
+    handler: async ({ params }) => {
+      try {
+        const count = await countCommentFlagsByCommentId(params.commentId);
+
+        return {
+          status: 200,
+          body: count,
+        };
+      } catch (error) {
+        return {
+          status: 400,
+          body: {
+            message:
+              "An error occured while trying to fetch the count of commentFlags.",
+            details: toErrorDetails(error),
+          },
+        };
+      }
+    },
+  },
+);
 // ----------------------------------------------------------------------------
 // controllers/commentFlag.js     → apiRouter.use('/commentFlag', commentFlagRouter)
-//	POST	/create/:commentId	          create a flag for a specific comment
+//x	POST	/create/:commentId	          create a flag for a specific comment
 //x	GET	  /getAll	                      get all comment flags
-//	PUT	  /falseFlagMany/:commentId	    mark many flags on a comment as false and update false-flag behavior
-//	GET	  /getFlags/:commentId	        get flag count for a specific comment
+//x	PUT	  /falseFlagMany/:commentId	    mark many flags on a comment as false and update false-flag behavior
+//x	GET	  /getFlags/:commentId	        get flag count for a specific comment
 // ----------------------------------------------------------------------------
 
 // ============================================================================
@@ -1869,7 +2082,10 @@ export default {
     },
     //flags
     commentFlag: {
+      create: createCommentFlagHandler,
       getAll: getAllCommentFlags,
+      falseFlagMany: falseFlagManyComments,
+      getFlags: getCommentFlagCount,
     },
   },
 } as unknown as Handlers;

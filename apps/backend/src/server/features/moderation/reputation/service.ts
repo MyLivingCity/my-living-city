@@ -150,83 +150,49 @@ const syncAllUsersToThreshold = async () => {
   return idsToBan.length;
 };
 // ============================================================================
-// banPost
+// falseFlaggingBehavior
 // ============================================================================
-const fetchPostBanByPostId = async (postId: number) => {
-  return await prisma.postBan.findFirst({
-    where: { postId },
+// ----------------------------------------------------------------------------
+//  SERVICES
+// ----------------------------------------------------------------------------
+const processFalseFlaggingBans = async () => {
+  const thresholdRecord = await prisma.threshhold.findUnique({
+    where: { id: 2 },
   });
+
+  if (!thresholdRecord) {
+    throw new Error(
+      "False flagging threshold configuration (ID: 2) not found.",
+    );
+  }
+
+  const behaviors = await prisma.false_Flagging_Behavior.findMany();
+
+  const updates = behaviors
+    .filter((user) => user.flag_count >= thresholdRecord.number)
+    .map((user) =>
+      prisma.false_Flagging_Behavior.update({
+        where: { id: user.id },
+        data: { flag_ban: true },
+      }),
+    );
+
+  await Promise.all(updates);
+  return updates.length;
 };
 // ----------------------------------------------------------------------------
-
-const fetchUndismissedPostBans = async (authorId: string) => {
-  return await prisma.postBan.findMany({
-    where: {
-      notificationDismissed: false,
-      authorId: authorId,
+// TODO: determine if further fields should be SELECTed
+// keeping it lean to start to minimize database load
+const fetchFalseFlaggingIds = async () => {
+  return await prisma.false_Flagging_Behavior.findMany({
+    select: {
+      userId: true,
     },
-    include: {
-      post: true,
-    },
   });
 };
-// ----------------------------------------------------------------------------
-const executePostBan = async (data: {
-  postId: number;
-  authorId: string;
-  banReason: string;
-  banMessage: string;
-  moderatorId: string;
-}) => {
-  const createdAt = new Date(); // Internal timestamping
 
-  return await prisma.$transaction(async (tx) => {
-    const createdBan = await tx.postBan.create({
-      data: {
-        postId: data.postId,
-        authorId: data.authorId,
-        banReason: data.banReason,
-        banMessage: data.banMessage,
-        bannedBy: data.moderatorId,
-        createdAt,
-      },
-    });
-
-    await tx.ban_History.create({
-      data: {
-        userId: data.authorId,
-        type: "IDEA", // Mapping BanType.IDEA per legacy ctrl
-        reason: data.banReason,
-        ideaId: data.postId,
-        modId: data.moderatorId,
-        message: data.banMessage,
-        createdAt,
-      },
-    });
-
-    return createdBan;
-  });
-};
-// ----------------------------------------------------------------------------
-const updatePostNotificationStatus = async (postBanId: number) => {
-  return await prisma.postBan.update({
-    where: { id: postBanId },
-    data: { notificationDismissed: true },
-  });
-};
-// ----------------------------------------------------------------------------
-const removePostBanByPostId = async (postId: number) => {
-  const foundBan = await prisma.postBan.findFirst({
-    where: { postId },
-  });
-
-  if (!foundBan) return null;
-
-  return await prisma.postBan.delete({
-    where: { id: foundBan.id },
-  });
-};
 export {
+  //badPostingBehavior
   incrementUserBadPostStats,
   incrementUserFlagStats,
   getAuthorFromIdea,
@@ -234,9 +200,7 @@ export {
   evaluateAndApplyUserBan,
   getIdsFromBehaviorTable,
   syncAllUsersToThreshold,
-  fetchPostBanByPostId,
-  fetchUndismissedPostBans,
-  executePostBan,
-  updatePostNotificationStatus,
-  removePostBanByPostId,
+  //falseFlaggingBehavior
+  processFalseFlaggingBans,
+  fetchFalseFlaggingIds,
 };

@@ -2,14 +2,14 @@ import { moderationApiContracts } from "@mlc/lib/api";
 import { Handlers } from "src/server";
 
 import { reputationRouter } from "./reputation/handler";
-//import { flagRouter } from "./flags/handler";
-//import { banRouter } from "./bans/handler";
+import { flagsRouter } from "./flags/handler";
+import { bansRouter } from "./bans/handler";
 
 export default {
   schema: moderationApiContracts,
   router: {
     reputation: reputationRouter,
-    //flags: flagRouter,
-    //bans: banRouter,
+    flags: flagsRouter,
+    bans: bansRouter,
   },
 } as unknown as Handlers;

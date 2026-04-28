@@ -11,6 +11,7 @@ import {
   BanTypeSchema,
   BanUserType,
 } from "@mlc/lib/api/contracts/moderation/bans";
+import { Prisma, Idea } from "#prisma/client";
 
 type User = z.infer<typeof UserSchema>;
 
@@ -1549,7 +1550,7 @@ const updateUserBan = s.route(
         const updated = await updateLatestUserBan(userId, {
           banReason,
           banMessage,
-          banUntil: banUntil ? new Date(banUntil) : undefined,
+          banUntil: banUntil,
           banType,
         });
 
@@ -1726,7 +1727,7 @@ export const createCommentFlag = async (data: {
 export const updateManyCommentFlags = async (
   commentId: number,
   isFalse: boolean,
-) => {
+): Promise<Prisma.BatchPayload> => {
   return await prisma.commentFlag.updateMany({
     where: { commentId },
     data: { falseFlag: isFalse },
@@ -1951,7 +1952,7 @@ const getCommentFlagCount = s.route(
 // ----------------------------------------------------------------------------
 //  SERVICES
 // ----------------------------------------------------------------------------
-export const findIdeaById = async (id: number) => {
+export const findIdeaById = async (id: number): Promise<Idea | null> => {
   return await prisma.idea.findUnique({ where: { id } });
 };
 // ----------------------------------------------------------------------------
@@ -1977,7 +1978,10 @@ export const fetchAllIdeaFlags = async () => {
   return await prisma.ideaFlag.findMany();
 };
 // ----------------------------------------------------------------------------
-export const updateManyIdeaFlags = async (ideaId: number, isFalse: boolean) => {
+export const updateManyIdeaFlags = async (
+  ideaId: number,
+  isFalse: boolean,
+): Promise<Prisma.BatchPayload> => {
   return await prisma.ideaFlag.updateMany({
     where: { ideaId },
     data: { falseFlag: isFalse },

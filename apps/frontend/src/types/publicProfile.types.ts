@@ -1,0 +1,84 @@
+export enum LinkType {
+    WEBSITE = 'WEBSITE',
+    TWITTER = 'TWITTER',
+    FACEBOOK = 'FACEBOOK',
+    INSTAGRAM = 'INSTAGRAM',
+    LINKEDIN = 'LINKEDIN',
+    YOUTUBE = 'YOUTUBE',
+    TIKTOK = 'TIKTOK',
+    OTHER = 'OTHER',
+}
+
+export interface Link {
+    id: number;
+    link: string;
+    linkType: LinkType;
+    createdAt: Date;
+    public_community_business_profile_id?: number;
+    public_municipal_profile_id?: number;
+}
+
+export interface PublicStandardProfile {
+    id: string;
+    email: string;
+    fname: string;
+    lname: string;
+}
+
+export enum ProfileVisibility {
+    PUBLIC = 'PUBLIC',
+    COMMUNITY_MEMBERS = 'COMMUNITY_MEMBERS',
+    CONTACTS_ONLY = 'CONTACTS_ONLY',
+    PRIVATE = 'PRIVATE',
+}
+
+export interface PublicCommunityBusinessProfile {
+    userId: string;
+    statement: string;
+    description: string;
+    links: Object[];
+    profileVisibility?: ProfileVisibility;
+    address: string;
+    contactFirstName: string;
+    contactLastName: string;
+    contactEmail: string;
+    contactPhone: string;
+}
+
+export interface PublicMunicipalProfile {
+    userId: string;
+    statement: string;
+    responsibility: string;
+    links: Object[];
+    address: string;
+    contactEmail: string;
+    contactPhone: string;
+}
+
+export interface PublicSubGroup {
+    subgroupId: string;
+    subgroupName: string;
+    region: string;
+    municipality?: string | null;
+    neighborhood?: string | null;
+    description: string;
+}
+
+export interface JoinRequest {
+    requestId: string;
+    subGroupName: string;
+    status: 'PENDING' | 'APPROVED' | 'REJECTED';
+    joinAt: string;
+}
+
+export interface JoinRequestResponse {
+    userId: string;
+    subgroupId: string;
+}
+
+export interface SearchFilters {
+    profileType?: 'MUNICIPAL' | 'BUSINESS' | 'RESIDENTIAL' | '';
+    community?: string;
+    neighbourhood?: string;
+    searchQuery?: string;
+}

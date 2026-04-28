@@ -1,4 +1,7 @@
+import type { IUserSegment, SegmentsByRelation } from "@/types/segment.types";
 import { env } from "./env";
+import { SegmentType, UserSegmentRelationship } from "./types/segment.types";
+import type { IUser } from "@/types/user.types";
 
 export const capitalize = (str: string) =>
   str.replace(/\b\w/g, (c) => c.toUpperCase());
@@ -116,3 +119,48 @@ export const storeTokenExpiryInLocalStorage = (
   tokenExpiry.setMinutes(tokenExpiry.getMinutes() + minutesOffset);
   localStorage.setItem("token-expiry", tokenExpiry.toISOString());
 };
+
+export function getSegmentsFromUserSegments(
+  userSegments: IUserSegment[] | undefined,
+): SegmentsByRelation {
+  const result: SegmentsByRelation = {
+    homeSegments: {},
+    workSegments: {},
+    schoolSegments: {},
+  };
+
+  if (!userSegments) return result;
+
+  for (const seg of userSegments) {
+    const relation = seg.userSegmentRelationship;
+    const type = seg?.segment?.segmentType;
+
+    switch (relation) {
+      case UserSegmentRelationship.HOME:
+        if (type === SegmentType.superSegment)
+          result.homeSegments.superSegment = seg.segment;
+        else if (type === SegmentType.segment)
+          result.homeSegments.segment = seg.segment;
+        else if (type === SegmentType.subSegment)
+          result.homeSegments.subSegment = seg.segment;
+        break;
+      case UserSegmentRelationship.WORK:
+        if (type === SegmentType.superSegment)
+          result.workSegments.superSegment = seg.segment;
+        else if (type === SegmentType.segment)
+          result.workSegments.segment = seg.segment;
+        else if (type === SegmentType.subSegment)
+          result.workSegments.subSegment = seg.segment;
+        break;
+      case UserSegmentRelationship.SCHOOL:
+        if (type === SegmentType.superSegment)
+          result.schoolSegments.superSegment = seg.segment;
+        else if (type === SegmentType.segment)
+          result.schoolSegments.segment = seg.segment;
+        else if (type === SegmentType.subSegment)
+          result.schoolSegments.subSegment = seg.segment;
+        break;
+    }
+  }
+  return result;
+}

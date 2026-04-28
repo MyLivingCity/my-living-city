@@ -6,7 +6,7 @@ import {
   getAllSegments,
   findSubsegmentsBySegmentId,
 } from "@lib/api/segment.routes";
-import { RequestSegmentModal } from "@components/ui/session/RequestSegmentModal";
+import { RequestSegmentModal } from "@components/RequestSegmentModal";
 import { type ISegment, type ISubSegment } from "@/lib/types/segment.types";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { USER_TYPES } from "@/lib/constants/constants";
@@ -243,18 +243,18 @@ const CommunityLocation = ({
 
   const validationSchema = showNext
     ? Yup.object({
-        homeSegmentId: Yup.number()
-          .typeError("Municipality is required")
-          .required("Municipality is required"),
-        communityType: Yup.string().required(
-          "Community relationship is required",
-        ),
-      })
+      homeSegmentId: Yup.number()
+        .typeError("Municipality is required")
+        .required("Municipality is required"),
+      communityType: Yup.string().required(
+        "Community relationship is required",
+      ),
+    })
     : Yup.object({
-        homeSegmentId: Yup.number()
-          .typeError("Municipality is required")
-          .required("Municipality is required"),
-      });
+      homeSegmentId: Yup.number()
+        .typeError("Municipality is required")
+        .required("Municipality is required"),
+    });
 
   return (
     <FormikStep validationSchema={validationSchema}>

@@ -1,4 +1,5 @@
 # General /admin notes
+
 - we need to decide how to handle notifications
 - I don't see any lists to quarantine users to
 
@@ -19,14 +20,36 @@ Incremented when a user's content is flagged
 ## Quarantine (C-17)
 
 Denotes a user who is muted/restricted from certain actions to prevent abuse
+// ----------------------------------------------------------------------------
 
-Docs say it's tracked in two lists:
-#### False Flagging behaviour quarantine list
+## report.getAll has inline role-checking; this should be pulled out into RBAC middleware:
 
-#### Bad posting behaviour quarantine list
-Neither of which have an associated table
+// middleware/auth.ts
 
+```ts
+import { Request, Response, NextFunction } from "express";
 
-## from 3. File System Navigation (Version 1.1), 1/20/25
-### dashboard.js
-Controller used to handle quarantine notifications for the user’s dashboard.
+export const authorizeAdmin = async (req: Request, res: Response, next: NextFunction) => {
+try {
+const loggedInUserId = (req.user as User)?.id;
+
+    const foundUser = await prisma.user.findUnique({ where: { id: loggedInUserId } });
+    const isUserAdmin = foundUser?.userType === 'SUPER_ADMIN' || foundUser?.userType === 'ADMIN';
+
+    if (!isUserAdmin) {
+      // Note: Since this is standard Express middleware, we use res.status()
+      return res.status(400).json({
+        message: "You must be an Administrator to view reports.",
+        details: { error: "Unauthorized access attempt" }
+      });
+    }
+
+    next();
+
+} catch (error) {
+next(error);
+}
+};
+```
+
+// ----------------------------------------------------------------------------

@@ -1,33 +1,23 @@
 import { initServer } from "@ts-rest/express";
-import { adminApiContracts } from "@mlc/lib/api/contracts/admin";
-import { prisma } from "src/prisma/client";
 import { Handlers } from "src/server";
-import { toErrorDetails } from "src/server/utils";
 import passport from "passport";
 
+import { toErrorDetails } from "src/server/utils";
+import { adminApiContracts } from "@mlc/lib/api/contracts/admin";
+import { UserSchema } from "@mlc/lib/api/contracts/users";
+import { z } from "zod";
+
+import {
+  authorizeUser,
+  fetchUnseenNotifications,
+  dismissQuarantineNotification,
+  fetchAllReports,
+  createNewReport,
+  deleteReportById,
+} from "./service";
+
+type User = z.infer<typeof UserSchema>;
 const s = initServer();
-
-// ----------------------------------------------------------------------------
-//  SERVICES
-// ----------------------------------------------------------------------------
-// dashboard
-export const fetchUnseenNotifications = async () => {
-  return await prisma.quarantine_Notifications.findMany({
-    where: {
-      seen: false,
-    },
-  });
-};
-// ----------------------------------------------------------------------------
-const dismissQuarantineNotification = async (id: number) => {
-  return await prisma.quarantine_Notifications.update({
-    where: { id },
-    data: { seen: true },
-  });
-};
-// report
-
-// threshhold
 
 // ============================================================================
 // dashboard
@@ -44,6 +34,12 @@ const getAllNotifications = s.route(
       try {
         const notifications = await fetchUnseenNotifications();
 
+        if (notifications.length === 0) {
+          return {
+            status: 200,
+            body: { message: "No new notifications" },
+          };
+        }
         return {
           status: 200,
           body: notifications,
@@ -92,6 +88,118 @@ const dismissNotification = s.route(
 //	POST	/create	                  create a report
 //	DEL	  /delete/:reportId	        delete a report by id (admin only)
 // ----------------------------------------------------------------------------
+const getAll = s.route(adminApiContracts.report.getAll, {
+  middleware: [passport.authenticate("jwt", { session: false })],
+  handler: async ({ req }) => {
+    try {
+      const u = req.user as User;
+      const isAuthorized = await authorizeUser(u.id);
+      if (!isAuthorized) {
+        return {
+          status: 403,
+          body: {
+            message: "You must be an Administrator to view reports.",
+            details: toErrorDetails("Unauthorized access attempt"),
+          },
+        };
+      }
+      const allReports = await fetchAllReports();
+
+      return {
+        status: 200,
+        body: allReports,
+      };
+    } catch (error) {
+      return {
+        status: 400,
+        body: {
+          message: "An error occured while trying to fetch all reports",
+          details: toErrorDetails(error),
+        },
+      };
+    }
+  },
+});
+const createReport = s.route(adminApiContracts.report.create, {
+  middleware: [passport.authenticate("jwt", { session: false })],
+  handler: async ({ body: { email, description } }) => {
+    try {
+      // Manual validation check from legacy controller
+      if (!email || !description) {
+        return {
+          status: 400,
+          body: {
+            message: "You must supply an email and description of your report.",
+            details: toErrorDetails("Missing required fields"),
+          },
+        };
+      }
+
+      await createNewReport({ email, description });
+
+      return {
+        status: 201,
+        body: {
+          message: `Report succesfully created under ${email}. Thank you!`,
+        },
+      };
+    } catch (error) {
+      return {
+        status: 400,
+        body: {
+          message: "An error occured while trying to create a report.",
+          details: toErrorDetails(error),
+        },
+      };
+    }
+  },
+});
+const deleteReport = s.route(adminApiContracts.report.delete, {
+  middleware: [passport.authenticate("jwt", { session: false })],
+  handler: async ({ params: { reportId }, req }) => {
+    try {
+      const u = req.user as User;
+      const isAuthorized = await authorizeUser(u.id);
+      if (!isAuthorized) {
+        return {
+          status: 403,
+          body: {
+            message: "You must be an Administrator to delete reports.",
+            details: toErrorDetails("Unauthorized delete attempt"),
+          },
+        };
+      }
+
+      if (!reportId) {
+        return {
+          status: 400,
+          body: {
+            message:
+              "A valid reportId must be specified in the route parameter.",
+            details: toErrorDetails(`Invalid ID: ${reportId}`),
+          },
+        };
+      }
+
+      await deleteReportById(reportId);
+
+      return {
+        status: 200,
+        body: {
+          message: "Report successfully deleted",
+        },
+      };
+    } catch (error) {
+      return {
+        status: 400,
+        body: {
+          message: "An error occured while trying to delete a report.",
+          details: toErrorDetails(error),
+        },
+      };
+    }
+  },
+});
 // ============================================================================
 // threshhold
 // ============================================================================
@@ -106,12 +214,27 @@ const dismissNotification = s.route(
 //   - POST /reset                   reset thresholds to defaults
 // ----------------------------------------------------------------------------
 
+// ----------------------------------------------------------------------------
 export default {
   schema: adminApiContracts,
   router: {
     dashboard: {
       getAllNotifications,
       dismiss: dismissNotification,
+    },
+    report: {
+      getAll,
+      create: createReport,
+      delete: deleteReport,
+    },
+    threshhold: {
+      // getBanThreshold,
+      // updateBanThreshold,
+      // createThreshold,
+      // getFalseFlagThreshold,
+      // updateFalseFlagThreshold,
+      // getBadPostingThreshold,
+      // updateBadPostingThreshold,
     },
   },
 } as unknown as Handlers;

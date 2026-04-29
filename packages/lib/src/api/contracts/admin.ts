@@ -1,5 +1,6 @@
 import { initContract } from "@ts-rest/core";
 import z from "zod";
+import { ErrorResponseSchema, SimpleMessageResponseSchema } from "../common";
 
 export const ThresholdType = {
   BAN: 1,
@@ -23,6 +24,13 @@ const ThresholdSchema = z.object({
   count: z.number().int().nonnegative(), // the actual threshold field
 });
 
+const ReportSchema = z.object({
+  id: z.number(),
+  email: z.string(),
+  description: z.string(),
+  createdAt: z.date().default(new Date(0)),
+  updatedAt: z.date().default(new Date(0)),
+});
 // ----------------------------------------------------------------------------
 // Router
 // ----------------------------------------------------------------------------
@@ -36,6 +44,7 @@ export const adminApiContracts = c.router({
         path: "/getAllNotifications",
         responses: {
           200: z.array(QNotificationSchema),
+          400: ErrorResponseSchema,
         },
         summary: "Get all unseen notifications",
       },
@@ -43,11 +52,12 @@ export const adminApiContracts = c.router({
         method: "PUT",
         path: "/dismiss/:notificationId",
         pathParams: z.object({
-          id: z.coerce.number(),
+          notificationId: z.coerce.number(),
         }),
         body: z.object({}),
         responses: {
           200: QNotificationSchema,
+          400: ErrorResponseSchema,
         },
       },
     },
@@ -60,6 +70,7 @@ export const adminApiContracts = c.router({
         path: "/get",
         responses: {
           200: ThresholdSchema,
+          400: ErrorResponseSchema,
         },
         summary: "Get existing ban threshold",
       },
@@ -75,6 +86,7 @@ export const adminApiContracts = c.router({
             message: z.string(),
             updatedThresh: ThresholdSchema,
           }),
+          400: ErrorResponseSchema,
         },
         summary: "Set existing ban threshold",
       },
@@ -85,6 +97,7 @@ export const adminApiContracts = c.router({
         body: z.object({}),
         responses: {
           201: z.object({ message: z.string(), newThresh: ThresholdSchema }),
+          400: ErrorResponseSchema,
         },
         summary: "Create a new ban threshold",
       },
@@ -93,6 +106,7 @@ export const adminApiContracts = c.router({
         path: "/getFalseFlag",
         responses: {
           200: ThresholdSchema,
+          400: ErrorResponseSchema,
         },
         summary: "Get existing false-flag threshold",
       },
@@ -108,6 +122,7 @@ export const adminApiContracts = c.router({
             message: z.string(),
             updatedThresh: ThresholdSchema,
           }),
+          400: ErrorResponseSchema,
         },
         summary: "Set existing false-flag ban threshold",
       },
@@ -116,6 +131,7 @@ export const adminApiContracts = c.router({
         path: "/getBadPosting",
         responses: {
           200: ThresholdSchema,
+          400: ErrorResponseSchema,
         },
         summary: "Get existing bad posting ban threshold",
       },
@@ -131,10 +147,50 @@ export const adminApiContracts = c.router({
             message: z.string(),
             updatedThresh: ThresholdSchema,
           }),
+          400: ErrorResponseSchema,
         },
         summary: "Set existing bad posting ban threshold",
       },
     },
     { pathPrefix: "/threshhold" },
+  ),
+  // controllers/report.js          → apiRouter.use('/report', reportRouter)
+  //	GET	  /	                        welcome stub
+  //	GET	  /getall	                  get all reports (admin only)
+  //	POST	/create	                  create a report
+  //	DEL	  /delete/:reportId	        delete a report by id (admin only)
+  report: c.router(
+    {
+      getAll: {
+        method: "GET",
+        path: "/getAll",
+        responses: {
+          200: z.array(ReportSchema),
+          400: ErrorResponseSchema,
+        },
+        summary: "Get all reports",
+      },
+      create: {
+        method: "POST",
+        path: "/create",
+        body: z.object({}),
+        responses: {
+          201: SimpleMessageResponseSchema,
+          400: ErrorResponseSchema,
+        },
+        summary: "Create a report",
+      },
+      delete: {
+        method: "DELETE",
+        path: "/delete/:reportId",
+        pathParams: z.number(),
+        responses: {
+          200: SimpleMessageResponseSchema,
+          400: ErrorResponseSchema,
+        },
+        summary: "Delete a report by id",
+      },
+    },
+    { pathPrefix: "/report" },
   ),
 });

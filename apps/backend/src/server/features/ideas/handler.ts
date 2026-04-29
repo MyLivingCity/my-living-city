@@ -2,8 +2,8 @@ import { ideaApiContracts } from "@mlc/lib/api";
 import { Prisma } from "#prisma/client";
 import { prisma } from "src/prisma/client";
 import { initServer } from "@ts-rest/express";
-import { Handlers } from "src/server";
 import { prisma } from "src/prisma/client";
+import { createHandlers } from "src/server";
 import { getAggregateIdeaWithUserSegmentJoins } from "./utils";
 import { serializeForContract, toErrorDetails } from "src/server/utils";
 
@@ -472,7 +472,7 @@ const getAllWithAggregations = s.route(
   },
 );
 
-export default {
+export default createHandlers({
   schema: ideaApiContracts,
   router: {
     getAll,
@@ -481,4 +481,4 @@ export default {
     getById,
     getAllWithAggregations,
   },
-} as Handlers;
+});

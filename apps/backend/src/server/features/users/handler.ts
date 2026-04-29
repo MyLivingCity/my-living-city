@@ -5,7 +5,7 @@ import { initServer } from "@ts-rest/express";
 import { NextFunction, Request, Response } from "express";
 import * as passport from "passport";
 import { prisma } from "src/prisma/client";
-import { Handlers } from "src/server";
+import { createHandlers } from "src/server";
 import { serializeForContract, toErrorDetails } from "src/server/utils";
 import { env } from "src/lib/env";
 import { argon2Hash } from "src/lib/helpers";
@@ -914,7 +914,7 @@ const deleteById = s.route(userApiContracts.deleteById, {
   },
 });
 
-export default {
+export default createHandlers({
   schema: userApiContracts,
   router: {
     deleteById,
@@ -928,4 +928,4 @@ export default {
     register,
     tryUnbanSelf,
   },
-} as unknown as Handlers;
+});

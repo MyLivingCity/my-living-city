@@ -1,5 +1,5 @@
 import { initServer } from "@ts-rest/express";
-import { Handlers } from "src/server";
+import { createHandlers } from "src/server";
 import passport from "passport";
 
 import { toErrorDetails } from "src/server/utils";
@@ -513,7 +513,7 @@ const updateBadPostingThreshold = s.route(
   },
 );
 // ----------------------------------------------------------------------------
-export default {
+export default createHandlers({
   schema: adminApiContracts,
   router: {
     dashboard: {
@@ -535,4 +535,4 @@ export default {
       updateBadPostingThreshold,
     },
   },
-} as unknown as Handlers;
+});

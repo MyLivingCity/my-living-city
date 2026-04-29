@@ -7,7 +7,7 @@ import {
 import { initServer } from "@ts-rest/express";
 import * as passport from "passport";
 import { prisma } from "src/prisma/client";
-import { Handlers } from "src/server";
+import { createHandlers } from "src/server";
 import { serializeForContract, toErrorDetails } from "src/server/utils";
 
 const s = initServer();
@@ -1390,7 +1390,7 @@ const patchByUserId = s.route(userSegmentsApiContracts.patchByUserId, {
   },
 });
 
-export default {
+export default createHandlers({
   schema: userSegmentsApiContracts,
   router: {
     getAllForAuthenticatedUser,
@@ -1409,4 +1409,4 @@ export default {
     getSegmentByName,
     patchByUserId,
   },
-} as unknown as Handlers;
+});

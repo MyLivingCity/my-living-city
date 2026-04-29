@@ -6,16 +6,22 @@ import {
 } from "@ts-rest/express/src/lib/types";
 import { Router } from "express";
 
-export type Handlers = {
-  schema: AppRouter;
-  router: RouterImplementation<AppRouter>;
-  options?: TsRestExpressOptions<AppRouter>;
+export type Handlers<T extends AppRouter = AppRouter> = {
+  schema: T;
+  router: RouterImplementation<T>;
+  options?: TsRestExpressOptions<T>;
 };
+
+export function createHandlers<T extends AppRouter>(
+  handlersObj: Handlers<T>,
+): Handlers<T> {
+  return handlersObj;
+}
 
 export function addEndpoints(app: Router, handlers: Handlers) {
   createExpressEndpoints(
     handlers.schema,
-    handlers.router,
+    handlers.router as RouterImplementation<AppRouter>,
     app,
     handlers.options,
   );

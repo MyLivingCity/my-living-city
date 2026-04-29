@@ -40,7 +40,7 @@ export function makeUpload(folderName) {
   //   fileFilter: theFileFilter,
   // });
   // return upload;
-  return { single: (path: string) => "" };
+  return { single: (path: string) => () => "" };
 }
 
 // upload image to s3 bucket

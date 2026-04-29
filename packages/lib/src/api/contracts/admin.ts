@@ -13,9 +13,10 @@ export const ThresholdIdSchema = z.coerce.number().int().positive();
 //Quarantine_Notifications table
 const QNotificationSchema = z.object({
   id: z.number(),
-  userId: z.number(),
+  userId: z.string().cuid(),
   ideaId: z.number(),
-  createdAt: z.date(),
+  ideaTitle: z.string(),
+  createdAt: z.date().default(new Date(0)),
   seen: z.boolean(),
 });
 
@@ -32,7 +33,7 @@ const ReportSchema = z.object({
   updatedAt: z.date().default(new Date(0)),
 });
 // ----------------------------------------------------------------------------
-// Router
+// Routes
 // ----------------------------------------------------------------------------
 const c = initContract();
 
@@ -56,7 +57,7 @@ export const adminApiContracts = c.router({
         }),
         body: z.object({}),
         responses: {
-          200: QNotificationSchema,
+          200: SimpleMessageResponseSchema,
           400: ErrorResponseSchema,
         },
       },
@@ -154,11 +155,6 @@ export const adminApiContracts = c.router({
     },
     { pathPrefix: "/threshhold" },
   ),
-  // controllers/report.js          → apiRouter.use('/report', reportRouter)
-  //	GET	  /	                        welcome stub
-  //	GET	  /getall	                  get all reports (admin only)
-  //	POST	/create	                  create a report
-  //	DEL	  /delete/:reportId	        delete a report by id (admin only)
   report: c.router(
     {
       getAll: {

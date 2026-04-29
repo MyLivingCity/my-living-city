@@ -44,7 +44,7 @@ export const adminApiContracts = c.router({
         method: "GET",
         path: "/getAllNotifications",
         responses: {
-          200: z.array(QNotificationSchema),
+          200: z.array(QNotificationSchema).or(SimpleMessageResponseSchema),
           400: ErrorResponseSchema,
         },
         summary: "Get all unseen notifications",
@@ -163,13 +163,14 @@ export const adminApiContracts = c.router({
         responses: {
           200: z.array(ReportSchema),
           400: ErrorResponseSchema,
+          403: ErrorResponseSchema,
         },
         summary: "Get all reports",
       },
       create: {
         method: "POST",
         path: "/create",
-        body: z.object({}),
+        body: z.object({ email: z.string(), description: z.string() }),
         responses: {
           201: SimpleMessageResponseSchema,
           400: ErrorResponseSchema,
@@ -179,10 +180,10 @@ export const adminApiContracts = c.router({
       delete: {
         method: "DELETE",
         path: "/delete/:reportId",
-        pathParams: z.number(),
+        pathParams: z.object({ reportId: z.coerce.number() }),
         responses: {
           200: SimpleMessageResponseSchema,
-          400: ErrorResponseSchema,
+          403: ErrorResponseSchema,
         },
         summary: "Delete a report by id",
       },

@@ -298,7 +298,7 @@ const getById = s.route(ideaApiContracts.getById, {
 const getAllWithAggregations = s.route(
   ideaApiContracts.getAllWithAggregations,
   {
-    handler: () => {
+    handler: async ({ req }) => {
       try {
         let take = req.body.take;
         take = Number.isInteger(take) ? Number(take) : undefined;

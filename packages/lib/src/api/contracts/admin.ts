@@ -22,7 +22,7 @@ const QNotificationSchema = z.object({
 
 const ThresholdSchema = z.object({
   id: ThresholdIdSchema,
-  count: z.number().int().nonnegative(), // the actual threshold field
+  number: z.number().int().nonnegative(), // the actual threshold field
 });
 
 const ReportSchema = z.object({
@@ -70,7 +70,7 @@ export const adminApiContracts = c.router({
         method: "GET",
         path: "/get",
         responses: {
-          200: ThresholdSchema,
+          200: z.number(),
           400: ErrorResponseSchema,
         },
         summary: "Get existing ban threshold",

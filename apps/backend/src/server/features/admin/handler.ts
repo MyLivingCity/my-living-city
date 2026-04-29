@@ -14,6 +14,13 @@ import {
   fetchAllReports,
   createNewReport,
   deleteReportById,
+  fetchBanThreshold,
+  updateBanThresholdValue,
+  seedInitialThresholds,
+  fetchFalseFlagThreshold,
+  updateFalseFlagThresholdValue,
+  fetchBadPostingThreshold,
+  updateBadPostingThresholdValue,
 } from "./service";
 
 type User = z.infer<typeof UserSchema>;
@@ -213,7 +220,310 @@ const deleteReport = s.route(adminApiContracts.report.delete, {
 //   - PUT  /                        update thresholds (admin only)
 //   - POST /reset                   reset thresholds to defaults
 // ----------------------------------------------------------------------------
+const getBanThreshold = s.route(adminApiContracts.threshhold.getBanThreshold, {
+  middleware: [passport.authenticate("jwt", { session: false })],
+  handler: async () => {
+    try {
+      const threshold = await fetchBanThreshold();
 
+      if (!threshold) {
+        return {
+          status: 400,
+          body: {
+            message: "Ban threshold configuration not found.",
+            details: toErrorDetails("No threshold record exists at ID 1"),
+          },
+        };
+      }
+
+      return {
+        status: 200,
+        body: threshold.number,
+      };
+    } catch (error) {
+      return {
+        status: 400,
+        body: {
+          message: "An error occured while trying to fetch threshhold.",
+          details: toErrorDetails(error),
+        },
+      };
+    }
+  },
+});
+const updateBanThreshold = s.route(
+  adminApiContracts.threshhold.updateBanThreshold,
+  {
+    middleware: [passport.authenticate("jwt", { session: false })],
+    handler: async ({ params: { num } }) => {
+      try {
+        if (!num) {
+          return {
+            status: 400,
+            body: {
+              message:
+                "A valid number must be specified in the route parameter.",
+              details: toErrorDetails(`Value received: ${num}`),
+            },
+          };
+        }
+
+        const existing = fetchBanThreshold;
+        if (!existing) {
+          return {
+            status: 400,
+            body: {
+              message:
+                "A threshhold doesn't currently exist, please create one first",
+              details: toErrorDetails("No record found with ID 1"),
+            },
+          };
+        }
+
+        const updated = await updateBanThresholdValue(num);
+
+        return {
+          status: 200,
+          body: {
+            message: "Threshhold successfuly updated",
+            // Mapping updated.number to match the contract's expected number type
+            updatedThresh: updated,
+          },
+        };
+      } catch (error) {
+        return {
+          status: 400,
+          body: {
+            message: "An error occured while trying to update the threshhold",
+            details: toErrorDetails(error),
+          },
+        };
+      }
+    },
+  },
+);
+// TODO: replace magic numbers sprinkled throughout with an enum or associative array
+//**  Threshhold table should be modified to not autoincrement **
+const createThreshold = s.route(adminApiContracts.threshhold.createThreshold, {
+  middleware: [passport.authenticate("jwt", { session: false })],
+  handler: async ({ params: { num } }) => {
+    try {
+      if (!num) {
+        return {
+          status: 400,
+          body: {
+            message: "A valid number must be specified in the route parameter.",
+            details: toErrorDetails(`Value received: ${num}`),
+          },
+        };
+      }
+
+      const count = await fetchBanThreshold();
+      if (count) {
+        return {
+          status: 400,
+          body: {
+            message:
+              "Thresholds already exist, please modify the current thresholds.",
+            details: toErrorDetails("Table is not empty."),
+          },
+        };
+      }
+
+      // Seed all three
+      await seedInitialThresholds(num);
+
+      const newThreshold = await fetchBanThreshold();
+
+      return {
+        status: 201,
+        body: {
+          message: "All three thresholds successfully seeded.",
+          newThresh: newThreshold!, // Non-null assertion as we just created it
+        },
+      };
+    } catch (error) {
+      return {
+        status: 400,
+        body: {
+          message: "An error occured while trying to create thresholds.",
+          details: toErrorDetails(error),
+        },
+      };
+    }
+  },
+});
+const getFalseFlagThreshold = s.route(
+  adminApiContracts.threshhold.getFalseFlagThreshold,
+  {
+    middleware: [passport.authenticate("jwt", { session: false })],
+    handler: async () => {
+      try {
+        const threshold = await fetchFalseFlagThreshold();
+
+        if (!threshold) {
+          return {
+            status: 400,
+            body: {
+              message: "False-flag threshold configuration not found.",
+              details: toErrorDetails("No threshold record exists at ID 2"),
+            },
+          };
+        }
+
+        return {
+          status: 200,
+          body: threshold,
+        };
+      } catch (error) {
+        return {
+          status: 400,
+          body: {
+            message: "An error occured while trying to fetch threshhold.",
+            details: toErrorDetails(error),
+          },
+        };
+      }
+    },
+  },
+);
+const updateFalseFlagThreshold = s.route(
+  adminApiContracts.threshhold.updateFalseFlagThreshold,
+  {
+    middleware: [passport.authenticate("jwt", { session: false })],
+    handler: async ({ params: { num } }) => {
+      try {
+        if (!num && num !== 0) {
+          return {
+            status: 400,
+            body: {
+              message:
+                "A valid number must be specified in the route parameter.",
+              details: toErrorDetails(`Value received: ${num}`),
+            },
+          };
+        }
+
+        const existing = await fetchFalseFlagThreshold();
+
+        if (!existing) {
+          return {
+            status: 400,
+            body: {
+              message:
+                "A threshhold doesn't currently exist, please create one first",
+              details: toErrorDetails("No record found with ID 2"),
+            },
+          };
+        }
+
+        const updatedThresh = await updateFalseFlagThresholdValue(num);
+
+        return {
+          status: 200,
+          body: {
+            message: "Threshhold successfuly updated",
+            updatedThresh,
+          },
+        };
+      } catch (error) {
+        return {
+          status: 400,
+          body: {
+            message: "An error occured while trying to update the threshhold",
+            details: toErrorDetails(error),
+          },
+        };
+      }
+    },
+  },
+);
+const getBadPostingThreshold = s.route(
+  adminApiContracts.threshhold.getBadPostingThreshold,
+  {
+    middleware: [passport.authenticate("jwt", { session: false })],
+    handler: async () => {
+      try {
+        const threshold = await fetchBadPostingThreshold();
+
+        if (!threshold) {
+          return {
+            status: 400,
+            body: {
+              message: "Bad posting threshold configuration not found.",
+              details: toErrorDetails("No threshold record exists at ID 3"),
+            },
+          };
+        }
+
+        return {
+          status: 200,
+          body: threshold,
+        };
+      } catch (error) {
+        return {
+          status: 400,
+          body: {
+            message: "An error occured while trying to fetch threshhold.",
+            details: toErrorDetails(error),
+          },
+        };
+      }
+    },
+  },
+);
+const updateBadPostingThreshold = s.route(
+  adminApiContracts.threshhold.updateBadPostingThreshold,
+  {
+    middleware: [passport.authenticate("jwt", { session: false })],
+    handler: async ({ params: { num } }) => {
+      try {
+        // Validation check similar to legacy (allowing 0 if applicable)
+        if (!num && num !== 0) {
+          return {
+            status: 400,
+            body: {
+              message:
+                "A valid number must be specified in the route parameter.",
+              details: toErrorDetails(`Value received: ${num}`),
+            },
+          };
+        }
+
+        const existing = await fetchBadPostingThreshold();
+
+        if (!existing) {
+          return {
+            status: 400,
+            body: {
+              message:
+                "A threshhold doesn't currently exist, please create one first",
+              details: toErrorDetails("No record found with ID 3"),
+            },
+          };
+        }
+
+        const updatedThresh = await updateBadPostingThresholdValue(num);
+
+        return {
+          status: 200,
+          body: {
+            message: "Threshhold successfuly updated",
+            updatedThresh,
+          },
+        };
+      } catch (error) {
+        return {
+          status: 400,
+          body: {
+            message: "An error occured while trying to update the threshhold",
+            details: toErrorDetails(error),
+          },
+        };
+      }
+    },
+  },
+);
 // ----------------------------------------------------------------------------
 export default {
   schema: adminApiContracts,
@@ -228,13 +538,13 @@ export default {
       delete: deleteReport,
     },
     threshhold: {
-      // getBanThreshold,
-      // updateBanThreshold,
-      // createThreshold,
-      // getFalseFlagThreshold,
-      // updateFalseFlagThreshold,
-      // getBadPostingThreshold,
-      // updateBadPostingThreshold,
+      getBanThreshold,
+      updateBanThreshold,
+      createThreshold,
+      getFalseFlagThreshold,
+      updateFalseFlagThreshold,
+      getBadPostingThreshold,
+      updateBadPostingThreshold,
     },
   },
 } as unknown as Handlers;

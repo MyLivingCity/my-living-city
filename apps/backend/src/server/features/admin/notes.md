@@ -22,34 +22,8 @@ Incremented when a user's content is flagged
 Denotes a user who is muted/restricted from certain actions to prevent abuse
 // ----------------------------------------------------------------------------
 
-## report.getAll has inline role-checking; this should be pulled out into RBAC middleware:
+## report.getAll has inline role-checking; this should be pulled out into RBAC middleware
 
-// middleware/auth.ts
-
-```ts
-import { Request, Response, NextFunction } from "express";
-
-export const authorizeAdmin = async (req: Request, res: Response, next: NextFunction) => {
-try {
-const loggedInUserId = (req.user as User)?.id;
-
-    const foundUser = await prisma.user.findUnique({ where: { id: loggedInUserId } });
-    const isUserAdmin = foundUser?.userType === 'SUPER_ADMIN' || foundUser?.userType === 'ADMIN';
-
-    if (!isUserAdmin) {
-      // Note: Since this is standard Express middleware, we use res.status()
-      return res.status(400).json({
-        message: "You must be an Administrator to view reports.",
-        details: { error: "Unauthorized access attempt" }
-      });
-    }
-
-    next();
-
-} catch (error) {
-next(error);
-}
-};
-```
-
+## Threshhold table uses magic numbers throughout the code. Likely to break if the database isn't seeded exactly
+### temp fix: createThreshold method now seeds all three numbers, so the correct pattern is established if the table isn't seeded
 // ----------------------------------------------------------------------------

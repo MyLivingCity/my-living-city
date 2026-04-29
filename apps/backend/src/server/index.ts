@@ -18,10 +18,13 @@ export function createHandlers<T extends AppRouter>(
   return handlersObj;
 }
 
-export function addEndpoints(app: Router, handlers: Handlers) {
-  createExpressEndpoints(
+export function addEndpoints<T extends AppRouter = AppRouter>(
+  app: Router,
+  handlers: Handlers<T>,
+) {
+  createExpressEndpoints<T>(
     handlers.schema,
-    handlers.router as RouterImplementation<AppRouter>,
+    handlers.router as RouterImplementation<T>,
     app,
     handlers.options,
   );

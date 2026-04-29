@@ -2,7 +2,6 @@ import { ideaApiContracts } from "@mlc/lib/api";
 import { Prisma } from "#prisma/client";
 import { prisma } from "src/prisma/client";
 import { initServer } from "@ts-rest/express";
-import { prisma } from "src/prisma/client";
 import { createHandlers } from "src/server";
 import { getAggregateIdeaWithUserSegmentJoins } from "./utils";
 import { serializeForContract, toErrorDetails } from "src/server/utils";

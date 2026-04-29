@@ -3,7 +3,7 @@ import { Prisma, UserType } from "#prisma/client";
 import * as passport from "passport";
 
 import { prisma } from "src/prisma/client";
-import { Handlers } from "src/server";
+import { createHandlers } from "src/server";
 import { subgroupApiContracts } from "@mlc/lib/api/contracts/subgroups";
 
 const s = initServer();
@@ -1071,7 +1071,7 @@ const getPublicSubgroups = s.route(subgroupApiContracts.getPublicSubgroups, {
   },
 });
 
-export default {
+export default createHandlers({
   schema: subgroupApiContracts,
   router: {
     subgroups: {
@@ -1098,4 +1098,4 @@ export default {
     },
     getPublicSubgroups,
   },
-} as Handlers;
+});

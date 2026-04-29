@@ -6,7 +6,7 @@ import { z } from "zod";
 import { prisma } from "src/prisma/client";
 import { BadPostingBehaviourSchema } from "@mlc/lib/api/contracts/moderation/reputation";
 import { UserSchema } from "@mlc/lib/api";
-import { Handlers } from "src/server";
+import { createHandlers } from "src/server";
 import {
   BanTypeSchema,
   BanUserType,
@@ -2238,7 +2238,7 @@ const checkFlagBan = s.route(moderationApiContracts.flags.flag.checkFlagBan, {
 // ----------------------------------------------------------------------------
 //  EXPORTS
 // ----------------------------------------------------------------------------
-export default {
+export default createHandlers({
   schema: moderationApiContracts,
   router: {
     reputation: {
@@ -2299,4 +2299,4 @@ export default {
       },
     },
   },
-} as unknown as Handlers;
+});

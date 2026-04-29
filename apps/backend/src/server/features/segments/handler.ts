@@ -3,7 +3,7 @@ import { Prisma, SegmentType, UserType } from "#prisma/client";
 import { prisma } from "src/prisma/client";
 import { initServer } from "@ts-rest/express";
 import * as passport from "passport";
-import { Handlers } from "src/server";
+import { createHandlers } from "src/server";
 import { serializeForContract, toErrorDetails } from "src/server/utils";
 
 const s = initServer();
@@ -492,7 +492,7 @@ const getChildrenOfParent = s.route(segmentApiContracts.getChildrenOfParent, {
   },
 });
 
-export default {
+export default createHandlers({
   schema: segmentApiContracts,
   router: {
     create,
@@ -502,4 +502,4 @@ export default {
     getByType,
     getChildrenOfParent,
   },
-} as Handlers;
+});

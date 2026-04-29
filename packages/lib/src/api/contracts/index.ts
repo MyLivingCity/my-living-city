@@ -6,6 +6,7 @@ import { segmentApiContracts } from "./segments";
 import { moderationApiContracts } from "./moderation";
 import { subgroupApiContracts } from "./subgroups";
 import { userSegmentsApiContracts } from "./userSegments";
+import { communityApiContracts } from "./community";
 
 const c = initContract();
 
@@ -17,4 +18,5 @@ export const allApiContracts = c.router({
   segments: segmentApiContracts,
   subgroups: subgroupApiContracts,
   userSegments: userSegmentsApiContracts,
+  community: communityApiContracts,
 });

@@ -5,3 +5,4 @@ export * from "./contracts/ideas";
 export * from "./contracts/segments";
 export * from "./contracts/moderation";
 export * from "./contracts/userSegments";
+export * from "./contracts/community";

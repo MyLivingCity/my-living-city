@@ -518,7 +518,7 @@ export default createHandlers({
   router: {
     dashboard: {
       getAllNotifications,
-      dismiss: dismissNotification,
+      dismissNotification,
     },
     report: {
       getAll,

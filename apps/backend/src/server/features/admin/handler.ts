@@ -15,7 +15,7 @@ import {
   createNewReport,
   deleteReportById,
   fetchBanThreshold,
-  updateBanThresholdValue,
+  updateBanThreshold,
   seedInitialThresholds,
   fetchFalseFlagThreshold,
   updateFalseFlagThresholdValue,
@@ -29,10 +29,6 @@ const s = initServer();
 // ============================================================================
 // dashboard
 // ============================================================================
-// controllers/dashboard.js             → apiRouter.use('/dashboard', dashboardRouter)
-//  GET     /getAllNotifications        return all unseen notifications from quarantine_Notifications
-//  PATCH   /dismiss/:notificationId    set quarantine_Notifications[id].seen to true
-// ----------------------------------------------------------------------------
 const getAllNotifications = s.route(
   adminApiContracts.dashboard.getAllNotifications,
   {
@@ -90,11 +86,6 @@ const dismissNotification = s.route(
 // ============================================================================
 // report
 // ============================================================================
-// controllers/report.js          → apiRouter.use('/report', reportRouter)
-//	GET	  /getall	                  get all reports (admin only)
-//	POST	/create	                  create a report
-//	DEL	  /delete/:reportId	        delete a report by id (admin only)
-// ----------------------------------------------------------------------------
 const getAll = s.route(adminApiContracts.report.getAll, {
   middleware: [passport.authenticate("jwt", { session: false })],
   handler: async ({ req }) => {
@@ -210,15 +201,12 @@ const deleteReport = s.route(adminApiContracts.report.delete, {
 // ============================================================================
 // threshhold
 // ============================================================================
-// controllers/threshhold.js       → apiRouter.use('/threshhold', threshholdRouter)
 //  threshhold(sic): int id, int number
 //  id:
-//              1: threshold - ban threshold
-//              2: falseFlag - user has flagged a post unfairly
-//              3: badPosting - user's post is unacceptable
-//   - GET  /                        get current moderation thresholds
-//   - PUT  /                        update thresholds (admin only)
-//   - POST /reset                   reset thresholds to defaults
+//  1: threshold - ban threshold
+//  2: falseFlag - user has flagged a post unfairly
+//  3: badPosting - user's post is unacceptable
+//  number: the ban threshold
 // ----------------------------------------------------------------------------
 const getBanThreshold = s.route(adminApiContracts.threshhold.getBanThreshold, {
   middleware: [passport.authenticate("jwt", { session: false })],
@@ -251,7 +239,7 @@ const getBanThreshold = s.route(adminApiContracts.threshhold.getBanThreshold, {
     }
   },
 });
-const updateBanThreshold = s.route(
+const updateBanThresholdRoute = s.route(
   adminApiContracts.threshhold.updateBanThreshold,
   {
     middleware: [passport.authenticate("jwt", { session: false })],
@@ -280,7 +268,7 @@ const updateBanThreshold = s.route(
           };
         }
 
-        const updated = await updateBanThresholdValue(num);
+        const updated = await updateBanThreshold(num);
 
         return {
           status: 200,
@@ -539,7 +527,7 @@ export default {
     },
     threshhold: {
       getBanThreshold,
-      updateBanThreshold,
+      updateBanThreshold: updateBanThresholdRoute,
       createThreshold,
       getFalseFlagThreshold,
       updateFalseFlagThreshold,

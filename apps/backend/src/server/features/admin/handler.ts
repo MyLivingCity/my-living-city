@@ -1,35 +1,46 @@
-// =============================================================================
-// features/admin/handler.ts
-// =============================================================================
-// Source controllers to refactor into this file:
-//
+import { initServer } from "@ts-rest/express";
+import { adminApiContracts } from "@mlc/lib/api/contracts/admin";
+import { prisma } from "src/prisma/client";
+// ----------------------------------------------------------------------------
+//  SERVICES
+// ----------------------------------------------------------------------------
+// dashboard
+
+// report
+
+// threshhold
+
+// ============================================================================
+// dashboard
+// ============================================================================
 // controllers/dashboard.js        → apiRouter.use('/dashboard', dashboardRouter)
 //   - GET  /stats                   platform-wide aggregate stats
 //   - GET  /users                   user counts / growth stats
 //   - GET  /ideas                   idea counts / engagement stats
 //   - GET  /moderation              moderation activity summary
-//
-// controllers/threshhold.js       → apiRouter.use('/threshhold', threshholdRouter)
-//  threshhold(sic): int id, int number
-//  id:
-// 1: threshold - ban threshold
-// 2: falseFlag - user has flagged a post unfairly
-// 3: badPosting - user's post is unacceptable
-//   - GET  /                        get current moderation thresholds
-//   - PUT  /                        update thresholds (admin only)
-//   - POST /reset                   reset thresholds to defaults
 // ----------------------------------------------------------------------------
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//  MOVE TO ADMIN AREA FOR NOW
+// ============================================================================
+// report
+// ============================================================================
 // controllers/report.js          → apiRouter.use('/report', reportRouter)
 //	GET	  /	                        welcome stub
 //	GET	  /getall	                  get all reports (admin only)
 //	POST	/create	                  create a report
 //	DEL	  /delete/:reportId	        delete a report by id (admin only)
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-import { initServer } from "@ts-rest/express";
-import { adminApiContracts } from "@mlc/lib/api/contracts/admin";
-import { prisma } from "src/prisma/client";
+// ----------------------------------------------------------------------------
+// ============================================================================
+// threshhold
+// ============================================================================
+// controllers/threshhold.js       → apiRouter.use('/threshhold', threshholdRouter)
+//  threshhold(sic): int id, int number
+//  id:
+//              1: threshold - ban threshold
+//              2: falseFlag - user has flagged a post unfairly
+//              3: badPosting - user's post is unacceptable
+//   - GET  /                        get current moderation thresholds
+//   - PUT  /                        update thresholds (admin only)
+//   - POST /reset                   reset thresholds to defaults
+// ----------------------------------------------------------------------------
 
 const s = initServer();
 

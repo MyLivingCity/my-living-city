@@ -1,4 +1,5 @@
 import { initContract } from "@ts-rest/core";
+import { adminApiContracts } from "./admin";
 import { userApiContracts } from "./users";
 import { ideaApiContracts } from "./ideas";
 import { segmentApiContracts } from "./segments";
@@ -9,6 +10,7 @@ import { userSegmentsApiContracts } from "./userSegments";
 const c = initContract();
 
 export const allApiContracts = c.router({
+  admin: adminApiContracts,
   users: userApiContracts,
   ideas: ideaApiContracts,
   moderation: moderationApiContracts,

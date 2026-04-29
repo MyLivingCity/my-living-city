@@ -1,11 +1,30 @@
 import { initServer } from "@ts-rest/express";
 import { adminApiContracts } from "@mlc/lib/api/contracts/admin";
 import { prisma } from "src/prisma/client";
+import { Handlers } from "src/server";
+import { toErrorDetails } from "src/server/utils";
+import passport from "passport";
+
+const s = initServer();
+
 // ----------------------------------------------------------------------------
 //  SERVICES
 // ----------------------------------------------------------------------------
 // dashboard
-
+export const fetchUnseenNotifications = async () => {
+  return await prisma.quarantine_Notifications.findMany({
+    where: {
+      seen: false,
+    },
+  });
+};
+// ----------------------------------------------------------------------------
+const dismissQuarantineNotification = async (id: number) => {
+  return await prisma.quarantine_Notifications.update({
+    where: { id },
+    data: { seen: true },
+  });
+};
 // report
 
 // threshhold
@@ -13,17 +32,62 @@ import { prisma } from "src/prisma/client";
 // ============================================================================
 // dashboard
 // ============================================================================
-// controllers/dashboard.js        → apiRouter.use('/dashboard', dashboardRouter)
-//   - GET  /stats                   platform-wide aggregate stats
-//   - GET  /users                   user counts / growth stats
-//   - GET  /ideas                   idea counts / engagement stats
-//   - GET  /moderation              moderation activity summary
+// controllers/dashboard.js             → apiRouter.use('/dashboard', dashboardRouter)
+//  GET     /getAllNotifications        return all unseen notifications from quarantine_Notifications
+//  PATCH   /dismiss/:notificationId    set quarantine_Notifications[id].seen to true
 // ----------------------------------------------------------------------------
+const getAllNotifications = s.route(
+  adminApiContracts.dashboard.getAllNotifications,
+  {
+    middleware: [passport.authenticate("jwt", { session: false })],
+    handler: async () => {
+      try {
+        const notifications = await fetchUnseenNotifications();
+
+        return {
+          status: 200,
+          body: notifications,
+        };
+      } catch (error) {
+        return {
+          status: 400,
+          body: {
+            message: "Failed to fetch notifications",
+            details: toErrorDetails(error),
+          },
+        };
+      }
+    },
+  },
+);
+const dismissNotification = s.route(
+  adminApiContracts.dashboard.dismissNotification,
+  {
+    middleware: [passport.authenticate("jwt", { session: false })],
+    handler: async ({ params: { notificationId } }) => {
+      try {
+        await dismissQuarantineNotification(notificationId);
+
+        return {
+          status: 200,
+          body: { message: "Updated successfully" },
+        };
+      } catch (error) {
+        return {
+          status: 400,
+          body: {
+            message: "Error dismissing notification",
+            details: toErrorDetails(error),
+          },
+        };
+      }
+    },
+  },
+);
 // ============================================================================
 // report
 // ============================================================================
 // controllers/report.js          → apiRouter.use('/report', reportRouter)
-//	GET	  /	                        welcome stub
 //	GET	  /getall	                  get all reports (admin only)
 //	POST	/create	                  create a report
 //	DEL	  /delete/:reportId	        delete a report by id (admin only)
@@ -42,61 +106,12 @@ import { prisma } from "src/prisma/client";
 //   - POST /reset                   reset thresholds to defaults
 // ----------------------------------------------------------------------------
 
-const s = initServer();
-
-export const adminRouter = s.router(adminApiContracts, {
-  getThreshold: async ({ params }) => {
-    const threshold = await prisma.threshhold.findUnique({
-      where: { id: params.id },
-    });
-
-    if (!threshold) {
-      return { status: 404, body: { message: "Threshold not found" } };
-    }
-
-    return { status: 200, body: threshold };
+export default {
+  schema: adminApiContracts,
+  router: {
+    dashboard: {
+      getAllNotifications,
+      dismiss: dismissNotification,
+    },
   },
-
-  updateThreshold: async ({ params }) => {
-    const exists = await prisma.threshhold.findUnique({
-      where: { id: params.id },
-    });
-
-    if (!exists) {
-      return {
-        status: 400,
-        body: { message: "Threshold doesn't exist, create it first" },
-      };
-    }
-
-    const updated = await prisma.threshhold.update({
-      where: { id: params.id },
-      data: { number: params.num },
-    });
-
-    return {
-      status: 200,
-      body: {
-        message: "Threshold successfully updated",
-        updatedThresh: updated,
-      },
-    };
-  },
-
-  createThreshold: async ({ params }) => {
-    // Basic logic to prevent duplicates as seen in your JS
-    const count = await prisma.threshhold.count();
-    if (count > 0) {
-      return { status: 400, body: { message: "A threshold already exists" } };
-    }
-
-    const newThresh = await prisma.threshhold.create({
-      data: { number: params.num },
-    });
-
-    return {
-      status: 201,
-      body: { message: "Threshold successfully created", newThresh },
-    };
-  },
-});
+} as unknown as Handlers;

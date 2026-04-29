@@ -1,19 +1,25 @@
 import { prisma } from "src/prisma/client";
 import { Prisma } from "#prisma/client";
-
+// ============================================================================
 // auth
+// ============================================================================
+/**
+ * Primitive auth: checks if userType is "SUPER_ADMIN" or "ADMIN"
+ * @param u: userId
+ * @returns: boolean
+ */
 const authorizeUser = async (u: string) => {
   const foundUser = await prisma.user.findUnique({
     where: { id: u },
   });
-  const isUserAdmin =
+  const isAdmin =
     foundUser?.userType === "SUPER_ADMIN" || foundUser?.userType === "ADMIN";
 
-  return isUserAdmin;
+  return isAdmin;
 };
-// ----------------------------------------------------------------------------
+// ============================================================================
 // dashboard
-// ----------------------------------------------------------------------------
+// ============================================================================
 const fetchUnseenNotifications = async () => {
   return await prisma.quarantine_Notifications.findMany({
     where: {
@@ -28,7 +34,9 @@ const dismissQuarantineNotification = async (id: number) => {
     data: { seen: true },
   });
 };
+// ============================================================================
 // report
+// ============================================================================
 const fetchAllReports = async () => {
   return await prisma.report.findMany();
 };
@@ -50,24 +58,11 @@ const deleteReportById = async (id: number) => {
     where: { id },
   });
 };
-// ----------------------------------------------------------------------------
+// ============================================================================
 // threshhold
-// ----------------------------------------------------------------------------
-const fetchBanThreshold = async () => {
-  return await prisma.threshhold.findUnique({
-    where: { id: 1 },
-  });
-};
-// ----------------------------------------------------------------------------
-const updateBanThresholdValue = async (newThreshold: number) => {
-  return await prisma.threshhold.update({
-    where: { id: 1 },
-    data: { number: newThreshold },
-  });
-};
-// ----------------------------------------------------------------------------
+// ============================================================================
 /**
- * Sets all ban thresholds in case the table is unseeded
+ * Sets all ban thresholds in case the Threshhold table is unseeded
  * @param value: the threshold
  * @returns
  */
@@ -80,6 +75,19 @@ const seedInitialThresholds = async (
       { number: value }, //ID 2
       { number: value }, //ID 3
     ],
+  });
+};
+// ----------------------------------------------------------------------------
+const fetchBanThreshold = async () => {
+  return await prisma.threshhold.findUnique({
+    where: { id: 1 },
+  });
+};
+// ----------------------------------------------------------------------------
+const updateBanThreshold = async (newThreshold: number) => {
+  return await prisma.threshhold.update({
+    where: { id: 1 },
+    data: { number: newThreshold },
   });
 };
 // ----------------------------------------------------------------------------
@@ -121,7 +129,7 @@ export {
   deleteReportById,
   //threshhold
   fetchBanThreshold,
-  updateBanThresholdValue,
+  updateBanThreshold,
   seedInitialThresholds,
   fetchFalseFlagThreshold,
   updateFalseFlagThresholdValue,

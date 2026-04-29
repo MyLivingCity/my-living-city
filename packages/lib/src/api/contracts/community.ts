@@ -152,356 +152,412 @@ const SegmentPriceSchema = z.object({
   weeklyPrice: z.string().nullable(),
 });
 
+export const commentApiContracts = c.router(
+  {
+    get: {
+      method: "GET",
+      path: "/",
+      responses: { 200: RouteResponseSchema, 400: ErrorResponseSchema },
+    },
+    getAll: {
+      method: "GET",
+      path: "/getall",
+      responses: { 200: z.array(CommentSchema), 400: ErrorResponseSchema },
+    },
+    getAllByIdeaId: {
+      method: "GET",
+      path: "/getall/:ideaId",
+      pathParams: z.object({ ideaId: z.string() }),
+      responses: { 200: z.array(CommentSchema), 400: ErrorResponseSchema },
+    },
+    create: {
+      method: "POST",
+      path: "/create/:ideaId",
+      pathParams: z.object({ ideaId: z.string() }),
+      body: AnySchema,
+      responses: {
+        200: CommentSchema,
+        400: ErrorResponseSchema,
+        403: MessageResponseSchema,
+      },
+    },
+    similarComments: {
+      method: "POST",
+      path: "/similarcomments/:ideaId",
+      pathParams: z.object({ ideaId: z.string() }),
+      body: AnySchema,
+      responses: {
+        200: SimilarCommentsResponseSchema,
+        400: ErrorResponseSchema,
+      },
+    },
+    updateState: {
+      method: "PUT",
+      path: "/updateState/:commentId",
+      pathParams: z.object({ commentId: z.string() }),
+      body: AnySchema,
+      responses: {
+        200: z.object({ message: z.string(), idea: CommentSchema }),
+        400: ErrorResponseSchema,
+      },
+    },
+    updateNotificationState: {
+      method: "PUT",
+      path: "/updateNotificationState/:commentId",
+      pathParams: z.object({ commentId: z.string() }),
+      body: AnySchema,
+      responses: {
+        200: z.object({ message: z.string(), idea: CommentSchema }),
+        400: ErrorResponseSchema,
+      },
+    },
+    update: {
+      method: "PUT",
+      path: "/update/:commentId",
+      pathParams: z.object({ commentId: z.string() }),
+      body: AnySchema,
+      responses: {
+        200: z.object({ message: z.string(), comment: CommentSchema }),
+        400: ErrorResponseSchema,
+        401: MessageResponseSchema,
+      },
+    },
+    delete: {
+      method: "DELETE",
+      path: "/delete/:commentId",
+      pathParams: z.object({ commentId: z.string() }),
+      body: AnySchema,
+      responses: {
+        200: z.object({ message: z.string(), deletedComment: CommentSchema }),
+        400: ErrorResponseSchema,
+        401: MessageResponseSchema,
+      },
+    },
+    getAggregate: {
+      method: "GET",
+      path: "/aggregate/:ideaId",
+      pathParams: z.object({ ideaId: z.string() }),
+      responses: {
+        200: z.object({ count: z.number() }),
+        400: ErrorResponseSchema,
+      },
+    },
+    getByUser: {
+      method: "GET",
+      path: "/user/:userId",
+      pathParams: z.object({ userId: z.string() }),
+      responses: { 200: z.array(CommentSchema), 400: ErrorResponseSchema },
+    },
+  },
+  {
+    pathPrefix: "/comment",
+  },
+);
+
+export const commentInteractionApiContracts = c.router(
+  {
+    commentTest: {
+      method: "GET",
+      path: "/comment/test",
+      responses: { 200: z.string(), 400: ErrorResponseSchema },
+    },
+    commentLikeGetAll: {
+      method: "GET",
+      path: "/comment/like/getall",
+      responses: {
+        200: z.array(LikeDislikeSchema),
+        400: ErrorResponseSchema,
+      },
+    },
+    commentDislikeGetAll: {
+      method: "GET",
+      path: "/comment/dislike/getall",
+      responses: {
+        200: z.array(LikeDislikeSchema),
+        400: ErrorResponseSchema,
+      },
+    },
+    commentLike: {
+      method: "POST",
+      path: "/comment/like/:commentId",
+      pathParams: z.object({ commentId: z.string() }),
+      body: AnySchema,
+      responses: {
+        201: LikeDislikeSchema.nullable(),
+        400: ErrorResponseSchema,
+      },
+    },
+    commentDislike: {
+      method: "POST",
+      path: "/comment/dislike/:commentId",
+      pathParams: z.object({ commentId: z.string() }),
+      body: AnySchema,
+      responses: {
+        201: LikeDislikeSchema.nullable(),
+        400: ErrorResponseSchema,
+      },
+    },
+  },
+  {
+    pathPrefix: "/interact",
+  },
+);
+
+export const advertisementApiContracts = c.router(
+  {
+    create: {
+      method: "POST",
+      path: "/create",
+      contentType: "multipart/form-data",
+      body: AnySchema,
+      responses: {
+        200: AdvertisementSchema,
+        400: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+      },
+    },
+    getAll: {
+      method: "GET",
+      path: "/getAll",
+      responses: {
+        200: z.array(AdvertisementSchema),
+        400: ErrorResponseSchema,
+        404: z.string(),
+      },
+    },
+    getAllPublished: {
+      method: "GET",
+      path: "/getAllPublished",
+      responses: {
+        200: z.array(AdvertisementSchema),
+        400: ErrorResponseSchema,
+        404: z.string(),
+      },
+    },
+    getAllUser: {
+      method: "GET",
+      path: "/getAllUser/:userId",
+      pathParams: z.object({ userId: z.string() }),
+      responses: {
+        200: z.array(AdvertisementSchema),
+        204: z.string(),
+        400: ErrorResponseSchema,
+      },
+    },
+    getById: {
+      method: "GET",
+      path: "/get/:adsId",
+      pathParams: z.object({ adsId: z.string() }),
+      responses: {
+        200: AdvertisementSchema,
+        204: z.string(),
+        400: ErrorResponseSchema,
+      },
+    },
+    getAdsByOwner: {
+      method: "GET",
+      path: "/getAdsByOwner/:ownerId",
+      pathParams: z.object({ ownerId: z.string() }),
+      responses: {
+        200: z.array(AdvertisementSchema),
+        400: ErrorResponseSchema,
+      },
+    },
+    update: {
+      method: "PUT",
+      path: "/update/:id",
+      pathParams: z.object({ id: z.string() }),
+      contentType: "multipart/form-data",
+      body: AnySchema,
+      responses: {
+        200: AdvertisementSchema,
+        400: ErrorResponseWithRequestBodySchema,
+        401: MessageResponseSchema,
+        403: ErrorResponseSchema,
+      },
+    },
+    delete: {
+      method: "DELETE",
+      path: "/delete/:id",
+      pathParams: z.object({ id: z.string() }),
+      body: AnySchema,
+      responses: {
+        200: AdvertisementDeleteResponseSchema,
+        400: ErrorResponseSchema,
+        401: MessageResponseSchema,
+        403: ErrorResponseSchema,
+        404: z.string(),
+      },
+    },
+    getPrices: {
+      method: "GET",
+      path: "/getPrices",
+      responses: { 200: z.array(AdPriceSchema), 400: ErrorResponseSchema },
+    },
+    addPrice: {
+      method: "POST",
+      path: "/addPrice",
+      body: AnySchema,
+      responses: {
+        201: AdPriceSchema,
+        400: z.object({
+          message: z.string(),
+          details: z.string().optional(),
+        }),
+      },
+    },
+    updatePrice: {
+      method: "PUT",
+      path: "/updatePrice/:id",
+      pathParams: z.object({ id: z.string() }),
+      body: AnySchema,
+      responses: {
+        200: AdPriceSchema,
+        400: z.object({
+          message: z.string(),
+          details: z.string().optional(),
+        }),
+      },
+    },
+    deletePrice: {
+      method: "DELETE",
+      path: "/deletePrice/:id",
+      pathParams: z.object({ id: z.string() }),
+      body: AnySchema,
+      responses: {
+        204: z.undefined(),
+        400: z.object({
+          message: z.string(),
+          details: z.string().optional(),
+        }),
+      },
+    },
+    pricing: {
+      method: "GET",
+      path: "/pricing",
+      responses: {
+        200: z.array(SegmentPricingSchema),
+        400: MessageResponseSchema,
+      },
+    },
+    getSegmentPrices: {
+      method: "GET",
+      path: "/getSegmentPrices",
+      responses: {
+        200: z.array(SegmentPriceSchema),
+        400: ErrorResponseSchema,
+      },
+    },
+    updateSegmentPrice: {
+      method: "PUT",
+      path: "/updateSegmentPrice/:segmentId",
+      pathParams: z.object({ segmentId: z.string() }),
+      body: AnySchema,
+      responses: {
+        200: SegmentPriceSchema,
+        400: ErrorResponseSchema,
+        403: MessageResponseSchema,
+      },
+    },
+    deleteSegmentPrice: {
+      method: "DELETE",
+      path: "/deleteSegmentPrice/:segmentId",
+      pathParams: z.object({ segmentId: z.string() }),
+      body: AnySchema,
+      responses: {
+        200: MessageResponseSchema,
+        400: ErrorResponseSchema,
+        403: MessageResponseSchema,
+      },
+    },
+  },
+  {
+    pathPrefix: "/advertisement",
+  },
+);
+
 export const communityApiContracts = c.router({
-  commentRoot: {
-    method: "GET",
-    path: "/comment/",
-    responses: { 200: RouteResponseSchema, 400: ErrorResponseSchema },
-  },
-  commentGetAll: {
-    method: "GET",
-    path: "/comment/getall",
-    responses: { 200: z.array(CommentSchema), 400: ErrorResponseSchema },
-  },
-  commentGetAllByIdeaId: {
-    method: "GET",
-    path: "/comment/getall/:ideaId",
-    pathParams: z.object({ ideaId: z.string() }),
-    responses: { 200: z.array(CommentSchema), 400: ErrorResponseSchema },
-  },
-  commentCreate: {
-    method: "POST",
-    path: "/comment/create/:ideaId",
-    pathParams: z.object({ ideaId: z.string() }),
-    body: AnySchema,
-    responses: {
-      200: CommentSchema,
-      400: ErrorResponseSchema,
-      403: MessageResponseSchema,
+  comment: commentApiContracts,
+  interact: commentInteractionApiContracts,
+  advertisement: advertisementApiContracts,
+  community: c.router(
+    {
+      createCollaborator: {
+        method: "POST",
+        path: "/create/collaborator",
+        body: AnySchema,
+        responses: { 200: ProposalMembershipSchema, 400: ErrorResponseSchema },
+      },
+      getCollaborators: {
+        method: "GET",
+        path: "/collaborators/getAll/:proposalId",
+        pathParams: z.object({ proposalId: z.string() }),
+        responses: {
+          200: z.array(ProposalMembershipSchema),
+          400: ErrorResponseSchema,
+        },
+      },
+      createVolunteer: {
+        method: "POST",
+        path: "/create/volunteer",
+        body: AnySchema,
+        responses: { 200: ProposalMembershipSchema, 400: ErrorResponseSchema },
+      },
+      getVolunteers: {
+        method: "GET",
+        path: "/volunteers/getAll/:proposalId",
+        pathParams: z.object({ proposalId: z.string() }),
+        responses: {
+          200: z.array(ProposalMembershipSchema),
+          400: ErrorResponseSchema,
+        },
+      },
+      createDonor: {
+        method: "POST",
+        path: "/create/donor",
+        body: AnySchema,
+        responses: { 200: ProposalMembershipSchema, 400: ErrorResponseSchema },
+      },
+      getDonors: {
+        method: "GET",
+        path: "/donors/getAll/:proposalId",
+        pathParams: z.object({ proposalId: z.string() }),
+        responses: {
+          200: z.array(ProposalMembershipSchema),
+          400: ErrorResponseSchema,
+        },
+      },
     },
-  },
-  commentSimilarComments: {
-    method: "POST",
-    path: "/comment/similarcomments/:ideaId",
-    pathParams: z.object({ ideaId: z.string() }),
-    body: AnySchema,
-    responses: { 200: SimilarCommentsResponseSchema, 400: ErrorResponseSchema },
-  },
-  commentUpdateState: {
-    method: "PUT",
-    path: "/comment/updateState/:commentId",
-    pathParams: z.object({ commentId: z.string() }),
-    body: AnySchema,
-    responses: {
-      200: z.object({ message: z.string(), idea: CommentSchema }),
-      400: ErrorResponseSchema,
+    {
+      pathPrefix: "/community",
     },
-  },
-  commentUpdateNotificationState: {
-    method: "PUT",
-    path: "/comment/updateNotificationState/:commentId",
-    pathParams: z.object({ commentId: z.string() }),
-    body: AnySchema,
-    responses: {
-      200: z.object({ message: z.string(), idea: CommentSchema }),
-      400: ErrorResponseSchema,
+  ),
+  category: c.router(
+    {
+      get: {
+        method: "GET",
+        path: "/",
+        responses: { 200: RouteResponseSchema, 400: ErrorResponseSchema },
+      },
+      getAll: {
+        method: "GET",
+        path: "/getall",
+        responses: { 200: z.array(CategorySchema), 400: ErrorResponseSchema },
+      },
+      getById: {
+        method: "GET",
+        path: "/get/:categoryId",
+        pathParams: z.object({ categoryId: z.string() }),
+        responses: { 200: CategorySchema, 400: ErrorResponseSchema },
+      },
     },
-  },
-  commentUpdate: {
-    method: "PUT",
-    path: "/comment/update/:commentId",
-    pathParams: z.object({ commentId: z.string() }),
-    body: AnySchema,
-    responses: {
-      200: z.object({ message: z.string(), comment: CommentSchema }),
-      400: ErrorResponseSchema,
-      401: MessageResponseSchema,
+    {
+      pathPrefix: "/category",
     },
-  },
-  commentDelete: {
-    method: "DELETE",
-    path: "/comment/delete/:commentId",
-    pathParams: z.object({ commentId: z.string() }),
-    body: AnySchema,
-    responses: {
-      200: z.object({ message: z.string(), deletedComment: CommentSchema }),
-      400: ErrorResponseSchema,
-      401: MessageResponseSchema,
-    },
-  },
-  commentAggregate: {
-    method: "GET",
-    path: "/comment/aggregate/:ideaId",
-    pathParams: z.object({ ideaId: z.string() }),
-    responses: {
-      200: z.object({ count: z.number() }),
-      400: ErrorResponseSchema,
-    },
-  },
-  commentByUser: {
-    method: "GET",
-    path: "/comment/user/:userId",
-    pathParams: z.object({ userId: z.string() }),
-    responses: { 200: z.array(CommentSchema), 400: ErrorResponseSchema },
-  },
-  commentInteractTest: {
-    method: "GET",
-    path: "/interact/comment/test",
-    responses: { 200: z.string(), 400: ErrorResponseSchema },
-  },
-  commentInteractLikeGetAll: {
-    method: "GET",
-    path: "/interact/comment/like/getall",
-    responses: { 200: z.array(LikeDislikeSchema), 400: ErrorResponseSchema },
-  },
-  commentInteractDislikeGetAll: {
-    method: "GET",
-    path: "/interact/comment/dislike/getall",
-    responses: { 200: z.array(LikeDislikeSchema), 400: ErrorResponseSchema },
-  },
-  commentInteractLike: {
-    method: "POST",
-    path: "/interact/comment/like/:commentId",
-    pathParams: z.object({ commentId: z.string() }),
-    body: AnySchema,
-    responses: { 201: LikeDislikeSchema.nullable(), 400: ErrorResponseSchema },
-  },
-  commentInteractDislike: {
-    method: "POST",
-    path: "/interact/comment/dislike/:commentId",
-    pathParams: z.object({ commentId: z.string() }),
-    body: AnySchema,
-    responses: { 201: LikeDislikeSchema.nullable(), 400: ErrorResponseSchema },
-  },
-  communityCreateCollaborator: {
-    method: "POST",
-    path: "/community/create/collaborator",
-    body: AnySchema,
-    responses: { 200: ProposalMembershipSchema, 400: ErrorResponseSchema },
-  },
-  communityGetCollaborators: {
-    method: "GET",
-    path: "/community/collaborators/getAll/:proposalId",
-    pathParams: z.object({ proposalId: z.string() }),
-    responses: {
-      200: z.array(ProposalMembershipSchema),
-      400: ErrorResponseSchema,
-    },
-  },
-  communityCreateVolunteer: {
-    method: "POST",
-    path: "/community/create/volunteer",
-    body: AnySchema,
-    responses: { 200: ProposalMembershipSchema, 400: ErrorResponseSchema },
-  },
-  communityGetVolunteers: {
-    method: "GET",
-    path: "/community/volunteers/getAll/:proposalId",
-    pathParams: z.object({ proposalId: z.string() }),
-    responses: {
-      200: z.array(ProposalMembershipSchema),
-      400: ErrorResponseSchema,
-    },
-  },
-  communityCreateDonor: {
-    method: "POST",
-    path: "/community/create/donor",
-    body: AnySchema,
-    responses: { 200: ProposalMembershipSchema, 400: ErrorResponseSchema },
-  },
-  communityGetDonors: {
-    method: "GET",
-    path: "/community/donors/getAll/:proposalId",
-    pathParams: z.object({ proposalId: z.string() }),
-    responses: {
-      200: z.array(ProposalMembershipSchema),
-      400: ErrorResponseSchema,
-    },
-  },
+  ),
   blogRoot: {
     method: "GET",
     path: "/blog/",
     responses: { 200: RouteResponseSchema, 400: ErrorResponseSchema },
-  },
-  categoryRoot: {
-    method: "GET",
-    path: "/category/",
-    responses: { 200: RouteResponseSchema, 400: ErrorResponseSchema },
-  },
-  categoryGetAll: {
-    method: "GET",
-    path: "/category/getall",
-    responses: { 200: z.array(CategorySchema), 400: ErrorResponseSchema },
-  },
-  categoryGetById: {
-    method: "GET",
-    path: "/category/get/:categoryId",
-    pathParams: z.object({ categoryId: z.string() }),
-    responses: { 200: CategorySchema, 400: ErrorResponseSchema },
-  },
-  advertisementCreate: {
-    method: "POST",
-    path: "/advertisement/create",
-    contentType: "multipart/form-data",
-    body: AnySchema,
-    responses: {
-      200: AdvertisementSchema,
-      400: ErrorResponseSchema,
-      403: ErrorResponseSchema,
-    },
-  },
-  advertisementGetAll: {
-    method: "GET",
-    path: "/advertisement/getAll",
-    responses: {
-      200: z.array(AdvertisementSchema),
-      400: ErrorResponseSchema,
-      404: z.string(),
-    },
-  },
-  advertisementGetAllPublished: {
-    method: "GET",
-    path: "/advertisement/getAllPublished",
-    responses: {
-      200: z.array(AdvertisementSchema),
-      400: ErrorResponseSchema,
-      404: z.string(),
-    },
-  },
-  advertisementGetAllUser: {
-    method: "GET",
-    path: "/advertisement/getAllUser/:userId",
-    pathParams: z.object({ userId: z.string() }),
-    responses: {
-      200: z.array(AdvertisementSchema),
-      204: z.string(),
-      400: ErrorResponseSchema,
-    },
-  },
-  advertisementGetById: {
-    method: "GET",
-    path: "/advertisement/get/:adsId",
-    pathParams: z.object({ adsId: z.string() }),
-    responses: {
-      200: AdvertisementSchema,
-      204: z.string(),
-      400: ErrorResponseSchema,
-    },
-  },
-  advertisementGetAdsByOwner: {
-    method: "GET",
-    path: "/advertisement/getAdsByOwner/:ownerId",
-    pathParams: z.object({ ownerId: z.string() }),
-    responses: {
-      200: z.array(AdvertisementSchema),
-      400: ErrorResponseSchema,
-    },
-  },
-  advertisementUpdate: {
-    method: "PUT",
-    path: "/advertisement/update/:advertisementId",
-    pathParams: z.object({ advertisementId: z.string() }),
-    contentType: "multipart/form-data",
-    body: AnySchema,
-    responses: {
-      200: AdvertisementSchema,
-      400: ErrorResponseWithRequestBodySchema,
-      401: MessageResponseSchema,
-      403: ErrorResponseSchema,
-    },
-  },
-  advertisementDelete: {
-    method: "DELETE",
-    path: "/advertisement/delete/:advertisementId",
-    pathParams: z.object({ advertisementId: z.string() }),
-    body: AnySchema,
-    responses: {
-      200: AdvertisementDeleteResponseSchema,
-      400: ErrorResponseSchema,
-      401: MessageResponseSchema,
-      403: ErrorResponseSchema,
-      404: z.string(),
-    },
-  },
-  advertisementGetPrices: {
-    method: "GET",
-    path: "/advertisement/getPrices",
-    responses: { 200: z.array(AdPriceSchema), 400: ErrorResponseSchema },
-  },
-  advertisementAddPrice: {
-    method: "POST",
-    path: "/advertisement/addPrice",
-    body: AnySchema,
-    responses: {
-      201: AdPriceSchema,
-      400: z.object({
-        message: z.string(),
-        details: z.string().optional(),
-      }),
-    },
-  },
-  advertisementUpdatePrice: {
-    method: "PUT",
-    path: "/advertisement/updatePrice/:id",
-    pathParams: z.object({ id: z.string() }),
-    body: AnySchema,
-    responses: {
-      200: AdPriceSchema,
-      400: z.object({
-        message: z.string(),
-        details: z.string().optional(),
-      }),
-    },
-  },
-  advertisementDeletePrice: {
-    method: "DELETE",
-    path: "/advertisement/deletePrice/:id",
-    pathParams: z.object({ id: z.string() }),
-    body: AnySchema,
-    responses: {
-      204: z.undefined(),
-      400: z.object({
-        message: z.string(),
-        details: z.string().optional(),
-      }),
-    },
-  },
-  advertisementPricing: {
-    method: "GET",
-    path: "/advertisement/pricing",
-    responses: {
-      200: z.array(SegmentPricingSchema),
-      400: MessageResponseSchema,
-    },
-  },
-  advertisementGetSegmentPrices: {
-    method: "GET",
-    path: "/advertisement/getSegmentPrices",
-    responses: {
-      200: z.array(SegmentPriceSchema),
-      400: ErrorResponseSchema,
-    },
-  },
-  advertisementUpdateSegmentPrice: {
-    method: "PUT",
-    path: "/advertisement/updateSegmentPrice/:segmentId",
-    pathParams: z.object({ segmentId: z.string() }),
-    body: AnySchema,
-    responses: {
-      200: SegmentPriceSchema,
-      400: ErrorResponseSchema,
-      403: MessageResponseSchema,
-    },
-  },
-  advertisementDeleteSegmentPrice: {
-    method: "DELETE",
-    path: "/advertisement/deleteSegmentPrice/:segmentId",
-    pathParams: z.object({ segmentId: z.string() }),
-    body: AnySchema,
-    responses: {
-      200: MessageResponseSchema,
-      400: ErrorResponseSchema,
-      403: MessageResponseSchema,
-    },
   },
 });

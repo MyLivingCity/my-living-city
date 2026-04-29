@@ -7,7 +7,7 @@ const funnelPrompt =
 
 const openai = new OpenAI({
   baseURL: "https://api.deepinfra.com/v1/openai",
-  apiKey: env.DEEPINFRA_API_KEY,
+  apiKey: env.DEEPINFRA_API_KEY || "",
   dangerouslyAllowBrowser: true,
 });
 

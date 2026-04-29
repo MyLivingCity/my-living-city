@@ -8,6 +8,7 @@ import userSegmentApiHandlers from "./server/features/userSegments/handler";
 import moderationApiHandlers from "./server/features/moderation/index";
 import subgroupApiHandlers from "./server/features/subgroups/handler";
 import communityApiHandlers from "./server/features/community/handler";
+import adminApiHandlers from "./server/features/admin/handler";
 import { addEndpoints } from "./server";
 import { initStrategies } from "./lib/auth/strategy";
 
@@ -36,6 +37,7 @@ addEndpoints(app, userSegmentApiHandlers);
 addEndpoints(app, moderationApiHandlers);
 addEndpoints(app, subgroupApiHandlers);
 addEndpoints(app, communityApiHandlers);
+addEndpoints(app, adminApiHandlers);
 
 const port = process.env["port"] || 3001;
 app.listen(port, () => {

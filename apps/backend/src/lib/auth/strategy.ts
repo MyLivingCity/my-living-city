@@ -4,6 +4,19 @@ import { env } from "../env";
 import { Strategy as LocalStrategy } from "passport-local";
 import { argon2ConfirmHash } from "../helpers";
 import passport from "passport";
+import {
+  UserExistsError,
+  validateUserData,
+  ValidationError,
+  verifyUserExists,
+} from "./validations";
+import {
+  createUser,
+  processAdminAccount,
+  processBusinessAccount,
+  processResidentialAccount,
+  processUserSegments,
+} from "./utils";
 
 export function initStrategies() {
   passport.use(
@@ -113,6 +126,63 @@ export function initStrategies() {
           return done(null, foundUser);
         } catch (error) {
           done(error);
+        } finally {
+          await prisma.$disconnect();
+        }
+      },
+    ),
+  );
+
+  passport.use(
+    "signup",
+    new LocalStrategy(
+      {
+        usernameField: "email",
+        passwordField: "password",
+        passReqToCallback: true,
+      },
+      async (req, email, password, done) => {
+        try {
+          // Validate basic user data
+          const validatedData = await validateUserData(
+            email,
+            password,
+            req.body.confirmPassword,
+          );
+
+          // Check if user exists
+          await verifyUserExists(validatedData.email);
+
+          // Process account based on type
+          let userData = {
+            ...req.body,
+            ...validatedData,
+          };
+
+          // Process different account types
+          userData = await processAdminAccount(userData);
+          userData = await processBusinessAccount(userData);
+          userData = processResidentialAccount(userData);
+          userData = processUserSegments(userData);
+
+          // Create user in database
+          const createdUser = await createUser(userData);
+
+          // TODO
+          // if (!createdUser.verified) {
+          //   await sendEmailVerification(createdUser);
+          // }
+
+          return done(null, createdUser);
+        } catch (error) {
+          if (
+            error instanceof ValidationError ||
+            error instanceof UserExistsError
+          ) {
+            return done(null, false, { message: error.message });
+          }
+          console.error("Signup error:", error);
+          return done(error);
         } finally {
           await prisma.$disconnect();
         }

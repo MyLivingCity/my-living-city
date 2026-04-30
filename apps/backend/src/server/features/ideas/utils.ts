@@ -1,8 +1,12 @@
 import { UserSchema } from "@mlc/lib/api";
+import { Prisma } from "#prisma/client";
 import { prisma } from "src/prisma/client";
+import z from "zod";
+
+type UserSchemaType = z.infer<typeof UserSchema>;
 
 export async function getAggregateIdeaWithUserSegmentJoins(
-  userId: UserSchema.shape.id,
+  userId: UserSchemaType["id"],
   limitSql: string,
 ) {
   return await prisma.$queryRaw<Record<string, unknown>[]>(Prisma.sql`

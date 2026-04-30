@@ -3,7 +3,10 @@ import { Prisma } from "#prisma/client";
 import { prisma } from "src/prisma/client";
 import { initServer } from "@ts-rest/express";
 import { createHandlers } from "src/server";
-import { getAggregateIdeaWithUserSegmentJoins } from "./utils";
+import {
+  checkIdeaThresholds,
+  getAggregateIdeaWithUserSegmentJoins,
+} from "./utils";
 import { serializeForContract, toErrorDetails } from "src/server/utils";
 
 const s = initServer();
@@ -73,50 +76,6 @@ const imagePathsToS3Url = async (
   );
 };
 
-const envProposalRatingCount = process.env["PROPOSAL_RATING_COUNT"] || "25";
-const envProposalRatingAvg = process.env["PROPOSAL_RATING_AVG"] || "1";
-const envProjectRatingCount = process.env["PROJECT_RATING_COUNT"] || "50";
-const envProjectRatingAvg = process.env["PROJECT_RATING_AVG"] || "1.5";
-
-// Legacy controller uses parseInt here, so keep the same threshold semantics.
-const PROPOSAL_RATING_COUNT = parseInt(envProposalRatingCount, 10);
-const PROPOSAL_RATING_AVG = parseInt(envProposalRatingAvg, 10);
-const PROJECT_RATING_COUNT = parseInt(envProjectRatingCount, 10);
-const PROJECT_RATING_AVG = parseInt(envProjectRatingAvg, 10);
-
-const checkIdeaThresholds = async (ideaId: number) => {
-  const foundIdea = await prisma.idea.findUnique({ where: { id: ideaId } });
-
-  if (!foundIdea) {
-    throw new Error(`The idea with that listed ID (${ideaId}) does not exist.`);
-  }
-
-  const ratingAggregations = await prisma.ideaRating.aggregate({
-    where: { ideaId },
-    _avg: {
-      rating: true,
-    },
-    _count: true,
-  });
-
-  const ratingAvg = ratingAggregations._avg.rating || 0;
-  const ratingCount = ratingAggregations._count || 0;
-
-  return {
-    triggerProposalAdvancement:
-      PROPOSAL_RATING_AVG <= ratingAvg &&
-      PROPOSAL_RATING_COUNT <= ratingCount &&
-      foundIdea.state === "IDEA",
-    triggerProjectAdvancement:
-      PROJECT_RATING_AVG <= ratingAvg &&
-      PROJECT_RATING_COUNT <= ratingCount &&
-      (foundIdea.state === "IDEA" || foundIdea.state === "PROPOSAL"),
-    isChampionable:
-      foundIdea.championId == null &&
-      PROPOSAL_RATING_AVG <= ratingAvg &&
-      PROPOSAL_RATING_COUNT <= ratingCount,
-  };
-};
 
 const getAll = s.route(ideaApiContracts.getAll, {
   handler: async () => {

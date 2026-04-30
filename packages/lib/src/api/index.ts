@@ -7,3 +7,4 @@ export * from "./contracts/moderation";
 export * from "./contracts/userSegments";
 export * from "./contracts/community";
 export * from "./contracts/details";
+export * from "./contracts/ratings";

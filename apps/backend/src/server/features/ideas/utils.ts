@@ -3,6 +3,55 @@ import { Prisma } from "#prisma/client";
 import { prisma } from "src/prisma/client";
 import z from "zod";
 
+const PROPOSAL_RATING_COUNT = parseInt(
+  process.env["PROPOSAL_RATING_COUNT"] || "25",
+  10,
+);
+const PROPOSAL_RATING_AVG = parseInt(
+  process.env["PROPOSAL_RATING_AVG"] || "1",
+  10,
+);
+const PROJECT_RATING_COUNT = parseInt(
+  process.env["PROJECT_RATING_COUNT"] || "50",
+  10,
+);
+const PROJECT_RATING_AVG = parseInt(
+  process.env["PROJECT_RATING_AVG"] || "1.5",
+  10,
+);
+
+export const checkIdeaThresholds = async (ideaId: number) => {
+  const foundIdea = await prisma.idea.findUnique({ where: { id: ideaId } });
+
+  if (!foundIdea) {
+    throw new Error(`The idea with that listed ID (${ideaId}) does not exist.`);
+  }
+
+  const ratingAggregations = await prisma.ideaRating.aggregate({
+    where: { ideaId },
+    _avg: { rating: true },
+    _count: true,
+  });
+
+  const ratingAvg = ratingAggregations._avg.rating || 0;
+  const ratingCount = ratingAggregations._count || 0;
+
+  return {
+    triggerProposalAdvancement:
+      PROPOSAL_RATING_AVG <= ratingAvg &&
+      PROPOSAL_RATING_COUNT <= ratingCount &&
+      foundIdea.state === "IDEA",
+    triggerProjectAdvancement:
+      PROJECT_RATING_AVG <= ratingAvg &&
+      PROJECT_RATING_COUNT <= ratingCount &&
+      (foundIdea.state === "IDEA" || foundIdea.state === "PROPOSAL"),
+    isChampionable:
+      foundIdea.championId == null &&
+      PROPOSAL_RATING_AVG <= ratingAvg &&
+      PROPOSAL_RATING_COUNT <= ratingCount,
+  };
+};
+
 type UserSchemaType = z.infer<typeof UserSchema>;
 
 export async function getAggregateIdeaWithUserSegmentJoins(

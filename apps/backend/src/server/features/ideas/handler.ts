@@ -8,8 +8,9 @@ import { serializeForContract, toErrorDetails } from "src/server/utils";
 
 const s = initServer();
 
+const IDEA_IMAGE_FOLDER = "idea-proposal";
+
 // TODO
-// const IDEA_IMAGE_FOLDER = "idea-proposal";
 // const SIGNED_URL_EXPIRY_SECONDS = 60;
 // const VALID_IMAGE_FOLDERS = new Set([
 //   "advertisement",
@@ -33,7 +34,7 @@ const s = initServer();
 //       })
 //     : null;
 
-const accessImage = async (imageFolder: string, imageKey: string) => {
+const accessImage = async (_: string, imageKey: string) => {
   return imageKey;
   // TODO
   // if (!VALID_IMAGE_FOLDERS.has(imageFolder)) {
@@ -454,16 +455,22 @@ const getAllWithAggregations = s.route(
           return newRow;
         });
 
-        return res.status(200).json(finalResults);
+        return {
+          status: 200,
+          body: finalResults,
+        };
       } catch (error) {
         console.error(error);
-        return res.status(400).json({
-          message: "An error occurred while trying to fetch all ideas",
-          details: {
-            errorMessage: error.message,
-            errorStack: error.stack,
+        return {
+          status: 400,
+          body: {
+            message: "An error occurred while trying to fetch all ideas",
+            details: {
+              errorMessage: error.message,
+              errorStack: error.stack,
+            },
           },
-        });
+        };
       } finally {
         await prisma.$disconnect();
       }

@@ -1,3 +1,4 @@
+import { serializeForContract } from "src/server/utils";
 import { makeUpload } from "src/server/utils/image";
 
 export const upload = makeUpload("advertisement").single("imagePath");

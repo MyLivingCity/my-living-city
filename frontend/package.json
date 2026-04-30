@@ -44,6 +44,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "start:no-warn": "DISABLE_ESLINT_PLUGIN=true TSC_COMPILE_ON_ERROR=true react-scripts start",
     "start-diff-port": "(set PORT=4000 || export PORT=4000) && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",

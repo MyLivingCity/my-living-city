@@ -8,6 +8,8 @@ import { subgroupApiContracts } from "./subgroups";
 import { userSegmentsApiContracts } from "./userSegments";
 import { communityApiContracts } from "./community";
 import { ratingApiContracts } from "./ratings";
+import { proposalApiContracts } from "./proposals";
+import { publicProfileApiContracts } from "./publicProfile";
 
 const c = initContract();
 
@@ -21,4 +23,6 @@ export const allApiContracts = c.router({
   userSegments: userSegmentsApiContracts,
   community: communityApiContracts,
   ratings: ratingApiContracts,
+  proposals: proposalApiContracts,
+  publicProfile: publicProfileApiContracts,
 });

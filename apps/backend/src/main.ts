@@ -10,6 +10,8 @@ import subgroupApiHandlers from "./server/features/subgroups/handler";
 import communityApiHandlers from "./server/features/community/handler";
 import adminApiHandlers from "./server/features/admin/handler";
 import ratingApiHandlers from "./server/features/ratings/handler";
+import proposalApiHandlers from "./server/features/proposals/handler";
+import publicProfileApiHandlers from "./server/features/publicProfile/handler";
 import { addEndpoints } from "./server";
 import { initStrategies } from "./lib/auth/strategy";
 
@@ -40,6 +42,8 @@ addEndpoints(app, subgroupApiHandlers);
 addEndpoints(app, communityApiHandlers);
 addEndpoints(app, adminApiHandlers);
 addEndpoints(app, ratingApiHandlers);
+addEndpoints(app, proposalApiHandlers);
+addEndpoints(app, publicProfileApiHandlers);
 
 const port = process.env["port"] || 3001;
 app.listen(port, () => {

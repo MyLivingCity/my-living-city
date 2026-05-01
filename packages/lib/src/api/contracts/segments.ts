@@ -130,13 +130,95 @@ export const segmentApiContracts = c.router(
       },
     ),
     subSegment: c.router(
-      {},
+      {
+        //  /delete/:subSegmentId
+        //  /getAll
+        //  /getBySubSegmentId/:subSegmentId
+        //  /getBySegmentId/:segmentId
+        //  /update/:subSegmentId
+        create: {
+          method: "POST",
+          path: "/create",
+          body: SegmentSchema.pick({
+            segId: true,
+            name: true,
+            lat: true,
+            lon: true,
+            radius: true,
+          }),
+          responses: {
+            201: SimpleMessageResponseSchema,
+            400: ErrorResponseSchema,
+            403: ErrorResponseSchema,
+          },
+          summary: "Create a new subsegment",
+        },
+        delete: {
+          method: "DELETE",
+          path: "/delete/:subSegmentId",
+          pathParams: z.object({ subSegmentId: z.coerce.number() }),
+          responses: {
+            204: z.undefined(),
+            400: ErrorResponseSchema,
+            403: ErrorResponseSchema,
+            404: ErrorResponseSchema,
+          },
+          summary: "Delete a subsegment by segId",
+        },
+        /**
+         * This will require a findMany where parentId !== null,
+         * as subSegments is not a real table
+         */
+        getAll: {
+          method: "GET",
+          path: "/getAll",
+          responses: {
+            200: z.array(SegmentSchema),
+            400: ErrorResponseSchema,
+          },
+          summary: "Get all subsegments",
+        },
+        getBySubSegmentId: {
+          method: "GET",
+          path: "/getBySubSegmentId/:subSegmentId",
+          pathParams: z.object({ subSegmentId: z.coerce.number() }),
+          responses: {
+            200: z.array(SegmentSchema),
+            400: ErrorResponseSchema,
+          },
+          summary: "Get a subsegment by its segId",
+        },
+        /**
+         * This will require a findMany where parentId === :segmentId,
+         * as subSegments is not a real table
+         */
+        getBySegmentId: {
+          method: "GET",
+          path: "/getBySegmentId/:segmentId",
+          pathParams: z.object({ segmentId: z.coerce.number() }),
+          responses: {
+            200: z.array(SegmentSchema),
+            400: ErrorResponseSchema,
+            404: ErrorResponseSchema,
+          },
+          summary: "Get all subsegments with parentId :segmentId",
+        },
+      },
       {
         pathPrefix: "/subSegment",
       },
     ),
     superSegment: c.router(
-      {},
+      {
+        /*   
+          /create 
+          /getAll
+          /getByCountryProvince
+          /getById/:superSegmentId
+          /delete/:deleteId
+          /update/:superSegId
+        */
+      },
       {
         pathPrefix: "/superSegment",
       },

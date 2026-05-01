@@ -104,9 +104,11 @@ const toSegmentResponse = (segment: {
   parentSegment: toParentSegment(segment.parentSegment),
   children: segment.children?.map((child) => toSegmentSummary(child)),
 });
-
-const create = s.route(segmentApiContracts.create, {
-  middleware: [authenticateJwt],
+// ============================================================================
+// segment
+// ============================================================================
+const create = s.route(segmentApiContracts.segment.create, {
+  middleware: [passport.authenticate("jwt", { session: false })],
   handler: async ({ req, body }) => {
     try {
       const userId = (req.user as { id?: string } | undefined)?.id;
@@ -227,7 +229,7 @@ const create = s.route(segmentApiContracts.create, {
   },
 });
 
-const getAll = s.route(segmentApiContracts.getAll, {
+const getAll = s.route(segmentApiContracts.segment.getAll, {
   handler: async () => {
     try {
       const segments = await prisma.segments.findMany({
@@ -264,7 +266,7 @@ const getAll = s.route(segmentApiContracts.getAll, {
   },
 });
 
-const getById = s.route(segmentApiContracts.getById, {
+const getById = s.route(segmentApiContracts.segment.getById, {
   handler: async ({ params }) => {
     try {
       const segmentId = parseSegmentId(params.segmentId);
@@ -320,7 +322,7 @@ const getById = s.route(segmentApiContracts.getById, {
   },
 });
 
-const getBySuperSegId = s.route(segmentApiContracts.getBySuperSegId, {
+const getBySuperSegId = s.route(segmentApiContracts.segment.getBySuperSegId, {
   handler: async ({ params }) => {
     try {
       const superSegId = parseSegmentId(params.superSegId);
@@ -381,7 +383,7 @@ const getBySuperSegId = s.route(segmentApiContracts.getBySuperSegId, {
   },
 });
 
-const getByType = s.route(segmentApiContracts.getByType, {
+const getByType = s.route(segmentApiContracts.segment.getByType, {
   handler: async ({ params }) => {
     try {
       const validTypes = [
@@ -434,72 +436,94 @@ const getByType = s.route(segmentApiContracts.getByType, {
   },
 });
 
-const getChildrenOfParent = s.route(segmentApiContracts.getChildrenOfParent, {
-  handler: async ({ params }) => {
-    try {
-      const parentId = parseSegmentId(params.parentId);
+const getChildrenOfParent = s.route(
+  segmentApiContracts.segment.getChildrenOfParent,
+  {
+    handler: async ({ params }) => {
+      try {
+        const parentId = parseSegmentId(params.parentId);
 
-      if (parentId === null) {
+        if (parentId === null) {
+          return {
+            status: 400,
+            body: {
+              message: "Invalid parent ID format. Must be a number.",
+            },
+          };
+        }
+
+        const children = await prisma.segments.findMany({
+          where: { parentId },
+          include: {
+            parentSegment: {
+              select: {
+                segId: true,
+                country: true,
+                province: true,
+                name: true,
+                segmentType: true,
+              },
+            },
+            children: true,
+          },
+          orderBy: { segId: "asc" },
+        });
+
+        if (children.length === 0) {
+          return {
+            status: 404,
+            body: {
+              message: `No children segments found for parent ID: ${parentId}`,
+            },
+          };
+        }
+
+        return {
+          status: 200,
+          body: serializeForContract(
+            children.map((segment) => toSegmentResponse(segment)),
+          ),
+        };
+      } catch (error) {
         return {
           status: 400,
           body: {
-            message: "Invalid parent ID format. Must be a number.",
+            message:
+              "An error occurred while trying to retrieve child segments.",
+            details: toErrorDetails(error),
           },
         };
       }
-
-      const children = await prisma.segments.findMany({
-        where: { parentId },
-        include: {
-          parentSegment: {
-            select: {
-              segId: true,
-              country: true,
-              province: true,
-              name: true,
-              segmentType: true,
-            },
-          },
-          children: true,
-        },
-        orderBy: { segId: "asc" },
-      });
-
-      if (children.length === 0) {
-        return {
-          status: 404,
-          body: {
-            message: `No children segments found for parent ID: ${parentId}`,
-          },
-        };
-      }
-
-      return {
-        status: 200,
-        body: serializeForContract(
-          children.map((segment) => toSegmentResponse(segment)),
-        ),
-      };
-    } catch (error) {
-      return {
-        status: 400,
-        body: {
-          message: "An error occurred while trying to retrieve child segments.",
-          details: toErrorDetails(error),
-        },
-      };
-    }
+    },
   },
-});
+);
 
 export default createHandlers({
   schema: segmentApiContracts,
   router: {
-    create,
-    getAll,
-    getById,
-    getBySuperSegId,
-    getByType,
-    getChildrenOfParent,
+    segment: {
+      create,
+      getAll,
+      getById,
+      getBySuperSegId,
+      getByType,
+      getChildrenOfParent,
+    },
+    subSegment: {
+      create,
+      delete,    
+      getAll,  
+      getBySubSegmentId,
+      getBySegmentId,
+
+    },
+    superSegment: {
+      //  /create 
+      //  /getAll
+      //  /getByCountryProvince
+      //  /getById/:superSegmentId
+      //  /delete/:deleteId
+      //  /update/:superSegId
+    },
   },
 });

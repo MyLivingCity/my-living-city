@@ -48,8 +48,8 @@ export const configDefaultHttpLogger: Options = {
 
   // Define a custom success message
   customSuccessMessage: function (req, res) {
-    if (res.statusCode === 404) {
-      return "resource not found";
+    if (res.statusCode >= 400 && res.statusCode <= 499) {
+      return `${res.statusCode} ${res.statusMessage}`;
     }
     return `${req.method} completed`;
   },

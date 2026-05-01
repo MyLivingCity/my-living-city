@@ -15,10 +15,11 @@ import publicProfileApiHandlers from "./server/features/publicProfile/handler";
 import { addEndpoints } from "./server";
 import { initStrategies } from "./lib/auth/strategy";
 import { pinoHttp } from "pino-http";
+import { configDefaultHttpLogger } from "./logger";
 
 const app = express();
 
-app.use(pinoHttp());
+app.use(pinoHttp(configDefaultHttpLogger));
 
 const passport = initStrategies();
 app.use(passport.initialize());

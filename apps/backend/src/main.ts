@@ -14,11 +14,13 @@ import proposalApiHandlers from "./server/features/proposals/handler";
 import publicProfileApiHandlers from "./server/features/publicProfile/handler";
 import { addEndpoints } from "./server";
 import { initStrategies } from "./lib/auth/strategy";
+import { pinoHttp } from "pino-http";
 
 const app = express();
 
-const passport = initStrategies();
+app.use(pinoHttp());
 
+const passport = initStrategies();
 app.use(passport.initialize());
 
 app.use(

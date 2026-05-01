@@ -1,6 +1,6 @@
 import z from "zod";
 
-export const DateTimeString = z.string().datetime();
+export const DateTimeString = z.date();
 
 // EXTENDS DateTimeString
 export const SafeDateFormat = z.preprocess((val: unknown) => {

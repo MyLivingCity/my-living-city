@@ -1,8 +1,6 @@
 import { z } from "zod";
 import { initContract } from "@ts-rest/core";
 import { SimpleMessageResponseSchema, ErrorResponseSchema } from "../common";
-import { SegmentSchema /*, UserSegmentSchema */ } from "./segments";
-//import { UserSchema } from "../users";
 
 export const HybridErrorSchema = z.union([
   z.object({ error: z.string() }), // Legacy shape: { error: "message" }
@@ -103,7 +101,10 @@ export const detailsApiContracts = c.router({
         pathParams: z.object({
           id: z.string().cuid(), //userId
         }),
-        body: SegmentSchema.partial(),
+        body: z.object({
+          city: z.string(),
+          neighbourhood: z.string(),
+        }),
         responses: {
           200: SimpleMessageResponseSchema,
           400: HybridErrorSchema,
@@ -134,9 +135,9 @@ export const detailsApiContracts = c.router({
       },
       delete: {
         method: "DELETE",
-        path: "/delete/:id",
+        path: "/delete/:id", //userId
         pathParams: z.object({
-          id: z.number(),
+          id: z.string().cuid(), //userId
         }),
         responses: {
           204: z.undefined(), //legacy only sends 204 status(success, no redirect)
@@ -147,9 +148,9 @@ export const detailsApiContracts = c.router({
       },
       get: {
         method: "GET",
-        path: "/get/:id",
+        path: "/get/:id", //userId
         pathParams: z.object({
-          id: z.number(),
+          id: z.string().cuid(), //userId
         }),
         responses: {
           200: WorkDetailsSchema,
@@ -176,7 +177,10 @@ export const detailsApiContracts = c.router({
         pathParams: z.object({
           id: z.string().cuid(), //userId
         }),
-        body: SegmentSchema.partial(),
+        body: z.object({
+          city: z.string(),
+          neighbourhood: z.string(),
+        }),
         responses: {
           200: SimpleMessageResponseSchema,
           400: HybridErrorSchema,

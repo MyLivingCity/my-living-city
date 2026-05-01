@@ -34,6 +34,7 @@ import {
   upsertWorkDetailsAndHandle,
   updateWorkCityAndNeighbourhood,
 } from "./service";
+import { createHandlers } from "src/server";
 
 const s = initServer();
 // ============================================================================
@@ -318,8 +319,9 @@ const updateWorkCityNeighbourhood = s.route(
   },
 );
 
-export const detailsRouter: RouterImplementation<typeof detailsApiContracts> =
-  s.router(detailsApiContracts, {
+export default createHandlers({
+  schema: detailsApiContracts,
+  router: {
     schoolDetails: {
       create: createSchoolDetails,
       get: getSchoolDetails,
@@ -334,4 +336,5 @@ export const detailsRouter: RouterImplementation<typeof detailsApiContracts> =
       update: updateWorkDetails,
       updateCityNeighbourhood: updateWorkCityNeighbourhood,
     },
-  });
+  },
+});

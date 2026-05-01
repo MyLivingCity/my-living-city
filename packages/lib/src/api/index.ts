@@ -8,3 +8,5 @@ export * from "./contracts/userSegments";
 export * from "./contracts/community";
 export * from "./contracts/details";
 export * from "./contracts/ratings";
+export * from "./contracts/proposals";
+export * from "./contracts/publicProfile";

@@ -1,9 +1,9 @@
 import { initServer } from "@ts-rest/express";
-import * as passport from "passport";
 import { moderationApiContracts } from "@mlc/lib/api";
 import { toErrorDetails } from "src/server/utils";
 import { prisma } from "src/prisma/client";
 import { BadPostingBehaviourSchema } from "@mlc/lib/api/contracts/moderation/reputation";
+import { authenticateJwt } from "src/server/middleware/auth";
 
 import {
   //badPostingBehavior
@@ -28,7 +28,7 @@ const s = initServer();
 const incrementPostFlagCount = s.route(
   moderationApiContracts.reputation.badPostingBehavior.incrementPostFlagCount,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async ({ params }) => {
       const result = await getAuthorFromIdea(params.ideaId);
       if ("error" in result) return result.error;
@@ -51,7 +51,7 @@ const incrementPostFlagCount = s.route(
 const incrementBadPostCount = s.route(
   moderationApiContracts.reputation.badPostingBehavior.incrementBadPostCount,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async ({ params }) => {
       const result = await getAuthorFromIdea(params.ideaId);
       if ("error" in result) return result.error;
@@ -71,7 +71,7 @@ const incrementBadPostCount = s.route(
 const resetBadPostCount = s.route(
   moderationApiContracts.reputation.badPostingBehavior.resetBadPostCount,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async ({ params }) => {
       const result = await getAuthorFromIdea(params.ideaId);
       if ("error" in result) return result.error;
@@ -98,7 +98,7 @@ const resetBadPostCount = s.route(
 const checkUser = s.route(
   moderationApiContracts.reputation.badPostingBehavior.checkUser,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async ({ params }) => {
       try {
         const isBanned = await evaluateAndApplyUserBan(params.userId);
@@ -126,7 +126,7 @@ const checkUser = s.route(
 const getAllBadPosting = s.route(
   moderationApiContracts.reputation.badPostingBehavior.getAll,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async () => {
       try {
         const users = await getIdsFromBehaviorTable();
@@ -150,7 +150,7 @@ const getAllBadPosting = s.route(
 const getBadPostingBehavior = s.route(
   moderationApiContracts.reputation.badPostingBehavior.getBadPostingBehavior,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async ({ req }) => {
       try {
         // 1. Cast the passport user
@@ -188,7 +188,7 @@ const checkThreshold = s.route(
   moderationApiContracts.reputation.badPostingBehavior.checkThreshold,
   {
     // No auth in legacy, but adding it
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async () => {
       try {
         const bannedCount = await syncAllUsersToThreshold();
@@ -218,7 +218,7 @@ const checkFalseFlaggingBehavior = s.route(
   moderationApiContracts.reputation.falseFlaggingBehavior
     .checkFalseFlaggingBehavior,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async () => {
       try {
         await processFalseFlaggingBans();
@@ -245,7 +245,7 @@ const checkFalseFlaggingBehavior = s.route(
 const getAllFalseFlagging = s.route(
   moderationApiContracts.reputation.falseFlaggingBehavior.getAll,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async () => {
       try {
         const records = await fetchFalseFlaggingIds();

@@ -10,6 +10,7 @@ import { env } from "src/lib/env";
 import { argon2Hash } from "src/lib/helpers";
 import * as jwt from "jsonwebtoken";
 import z from "zod";
+import { authenticateJwt } from "src/server/middleware/auth";
 
 const s = initServer();
 
@@ -144,7 +145,7 @@ const getAuthenticatedRequestUser = async (req: Request) => {
   });
 };
 
-const authenticateJwt = async (req: Request) => {
+const manualAuthJwt = async (req: Request) => {
   return new Promise<{
     err: unknown;
     user: Express.User | false;
@@ -249,7 +250,7 @@ const hasOwnValues = (value: unknown) => {
 };
 
 const getSelf = s.route(userApiContracts.getSelf, {
-  middleware: [passport.authenticate("jwt", { session: false })],
+  middleware: [authenticateJwt],
   handler: async ({ req }) => {
     const { id } = req.user as { id?: string };
 
@@ -294,7 +295,7 @@ const getSelf = s.route(userApiContracts.getSelf, {
 });
 
 const getSelfVerbose = s.route(userApiContracts.getSelfVerbose, {
-  middleware: [passport.authenticate("jwt", { session: false })],
+  middleware: [authenticateJwt],
   handler: async ({ req }) => {
     try {
       const { id } = req.user as { id?: string };
@@ -427,7 +428,7 @@ const getByEmail = s.route(userApiContracts.getByEmail, {
 });
 
 const getAll = s.route(userApiContracts.getAll, {
-  middleware: [passport.authenticate("jwt", { session: false })],
+  middleware: [authenticateJwt],
   handler: async ({ req }) => {
     try {
       const authenticatedUser = await getAuthenticatedRequestUser(req);
@@ -472,7 +473,7 @@ const getAll = s.route(userApiContracts.getAll, {
 });
 
 const getAllRegularUsers = s.route(userApiContracts.getAllRegularUsers, {
-  middleware: [passport.authenticate("jwt", { session: false })],
+  middleware: [authenticateJwt],
   handler: async ({ req }) => {
     try {
       const authenticatedUser = await getAuthenticatedRequestUser(req);
@@ -561,7 +562,7 @@ const register = s.route(userApiContracts.register, {
       }
 
       if (!REGISTER_WITHOUT_AUTH_TYPES.has(userType) || verified) {
-        const authResult = await authenticateJwt(req);
+        const authResult = await manualAuthJwt(req);
 
         if (authResult.err) {
           return {
@@ -771,7 +772,7 @@ const login = s.route(userApiContracts.login, {
 });
 
 const tryUnbanSelf = s.route(userApiContracts.tryUnbanSelf, {
-  middleware: [passport.authenticate("jwt", { session: false })],
+  middleware: [authenticateJwt],
   handler: async ({ req }) => {
     try {
       const { id } = (req.user ?? {}) as z.infer<typeof UserSchema>;

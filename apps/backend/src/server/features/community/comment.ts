@@ -7,8 +7,10 @@ import {
   toErrorDetails,
 } from "src/server/utils";
 import { getRequestUser, parseIntegerParam, toSerialized } from "./utils";
-import { checkIfUserIsLoggedIn } from "src/server/middleware/auth";
-import passport from "passport";
+import {
+  checkIfUserIsLoggedIn,
+  authenticateJwt,
+} from "src/server/middleware/auth";
 import { checkSimilar, funnelCommentApi } from "src/server/utils/comments";
 
 const s = initServer();
@@ -183,7 +185,7 @@ const commentGetAllByIdeaId = s.route(commentApiContracts.getAllByIdeaId, {
 });
 
 const commentCreate = s.route(commentApiContracts.create, {
-  middleware: [passport.authenticate("jwt", { session: false })],
+  middleware: [authenticateJwt],
   handler: async ({ params, req, body }) => {
     try {
       const user = getRequestUser(req);
@@ -383,10 +385,7 @@ const commentCreate = s.route(commentApiContracts.create, {
 });
 
 const commentSimilarComments = s.route(commentApiContracts.similarComments, {
-  middleware: [
-    checkIfUserIsLoggedIn,
-    passport.authenticate("jwt", { session: false }),
-  ],
+  middleware: [checkIfUserIsLoggedIn, authenticateJwt],
   handler: async ({ params, req, body }) => {
     try {
       const content = (body as { content?: string }).content;
@@ -433,7 +432,7 @@ const commentSimilarComments = s.route(commentApiContracts.similarComments, {
 });
 
 const commentUpdateState = s.route(commentApiContracts.updateState, {
-  middleware: [passport.authenticate("jwt", { session: false })],
+  middleware: [authenticateJwt],
   handler: async ({ params, body }) => {
     try {
       const parsedCommentId = parseIntegerParam(params.commentId);
@@ -494,7 +493,7 @@ const commentUpdateState = s.route(commentApiContracts.updateState, {
 const commentUpdateNotificationState = s.route(
   commentApiContracts.updateNotificationState,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async ({ params, body }) => {
       try {
         const parsedCommentId = parseIntegerParam(params.commentId);
@@ -552,7 +551,7 @@ const commentUpdateNotificationState = s.route(
 );
 
 const commentUpdate = s.route(commentApiContracts.update, {
-  middleware: [passport.authenticate("jwt", { session: false })],
+  middleware: [authenticateJwt],
   handler: async ({ params, req, body }) => {
     try {
       const user = getRequestUser(req);
@@ -618,7 +617,7 @@ const commentUpdate = s.route(commentApiContracts.update, {
 });
 
 const commentDelete = s.route(commentApiContracts.delete, {
-  middleware: [passport.authenticate("jwt", { session: false })],
+  middleware: [authenticateJwt],
   handler: async ({ params, req }) => {
     try {
       const user = getRequestUser(req);

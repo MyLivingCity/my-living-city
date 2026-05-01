@@ -2,9 +2,9 @@ import { segmentApiContracts } from "@mlc/lib/api";
 import { Prisma, SegmentType, UserType } from "#prisma/client";
 import { prisma } from "src/prisma/client";
 import { initServer } from "@ts-rest/express";
-import * as passport from "passport";
 import { createHandlers } from "src/server";
 import { serializeForContract, toErrorDetails } from "src/server/utils";
+import { authenticateJwt } from "src/server/middleware/auth";
 
 const s = initServer();
 
@@ -106,7 +106,7 @@ const toSegmentResponse = (segment: {
 });
 
 const create = s.route(segmentApiContracts.create, {
-  middleware: [passport.authenticate("jwt", { session: false })],
+  middleware: [authenticateJwt],
   handler: async ({ req, body }) => {
     try {
       const userId = (req.user as { id?: string } | undefined)?.id;

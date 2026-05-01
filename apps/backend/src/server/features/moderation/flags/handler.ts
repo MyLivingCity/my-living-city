@@ -19,12 +19,12 @@ import {
 } from "./service";
 
 import { initServer } from "@ts-rest/express";
-import * as passport from "passport";
 import { moderationApiContracts } from "@mlc/lib/api";
 import { toErrorDetails } from "src/server/utils";
 import { z } from "zod";
 import { UserSchema } from "@mlc/lib/api";
 import { RouterImplementation } from "@ts-rest/express/src/lib/types";
+import { authenticateJwt } from "src/server/middleware/auth";
 
 type User = z.infer<typeof UserSchema>;
 
@@ -35,7 +35,7 @@ const s = initServer();
 const createCommentFlagHandler = s.route(
   moderationApiContracts.flags.commentFlag.create,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async ({ params, body, req }) => {
       try {
         const loggedInUserId = (req.user as User).id;
@@ -99,7 +99,7 @@ const createCommentFlagHandler = s.route(
 const getAllCommentFlags = s.route(
   moderationApiContracts.flags.commentFlag.getAll,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async () => {
       try {
         const allCommentFlags = await fetchAllCommentFlags();
@@ -136,7 +136,7 @@ const getAllCommentFlags = s.route(
 const falseFlagManyComments = s.route(
   moderationApiContracts.flags.commentFlag.falseFlagMany,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async ({ params, body, req }) => {
       try {
         const loggedInUserId = (req.user as User).id;
@@ -185,7 +185,7 @@ const falseFlagManyComments = s.route(
 const getCommentFlagCount = s.route(
   moderationApiContracts.flags.commentFlag.getFlags,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async ({ params }) => {
       try {
         const count = await countCommentFlagsByCommentId(params.commentId);
@@ -213,7 +213,7 @@ const getCommentFlagCount = s.route(
 const createIdeaFlagHandler = s.route(
   moderationApiContracts.flags.flag.create,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async ({ params, body, req }) => {
       try {
         const loggedInUserId = (req.user as User).id;
@@ -285,7 +285,7 @@ const createIdeaFlagHandler = s.route(
   },
 );
 const getAllIdeaFlags = s.route(moderationApiContracts.flags.flag.getAll, {
-  middleware: [passport.authenticate("jwt", { session: false })],
+  middleware: [authenticateJwt],
   handler: async () => {
     try {
       const allIdeaFlags = await fetchAllIdeaFlags();
@@ -320,7 +320,7 @@ const getAllIdeaFlags = s.route(moderationApiContracts.flags.flag.getAll, {
 const falseFlagManyIdeas = s.route(
   moderationApiContracts.flags.flag.falseFlagMany,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async ({ params, body, req }) => {
       try {
         const loggedInUserId = (req.user as User).id;
@@ -369,7 +369,7 @@ const falseFlagManyIdeas = s.route(
   },
 );
 const getIdeaFlagCount = s.route(moderationApiContracts.flags.flag.getFlags, {
-  middleware: [passport.authenticate("jwt", { session: false })],
+  middleware: [authenticateJwt],
   handler: async ({ params }) => {
     try {
       const count = await countIdeaFlagsByIdeaId(params.ideaId);
@@ -391,7 +391,7 @@ const getIdeaFlagCount = s.route(moderationApiContracts.flags.flag.getFlags, {
   },
 });
 const checkFlagBan = s.route(moderationApiContracts.flags.flag.checkFlagBan, {
-  middleware: [passport.authenticate("jwt", { session: false })],
+  middleware: [authenticateJwt],
   handler: async ({ params }) => {
     try {
       const userFlagBan = await findFalseFlaggingBehaviorByUserId(

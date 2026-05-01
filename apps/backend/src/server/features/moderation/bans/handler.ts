@@ -23,7 +23,6 @@ import {
   cleanupExpiredBans,
 } from "./service";
 import { initServer } from "@ts-rest/express";
-import * as passport from "passport";
 import { moderationApiContracts } from "@mlc/lib/api";
 import { toErrorDetails } from "src/server/utils";
 import { z } from "zod";
@@ -31,6 +30,7 @@ import { prisma } from "src/prisma/client";
 import { UserSchema } from "@mlc/lib/api";
 import { BanTypeSchema } from "@mlc/lib/api/contracts/moderation/bans";
 import { RouterImplementation } from "@ts-rest/express/src/lib/types";
+import { authenticateJwt } from "src/server/middleware/auth";
 
 type User = z.infer<typeof UserSchema>;
 
@@ -41,7 +41,7 @@ const s = initServer();
 const createCommentBan = s.route(
   moderationApiContracts.bans.banComment.create,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async ({ body, req }) => {
       try {
         const moderatorId = (req.user as User).id;
@@ -112,7 +112,7 @@ const createCommentBan = s.route(
 const dismissCommentBanNotification = s.route(
   moderationApiContracts.bans.banComment.dismissNotification,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async ({ params }) => {
       const { commentBanId } = params;
 
@@ -157,7 +157,7 @@ const dismissCommentBanNotification = s.route(
 const getCommentBanById = s.route(
   moderationApiContracts.bans.banComment.getById,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async ({ params }) => {
       const { commentBanId } = params;
 
@@ -203,7 +203,7 @@ const getCommentBanById = s.route(
 const getUndismissedCommentBanNotifications = s.route(
   moderationApiContracts.bans.banComment.getUndismissedNotifications,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async ({ params }) => {
       const { userId } = params;
 
@@ -245,7 +245,7 @@ const getUndismissedCommentBanNotifications = s.route(
 const deleteCommentBan = s.route(
   moderationApiContracts.bans.banComment.delete,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async ({ params }) => {
       const { commentBanId } = params;
 
@@ -284,7 +284,7 @@ const deleteCommentBan = s.route(
 // banPost
 // ============================================================================
 const createPostBan = s.route(moderationApiContracts.bans.banPost.create, {
-  middleware: [passport.authenticate("jwt", { session: false })],
+  middleware: [authenticateJwt],
   handler: async ({ body, req }) => {
     try {
       const moderatorId = (req.user as User).id;
@@ -354,7 +354,7 @@ const createPostBan = s.route(moderationApiContracts.bans.banPost.create, {
 const dismissPostNotification = s.route(
   moderationApiContracts.bans.banPost.dismissNotification,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async ({ params }) => {
       const { postBanId } = params;
 
@@ -439,7 +439,7 @@ const getPostBanById = s.route(
 const getUndismissedPostNotifications = s.route(
   moderationApiContracts.bans.banPost.getUndismissedNotifications,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async ({ params }) => {
       const { userId } = params;
 
@@ -471,7 +471,7 @@ const getUndismissedPostNotifications = s.route(
   },
 );
 const deletePostBan = s.route(moderationApiContracts.bans.banPost.delete, {
-  middleware: [passport.authenticate("jwt", { session: false })],
+  middleware: [authenticateJwt],
   handler: async ({ params }) => {
     const { postBanId } = params;
 
@@ -509,7 +509,7 @@ const deletePostBan = s.route(moderationApiContracts.bans.banPost.delete, {
 // banUser
 // ============================================================================
 const createUserBan = s.route(moderationApiContracts.bans.banUser.create, {
-  middleware: [passport.authenticate("jwt", { session: false })],
+  middleware: [authenticateJwt],
   handler: async ({ body, req }) => {
     try {
       const moderatorId = (req.user as User).id;
@@ -576,7 +576,7 @@ const createUserBan = s.route(moderationApiContracts.bans.banUser.create, {
   },
 });
 const getAllUserBans = s.route(moderationApiContracts.bans.banUser.getAll, {
-  middleware: [passport.authenticate("jwt", { session: false })],
+  middleware: [authenticateJwt],
   handler: async () => {
     try {
       const bans = await fetchAllUserBans();
@@ -610,7 +610,7 @@ const getAllUserBans = s.route(moderationApiContracts.bans.banUser.getAll, {
   },
 });
 const getUserBanById = s.route(moderationApiContracts.bans.banUser.getById, {
-  middleware: [passport.authenticate("jwt", { session: false })],
+  middleware: [authenticateJwt],
   handler: async ({ params }) => {
     const { userId } = params;
 
@@ -660,7 +660,7 @@ const getUserBanById = s.route(moderationApiContracts.bans.banUser.getById, {
 const getMostRecent = s.route(
   moderationApiContracts.bans.banUser.getMostRecent,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async ({ params }) => {
       const { userId } = params;
 
@@ -705,7 +705,7 @@ const getMostRecent = s.route(
 const getMostRecentWithToken = s.route(
   moderationApiContracts.bans.banUser.getMostRecentWithToken,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async ({ req }) => {
       const userId = (req.user as User).id;
 
@@ -744,7 +744,7 @@ const getMostRecentWithToken = s.route(
   },
 );
 const updateUserBan = s.route(moderationApiContracts.bans.banUser.update, {
-  middleware: [passport.authenticate("jwt", { session: false })],
+  middleware: [authenticateJwt],
   handler: async ({ params, body }) => {
     const { userId } = params;
 
@@ -791,7 +791,7 @@ const updateUserBan = s.route(moderationApiContracts.bans.banUser.update, {
   },
 });
 const deleteUserBan = s.route(moderationApiContracts.bans.banUser.delete, {
-  middleware: [passport.authenticate("jwt", { session: false })],
+  middleware: [authenticateJwt],
   handler: async ({ params }) => {
     const { userId } = params;
 
@@ -830,7 +830,7 @@ const deleteUserBan = s.route(moderationApiContracts.bans.banUser.delete, {
 const getAllPassedDate = s.route(
   moderationApiContracts.bans.banUser.getAllPassedDate,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async () => {
       try {
         const expiredBans = await fetchExpiredUserBans();
@@ -866,7 +866,7 @@ const getAllPassedDate = s.route(
 const deletePassedBanDate = s.route(
   moderationApiContracts.bans.banUser.deletePassedBanDate,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async () => {
       try {
         // Calls the service that handles both table cleanup and User flag reset

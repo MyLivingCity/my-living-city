@@ -1,6 +1,5 @@
 import { initServer } from "@ts-rest/express";
 import { createHandlers } from "src/server";
-import passport from "passport";
 
 import { toErrorDetails } from "src/server/utils";
 import { adminApiContracts } from "@mlc/lib/api/contracts/admin";
@@ -22,6 +21,7 @@ import {
   fetchBadPostingThreshold,
   updateBadPostingThresholdValue,
 } from "./service";
+import { authenticateJwt } from "src/server/middleware/auth";
 
 type User = z.infer<typeof UserSchema>;
 const s = initServer();
@@ -32,7 +32,7 @@ const s = initServer();
 const getAllNotifications = s.route(
   adminApiContracts.dashboard.getAllNotifications,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async () => {
       try {
         const notifications = await fetchUnseenNotifications();
@@ -62,7 +62,7 @@ const getAllNotifications = s.route(
 const dismissNotification = s.route(
   adminApiContracts.dashboard.dismissNotification,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async ({ params: { notificationId } }) => {
       try {
         await dismissQuarantineNotification(notificationId);
@@ -87,7 +87,7 @@ const dismissNotification = s.route(
 // report
 // ============================================================================
 const getAll = s.route(adminApiContracts.report.getAll, {
-  middleware: [passport.authenticate("jwt", { session: false })],
+  middleware: [authenticateJwt],
   handler: async ({ req }) => {
     try {
       const u = req.user as User;
@@ -119,7 +119,7 @@ const getAll = s.route(adminApiContracts.report.getAll, {
   },
 });
 const createReport = s.route(adminApiContracts.report.create, {
-  middleware: [passport.authenticate("jwt", { session: false })],
+  middleware: [authenticateJwt],
   handler: async ({ body: { email, description } }) => {
     try {
       // Manual validation check from legacy controller
@@ -153,7 +153,7 @@ const createReport = s.route(adminApiContracts.report.create, {
   },
 });
 const deleteReport = s.route(adminApiContracts.report.delete, {
-  middleware: [passport.authenticate("jwt", { session: false })],
+  middleware: [authenticateJwt],
   handler: async ({ params: { reportId }, req }) => {
     try {
       const u = req.user as User;
@@ -209,7 +209,7 @@ const deleteReport = s.route(adminApiContracts.report.delete, {
 //  number: the ban threshold
 // ----------------------------------------------------------------------------
 const getBanThreshold = s.route(adminApiContracts.threshhold.getBanThreshold, {
-  middleware: [passport.authenticate("jwt", { session: false })],
+  middleware: [authenticateJwt],
   handler: async () => {
     try {
       const threshold = await fetchBanThreshold();
@@ -242,7 +242,7 @@ const getBanThreshold = s.route(adminApiContracts.threshhold.getBanThreshold, {
 const updateBanThresholdRoute = s.route(
   adminApiContracts.threshhold.updateBanThreshold,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async ({ params: { num } }) => {
       try {
         if (!num) {
@@ -293,7 +293,7 @@ const updateBanThresholdRoute = s.route(
 // TODO: replace magic numbers sprinkled throughout with an enum or associative array
 //**  Threshhold table should be modified to not autoincrement **
 const createThreshold = s.route(adminApiContracts.threshhold.createThreshold, {
-  middleware: [passport.authenticate("jwt", { session: false })],
+  middleware: [authenticateJwt],
   handler: async ({ params: { num } }) => {
     try {
       if (!num) {
@@ -344,7 +344,7 @@ const createThreshold = s.route(adminApiContracts.threshhold.createThreshold, {
 const getFalseFlagThreshold = s.route(
   adminApiContracts.threshhold.getFalseFlagThreshold,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async () => {
       try {
         const threshold = await fetchFalseFlagThreshold();
@@ -378,7 +378,7 @@ const getFalseFlagThreshold = s.route(
 const updateFalseFlagThreshold = s.route(
   adminApiContracts.threshhold.updateFalseFlagThreshold,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async ({ params: { num } }) => {
       try {
         if (!num && num !== 0) {
@@ -429,7 +429,7 @@ const updateFalseFlagThreshold = s.route(
 const getBadPostingThreshold = s.route(
   adminApiContracts.threshhold.getBadPostingThreshold,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async () => {
       try {
         const threshold = await fetchBadPostingThreshold();
@@ -463,7 +463,7 @@ const getBadPostingThreshold = s.route(
 const updateBadPostingThreshold = s.route(
   adminApiContracts.threshhold.updateBadPostingThreshold,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async ({ params: { num } }) => {
       try {
         // Validation check similar to legacy (allowing 0 if applicable)

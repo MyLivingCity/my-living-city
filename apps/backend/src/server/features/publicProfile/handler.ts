@@ -80,14 +80,14 @@ const updateStandardProfile = s.route(
           } as never;
         }
 
+        const updateData: Record<string, unknown> = { updatedAt: new Date() };
+        if (body.fname !== undefined) updateData.fname = body.fname;
+        if (body.lname !== undefined) updateData.lname = body.lname;
+        if (body.email !== undefined) updateData.email = body.email;
+
         const result = await prisma.user.update({
           where: { id: userId },
-          data: {
-            updatedAt: new Date(),
-            ...(body.fname !== undefined && { fname: body.fname }),
-            ...(body.lname !== undefined && { lname: body.lname }),
-            ...(body.email !== undefined && { email: body.email }),
-          },
+          data: updateData,
         });
 
         return {
@@ -125,8 +125,8 @@ const getCommunityBusinessProfile = s.route(
           } as never;
         }
 
-        const result =
-          await prisma.public_Community_Business_Profile.findFirst({
+        const result = await prisma.public_Community_Business_Profile.findFirst(
+          {
             where: { userId },
             include: {
               links: true,
@@ -145,7 +145,8 @@ const getCommunityBusinessProfile = s.route(
                 },
               },
             },
-          });
+          },
+        );
 
         if (!result) {
           return {
@@ -271,12 +272,13 @@ const upsertCommunityBusinessProfile = s.route(
             ),
           );
 
-          const result =
-            await prisma.public_Community_Business_Profile.update({
-              where: { id: created.id },
-              data: { links: { connect: createdLinks.map((l) => ({ id: l.id })) } },
-              include: { links: true },
-            });
+          const result = await prisma.public_Community_Business_Profile.update({
+            where: { id: created.id },
+            data: {
+              links: { connect: createdLinks.map((l) => ({ id: l.id })) },
+            },
+            include: { links: true },
+          });
 
           return { status: 200, body: serializeForContract(result) };
         }
@@ -464,10 +466,11 @@ const upsertMunicipalProfile = s.route(
         const profileLinks = Array.isArray(links) ? links : [];
         const updatedAt = new Date();
 
-        const existingProfile =
-          await prisma.public_Municipal_Profile.findFirst({
+        const existingProfile = await prisma.public_Municipal_Profile.findFirst(
+          {
             where: { userId },
-          });
+          },
+        );
 
         if (!existingProfile) {
           const created = await prisma.public_Municipal_Profile.create({
@@ -496,7 +499,9 @@ const upsertMunicipalProfile = s.route(
 
           const result = await prisma.public_Municipal_Profile.update({
             where: { id: created.id },
-            data: { links: { connect: createdLinks.map((l) => ({ id: l.id })) } },
+            data: {
+              links: { connect: createdLinks.map((l) => ({ id: l.id })) },
+            },
             include: { links: true },
           });
 
@@ -586,12 +591,7 @@ const getAllProfiles = s.route(publicProfileApiContracts.getAllProfiles, {
   handler: async ({ query, req }) => {
     try {
       const viewer = await getViewerFromRequest(req);
-      const {
-        search = "",
-        profileType,
-        communityId,
-        neighbourhoodId,
-      } = query;
+      const { search = "", profileType, communityId, neighbourhoodId } = query;
 
       let userIdFilter: string[] | undefined;
 
@@ -673,13 +673,18 @@ const getAllProfiles = s.route(publicProfileApiContracts.getAllProfiles, {
         include: {
           address: true,
           userReach: { include: { segment: true } },
-          ideas: { where: { active: true }, select: { id: true, authorId: true } },
+          ideas: {
+            where: { active: true },
+            select: { id: true, authorId: true },
+          },
         },
         orderBy: [{ createdAt: "desc" }],
       });
 
       // Resolve residential visibility.
-      const residentialUsers = users.filter((u) => u.userType === "RESIDENTIAL");
+      const residentialUsers = users.filter(
+        (u) => u.userType === "RESIDENTIAL",
+      );
       const residentialUserIds = residentialUsers.map((u) => u.id);
 
       const profileRows = residentialUserIds.length
@@ -740,7 +745,10 @@ const getAllProfiles = s.route(publicProfileApiContracts.getAllProfiles, {
             const visibility =
               visibilityByUserId[u.id] || PROFILE_VISIBILITY.PUBLIC;
 
-            if (viewer?.id === u.id || visibility === PROFILE_VISIBILITY.PUBLIC) {
+            if (
+              viewer?.id === u.id ||
+              visibility === PROFILE_VISIBILITY.PUBLIC
+            ) {
               residentialAllowedUserIds.add(u.id);
               return;
             }

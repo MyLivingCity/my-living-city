@@ -518,12 +518,12 @@ export default createHandlers({
 
     },
     superSegment: {
-      //  /create 
-      //  /getAll
-      //  /getByCountryProvince
-      //  /getById/:superSegmentId
-      //  /delete/:deleteId
-      //  /update/:superSegId
+      create,
+      getAll,
+      getByCountryProvince,
+      getById/:superSegmentId,
+      delete/:deleteId,
+      update/:superSegId,
     },
   },
 });

@@ -56,12 +56,12 @@ export const configDefaultHttpLogger: Options = {
 
   // Define a custom receive message
   customReceivedMessage: function (req) {
-    return "request received: " + req.method;
+    return `${req.method} received`;
   },
 
   // Define a custom error message
   customErrorMessage: function (_, res) {
-    return "request errored with status code: " + res.statusCode;
+    return `${res.statusCode} ${res.statusMessage}`;
   },
 
   // Override attribute keys for the log object

@@ -58,72 +58,91 @@ const CreateSegmentBodySchema = z.object({
 
 export const segmentApiContracts = c.router(
   {
-    create: {
-      method: "POST",
-      path: "/create",
-      body: CreateSegmentBodySchema,
-      responses: {
-        200: SegmentSchema,
-        400: ErrorResponseSchema,
-        403: ErrorResponseSchema,
+    segment: c.router(
+      {
+        create: {
+          method: "POST",
+          path: "/create",
+          body: CreateSegmentBodySchema,
+          responses: {
+            200: SegmentSchema,
+            400: ErrorResponseSchema,
+            403: ErrorResponseSchema,
+          },
+          summary: "Create a segment",
+        },
+        getAll: {
+          method: "GET",
+          path: "/getAll",
+          responses: {
+            200: z.array(SegmentSchema),
+            400: ErrorResponseSchema,
+          },
+          summary: "Get all segments",
+        },
+        getById: {
+          method: "GET",
+          path: "/getBySegmentId/:segmentId",
+          responses: {
+            200: SegmentSchema,
+            400: z.union([SimpleMessageResponseSchema, ErrorResponseSchema]),
+          },
+          summary: "Get segment by id",
+        },
+        getBySuperSegId: {
+          method: "GET",
+          path: "/getBySuperSegId/:superSegId",
+          responses: {
+            200: z.array(SegmentSchema),
+            400: z.union([z.string(), ErrorResponseSchema]),
+            404: z.string(),
+          },
+          summary: "Get segments by super segment id",
+        },
+        getByType: {
+          method: "GET",
+          path: "/getByType/:type",
+          responses: {
+            200: z.array(SegmentSchema),
+            400: z.union([
+              z.object({
+                message: z.string(),
+                validTypes: z.array(SegmentType),
+              }),
+              ErrorResponseSchema,
+            ]),
+          },
+          summary: "Get all segments by type",
+        },
+        getChildrenOfParent: {
+          method: "GET",
+          path: "/getChildren/:parentId",
+          responses: {
+            200: z.array(SegmentSchema),
+            400: ErrorResponseSchema.or(SimpleMessageResponseSchema),
+            404: SimpleMessageResponseSchema,
+          },
+          summary: "Get all child segments of parent",
+        },
       },
-      summary: "Create a segment",
-    },
-    getAll: {
-      method: "GET",
-      path: "/getAll",
-      responses: {
-        200: z.array(SegmentSchema),
-        400: ErrorResponseSchema,
+      {
+        pathPrefix: "/segment",
       },
-      summary: "Get all segments",
-    },
-    getById: {
-      method: "GET",
-      path: "/getBySegmentId/:segmentId",
-      responses: {
-        200: SegmentSchema,
-        400: z.union([SimpleMessageResponseSchema, ErrorResponseSchema]),
+    ),
+    subSegment: c.router(
+      {},
+      {
+        pathPrefix: "/subSegment",
       },
-      summary: "Get segment by id",
-    },
-    getBySuperSegId: {
-      method: "GET",
-      path: "/getBySuperSegId/:superSegId",
-      responses: {
-        200: z.array(SegmentSchema),
-        400: z.union([z.string(), ErrorResponseSchema]),
-        404: z.string(),
+    ),
+    superSegment: c.router(
+      {},
+      {
+        pathPrefix: "/superSegment",
       },
-      summary: "Get segments by super segment id",
-    },
-    getByType: {
-      method: "GET",
-      path: "/getByType/:type",
-      responses: {
-        200: z.array(SegmentSchema),
-        400: z.union([
-          z.object({
-            message: z.string(),
-            validTypes: z.array(SegmentType),
-          }),
-          ErrorResponseSchema,
-        ]),
-      },
-      summary: "Get all segments by type",
-    },
-    getChildrenOfParent: {
-      method: "GET",
-      path: "/getChildren/:parentId",
-      responses: {
-        200: z.array(SegmentSchema),
-        400: ErrorResponseSchema.or(SimpleMessageResponseSchema),
-        404: SimpleMessageResponseSchema,
-      },
-      summary: "Get all child segments of parent",
-    },
+    ),
   },
   {
-    pathPrefix: "/segment",
+    pathPrefix: "/segments",
   },
 );

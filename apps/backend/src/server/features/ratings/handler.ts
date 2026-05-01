@@ -310,12 +310,10 @@ const update = s.route(ratingApiContracts.update, {
         } as never;
       }
 
-      // Build update object only for fields that were actually provided,
-      // so a rating of 0 (falsy but valid) still gets saved.
-      const updateData: Record<string, unknown> = {};
-      if (body.rating !== undefined) updateData.rating = body.rating;
-      if (body.ratingExplanation !== undefined)
-        updateData.ratingExplanation = body.ratingExplanation;
+      const updateData: Record<string, unknown> = {
+        rating: body.rating,
+        ratingExplanation: body.ratingExplanation,
+      };
 
       const updatedRating = await prisma.ideaRating.update({
         where: { id: parsedRatingId },

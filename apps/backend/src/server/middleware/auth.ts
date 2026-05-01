@@ -2,14 +2,23 @@ import { prisma } from "src/prisma/client";
 import * as jwt from "jsonwebtoken";
 import { env } from "src/lib/env";
 import passport from "passport";
+import { ExpressMiddleware } from "./types";
 
-export const authenticateJwt = passport.authenticate("jwt", { session: false });
+export const authenticateJwt: ExpressMiddleware = async (req, res, next) => {
+  // Set Content-Type to text/plain by default to avoid implicit XML parsing in the old frontend
+  res.setHeader("Content-Type", "text/plain");
+  return passport.authenticate("jwt", { session: false })(req, res, next);
+};
 
 /**
  * Middleware to check if user is logged in and parses database to check if user
  * actually exists in database.
  */
-export const checkIfUserIsLoggedIn = async (req, res, next) => {
+export const checkIfUserIsLoggedIn: ExpressMiddleware = async (
+  req,
+  res,
+  next,
+) => {
   try {
     const token = req.header("x-auth-token");
     console.log(token);

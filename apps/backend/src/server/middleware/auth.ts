@@ -1,6 +1,9 @@
 import { prisma } from "src/prisma/client";
 import * as jwt from "jsonwebtoken";
 import { env } from "src/lib/env";
+import passport from "passport";
+
+export const authenticateJwt = passport.authenticate("jwt", { session: false });
 
 /**
  * Middleware to check if user is logged in and parses database to check if user

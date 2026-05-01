@@ -1,6 +1,5 @@
 import { advertisementApiContracts } from "@mlc/lib/api";
 import { initServer } from "@ts-rest/express";
-import passport from "passport";
 import { prisma } from "src/prisma/client";
 import {
   getRequestUser,
@@ -13,6 +12,7 @@ import {
 import { imagePathsToS3Url, toErrorDetails } from "src/server/utils";
 import { deleteImage } from "src/server/utils/image";
 import { createHandlers } from "src/server";
+import { authenticateJwt } from "src/server/middleware/auth";
 
 const s = initServer();
 
@@ -30,7 +30,7 @@ const canManageAdvertisement = (userType: UserType | null | undefined) =>
   userType === "COMMUNITY";
 
 const create = s.route(advertisementApiContracts.create, {
-  middleware: [passport.authenticate("jwt", { session: false }), upload],
+  middleware: [authenticateJwt, upload],
   handler: async ({ req, body }) => {
     let error = "";
     let errorMessage = "";
@@ -423,7 +423,7 @@ const getAdsByOwner = s.route(advertisementApiContracts.getAdsByOwner, {
 });
 
 const update = s.route(advertisementApiContracts.update, {
-  middleware: [passport.authenticate("jwt", { session: false }), upload],
+  middleware: [authenticateJwt, upload],
   handler: async ({ params, req, body }) => {
     let error = "";
     let errorMessage = "";
@@ -616,7 +616,7 @@ const update = s.route(advertisementApiContracts.update, {
 });
 
 const handleDelete = s.route(advertisementApiContracts.delete, {
-  middleware: [passport.authenticate("jwt", { session: false })],
+  middleware: [authenticateJwt],
   handler: async ({ params, req }) => {
     try {
       const user = getRequestUser(req);
@@ -843,7 +843,7 @@ const deletePrice = s.route(advertisementApiContracts.deletePrice, {
 });
 
 const pricing = s.route(advertisementApiContracts.pricing, {
-  middleware: [passport.authenticate("jwt", { session: false })],
+  middleware: [authenticateJwt],
   handler: async () => {
     try {
       const segmentUserCounts = await (prisma as any).userSegments.groupBy({
@@ -920,7 +920,7 @@ const getSegmentPrices = s.route(advertisementApiContracts.getSegmentPrices, {
 const updateSegmentPrice = s.route(
   advertisementApiContracts.updateSegmentPrice,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async ({ params, req, body }) => {
       try {
         const segmentId = Number(params.segmentId);
@@ -987,7 +987,7 @@ const updateSegmentPrice = s.route(
 const deleteSegmentPrice = s.route(
   advertisementApiContracts.deleteSegmentPrice,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async ({ params, req }) => {
       try {
         const segmentId = Number(params.segmentId);

@@ -5,10 +5,11 @@ import {
   UserSegmentRelationShipType,
 } from "#prisma/client";
 import { initServer } from "@ts-rest/express";
-import * as passport from "passport";
 import { prisma } from "src/prisma/client";
 import { createHandlers } from "src/server";
 import { serializeForContract, toErrorDetails } from "src/server/utils";
+
+import { authenticateJwt } from "src/server/middleware/auth";
 
 const s = initServer();
 
@@ -473,7 +474,7 @@ const getSegmentByRelationship = async (
 const getAllForAuthenticatedUser = s.route(
   userSegmentsApiContracts.getAllForAuthenticatedUser,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async ({ req }: { req: any }) => {
       try {
         const userId = getAuthenticatedUserId(req.user);
@@ -512,7 +513,7 @@ const getAllForAuthenticatedUser = s.route(
 );
 
 const create = s.route(userSegmentsApiContracts.create, {
-  middleware: [passport.authenticate("jwt", { session: false })],
+  middleware: [authenticateJwt],
   handler: async ({ req, body }: { req: any; body: MutationBody }) => {
     try {
       const userId = getAuthenticatedUserId(req.user);
@@ -644,7 +645,7 @@ const create = s.route(userSegmentsApiContracts.create, {
 });
 
 const getMine = s.route(userSegmentsApiContracts.getMine, {
-  middleware: [passport.authenticate("jwt", { session: false })],
+  middleware: [authenticateJwt],
   handler: async ({ req }: { req: any }) => {
     try {
       const userId = getAuthenticatedUserId(req.user);
@@ -684,7 +685,7 @@ const getMine = s.route(userSegmentsApiContracts.getMine, {
 });
 
 const getByUserId = s.route(userSegmentsApiContracts.getByUserId, {
-  middleware: [passport.authenticate("jwt", { session: false })],
+  middleware: [authenticateJwt],
   handler: async ({ params }: { params: { userId: string } }) => {
     try {
       const rows = await loadUserSegments(params.userId);
@@ -713,7 +714,7 @@ const getByUserId = s.route(userSegmentsApiContracts.getByUserId, {
 });
 
 const deleteMine = s.route(userSegmentsApiContracts.deleteMine, {
-  middleware: [passport.authenticate("jwt", { session: false })],
+  middleware: [authenticateJwt],
   handler: async ({ req }: { req: any }) => {
     try {
       const userId = getAuthenticatedUserId(req.user);
@@ -757,7 +758,7 @@ const deleteMine = s.route(userSegmentsApiContracts.deleteMine, {
 });
 
 const upsertMine = s.route(userSegmentsApiContracts.upsertMine, {
-  middleware: [passport.authenticate("jwt", { session: false })],
+  middleware: [authenticateJwt],
   handler: async ({ req, body }: { req: any; body: MutationBody }) => {
     try {
       const userId = getAuthenticatedUserId(req.user);
@@ -847,7 +848,7 @@ const upsertMine = s.route(userSegmentsApiContracts.upsertMine, {
 });
 
 const updateByUserId = s.route(userSegmentsApiContracts.updateByUserId, {
-  middleware: [passport.authenticate("jwt", { session: false })],
+  middleware: [authenticateJwt],
   handler: async ({
     params,
     body,
@@ -942,7 +943,7 @@ const updateByUserId = s.route(userSegmentsApiContracts.updateByUserId, {
 });
 
 const getHomeSegment = s.route(userSegmentsApiContracts.getHomeSegment, {
-  middleware: [passport.authenticate("jwt", { session: false })],
+  middleware: [authenticateJwt],
   handler: async ({ req }: { req: any }) => {
     try {
       const userId = getAuthenticatedUserId(req.user);
@@ -990,7 +991,7 @@ const getHomeSegment = s.route(userSegmentsApiContracts.getHomeSegment, {
 });
 
 const getWorkSegment = s.route(userSegmentsApiContracts.getWorkSegment, {
-  middleware: [passport.authenticate("jwt", { session: false })],
+  middleware: [authenticateJwt],
   handler: async ({ req }: { req: any }) => {
     try {
       const userId = getAuthenticatedUserId(req.user);
@@ -1038,7 +1039,7 @@ const getWorkSegment = s.route(userSegmentsApiContracts.getWorkSegment, {
 });
 
 const getSchoolSegment = s.route(userSegmentsApiContracts.getSchoolSegment, {
-  middleware: [passport.authenticate("jwt", { session: false })],
+  middleware: [authenticateJwt],
   handler: async ({ req }: { req: any }) => {
     try {
       const userId = getAuthenticatedUserId(req.user);
@@ -1086,7 +1087,7 @@ const getSchoolSegment = s.route(userSegmentsApiContracts.getSchoolSegment, {
 });
 
 const getHomeSubSegment = s.route(userSegmentsApiContracts.getHomeSubSegment, {
-  middleware: [passport.authenticate("jwt", { session: false })],
+  middleware: [authenticateJwt],
   handler: async ({ req }: { req: any }) => {
     try {
       const userId = getAuthenticatedUserId(req.user);
@@ -1134,7 +1135,7 @@ const getHomeSubSegment = s.route(userSegmentsApiContracts.getHomeSubSegment, {
 });
 
 const getWorkSubSegment = s.route(userSegmentsApiContracts.getWorkSubSegment, {
-  middleware: [passport.authenticate("jwt", { session: false })],
+  middleware: [authenticateJwt],
   handler: async ({ req }: { req: any }) => {
     try {
       const userId = getAuthenticatedUserId(req.user);
@@ -1184,7 +1185,7 @@ const getWorkSubSegment = s.route(userSegmentsApiContracts.getWorkSubSegment, {
 const getSchoolSubSegment = s.route(
   userSegmentsApiContracts.getSchoolSubSegment,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async ({ req }: { req: any }) => {
       try {
         const userId = getAuthenticatedUserId(req.user);

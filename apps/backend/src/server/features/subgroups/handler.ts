@@ -1,10 +1,11 @@
 import { initServer } from "@ts-rest/express";
 import { Prisma, UserType } from "#prisma/client";
-import * as passport from "passport";
 
 import { prisma } from "src/prisma/client";
 import { createHandlers } from "src/server";
 import { subgroupApiContracts } from "@mlc/lib/api/contracts/subgroups";
+
+import { authenticateJwt } from "src/server/middleware/auth";
 
 const s = initServer();
 
@@ -31,7 +32,7 @@ const getSubgroupAdminType = async (userId: string) => {
 const getIsSubGroupManager = s.route(
   subgroupApiContracts.subgroups.getIsSubGroupManager,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async ({ req }) => {
       try {
         const userId = getRequestUserId(req);
@@ -79,7 +80,7 @@ const getIsSubGroupManager = s.route(
 const getManagedSubgroups = s.route(
   subgroupApiContracts.subgroups.getManagedSubgroups,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async ({ req }) => {
       try {
         const userId = getRequestUserId(req);
@@ -142,7 +143,7 @@ const getManagedSubgroups = s.route(
 const getSubgroupUsers = s.route(
   subgroupApiContracts.subgroups.getSubgroupUsers,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async ({ params }) => {
       try {
         const currentUsers = await prisma.subGroupMember.findMany({
@@ -187,7 +188,7 @@ const getSubgroupUsers = s.route(
 const getUsersNotInSubGroup = s.route(
   subgroupApiContracts.subgroups.getUsersNotInSubGroup,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async ({ req, params }) => {
       try {
         const userId = getRequestUserId(req);
@@ -257,7 +258,7 @@ const getUsersNotInSubGroup = s.route(
 const addUserToSubGroup = s.route(
   subgroupApiContracts.subgroups.addUserToSubGroup,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async ({ params }) => {
       try {
         const newMember = await prisma.user.findUnique({
@@ -332,7 +333,7 @@ const addUserToSubGroup = s.route(
 const updateUserRequestInSubGroup = s.route(
   subgroupApiContracts.subgroups.updateUserRequestInSubGroup,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async ({ params, body }) => {
       try {
         if (!["APPROVED", "REJECTED", "PENDING"].includes(body.action)) {
@@ -406,7 +407,7 @@ const updateUserRequestInSubGroup = s.route(
 const removeUserFromSubGroup = s.route(
   subgroupApiContracts.subgroups.removeUserFromSubGroup,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async ({ params }) => {
       try {
         const deletedUser = await prisma.subGroupMember.deleteMany({
@@ -453,7 +454,7 @@ const removeUserFromSubGroup = s.route(
 const removeRejectedRequestFromSubGroup = s.route(
   subgroupApiContracts.subgroups.removeRejectedRequestFromSubGroup,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async ({ params }) => {
       try {
         const rejectedRequest = await prisma.subGroupMember.findUnique({
@@ -596,7 +597,7 @@ const getSubgroupsByName = s.route(
 );
 
 const createSubgroup = s.route(subgroupApiContracts.subgroup.createSubgroup, {
-  middleware: [passport.authenticate("jwt", { session: false })],
+  middleware: [authenticateJwt],
   handler: async ({ req, body }) => {
     try {
       const userId = getRequestUserId(req);
@@ -675,7 +676,7 @@ const createSubgroup = s.route(subgroupApiContracts.subgroup.createSubgroup, {
 });
 
 const deleteSubgroup = s.route(subgroupApiContracts.subgroup.deleteSubgroup, {
-  middleware: [passport.authenticate("jwt", { session: false })],
+  middleware: [authenticateJwt],
   handler: async ({ req, params }) => {
     try {
       const userId = getRequestUserId(req);
@@ -747,7 +748,7 @@ const deleteSubgroup = s.route(subgroupApiContracts.subgroup.deleteSubgroup, {
 });
 
 const updateSubgroup = s.route(subgroupApiContracts.subgroup.updateSubgroup, {
-  middleware: [passport.authenticate("jwt", { session: false })],
+  middleware: [authenticateJwt],
   handler: async ({ req, params, body }) => {
     try {
       const userId = getRequestUserId(req);

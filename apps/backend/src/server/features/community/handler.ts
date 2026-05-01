@@ -2,19 +2,19 @@ import { initServer } from "@ts-rest/express";
 import { createHandlers } from "src/server";
 import { prisma } from "src/prisma/client";
 import { toErrorDetails } from "src/server/utils";
-import * as passport from "passport";
 import { communityApiContracts } from "@mlc/lib/api";
 import { getRequestUser, parseIntegerParam, toSerialized } from "./utils";
 import { commentApiHandlers } from "./comment";
 import { commentInteractionApiHandlers } from "./commentInteractions";
 import { advertisementApiHandlers } from "./advertisement";
+import { authenticateJwt } from "src/server/middleware/auth";
 
 const s = initServer();
 
 const communityCreateCollaborator = s.route(
   communityApiContracts.community.createCollaborator,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async ({ req, body }) => {
       try {
         const user = getRequestUser(req);
@@ -121,7 +121,7 @@ const communityGetCollaborators = s.route(
 const communityCreateVolunteer = s.route(
   communityApiContracts.community.createVolunteer,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async ({ req, body }) => {
       try {
         const user = getRequestUser(req);
@@ -228,7 +228,7 @@ const communityGetVolunteers = s.route(
 const communityCreateDonor = s.route(
   communityApiContracts.community.createDonor,
   {
-    middleware: [passport.authenticate("jwt", { session: false })],
+    middleware: [authenticateJwt],
     handler: async ({ req, body }) => {
       try {
         const user = getRequestUser(req);

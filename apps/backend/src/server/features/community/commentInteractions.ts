@@ -3,8 +3,8 @@ import { initServer } from "@ts-rest/express";
 import { toErrorDetails } from "src/server/utils";
 import { getRequestUser, parseIntegerParam, toSerialized } from "./utils";
 import { prisma } from "src/prisma/client";
-import passport from "passport";
-import { createHandlers, Handlers } from "src/server";
+import { createHandlers } from "src/server";
+import { authenticateJwt } from "src/server/middleware/auth";
 
 const s = initServer();
 
@@ -134,7 +134,7 @@ const commentDislikeGetAll = s.route(
 );
 
 const commentLike = s.route(commentInteractionApiContracts.commentLike, {
-  middleware: [passport.authenticate("jwt", { session: false })],
+  middleware: [authenticateJwt],
   handler: async ({ params, req }) => {
     try {
       const user = getRequestUser(req);
@@ -185,7 +185,7 @@ const commentLike = s.route(commentInteractionApiContracts.commentLike, {
 });
 
 const commentDislike = s.route(commentInteractionApiContracts.commentDislike, {
-  middleware: [passport.authenticate("jwt", { session: false })],
+  middleware: [authenticateJwt],
   handler: async ({ params, req }) => {
     try {
       const user = getRequestUser(req);

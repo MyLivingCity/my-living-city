@@ -34,6 +34,12 @@ export const configDefaultHttpLogger: Options = {
   // Set to `false` to prevent standard serializers from being wrapped.
   wrapSerializers: true,
 
+  autoLogging: {
+    ignore: function (req) {
+      return req.method === "OPTIONS";
+    },
+  },
+
   // Define a custom logger level
   customLogLevel: function (_, res, err: unknown) {
     if (res.statusCode >= 400 && res.statusCode < 500) {

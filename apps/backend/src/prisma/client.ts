@@ -1,6 +1,7 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "#prisma/client";
 import { env } from "src/lib/env";
+import { log } from "src/logger";
 
 const adapter = new PrismaPg({
   connectionString: env.DATABASE_URL,
@@ -14,10 +15,13 @@ const adapter = new PrismaPg({
  */
 export const prisma = new PrismaClient({
   adapter,
-  log: ["query"],
+  log: [{ emit: "event", level: "query" }],
   errorFormat: "pretty",
 });
 
 prisma.$on("query", (event) => {
-  console.log(`Query Execution Time: ${event.duration}ms\n`);
+  log.info(`Query: ${event.query}
+    Params: ${event.params}
+    Execution time: ${event.duration}ms
+`);
 });

@@ -131,11 +131,6 @@ export const segmentApiContracts = c.router(
     ),
     subSegment: c.router(
       {
-        //  /delete/:subSegmentId
-        //  /getAll
-        //  /getBySubSegmentId/:subSegmentId
-        //  /getBySegmentId/:segmentId
-        //  /update/:subSegmentId
         create: {
           method: "POST",
           path: "/create",
@@ -147,7 +142,7 @@ export const segmentApiContracts = c.router(
             radius: true,
           }),
           responses: {
-            201: SimpleMessageResponseSchema,
+            200: SimpleMessageResponseSchema, //should be 201, semantically - matching existing
             400: ErrorResponseSchema,
             403: ErrorResponseSchema,
           },
@@ -210,14 +205,98 @@ export const segmentApiContracts = c.router(
     ),
     superSegment: c.router(
       {
-        /*   
-          /create 
-          /getAll
-          /getByCountryProvince
-          /getById/:superSegmentId
-          /delete/:deleteId
-          /update/:superSegId
-        */
+        create: {
+          method: "POST",
+          path: "/create",
+          body: SegmentSchema.pick({
+            name: true,
+            country: true,
+            province: true,
+          }),
+          responses: {
+            200: SimpleMessageResponseSchema, //should be 201, semantically - matching existing
+            400: ErrorResponseSchema,
+            403: ErrorResponseSchema,
+          },
+          summary: "Create a new superSegment",
+        },
+        getAll: {
+          method: "GET",
+          path: "/getAll",
+          responses: {
+            200: z.array(SegmentSchema),
+            400: ErrorResponseSchema,
+          },
+          summary: "Get all superSegments",
+        },
+        getByCountryProvince: {
+          method: "GET",
+          path: "/getByCountryProvince",
+          query: z.object({
+            country: z.string(),
+            province: z.string(),
+          }),
+          responses: {
+            200: z.object({
+              superSegId: z.string(),
+              name: z.string(),
+              country: z.string(),
+              province: z.string(),
+              createdAt: z.date(),
+              updatedAt: z.date(),
+            }),
+            400: ErrorResponseSchema,
+          },
+          summary:
+            "Get all superSegments matching both country and province queries",
+        },
+        getBySuperSegmentId: {
+          method: "GET",
+          path: "/getBySubSegmentId/:superSegmentId",
+          pathParams: z.object({ subSegmentId: z.coerce.number() }),
+          responses: {
+            200: z.array(SegmentSchema),
+            400: ErrorResponseSchema,
+          },
+          summary: "Get a subsegment by its segId",
+        },
+        /**
+         * the legacy version of this doesn't differ from DELETE
+         * of a standard segment, other than checking that it's
+         * a superSegment - should be removing relations, too
+         */
+        delete: {
+          method: "DELETE",
+          path: "/delete/:deleteId",
+          pathParams: z.object({ deleteId: z.coerce.number() }),
+          responses: {
+            204: z.undefined(),
+            400: ErrorResponseSchema,
+            403: ErrorResponseSchema,
+            404: ErrorResponseSchema,
+          },
+          summary: "Delete a superSegment by segId",
+        },
+        update: {
+          method: "PATCH",
+          path: "/update/:superSegId",
+          pathParams: z.object({ superSegId: z.coerce.number() }),
+          body: z.object({
+            superSegId: z.string(),
+            name: z.string(),
+            country: z.string(),
+            province: z.string(),
+            createdAt: z.date(),
+            updatedAt: z.date(),
+          }),
+          responses: {
+            200: z.undefined(),
+            400: ErrorResponseSchema,
+            403: ErrorResponseSchema,
+            404: ErrorResponseSchema,
+          },
+          summary: "Update a superSegment by segId",
+        },
       },
       {
         pathPrefix: "/superSegment",

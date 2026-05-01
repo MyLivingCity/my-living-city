@@ -2,7 +2,7 @@ import { z } from "zod";
 import { initContract } from "@ts-rest/core";
 import { SimpleMessageResponseSchema, ErrorResponseSchema } from "../common";
 
-export const HybridErrorSchema = z.union([
+const HybridErrorSchema = z.union([
   z.object({ error: z.string() }), // Legacy shape: { error: "message" }
   ErrorResponseSchema, // New project shape: { message: "...", details: { ... } }
 ]);
@@ -12,19 +12,48 @@ const BaseDetailsSchema = z.object({
   streetAddress: z.string().nullable(),
   postalCode: z.string().nullable(),
   userId: z.string().cuid(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date().nullable(),
   displayFName: z.string().nullable(),
   displayLName: z.string().nullable(),
 });
 
-export const SchoolDetailsSchema = BaseDetailsSchema.extend({
+const SchoolDetailsSchema = BaseDetailsSchema.extend({
   faculty: z.string().nullable(),
-  programCompletionDate: z.date().nullable(),
+  programCompletionDate: z.coerce.date().nullable(),
 });
 
-export const WorkDetailsSchema = BaseDetailsSchema.extend({
+const SchoolDetailsCreateSchema = SchoolDetailsSchema.pick({
+  streetAddress: true,
+  postalCode: true,
+  faculty: true,
+  programCompletionDate: true,
+  userId: true,
+});
+
+const SchoolDetailsUpdateSchema = SchoolDetailsSchema.pick({
+  streetAddress: true,
+  postalCode: true,
+  displayFName: true,
+  displayLName: true,
+});
+
+const WorkDetailsSchema = BaseDetailsSchema.extend({
   company: z.string().nullable(),
+});
+
+const WorkDetailsCreateSchema = WorkDetailsSchema.pick({
+  streetAddress: true,
+  postalCode: true,
+  company: true,
+  userId: true,
+});
+
+const WorkDetailsUpdateSchema = WorkDetailsSchema.pick({
+  streetAddress: true,
+  postalCode: true,
+  displayFName: true,
+  displayLName: true,
 });
 
 const c = initContract();
@@ -35,13 +64,7 @@ export const detailsApiContracts = c.router({
       create: {
         method: "POST",
         path: "/create",
-        body: SchoolDetailsSchema.pick({
-          streetAddress: true,
-          postalCode: true,
-          faculty: true,
-          programCompletionDate: true,
-          userId: true,
-        }),
+        body: SchoolDetailsCreateSchema,
         responses: {
           200: SchoolDetailsSchema,
           400: HybridErrorSchema,
@@ -63,9 +86,9 @@ export const detailsApiContracts = c.router({
       },
       get: {
         method: "GET",
-        path: "/get/:id",
+        path: "/get/:id", //userId
         pathParams: z.object({
-          id: z.number(),
+          id: z.string().cuid(), //userId
         }),
         responses: {
           200: SchoolDetailsSchema,
@@ -121,12 +144,7 @@ export const detailsApiContracts = c.router({
       create: {
         method: "POST",
         path: "/create",
-        body: WorkDetailsSchema.pick({
-          streetAddress: true,
-          postalCode: true,
-          company: true,
-          userId: true,
-        }),
+        body: WorkDetailsCreateSchema,
         responses: {
           200: WorkDetailsSchema,
           400: HybridErrorSchema,
@@ -164,7 +182,7 @@ export const detailsApiContracts = c.router({
         pathParams: z.object({
           id: z.string().cuid(), //userId
         }),
-        body: WorkDetailsSchema.partial(),
+        body: WorkDetailsUpdateSchema,
         responses: {
           200: WorkDetailsSchema,
           400: HybridErrorSchema,
@@ -193,3 +211,13 @@ export const detailsApiContracts = c.router({
     },
   ),
 });
+
+export {
+  HybridErrorSchema,
+  SchoolDetailsSchema,
+  SchoolDetailsCreateSchema,
+  SchoolDetailsUpdateSchema,
+  WorkDetailsSchema,
+  WorkDetailsCreateSchema,
+  WorkDetailsUpdateSchema,
+};

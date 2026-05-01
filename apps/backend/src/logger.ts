@@ -69,6 +69,6 @@ export const configDefaultHttpLogger: Options = {
     req: "request",
     res: "response",
     err: "error",
-    responseTime: "timeTaken",
+    responseTime: "timeTakenMsec",
   },
 };

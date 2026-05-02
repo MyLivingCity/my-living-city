@@ -1,9 +1,14 @@
 # Troubleshooting
+This document captures common issues encountered during development of the My Living City project.
+It will include their causes and recommended resolutions.
+This document isn't recommended if you haven't read CONTRIBUTING.md yet.
 
-> [!IMPORTANT]
-> This document captures common issues encountered during development of the My Living City project.
-> It will include their causes and recommended resolutions.
-> This document isn't recommended if you haven't read CONTRIBUTING.md yet.
+> [!NOTE]
+> A substantial amount of issues described in this document and otherwise enountered by
+> the BCIT SSD 2025/26 development team were the result of using Windows-backed software such as powershell
+> and developing in a Windows environment. If you are on Windows, we recommend using
+> [Git Bash](https://git-scm.com/install/windows) or [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install)
+> while contributing to this application.
 
 ## Local Database Not Populating (PostgreSQL):
 ***Potential Problems:***

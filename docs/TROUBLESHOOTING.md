@@ -5,6 +5,8 @@
 > It will include their causes and recommended resolutions.
 > This document isn't recommended if you haven't read CONTRIBUTING.md yet.
 
+> If anything here doesn't solve your issue, we recommend Googling or using AI from there
+
 ### Local Database Not Populating (PostgreSQL):
 ***Potential Problems:***
  - Application boots normally, but login attempts fail
@@ -29,11 +31,12 @@ Use GitBash instead of PowerShell when generating or handling the .tar snapshot.
 ***Potential Problem:***
 Attempting to import a contract from the shared @mlc/lib/api/contracts package and seeing errors:
 
-ex.\
+ex.
 ```
   Module '"@mlc/lib/api/contracts"' declares 'moderationApiContracts' locally, 
   but it is not exported. ts(2459)
 ```
+\
 
 The errors occur even though your imports appear to be correct. 
 Type inference inside the router fails, and the contract cannot be used.
@@ -53,10 +56,11 @@ Delete and reinstall your dependencies.
 You may encounter an error like this when trying to compose both the old and new versions
 of My Living City: 
 
-ex.\
+ex.
 ```
  target mlc-backend: failed to solve: process "/bin/sh -c pnpm --filter @mlc/backend exec prisma generate" did not complete successfully: exit code: 1
 ```
+\
 
 ***Solution:***
 Declare the DATABASE_URL environment variable in apps/backend/.env has the correct value:

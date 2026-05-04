@@ -1,3 +1,6 @@
+> [!IMPORTANT]
+> MUST READ DOCUMENT FOR PROCEEDING ON THE PROJECT
+
 # Contributing
 
 ## Prerequisites
@@ -14,6 +17,7 @@ Check if PNPM is available: `pnpm --version`
 [Install Node using NVM](https://github.com/nvm-sh/nvm?tab=readme-ov-file#installing-and-updating)\
 [Install Node using NVM for Windows](https://github.com/coreybutler/nvm-windows)\
 [Install PNPM](https://pnpm.io/installation)
+[PNPM Workspaces Details](https://pnpm.io/workspaces)
 
 ### PostgreSQL CLI tools
 
@@ -24,9 +28,13 @@ Check if PNPM is available: `pnpm --version`
 
 [Install PostgreSQL](https://www.postgresql.org/download/)
 
+> Ensure pnpm is installed before proceeding 'pnpm install' in your terminal.
+> We recommend using GitBash for the best outcomes.
+> Without it, you will run into errors with commands such as pg_dump.
+
 ## Setup
 
-#### 1. In each of the following directories, copy and rename `.env.example` -> `.env` (no file extension):
+#### 1. In EACH of the following directories, copy and rename `.env.example` -> `.env` (no file extension):
 > `server/` \
 > `frontend/` \
 > `apps/frontend/` \

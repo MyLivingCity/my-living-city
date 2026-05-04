@@ -1,4 +1,5 @@
 import express from "express";
+import { Express } from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
 import userApiHandlers from "./server/features/users/handler";
@@ -18,7 +19,7 @@ import { initStrategies } from "./lib/auth/strategy";
 import { pinoHttp } from "pino-http";
 import { configDefaultHttpLogger } from "./logger";
 
-const app = express();
+export const app: Express = express();
 
 app.use(pinoHttp(configDefaultHttpLogger));
 
@@ -51,6 +52,8 @@ addEndpoints(app, proposalApiHandlers);
 addEndpoints(app, publicProfileApiHandlers);
 
 const port = process.env["port"] || 3001;
-app.listen(port, () => {
-  console.log(`Listening at http://localhost:${port}`);
-});
+if (process.env["VITEST"] !== "true") {
+  app.listen(port, () => {
+    console.log(`Listening at http://localhost:${port}`);
+  });
+}

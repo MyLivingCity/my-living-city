@@ -28,7 +28,8 @@
     "supertest": "^7.2.2",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
-    "vitest": "^4.1.4"
+    "vitest": "^4.1.4",
+    "vitest-mock-extended": "^4.0.0"
   },
   "dependencies": {
     "@mlc/config": "workspace:*",

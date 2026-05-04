@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 import { initServer } from "@ts-rest/express";
 import { createHandlers } from "src/server";
-
+import { prisma } from "src/prisma/client";
 import { toErrorDetails } from "src/server/utils";
 import { adminApiContracts } from "@mlc/lib/api/contracts/admin";
 import { User } from "@mlc/lib/api/contracts/users";
@@ -571,7 +571,7 @@ const sendResetEmail = s.route(adminApiContracts.sendEmail.send, {
 // email
 // ============================================================================
 const sendEmailVerification = s.route(
-  adminApiContracts.emailVerification.create, // Update contract to .get
+  adminApiContracts.emailVerification.sendEmailVerification, // Update contract to .get
   {
     handler: async ({ params, res }) => {
       const { userId, verificationCode } = params;
@@ -624,6 +624,8 @@ export default createHandlers({
       getBadPostingThreshold,
       updateBadPostingThreshold,
     },
-    sendEmailVerification,
+    emailVerification: {
+      sendEmailVerification,
+    },
   },
 });

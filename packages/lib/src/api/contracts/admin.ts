@@ -207,7 +207,7 @@ export const adminApiContracts = c.router({
   ),
   emailVerification: c.router(
     {
-      create: {
+      sendEmailVerification: {
         method: "GET",
         path: "/checkVerificationCode/:userId/:verificationCode",
         pathParams: z.object({

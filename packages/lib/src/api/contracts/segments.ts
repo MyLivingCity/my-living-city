@@ -3,6 +3,9 @@ import z from "zod";
 import {
   DecimalLikeSchema,
   ErrorResponseSchema,
+  LatSchema,
+  LonSchema,
+  RadiusSchema,
   SimpleMessageResponseSchema,
 } from "../common";
 
@@ -21,12 +24,12 @@ const SegmentParentSchema = z.object({
 const SegmentBaseSchema = z.object({
   country: z.string().nullable(),
   createdAt: z.coerce.date(),
-  lat: DecimalLikeSchema.nullable(),
-  lon: DecimalLikeSchema.nullable(),
+  lat: z.union([LatSchema, DecimalLikeSchema]).nullable(),
+  lon: z.union([LonSchema, DecimalLikeSchema]).nullable(),
   name: z.string(),
   parentId: z.number().nullable(),
   province: z.string().nullable(),
-  radius: DecimalLikeSchema.nullable(),
+  radius: z.union([RadiusSchema, DecimalLikeSchema]).nullable(),
   segId: z.number(),
   segmentType: SegmentType,
   updatedAt: z.coerce.date().nullable(),

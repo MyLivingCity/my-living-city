@@ -6,3 +6,6 @@ export * from "./contracts/segments";
 export * from "./contracts/moderation";
 export * from "./contracts/userSegments";
 export * from "./contracts/community";
+export * from "./contracts/extraProposalPricing";
+export * from "./contracts/feedbackRating";
+export * from "./contracts/googleMap";

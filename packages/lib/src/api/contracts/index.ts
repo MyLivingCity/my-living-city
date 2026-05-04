@@ -7,6 +7,9 @@ import { moderationApiContracts } from "./moderation";
 import { subgroupApiContracts } from "./subgroups";
 import { userSegmentsApiContracts } from "./userSegments";
 import { communityApiContracts } from "./community";
+import { extraProposalPricingApiContracts } from "./extraProposalPricing";
+import { feedbackRatingApiContracts } from "./feedbackRating";
+import { googleMapApiContracts } from "./googleMap";
 
 const c = initContract();
 
@@ -19,4 +22,7 @@ export const allApiContracts = c.router({
   subgroups: subgroupApiContracts,
   userSegments: userSegmentsApiContracts,
   community: communityApiContracts,
+  extraProposalPricing: extraProposalPricingApiContracts,
+  feedbackRating: feedbackRatingApiContracts,
+  googleMap: googleMapApiContracts,
 });

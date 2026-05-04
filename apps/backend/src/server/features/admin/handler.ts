@@ -517,7 +517,7 @@ const updateBadPostingThreshold = s.route(
 // ============================================================================
 // sendEmailReset
 // ============================================================================
-const sendResetEmail = s.route(adminApiContracts.sendEmailReset.send, {
+const sendResetEmail = s.route(adminApiContracts.sendEmail.send, {
   handler: async ({ body }) => {
     try {
       const { email } = body;
@@ -613,7 +613,7 @@ export default createHandlers({
       create: createReport,
       delete: deleteReport,
     },
-    sendEmailReset: {
+    sendEmail: {
       send: sendResetEmail,
     },
     threshhold: {

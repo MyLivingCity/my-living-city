@@ -1,7 +1,6 @@
 import { initContract } from "@ts-rest/core";
 import z from "zod";
 import {
-  DateTimeString,
   DecimalLikeSchema,
   ErrorResponseSchema,
   SimpleMessageResponseSchema,
@@ -21,7 +20,7 @@ const SegmentParentSchema = z.object({
 
 const SegmentBaseSchema = z.object({
   country: z.string().nullable(),
-  createdAt: DateTimeString,
+  createdAt: z.coerce.date(),
   lat: DecimalLikeSchema.nullable(),
   lon: DecimalLikeSchema.nullable(),
   name: z.string(),
@@ -30,7 +29,7 @@ const SegmentBaseSchema = z.object({
   radius: DecimalLikeSchema.nullable(),
   segId: z.number(),
   segmentType: SegmentType,
-  updatedAt: DateTimeString.nullable(),
+  updatedAt: z.coerce.date().nullable(),
 });
 
 export const SegmentSchema = SegmentBaseSchema.extend({
@@ -83,6 +82,7 @@ export const segmentApiContracts = c.router(
         getById: {
           method: "GET",
           path: "/getBySegmentId/:segmentId",
+          pathParams: z.object({ segmentId: z.coerce.number() }),
           responses: {
             200: SegmentSchema,
             400: z.union([SimpleMessageResponseSchema, ErrorResponseSchema]),
@@ -92,6 +92,7 @@ export const segmentApiContracts = c.router(
         getBySuperSegId: {
           method: "GET",
           path: "/getBySuperSegId/:superSegId",
+          pathParams: z.object({ superSegId: z.coerce.number() }),
           responses: {
             200: z.array(SegmentSchema),
             400: z.union([z.string(), ErrorResponseSchema]),
@@ -102,6 +103,7 @@ export const segmentApiContracts = c.router(
         getByType: {
           method: "GET",
           path: "/getByType/:type",
+          pathParams: z.object({ type: SegmentType }),
           responses: {
             200: z.array(SegmentSchema),
             400: z.union([
@@ -117,6 +119,7 @@ export const segmentApiContracts = c.router(
         getChildrenOfParent: {
           method: "GET",
           path: "/getChildren/:parentId",
+          pathParams: z.object({ parentId: z.coerce.number() }),
           responses: {
             200: z.array(SegmentSchema),
             400: ErrorResponseSchema.or(SimpleMessageResponseSchema),
@@ -178,7 +181,7 @@ export const segmentApiContracts = c.router(
           path: "/getBySubSegmentId/:subSegmentId",
           pathParams: z.object({ subSegmentId: z.coerce.number() }),
           responses: {
-            200: z.array(SegmentSchema),
+            200: SegmentSchema,
             400: ErrorResponseSchema,
           },
           summary: "Get a subsegment by its segId",

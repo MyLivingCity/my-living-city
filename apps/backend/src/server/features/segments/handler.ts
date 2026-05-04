@@ -4,7 +4,15 @@ import { prisma } from "src/prisma/client";
 import { initServer } from "@ts-rest/express";
 import { createHandlers } from "src/server";
 import { serializeForContract, toErrorDetails } from "src/server/utils";
-import { authenticateJwt } from "src/server/middleware/auth";
+import { User } from "@mlc/lib/api/contracts/users";
+import passport from "passport";
+
+import {
+  createSubSegmentEntry,
+  deleteSubSegmentEntry,
+  getAllSubSegments,
+  getSubSegmentBySegId,
+} from "./service";
 
 const s = initServer();
 
@@ -111,7 +119,7 @@ const create = s.route(segmentApiContracts.segment.create, {
   middleware: [passport.authenticate("jwt", { session: false })],
   handler: async ({ req, body }) => {
     try {
-      const userId = (req.user as { id?: string } | undefined)?.id;
+      const userId = (req.user as User)?.id;
 
       if (!userId) {
         return {
@@ -269,7 +277,7 @@ const getAll = s.route(segmentApiContracts.segment.getAll, {
 const getById = s.route(segmentApiContracts.segment.getById, {
   handler: async ({ params }) => {
     try {
-      const segmentId = parseSegmentId(params.segmentId);
+      const { segmentId } = params;
 
       if (segmentId === null) {
         return {
@@ -325,7 +333,7 @@ const getById = s.route(segmentApiContracts.segment.getById, {
 const getBySuperSegId = s.route(segmentApiContracts.segment.getBySuperSegId, {
   handler: async ({ params }) => {
     try {
-      const superSegId = parseSegmentId(params.superSegId);
+      const { superSegId } = params;
 
       if (superSegId === null) {
         return {
@@ -441,7 +449,7 @@ const getChildrenOfParent = s.route(
   {
     handler: async ({ params }) => {
       try {
-        const parentId = parseSegmentId(params.parentId);
+        const { parentId } = params;
 
         if (parentId === null) {
           return {
@@ -497,7 +505,129 @@ const getChildrenOfParent = s.route(
     },
   },
 );
+// ============================================================================
+// subSegment
+// ============================================================================
+const createSubSegment = s.route(segmentApiContracts.subSegment.create, {
+  middleware: [passport.authenticate("jwt", { session: false })],
+  handler: async ({ body, req }) => {
+    const user = req.user as User;
 
+    try {
+      await createSubSegmentEntry(user.id, body);
+
+      return {
+        status: 200,
+        body: {
+          message: "Subsegment successfully created",
+        },
+      };
+    } catch (error) {
+      const status = error === "Insufficient permissions" ? 403 : 400;
+
+      return {
+        status,
+        body: {
+          message: "An error occurred while trying to create a subsegment.",
+          details: toErrorDetails(error),
+        },
+      };
+    }
+  },
+});
+
+const deleteSubSegment = s.route(segmentApiContracts.subSegment.delete, {
+  middleware: [passport.authenticate("jwt", { session: false })],
+  handler: async ({ params, req }) => {
+    const user = req.user as User;
+    const { subSegmentId } = params;
+
+    try {
+      await deleteSubSegmentEntry(user.id, subSegmentId);
+
+      return {
+        status: 204,
+        body: undefined,
+      };
+    } catch (error) {
+      let status: 400 | 403 | 404 = 400;
+
+      if (error === "Insufficient permissions") status = 403;
+      if (error === "Subsegment not found") status = 404;
+
+      return {
+        status,
+        body: {
+          message: "An error occurred while trying to delete the subsegment.",
+          details: toErrorDetails(error),
+        },
+      };
+    }
+  },
+});
+
+const getAllSubSegmentsHandler = s.route(
+  segmentApiContracts.subSegment.getAll,
+  {
+    handler: async () => {
+      try {
+        const subSegments = await getAllSubSegments();
+
+        return {
+          status: 200,
+          body: subSegments,
+        };
+      } catch (error) {
+        return {
+          status: 400,
+          body: {
+            message: "An error occurred while trying to get all subsegments.",
+            details: toErrorDetails(error),
+          },
+        };
+      }
+    },
+  },
+);
+
+const getBySubSegmentId = s.route(
+  segmentApiContracts.subSegment.getBySubSegmentId,
+  {
+    handler: async ({ params }) => {
+      const { subSegmentId } = params;
+
+      try {
+        const subSegment = await getSubSegmentBySegId(subSegmentId);
+
+        if (!subSegment) {
+          return {
+            status: 400,
+            body: {
+              message: "Subsegment not found",
+              details: toErrorDetails("Subsegment not found"),
+            },
+          };
+        }
+
+        return {
+          status: 200,
+          body: subSegment,
+        };
+      } catch (error) {
+        return {
+          status: 400,
+          body: {
+            message: "An error occurred while trying to get that subsegment.",
+            details: toErrorDetails(error),
+          },
+        };
+      }
+    },
+  },
+);
+// ============================================================================
+// superSegment
+// ============================================================================
 export default createHandlers({
   schema: segmentApiContracts,
   router: {
@@ -510,13 +640,12 @@ export default createHandlers({
       getChildrenOfParent,
     },
     subSegment: {
-      create,
-      delete,    
-      getAll,  
+      create: createSubSegment,
+      delete: deleteSubSegment,
+      getAll: getAllSubSegmentsHandler,
       getBySubSegmentId,
       getBySegmentId,
-
-    },
+    } /* 
     superSegment: {
       create,
       getAll,
@@ -524,6 +653,6 @@ export default createHandlers({
       getById/:superSegmentId,
       delete/:deleteId,
       update/:superSegId,
-    },
+    }, */,
   },
 });

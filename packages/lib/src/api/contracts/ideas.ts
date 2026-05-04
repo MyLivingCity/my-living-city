@@ -189,8 +189,28 @@ const IdeaDetailSchema = IdeaSchema.extend({
   segments: z.array(SegmentSummarySchema),
 });
 
+const ChampionIdeaResponseSchema = z.object({
+  message: z.string(),
+  updatedIdea: z.unknown(),
+});
+
 export const ideaApiContracts = c.router(
   {
+    champion: c.router(
+      {
+        championIdea: {
+          method: "POST",
+          path: "/:ideaId",
+          body: z.undefined(),
+          responses: {
+            200: ChampionIdeaResponseSchema,
+            400: ErrorResponseSchema,
+          },
+          summary: "Champion an idea (JWT required, cannot champion own idea)",
+        },
+      },
+      { pathPrefix: "/champion" },
+    ),
     getAll: {
       method: "GET",
       path: "/getall",

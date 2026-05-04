@@ -914,10 +914,112 @@ const deleteById = s.route(userApiContracts.deleteById, {
   },
 });
 
+const ENHANCED_MEMBER_ADMIN_ROLES = new Set<UserType>([
+  UserType.SUPER_ADMIN,
+  UserType.ADMIN,
+  UserType.MOD,
+]);
+
+const getEnhancedMemberStatus = s.route(
+  userApiContracts.enhancedMember.getStatus,
+  {
+    middleware: [authenticateJwt],
+    handler: async ({ params }) => {
+      try {
+        const { userId } = params;
+
+        const enhancedMember = await prisma.enhancedMember.findUnique({
+          where: { userId },
+          select: { id: true, userId: true },
+        });
+
+        return {
+          status: 200,
+          body: {
+            userId,
+            isEnhancedMember: !!enhancedMember,
+          },
+        };
+      } catch (error) {
+        return {
+          status: 500,
+          body: {
+            message: "Unable to fetch enhanced member status",
+            details: toErrorDetails(error),
+          },
+        };
+      }
+    },
+  },
+);
+
+const promoteEnhancedMember = s.route(userApiContracts.enhancedMember.promote, {
+  middleware: [authenticateJwt],
+  handler: async ({ body, req }) => {
+    try {
+      const { userId } = body;
+
+      const requestUser = req.user as
+        | { id: string; userType?: string }
+        | undefined;
+      const isSelfPromotion = requestUser?.id === userId;
+      const isAdmin = requestUser?.userType
+        ? ENHANCED_MEMBER_ADMIN_ROLES.has(requestUser.userType as UserType)
+        : false;
+
+      if (!isSelfPromotion && !isAdmin) {
+        return {
+          status: 403,
+          body: { message: "Forbidden" },
+        } as never;
+      }
+
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { id: true },
+      });
+
+      if (!user) {
+        return {
+          status: 404,
+          body: { message: "User not found" },
+        } as never;
+      }
+
+      const promoted = await prisma.enhancedMember.upsert({
+        where: { userId },
+        update: {},
+        create: { userId },
+      });
+
+      return {
+        status: 200,
+        body: {
+          message: "User promoted to enhanced member",
+          userId: promoted.userId,
+          isEnhancedMember: true,
+        },
+      };
+    } catch (error) {
+      return {
+        status: 500,
+        body: {
+          message: "Unable to promote user to enhanced member",
+          details: toErrorDetails(error),
+        },
+      };
+    }
+  },
+});
+
 export default createHandlers({
   schema: userApiContracts,
   router: {
     deleteById,
+    enhancedMember: {
+      getStatus: getEnhancedMemberStatus,
+      promote: promoteEnhancedMember,
+    },
     getAll,
     getAllRegularUsers,
     getByEmail,

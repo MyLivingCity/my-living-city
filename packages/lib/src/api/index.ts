@@ -10,3 +10,6 @@ export * from "./contracts/details";
 export * from "./contracts/ratings";
 export * from "./contracts/proposals";
 export * from "./contracts/publicProfile";
+export * from "./contracts/extraProposalPricing";
+export * from "./contracts/feedbackRating";
+export * from "./contracts/googleMap";

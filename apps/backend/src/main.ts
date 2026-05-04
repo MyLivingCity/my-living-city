@@ -13,6 +13,9 @@ import detailsApiHandlers from "./server/features/details/handler";
 import ratingApiHandlers from "./server/features/ratings/handler";
 import proposalApiHandlers from "./server/features/proposals/handler";
 import publicProfileApiHandlers from "./server/features/publicProfile/handler";
+import extraProposalPricingApiHandlers from "./server/features/extraProposalPricing/handler";
+import feedbackRatingApiHandlers from "./server/features/feedbackRating/handler";
+import googleMapApiHandlers from "./server/features/googleMap/handler";
 import { addEndpoints } from "./server";
 import { initStrategies } from "./lib/auth/strategy";
 import { pinoHttp } from "pino-http";
@@ -49,6 +52,9 @@ addEndpoints(app, detailsApiHandlers);
 addEndpoints(app, ratingApiHandlers);
 addEndpoints(app, proposalApiHandlers);
 addEndpoints(app, publicProfileApiHandlers);
+addEndpoints(app, extraProposalPricingApiHandlers);
+addEndpoints(app, feedbackRatingApiHandlers);
+addEndpoints(app, googleMapApiHandlers);
 
 const port = process.env["port"] || 3001;
 app.listen(port, () => {

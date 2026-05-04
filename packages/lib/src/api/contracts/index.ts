@@ -10,6 +10,9 @@ import { communityApiContracts } from "./community";
 import { ratingApiContracts } from "./ratings";
 import { proposalApiContracts } from "./proposals";
 import { publicProfileApiContracts } from "./publicProfile";
+import { extraProposalPricingApiContracts } from "./extraProposalPricing";
+import { feedbackRatingApiContracts } from "./feedbackRating";
+import { googleMapApiContracts } from "./googleMap";
 
 const c = initContract();
 
@@ -25,4 +28,7 @@ export const allApiContracts = c.router({
   ratings: ratingApiContracts,
   proposals: proposalApiContracts,
   publicProfile: publicProfileApiContracts,
+  extraProposalPricing: extraProposalPricingApiContracts,
+  feedbackRating: feedbackRatingApiContracts,
+  googleMap: googleMapApiContracts,
 });

@@ -117,6 +117,30 @@ const updateBadPostingThresholdValue = async (newThreshold: number) => {
   });
 };
 // ----------------------------------------------------------------------------
+const verifyUserEmail = async (userId: string, verificationCode: string) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true, verifiedToken: true },
+  });
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  if (user.verifiedToken !== verificationCode) {
+    throw new Error("Invalid verification code");
+  }
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: { verified: true },
+  });
+
+  const corsOrigin = process.env["CORS_ORIGIN"] || "http://localhost:3000";
+  return {
+    redirectUrl: `${corsOrigin}/login`,
+  };
+};
 export {
   //auth
   authorizeUser,
@@ -135,4 +159,6 @@ export {
   updateFalseFlagThresholdValue,
   fetchBadPostingThreshold,
   updateBadPostingThresholdValue,
+  //email
+  verifyUserEmail,
 };

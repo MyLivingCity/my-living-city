@@ -190,4 +190,19 @@ export const adminApiContracts = c.router({
     },
     { pathPrefix: "/report" },
   ),
+  sendEmailReset: c.router(
+    {
+      send: {
+        method: "POST",
+        path: "/",
+        body: z.object({ email: z.string().email() }),
+        responses: {
+          200: SimpleMessageResponseSchema,
+          400: ErrorResponseSchema,
+        },
+        summary: "Send a password reset email",
+      },
+    },
+    { pathPrefix: "/send-email-reset" },
+  ),
 });

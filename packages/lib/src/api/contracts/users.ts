@@ -268,6 +268,42 @@ export const userApiContracts = c.router(
       },
       summary: "Delete user by id",
     },
+    enhancedMember: c.router(
+      {
+        getStatus: {
+          method: "GET",
+          path: "/status/:userId",
+          responses: {
+            200: z.object({
+              userId: z.string(),
+              isEnhancedMember: z.boolean(),
+            }),
+            400: ErrorResponseSchema,
+            500: ErrorResponseSchema,
+          },
+          summary: "Get enhanced member status for a user (JWT required)",
+        },
+        promote: {
+          method: "POST",
+          path: "/promote",
+          body: z.object({ userId: z.string() }),
+          responses: {
+            200: z.object({
+              message: z.string(),
+              userId: z.string(),
+              isEnhancedMember: z.boolean(),
+            }),
+            400: ErrorResponseSchema,
+            403: SimpleMessageResponseSchema,
+            404: SimpleMessageResponseSchema,
+            500: ErrorResponseSchema,
+          },
+          summary:
+            "Promote a user to enhanced member (self or admin, JWT required)",
+        },
+      },
+      { pathPrefix: "/enhanced-member" },
+    ),
   },
   {
     pathPrefix: "/user",

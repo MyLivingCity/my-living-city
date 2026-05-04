@@ -50,7 +50,10 @@ const upsertPricing = s.route(accountPricingApiContracts.upsertPricing, {
   middleware: [passport.authenticate("jwt", { session: false })],
   handler: async ({ body, req }) => {
     try {
-      const { id: userId, userType } = req.user as { id: string; userType: string };
+      const { id: userId, userType } = req.user as {
+        id: string;
+        userType: string;
+      };
 
       if (!isAdmin(userType)) {
         return { status: 403, body: { message: "Forbidden" } };
@@ -60,7 +63,10 @@ const upsertPricing = s.route(accountPricingApiContracts.upsertPricing, {
         body.items.map((item) =>
           prisma.accountPricing.upsert({
             where: { accountType: item.accountType as never },
-            update: { yearlyPriceCents: item.yearlyPriceCents, updatedByUserId: userId },
+            update: {
+              yearlyPriceCents: item.yearlyPriceCents,
+              updatedByUserId: userId,
+            },
             create: {
               accountType: item.accountType as never,
               yearlyPriceCents: item.yearlyPriceCents,
@@ -91,83 +97,96 @@ const upsertPricing = s.route(accountPricingApiContracts.upsertPricing, {
   },
 });
 
-const getProposalLimits = s.route(accountPricingApiContracts.getProposalLimits, {
-  handler: async () => {
-    try {
-      const items = await prisma.accountType.findMany({
-        select: PROPOSAL_LIMIT_SELECT,
-        orderBy: { accountType: "asc" },
-      });
-      return {
-        status: 200,
-        body: serializeForContract({ items }),
-      };
-    } catch (error) {
-      return {
-        status: 400,
-        body: {
-          message: "An error occurred while fetching proposal limits.",
-          details: toErrorDetails(error),
-        },
-      };
-    }
-  },
-});
-
-const upsertProposalLimits = s.route(accountPricingApiContracts.upsertProposalLimits, {
-  middleware: [passport.authenticate("jwt", { session: false })],
-  handler: async ({ body, req }) => {
-    try {
-      const { id: userId, userType } = req.user as { id: string; userType: string };
-
-      if (!isAdmin(userType)) {
-        return { status: 403, body: { message: "Forbidden" } };
-      }
-
-      const updatedBy = userId.substring(0, 30);
-      const today = new Date();
-
-      for (const item of body.items) {
-        const existing = await prisma.accountType.findFirst({
-          where: { accountType: item.accountType },
+const getProposalLimits = s.route(
+  accountPricingApiContracts.getProposalLimits,
+  {
+    handler: async () => {
+      try {
+        const items = await prisma.accountType.findMany({
+          select: PROPOSAL_LIMIT_SELECT,
+          orderBy: { accountType: "asc" },
         });
-        if (existing) {
-          await prisma.accountType.update({
-            where: { id: existing.id },
-            data: { yearlyProposalLimit: item.yearlyProposalLimit, lastUpdated: today, updatedBy },
-          });
-        } else {
-          await prisma.accountType.create({
-            data: {
-              accountType: item.accountType,
-              yearlyProposalLimit: item.yearlyProposalLimit,
-              lastUpdated: today,
-              updatedBy,
-            },
-          });
-        }
+        return {
+          status: 200,
+          body: serializeForContract({ items }),
+        };
+      } catch (error) {
+        return {
+          status: 400,
+          body: {
+            message: "An error occurred while fetching proposal limits.",
+            details: toErrorDetails(error),
+          },
+        };
       }
-
-      const updated = await prisma.accountType.findMany({
-        select: PROPOSAL_LIMIT_SELECT,
-        orderBy: { accountType: "asc" },
-      });
-
-      return {
-        status: 200,
-        body: serializeForContract({ items: updated }),
-      };
-    } catch (error) {
-      return {
-        status: 400,
-        body: {
-          message: "An error occurred while updating proposal limits.",
-          details: toErrorDetails(error),
-        },
-      };
-    }
+    },
   },
-});
+);
+
+const upsertProposalLimits = s.route(
+  accountPricingApiContracts.upsertProposalLimits,
+  {
+    middleware: [passport.authenticate("jwt", { session: false })],
+    handler: async ({ body, req }) => {
+      try {
+        const { id: userId, userType } = req.user as {
+          id: string;
+          userType: string;
+        };
+
+        if (!isAdmin(userType)) {
+          return { status: 403, body: { message: "Forbidden" } };
+        }
+
+        const updatedBy = userId.substring(0, 30);
+        const today = new Date();
+
+        for (const item of body.items) {
+          const existing = await prisma.accountType.findFirst({
+            where: { accountType: item.accountType },
+          });
+          if (existing) {
+            await prisma.accountType.update({
+              where: { id: existing.id },
+              data: {
+                yearlyProposalLimit: item.yearlyProposalLimit,
+                lastUpdated: today,
+                updatedBy,
+              },
+            });
+          } else {
+            await prisma.accountType.create({
+              data: {
+                accountType: item.accountType,
+                yearlyProposalLimit: item.yearlyProposalLimit,
+                lastUpdated: today,
+                updatedBy,
+              },
+            });
+          }
+        }
+
+        const updated = await prisma.accountType.findMany({
+          select: PROPOSAL_LIMIT_SELECT,
+          orderBy: { accountType: "asc" },
+        });
+
+        return {
+          status: 200,
+          body: serializeForContract({ items: updated }),
+        };
+      } catch (error) {
+        return {
+          status: 400,
+          body: {
+            message: "An error occurred while updating proposal limits.",
+            details: toErrorDetails(error),
+          },
+        };
+      }
+    },
+  },
+);
 
 const getUsers = s.route(accountPricingApiContracts.getUsers, {
   middleware: [passport.authenticate("jwt", { session: false })],

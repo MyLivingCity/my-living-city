@@ -81,7 +81,9 @@ const getMine = s.route(userSegmentRequestApiContracts.getMine, {
     try {
       const { id: userId } = req.user as { id: string };
 
-      const result = await prisma.segmentRequest.findMany({ where: { userId } });
+      const result = await prisma.segmentRequest.findMany({
+        where: { userId },
+      });
 
       return {
         status: 200,
@@ -132,7 +134,9 @@ const deleteById = s.route(userSegmentRequestApiContracts.deleteById, {
       if (!userIsAdmin && theRequest.userId !== userId) {
         return {
           status: 403,
-          body: { message: "You don't have the right to delete this segment request!" },
+          body: {
+            message: "You don't have the right to delete this segment request!",
+          },
         } as never;
       }
 
@@ -157,7 +161,9 @@ const deleteByUser = s.route(userSegmentRequestApiContracts.deleteByUser, {
     try {
       const { id: loggedInId } = req.user as { id: string };
 
-      const theUser = await prisma.user.findUnique({ where: { id: loggedInId } });
+      const theUser = await prisma.user.findUnique({
+        where: { id: loggedInId },
+      });
       if (!isAdmin(theUser?.userType ?? "")) {
         return {
           status: 403,
@@ -165,7 +171,9 @@ const deleteByUser = s.route(userSegmentRequestApiContracts.deleteByUser, {
         } as never;
       }
 
-      const targetUser = await prisma.user.findUnique({ where: { id: params.userId } });
+      const targetUser = await prisma.user.findUnique({
+        where: { id: params.userId },
+      });
       if (!targetUser) {
         return {
           status: 404,
@@ -173,7 +181,9 @@ const deleteByUser = s.route(userSegmentRequestApiContracts.deleteByUser, {
         } as never;
       }
 
-      await prisma.segmentRequest.deleteMany({ where: { userId: params.userId } });
+      await prisma.segmentRequest.deleteMany({
+        where: { userId: params.userId },
+      });
 
       return { status: 204, body: undefined };
     } catch (error) {

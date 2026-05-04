@@ -20,8 +20,12 @@ const create = s.route(feedbackRatingApiContracts.create, {
         return {
           status: 400,
           body: {
-            message: "A valid proposalId and feedbackId must be specified in the route parameters.",
-            details: { errorMessage: "Invalid route parameters.", errorStack: "" },
+            message:
+              "A valid proposalId and feedbackId must be specified in the route parameters.",
+            details: {
+              errorMessage: "Invalid route parameters.",
+              errorStack: "",
+            },
           },
         };
       }
@@ -49,7 +53,8 @@ const create = s.route(feedbackRatingApiContracts.create, {
         return {
           status: 400,
           body: {
-            message: "You have already rated this feedback. You cannot rate a feedback twice.",
+            message:
+              "You have already rated this feedback. You cannot rate a feedback twice.",
             details: {
               errorMessage: "A rating can only be voted on once.",
               errorStack: "",
@@ -97,8 +102,12 @@ const getAll = s.route(feedbackRatingApiContracts.getAll, {
         return {
           status: 400,
           body: {
-            message: "A valid proposalId and feedbackId must be specified in the route parameters.",
-            details: { errorMessage: "Invalid route parameters.", errorStack: "" },
+            message:
+              "A valid proposalId and feedbackId must be specified in the route parameters.",
+            details: {
+              errorMessage: "Invalid route parameters.",
+              errorStack: "",
+            },
           },
         };
       }
@@ -136,8 +145,12 @@ const getAggregate = s.route(feedbackRatingApiContracts.getAggregate, {
         return {
           status: 400,
           body: {
-            message: "A valid proposalId and feedbackId must be specified in the route parameters.",
-            details: { errorMessage: "Invalid route parameters.", errorStack: "" },
+            message:
+              "A valid proposalId and feedbackId must be specified in the route parameters.",
+            details: {
+              errorMessage: "Invalid route parameters.",
+              errorStack: "",
+            },
           },
         };
       }
@@ -153,11 +166,19 @@ const getAggregate = s.route(feedbackRatingApiContracts.getAggregate, {
 
       if (params.type === "YESNO") {
         const yesRatings = await prisma.feedbackRating.aggregate({
-          where: { proposalId: parsedProposalId, feedbackId: parsedFeedbackId, rating: 1 },
+          where: {
+            proposalId: parsedProposalId,
+            feedbackId: parsedFeedbackId,
+            rating: 1,
+          },
           _count: true,
         });
         const noRatings = await prisma.feedbackRating.aggregate({
-          where: { proposalId: parsedProposalId, feedbackId: parsedFeedbackId, rating: 2 },
+          where: {
+            proposalId: parsedProposalId,
+            feedbackId: parsedFeedbackId,
+            rating: 2,
+          },
           _count: true,
         });
         summary = {

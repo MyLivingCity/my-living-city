@@ -8,6 +8,7 @@ import {
   getAggregateIdeaWithUserSegmentJoins,
 } from "./utils";
 import { serializeForContract, toErrorDetails } from "src/server/utils";
+import { authenticateJwt } from "src/server/middleware/auth";
 
 const s = initServer();
 
@@ -437,9 +438,75 @@ const getAllWithAggregations = s.route(
   },
 );
 
+const championIdea = s.route(ideaApiContracts.champion.championIdea, {
+  middleware: [authenticateJwt],
+  handler: async ({ params, req }) => {
+    try {
+      const { id: userId } = req.user as { id: string };
+      const parsedIdeaId = parseInt(params.ideaId, 10);
+
+      if (!parsedIdeaId) {
+        return {
+          status: 400,
+          body: {
+            message: "A valid ideaId must be specified in the route parameter.",
+          },
+        };
+      }
+
+      const foundIdea = await prisma.idea.findUnique({
+        where: { id: parsedIdeaId },
+      });
+      const { isChampionable } = await checkIdeaThresholds(parsedIdeaId);
+
+      if (!isChampionable) {
+        return {
+          status: 400,
+          body: {
+            message:
+              "This Idea is not Championable. It either already has a champion or it has not met the thresholds to become a proposal.",
+          },
+        };
+      }
+
+      if (userId === foundIdea?.authorId) {
+        return {
+          status: 400,
+          body: {
+            message:
+              "You cannot champion your own idea. Please wait for someone else to endorse your idea!",
+          },
+        };
+      }
+
+      const updatedIdea = await prisma.idea.update({
+        where: { id: parsedIdeaId },
+        data: { championId: userId },
+      });
+
+      return {
+        status: 200,
+        body: {
+          message: "You have succesfully championed the idea!",
+          updatedIdea: serializeForContract(updatedIdea),
+        },
+      };
+    } catch (error) {
+      return {
+        status: 400,
+        body: {
+          message: "An error occurred while trying to champion the idea.",
+          details: toErrorDetails(error),
+        },
+      };
+    }
+  },
+});
+
 export default createHandlers({
   schema: ideaApiContracts,
   router: {
+    champion: { championIdea },
     getAll,
     getAllWithSort,
     getAllByUserId,

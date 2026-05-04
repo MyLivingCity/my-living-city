@@ -25,14 +25,11 @@ import {
 import { initServer } from "@ts-rest/express";
 import { moderationApiContracts } from "@mlc/lib/api";
 import { toErrorDetails } from "src/server/utils";
-import { z } from "zod";
 import { prisma } from "src/prisma/client";
-import { UserSchema } from "@mlc/lib/api";
+import { User } from "@mlc/lib/api";
 import { BanTypeSchema } from "@mlc/lib/api/contracts/moderation/bans";
 import { RouterImplementation } from "@ts-rest/express/src/lib/types";
 import { authenticateJwt } from "src/server/middleware/auth";
-
-type User = z.infer<typeof UserSchema>;
 
 const s = initServer();
 // ============================================================================

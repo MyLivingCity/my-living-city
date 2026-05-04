@@ -4,9 +4,8 @@ import { createHandlers } from "src/server";
 
 import { toErrorDetails } from "src/server/utils";
 import { adminApiContracts } from "@mlc/lib/api/contracts/admin";
-import { prisma } from "src/prisma/client";
-import { UserSchema } from "@mlc/lib/api/contracts/users";
-import { z } from "zod";
+import { User } from "@mlc/lib/api/contracts/users";
+
 import {
   authorizeUser,
   fetchUnseenNotifications,
@@ -26,7 +25,6 @@ import {
 import { authenticateJwt } from "src/server/middleware/auth";
 import { env } from "src/lib/env";
 
-type User = z.infer<typeof UserSchema>;
 const s = initServer();
 
 // ============================================================================

@@ -26,6 +26,8 @@ export const UserTypeSchema = z.enum([
   "SUPER_ADMIN",
 ]);
 
+export type User = z.infer<typeof UserSchema>;
+
 export const UserSegmentRelationshipType = z.enum(["HOME", "WORK", "SCHOOL"]);
 
 export const UserSchema = z.object({

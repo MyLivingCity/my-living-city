@@ -214,7 +214,6 @@ export const adminApiContracts = c.router({
           userId: z.string(),
           verificationCode: z.string(),
         }),
-        body: z.object({}),
         responses: {
           200: SimpleMessageResponseSchema,
           400: ErrorResponseSchema,

@@ -7,7 +7,6 @@ import { adminApiContracts } from "@mlc/lib/api/contracts/admin";
 import { prisma } from "src/prisma/client";
 import { UserSchema } from "@mlc/lib/api/contracts/users";
 import { z } from "zod";
-
 import {
   authorizeUser,
   fetchUnseenNotifications,
@@ -22,6 +21,7 @@ import {
   updateFalseFlagThresholdValue,
   fetchBadPostingThreshold,
   updateBadPostingThresholdValue,
+  verifyUserEmail,
 } from "./service";
 import { authenticateJwt } from "src/server/middleware/auth";
 
@@ -568,6 +568,38 @@ const sendResetEmail = s.route(adminApiContracts.sendEmailReset.send, {
     }
   },
 });
+// ============================================================================
+// email
+// ============================================================================
+const sendEmailVerification = s.route(
+  adminApiContracts.emailVerification.create, // Update contract to .get
+  {
+    handler: async ({ params, res }) => {
+      const { userId, verificationCode } = params;
+
+      try {
+        const { redirectUrl } = await verifyUserEmail(userId, verificationCode);
+
+        res.redirect(redirectUrl);
+
+        // Return null/undefined as the response is already handled by res.redirect
+        return { status: 200, body: { message: "Redirecting..." } };
+      } catch (error) {
+        // Even on error, it's often better to redirect back to login with an error param
+        const loginUrl = `${process.env["CORS_ORIGIN"] || "http://localhost:3000"}/login?error=verification_failed`;
+        res.redirect(loginUrl);
+
+        return {
+          status: 400,
+          body: {
+            message: "An error occured during confirmation",
+            details: toErrorDetails(error),
+          },
+        };
+      }
+    },
+  },
+);
 // ----------------------------------------------------------------------------
 export default createHandlers({
   schema: adminApiContracts,
@@ -593,5 +625,6 @@ export default createHandlers({
       getBadPostingThreshold,
       updateBadPostingThreshold,
     },
+    sendEmailVerification,
   },
 });

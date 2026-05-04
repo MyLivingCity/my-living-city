@@ -6,8 +6,10 @@ import { toErrorDetails } from "src/server/utils";
 
 const s = initServer();
 
-const GOOGLE_TEXT_SEARCH_URL = "https://maps.googleapis.com/maps/api/place/textsearch/json?query=";
-const GOOGLE_PLACE_DETAILS_URL = "https://maps.googleapis.com/maps/api/place/details/json?placeid=";
+const GOOGLE_TEXT_SEARCH_URL =
+  "https://maps.googleapis.com/maps/api/place/textsearch/json?query=";
+const GOOGLE_PLACE_DETAILS_URL =
+  "https://maps.googleapis.com/maps/api/place/details/json?placeid=";
 
 const searchLocation = s.route(googleMapApiContracts.searchLocation, {
   handler: async ({ body }) => {
@@ -19,7 +21,10 @@ const searchLocation = s.route(googleMapApiContracts.searchLocation, {
           status: 400,
           body: {
             message: "lat or lon is missing.",
-            details: { errorMessage: "lat and lon are required.", errorStack: "" },
+            details: {
+              errorMessage: "lat and lon are required.",
+              errorStack: "",
+            },
           },
         };
       }
@@ -29,13 +34,18 @@ const searchLocation = s.route(googleMapApiContracts.searchLocation, {
         `${GOOGLE_TEXT_SEARCH_URL}${lat},${lon}&key=${apiKey}`,
       );
 
-      const placeId = response.data?.results?.[0]?.place_id as string | undefined;
+      const placeId = response.data?.results?.[0]?.place_id as
+        | string
+        | undefined;
       if (!placeId) {
         return {
           status: 400,
           body: {
             message: "No placeId was found in results.",
-            details: { errorMessage: "Google Places returned no results.", errorStack: "" },
+            details: {
+              errorMessage: "Google Places returned no results.",
+              errorStack: "",
+            },
           },
         };
       }
@@ -48,7 +58,8 @@ const searchLocation = s.route(googleMapApiContracts.searchLocation, {
       return {
         status: 400,
         body: {
-          message: "An unexpected error occurred when querying location information.",
+          message:
+            "An unexpected error occurred when querying location information.",
           details: toErrorDetails(error),
         },
       };
@@ -66,7 +77,10 @@ const locationDetails = s.route(googleMapApiContracts.locationDetails, {
           status: 400,
           body: {
             message: "placeId is missing.",
-            details: { errorMessage: "placeId route parameter is required.", errorStack: "" },
+            details: {
+              errorMessage: "placeId route parameter is required.",
+              errorStack: "",
+            },
           },
         };
       }
@@ -85,7 +99,10 @@ const locationDetails = s.route(googleMapApiContracts.locationDetails, {
           status: 400,
           body: {
             message: "placeId search returned no address components.",
-            details: { errorMessage: "No address_components in Google response.", errorStack: "" },
+            details: {
+              errorMessage: "No address_components in Google response.",
+              errorStack: "",
+            },
           },
         };
       }
@@ -116,7 +133,8 @@ const locationDetails = s.route(googleMapApiContracts.locationDetails, {
       return {
         status: 400,
         body: {
-          message: "An unexpected error occurred when querying location details.",
+          message:
+            "An unexpected error occurred when querying location details.",
           details: toErrorDetails(error),
         },
       };

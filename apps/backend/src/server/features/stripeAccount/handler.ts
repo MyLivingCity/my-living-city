@@ -1,5 +1,3 @@
-// NOTE: This handler requires stripe to be installed in the backend:
-//   pnpm --filter @mlc/backend add stripe
 import Stripe from "stripe";
 import { stripeAccountApiContracts } from "@mlc/lib/api";
 import { prisma } from "src/prisma/client";
@@ -48,7 +46,10 @@ const cancelWebhook = s.route(stripeAccountApiContracts.cancelWebhook, {
           status: 400,
           body: {
             message: `Unhandled event type: ${body.type}`,
-            details: { errorMessage: "Unexpected Stripe event type.", errorStack: "" },
+            details: {
+              errorMessage: "Unexpected Stripe event type.",
+              errorStack: "",
+            },
           },
         };
       }
@@ -84,7 +85,10 @@ const subscribeWebhook = s.route(stripeAccountApiContracts.subscribeWebhook, {
           status: 400,
           body: {
             message: `Unhandled event type: ${body.type}`,
-            details: { errorMessage: "Unexpected Stripe event type.", errorStack: "" },
+            details: {
+              errorMessage: "Unexpected Stripe event type.",
+              errorStack: "",
+            },
           },
         };
       }
@@ -125,7 +129,10 @@ const activate = s.route(stripeAccountApiContracts.activate, {
           status: 400,
           body: {
             message: "User or Stripe account not found.",
-            details: { errorMessage: "Could not find user or userStripe record.", errorStack: "" },
+            details: {
+              errorMessage: "Could not find user or userStripe record.",
+              errorStack: "",
+            },
           },
         };
       }
@@ -146,7 +153,8 @@ const activate = s.route(stripeAccountApiContracts.activate, {
       return {
         status: 400,
         body: {
-          message: "An error occurred while creating the Stripe checkout session.",
+          message:
+            "An error occurred while creating the Stripe checkout session.",
           details: toErrorDetails(error),
         },
       };
@@ -166,7 +174,10 @@ const update = s.route(stripeAccountApiContracts.update, {
           status: 400,
           body: {
             message: "Stripe account not found for this user.",
-            details: { errorMessage: "Could not find userStripe record.", errorStack: "" },
+            details: {
+              errorMessage: "Could not find userStripe record.",
+              errorStack: "",
+            },
           },
         };
       }
@@ -183,7 +194,8 @@ const update = s.route(stripeAccountApiContracts.update, {
       return {
         status: 400,
         body: {
-          message: "An error occurred while creating the Stripe billing portal session.",
+          message:
+            "An error occurred while creating the Stripe billing portal session.",
           details: toErrorDetails(error),
         },
       };

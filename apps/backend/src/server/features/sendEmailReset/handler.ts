@@ -1,6 +1,3 @@
-// NOTE: This handler requires nodemailer to be installed in the backend:
-//   pnpm --filter @mlc/backend add nodemailer
-//   pnpm --filter @mlc/backend add -D @types/nodemailer
 import nodemailer from "nodemailer";
 import { sendEmailResetApiContracts } from "@mlc/lib/api";
 import { prisma } from "src/prisma/client";
@@ -21,7 +18,10 @@ const sendReset = s.route(sendEmailResetApiContracts.sendReset, {
         // Return success regardless to avoid user enumeration
         return {
           status: 200,
-          body: { message: "If an account with that email exists, a reset email has been sent." },
+          body: {
+            message:
+              "If an account with that email exists, a reset email has been sent.",
+          },
         };
       }
 

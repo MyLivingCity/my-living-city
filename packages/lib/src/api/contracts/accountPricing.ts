@@ -4,7 +4,11 @@ import { DateTimeString, ErrorResponseSchema } from "../common";
 
 const c = initContract();
 
-const PricingAccountTypeSchema = z.enum(["ENHANCED_REGULAR", "COMMUNITY", "BUSINESS"]);
+const PricingAccountTypeSchema = z.enum([
+  "ENHANCED_REGULAR",
+  "COMMUNITY",
+  "BUSINESS",
+]);
 
 export const AccountPricingSchema = z.object({
   accountType: PricingAccountTypeSchema,

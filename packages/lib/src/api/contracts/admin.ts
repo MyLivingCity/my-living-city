@@ -205,4 +205,38 @@ export const adminApiContracts = c.router({
     },
     { pathPrefix: "/send-email-reset" },
   ),
+  sendEmail: c.router(
+    {
+      create: {
+        method: "POST",
+        path: "/",
+        body: z.object({ email: z.string(), description: z.string() }),
+        responses: {
+          200: SimpleMessageResponseSchema,
+          400: ErrorResponseSchema,
+        },
+        summary: "Create a report",
+      },
+    },
+    { pathPrefix: "/sendEmail" },
+  ),
+  emailVerification: c.router(
+    {
+      create: {
+        method: "POST",
+        path: "/checkVerificationCode/:userId/:verificationCode",
+        pathParams: z.object({
+          userId: z.string(),
+          verificationCode: z.string(),
+        }),
+        body: z.object({}),
+        responses: {
+          200: SimpleMessageResponseSchema,
+          400: ErrorResponseSchema,
+        },
+        summary: "Create a report",
+      },
+    },
+    { pathPrefix: "/emailVerification" },
+  ),
 });

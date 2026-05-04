@@ -1,5 +1,6 @@
 import { Decimal } from "@prisma/client/runtime/client";
 import z from "zod";
+import { Prisma } from "../../../../apps/backend/node_modules/.prisma/client/client";
 
 export const DateTimeString = z.date();
 

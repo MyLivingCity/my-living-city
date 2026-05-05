@@ -1,5 +1,6 @@
 import { prisma } from "src/prisma/client";
 import { Prisma } from "#prisma/client";
+import { env } from "src/lib/env";
 // ============================================================================
 // auth
 // ============================================================================
@@ -136,7 +137,7 @@ const verifyUserEmail = async (userId: string, verificationCode: string) => {
     data: { verified: true },
   });
 
-  const corsOrigin = process.env["CORS_ORIGIN"] || "http://localhost:3000";
+  const corsOrigin = env.CORS_ORIGIN || "http://localhost:3000";
   return {
     redirectUrl: `${corsOrigin}/login`,
   };

@@ -24,6 +24,7 @@ import {
   verifyUserEmail,
 } from "./service";
 import { authenticateJwt } from "src/server/middleware/auth";
+import { env } from "src/lib/env";
 
 type User = z.infer<typeof UserSchema>;
 const s = initServer();
@@ -539,16 +540,16 @@ const sendResetEmail = s.route(adminApiContracts.sendEmail.send, {
         host: "smtp-mail.outlook.com",
         port: 587,
         auth: {
-          user: process.env["EMAIL"],
-          pass: process.env["EMAIL_PASSWORD"],
+          user: env.EMAIL,
+          pass: env.EMAIL_PASSWORD,
         },
       });
 
       const mailOptions = {
-        from: process.env["EMAIL"],
+        from: env.EMAIL,
         to: email,
         subject: "MyLivingCity Password Reset",
-        text: `${process.env["CORS_ORIGIN"]}/user/reset-password?passCode=${foundUser.passCode}`,
+        text: `${env.CORS_ORIGIN}/user/reset-password?passCode=${foundUser.passCode}`,
       };
 
       await transporter.sendMail(mailOptions);
@@ -586,7 +587,7 @@ const sendEmailVerification = s.route(
         return { status: 200, body: { message: "Redirecting..." } };
       } catch (error) {
         // Even on error, it's often better to redirect back to login with an error param
-        const loginUrl = `${process.env["CORS_ORIGIN"] || "http://localhost:3000"}/login?error=verification_failed`;
+        const loginUrl = `${env.CORS_ORIGIN || "http://localhost:3000"}/login?error=verification_failed`;
         res.redirect(loginUrl);
 
         return {

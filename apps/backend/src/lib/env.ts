@@ -5,8 +5,11 @@ type Env = {
   AWS_REGION: string;
   AWS_S3_BUCKET_NAME: string;
   AWS_SECRET_KEY: string;
+  CORS_ORIGIN: string;
   DATABASE_URL: string;
   DEEPINFRA_API_KEY: string;
+  EMAIL_PASSWORD: string;
+  EMAIL: string;
   GOOGLE_MAP_API_KEY: string;
   JWT_EXPIRY: string;
   JWT_SECRET: string;
@@ -25,8 +28,11 @@ export const env: Env = {
   AWS_REGION: process.env["AWS_REGION"]!,
   AWS_S3_BUCKET_NAME: process.env["AWS_S3_BUCKET_NAME"]!,
   AWS_SECRET_KEY: process.env["AWS_SECRET_KEY"]!,
+  CORS_ORIGIN: process.env["CORS_ORIGIN"]!,
   DATABASE_URL: process.env["DATABASE_URL"]!,
   DEEPINFRA_API_KEY: process.env["DEEPINFRA_API_KEY"]!,
+  EMAIL_PASSWORD: process.env["EMAIL_PASSWORD"]!,
+  EMAIL: process.env["EMAIL"]!,
   GOOGLE_MAP_API_KEY: process.env["GOOGLE_MAP_API_KEY"]!,
   JWT_EXPIRY: process.env["JWT_EXPIRY"] || "7d",
   JWT_SECRET: process.env["JWT_SECRET"]!,

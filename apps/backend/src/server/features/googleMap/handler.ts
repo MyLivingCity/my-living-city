@@ -1,7 +1,10 @@
 import { googleMapApiContracts } from "@mlc/lib/api";
 import { initServer } from "@ts-rest/express";
+import { env } from "src/lib/env";
 import { createHandlers } from "src/server";
 import { toErrorDetails } from "src/server/utils";
+
+const apiKey = env.GOOGLE_MAP_API_KEY;
 
 const s = initServer();
 
@@ -28,7 +31,6 @@ const searchLocation = s.route(googleMapApiContracts.searchLocation, {
         };
       }
 
-      const apiKey = process.env["GOOGLE_MAP_API_KEY"];
       const response = await (
         await fetch(`${GOOGLE_TEXT_SEARCH_URL}${lat},${lon}&key=${apiKey}`)
       ).json();
@@ -82,7 +84,6 @@ const locationDetails = s.route(googleMapApiContracts.locationDetails, {
         };
       }
 
-      const apiKey = process.env["GOOGLE_MAP_API_KEY"];
       const response = await (
         await fetch(`${GOOGLE_PLACE_DETAILS_URL}${placeId}&key=${apiKey}`)
       ).json();

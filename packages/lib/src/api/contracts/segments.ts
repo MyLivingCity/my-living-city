@@ -73,6 +73,18 @@ export const segmentApiContracts = c.router(
           },
           summary: "Create a segment",
         },
+        delete: {
+          method: "DELETE",
+          path: "/delete/:segmentId",
+          pathParams: z.object({ segmentId: z.coerce.number() }),
+          responses: {
+            204: z.undefined(), // No content
+            400: ErrorResponseSchema,
+            403: ErrorResponseSchema,
+            404: ErrorResponseSchema,
+          },
+          summary: "Delete a segment and cleanup associations",
+        },
         getAll: {
           method: "GET",
           path: "/getAll",
@@ -129,6 +141,25 @@ export const segmentApiContracts = c.router(
             404: SimpleMessageResponseSchema,
           },
           summary: "Get all child segments of parent",
+        },
+        update: {
+          method: "PATCH",
+          path: "/update/:segmentId",
+          pathParams: z.object({ segmentId: z.coerce.number() }),
+          //original body: { country, province, name, superSegId, superSegName }
+          //problem: the "superSeg" fields don't exist, and there is no allowance for
+          //updating actual fields, like lat and lon
+          body: SegmentSchema.omit({
+            children: true,
+            parentSegment: true,
+          }).partial(),
+          responses: {
+            200: SegmentSchema,
+            400: ErrorResponseSchema.or(SimpleMessageResponseSchema),
+            403: ErrorResponseSchema.or(SimpleMessageResponseSchema),
+            404: ErrorResponseSchema.or(SimpleMessageResponseSchema),
+          },
+          summary: "Update a segment",
         },
       },
       {
@@ -258,13 +289,13 @@ export const segmentApiContracts = c.router(
         },
         getBySuperSegmentId: {
           method: "GET",
-          path: "/getBySubSegmentId/:superSegmentId",
-          pathParams: z.object({ subSegmentId: z.coerce.number() }),
+          path: "/getById/:superSegmentId",
+          pathParams: z.object({ superSegmentId: z.coerce.number() }),
           responses: {
             200: z.array(SegmentSchema),
             400: ErrorResponseSchema,
           },
-          summary: "Get a subsegment by its segId",
+          summary: "Get a superSegment by its segId",
         },
         /**
          * the legacy version of this doesn't differ from DELETE
@@ -285,23 +316,22 @@ export const segmentApiContracts = c.router(
         },
         update: {
           method: "PATCH",
-          path: "/update/:superSegId",
-          pathParams: z.object({ superSegId: z.coerce.number() }),
-          body: z.object({
-            superSegId: z.string(),
-            name: z.string(),
-            country: z.string(),
-            province: z.string(),
-            createdAt: z.date(),
-            updatedAt: z.date(),
-          }),
+          path: "/update/:segmentId",
+          pathParams: z.object({ segmentId: z.coerce.number() }),
+          //original body: { country, province, name, superSegId, superSegName }
+          //problem: the "superSeg" fields don't exist, and there is no allowance for
+          //updating actual fields, like lat and lon
+          body: SegmentSchema.omit({
+            children: true,
+            parentSegment: true,
+          }).partial(),
           responses: {
-            200: z.undefined(),
-            400: ErrorResponseSchema,
-            403: ErrorResponseSchema,
-            404: ErrorResponseSchema,
+            200: SegmentSchema,
+            400: ErrorResponseSchema.or(SimpleMessageResponseSchema),
+            403: ErrorResponseSchema.or(SimpleMessageResponseSchema),
+            404: ErrorResponseSchema.or(SimpleMessageResponseSchema),
           },
-          summary: "Update a superSegment by segId",
+          summary: "Update a segment",
         },
       },
       {

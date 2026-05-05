@@ -4,6 +4,7 @@ import { prisma } from "src/prisma/client";
 import { initServer } from "@ts-rest/express";
 import { createHandlers } from "src/server";
 import { toErrorDetails } from "src/server/utils";
+import { env } from "src/lib/env";
 
 const s = initServer();
 
@@ -29,16 +30,16 @@ const sendReset = s.route(sendEmailResetApiContracts.sendReset, {
         host: "smtp-mail.outlook.com",
         port: 587,
         auth: {
-          user: process.env["EMAIL"],
-          pass: process.env["EMAIL_PASSWORD"],
+          user: env.EMAIL,
+          pass: env.EMAIL_PASSWORD,
         },
       });
 
       const mailOptions = {
-        from: process.env["EMAIL"],
+        from: env.EMAIL,
         to: email,
         subject: "MyLivingCity Password Reset",
-        text: `${process.env["CORS_ORIGIN"]}/user/reset-password?passCode=${foundUser.passCode}`,
+        text: `${env.CORS_ORIGIN}/user/reset-password?passCode=${foundUser.passCode}`,
       };
 
       await transporter.sendMail(mailOptions);

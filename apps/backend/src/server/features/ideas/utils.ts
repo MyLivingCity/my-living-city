@@ -2,23 +2,12 @@ import { UserSchema } from "@mlc/lib/api";
 import { Prisma } from "#prisma/client";
 import { prisma } from "src/prisma/client";
 import z from "zod";
+import { env } from "src/lib/env";
 
-const PROPOSAL_RATING_COUNT = parseInt(
-  process.env["PROPOSAL_RATING_COUNT"] || "25",
-  10,
-);
-const PROPOSAL_RATING_AVG = parseInt(
-  process.env["PROPOSAL_RATING_AVG"] || "1",
-  10,
-);
-const PROJECT_RATING_COUNT = parseInt(
-  process.env["PROJECT_RATING_COUNT"] || "50",
-  10,
-);
-const PROJECT_RATING_AVG = parseInt(
-  process.env["PROJECT_RATING_AVG"] || "1.5",
-  10,
-);
+const PROPOSAL_RATING_COUNT = env.PROPOSAL_RATING_COUNT;
+const PROPOSAL_RATING_AVG = env.PROPOSAL_RATING_AVG;
+const PROJECT_RATING_COUNT = env.PROJECT_RATING_COUNT;
+const PROJECT_RATING_AVG = env.PROJECT_RATING_AVG;
 
 export const checkIdeaThresholds = async (ideaId: number) => {
   const foundIdea = await prisma.idea.findUnique({ where: { id: ideaId } });

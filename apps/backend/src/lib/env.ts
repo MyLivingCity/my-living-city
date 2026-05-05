@@ -6,6 +6,10 @@ type Env = {
   GOOGLE_MAP_API_KEY: string;
   JWT_EXPIRY: string;
   JWT_SECRET: string;
+  PROJECT_RATING_AVG: number;
+  PROJECT_RATING_COUNT: number;
+  PROPOSAL_RATING_AVG: number;
+  PROPOSAL_RATING_COUNT: number;
   STRIPE_PRICE_BUSINESS: string;
   STRIPE_PRICE_COMMUNITY: string;
   STRIPE_PRICE_MUNICIPAL: string;
@@ -18,6 +22,10 @@ export const env: Env = {
   GOOGLE_MAP_API_KEY: process.env["GOOGLE_MAP_API_KEY"]!,
   JWT_EXPIRY: process.env["JWT_EXPIRY"] || "7d",
   JWT_SECRET: process.env["JWT_SECRET"]!,
+  PROJECT_RATING_AVG: parseFloat(process.env["PROJECT_RATING_AVG"] || "1.5"),
+  PROJECT_RATING_COUNT: parseInt(process.env["PROJECT_RATING_COUNT"] || "50"),
+  PROPOSAL_RATING_AVG: parseFloat(process.env["PROPOSAL_RATING_AVG"] || "1"),
+  PROPOSAL_RATING_COUNT: parseInt(process.env["PROPOSAL_RATING_COUNT"] || "25"),
   STRIPE_PRICE_BUSINESS: process.env["STRIPE_PRICE_BUSINESS"]!,
   STRIPE_PRICE_COMMUNITY: process.env["STRIPE_PRICE_COMMUNITY"]!,
   STRIPE_PRICE_MUNICIPAL: process.env["STRIPE_PRICE_MUNICIPAL"]!,

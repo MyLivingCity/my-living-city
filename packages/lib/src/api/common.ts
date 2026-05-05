@@ -1,3 +1,4 @@
+import { Decimal } from "@prisma/client/runtime/client";
 import z from "zod";
 
 export const DateTimeString = z.date();
@@ -8,7 +9,11 @@ export const SafeDateFormat = z.preprocess((val: unknown) => {
   return val;
 }, DateTimeString);
 
-export const DecimalLikeSchema = z.union([z.number(), z.string()]);
+export const DecimalLikeSchema = z.union([
+  z.number(),
+  z.string(),
+  z.instanceof(Decimal),
+]);
 
 export const SimpleMessageResponseSchema = z.object({
   message: z.string(),

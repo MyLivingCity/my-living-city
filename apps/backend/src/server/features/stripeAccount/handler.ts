@@ -4,16 +4,17 @@ import { prisma } from "src/prisma/client";
 import { initServer } from "@ts-rest/express";
 import { createHandlers } from "src/server";
 import { serializeForContract, toErrorDetails } from "src/server/utils";
+import { env } from "src/lib/env";
 
 const s = initServer();
 
-const stripe = new Stripe(process.env["STRIPE_SECRET_KEY"] ?? "");
+const stripe = new Stripe(env.STRIPE_SECRET_KEY ?? "");
 
 // Map from userType to Stripe price IDs — keep in sync with server/lib/constants.js STRIPE_PRODUCTS
 const STRIPE_PRODUCTS: Record<string, string> = {
-  BUSINESS: process.env["STRIPE_PRICE_BUSINESS"] ?? "",
-  COMMUNITY: process.env["STRIPE_PRICE_COMMUNITY"] ?? "",
-  MUNICIPAL: process.env["STRIPE_PRICE_MUNICIPAL"] ?? "",
+  BUSINESS: env.STRIPE_PRICE_BUSINESS ?? "",
+  COMMUNITY: env.STRIPE_PRICE_COMMUNITY ?? "",
+  MUNICIPAL: env.STRIPE_PRICE_MUNICIPAL ?? "",
 };
 
 const getDetails = s.route(stripeAccountApiContracts.getDetails, {

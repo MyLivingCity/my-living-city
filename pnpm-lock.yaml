@@ -268,6 +268,9 @@ importers:
       '@mlc/config':
         specifier: workspace:*
         version: link:../config
+      '@prisma/client':
+        specifier: ^7.8.0
+        version: 7.8.0(prisma@7.8.0(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.9.3))(typescript@5.9.3)
       '@ts-rest/core':
         specifier: ^3.52.1
         version: 3.52.1(@types/node@24.12.2)(zod@3.25.76)

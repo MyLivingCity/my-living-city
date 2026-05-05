@@ -6,6 +6,10 @@ type Env = {
   GOOGLE_MAP_API_KEY: string;
   JWT_EXPIRY: string;
   JWT_SECRET: string;
+  STRIPE_PRICE_BUSINESS: string;
+  STRIPE_PRICE_COMMUNITY: string;
+  STRIPE_PRICE_MUNICIPAL: string;
+  STRIPE_SECRET_KEY: string;
 };
 
 export const env: Env = {
@@ -14,4 +18,8 @@ export const env: Env = {
   GOOGLE_MAP_API_KEY: process.env["GOOGLE_MAP_API_KEY"]!,
   JWT_EXPIRY: process.env["JWT_EXPIRY"] || "7d",
   JWT_SECRET: process.env["JWT_SECRET"]!,
+  STRIPE_PRICE_BUSINESS: process.env["STRIPE_PRICE_BUSINESS"]!,
+  STRIPE_PRICE_COMMUNITY: process.env["STRIPE_PRICE_COMMUNITY"]!,
+  STRIPE_PRICE_MUNICIPAL: process.env["STRIPE_PRICE_MUNICIPAL"]!,
+  STRIPE_SECRET_KEY: process.env["STRIPE_SECRET_KEY"]!,
 };

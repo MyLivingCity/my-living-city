@@ -7,16 +7,20 @@ import { env } from "src/lib/env";
 /**
  * Primitive auth: checks if userType is "SUPER_ADMIN" or "ADMIN"
  * @param u: userId
- * @returns: boolean
+ * @returns: Error if user not found or not admin
  */
 const authorizeUser = async (u: string) => {
+  const AUTHORIZED = ["ADMIN", "SUPER_ADMIN"];
+
   const foundUser = await prisma.user.findUnique({
     where: { id: u },
+    select: { userType: true }, // Performance: only fetch the column you need
   });
-  const isAdmin =
-    foundUser?.userType === "SUPER_ADMIN" || foundUser?.userType === "ADMIN";
 
-  return isAdmin;
+  if (!foundUser) throw new Error("User not found");
+
+  if (!AUTHORIZED.includes(foundUser.userType))
+    throw new Error("Insufficient permissions");
 };
 // ============================================================================
 // dashboard

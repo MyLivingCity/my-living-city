@@ -8,10 +8,13 @@ import { User } from "@mlc/lib/api/contracts/users";
 import passport from "passport";
 
 import {
+  updateSegment,
   createSubSegmentEntry,
-  deleteSubSegmentEntry,
+  deleteSegment,
   getAllSubSegments,
   getSubSegmentBySegId,
+  getSubSegmentsByParentId,
+  superSegmentService,
 } from "./service";
 
 const s = initServer();
@@ -233,6 +236,47 @@ const create = s.route(segmentApiContracts.segment.create, {
           details: toErrorDetails(error),
         },
       };
+    }
+  },
+});
+const deleteSegmentById = s.route(segmentApiContracts.segment.delete, {
+  handler: async ({ params: { segmentId }, req }) => {
+    const userId = (req.user as User).id;
+
+    try {
+      await deleteSegment(userId, segmentId);
+      return { status: 204, body: undefined };
+    } catch (error: unknown) {
+      const e = toErrorDetails(error);
+
+      switch (e.errorMessage) {
+        case "NOT_FOUND":
+          return {
+            status: 404,
+            body: {
+              message: "Segment not found",
+              details: toErrorDetails(e),
+            },
+          };
+
+        case "Insufficient permissions":
+          return {
+            status: 403,
+            body: {
+              message: "You are not authorized to perform this action",
+              details: toErrorDetails(e),
+            },
+          };
+
+        default:
+          return {
+            status: 400,
+            body: {
+              message: "An error occurred while trying to delete.",
+              details: toErrorDetails(e),
+            },
+          };
+      }
     }
   },
 });
@@ -505,6 +549,38 @@ const getChildrenOfParent = s.route(
     },
   },
 );
+/**
+ * This needs extension to handle associations with parent/children.
+ * A better option would be to correct the database, rather than adapting to
+ * the creative implementation
+ */
+const updateSegmentById = s.route(segmentApiContracts.segment.update, {
+  middleware: [passport.authenticate("jwt", { session: false })],
+  handler: async ({ params, body, req }) => {
+    const user = req.user as User;
+    const { segmentId } = params;
+
+    try {
+      // result is typed correctly via SegmentSchema.parse
+      const result = await updateSegment(user.id, segmentId, body);
+
+      return {
+        status: 200,
+        body: result, // Match the contract: response is SegmentSchema, not { result }
+      };
+    } catch (error) {
+      const status = error === "Insufficient permissions" ? 403 : 400;
+
+      return {
+        status,
+        body: {
+          message: "An error occurred while trying to update.",
+          details: toErrorDetails(error),
+        },
+      };
+    }
+  },
+});
 // ============================================================================
 // subSegment
 // ============================================================================
@@ -539,11 +615,11 @@ const createSubSegment = s.route(segmentApiContracts.subSegment.create, {
 const deleteSubSegment = s.route(segmentApiContracts.subSegment.delete, {
   middleware: [passport.authenticate("jwt", { session: false })],
   handler: async ({ params, req }) => {
-    const user = req.user as User;
+    const userId = (req.user as User).id;
     const { subSegmentId } = params;
 
     try {
-      await deleteSubSegmentEntry(user.id, subSegmentId);
+      await deleteSegment(userId, subSegmentId);
 
       return {
         status: 204,
@@ -590,7 +666,7 @@ const getAllSubSegmentsHandler = s.route(
   },
 );
 
-const getBySubSegmentId = s.route(
+const getSubSegmentsBySubSegmentId = s.route(
   segmentApiContracts.subSegment.getBySubSegmentId,
   {
     handler: async ({ params }) => {
@@ -625,34 +701,207 @@ const getBySubSegmentId = s.route(
     },
   },
 );
+const getSubSegmentsBySegmentId = s.route(
+  segmentApiContracts.subSegment.getBySegmentId,
+  {
+    handler: async ({ params: { segmentId } }) => {
+      try {
+        const theSubSegments = await getSubSegmentsByParentId(segmentId);
+
+        if (theSubSegments.length === 0) {
+          return {
+            status: 404,
+            body: {
+              message: "Subsegment not found",
+              details: toErrorDetails("Subsegment not found"),
+            },
+          };
+        }
+
+        return {
+          status: 200,
+          body: theSubSegments,
+        };
+      } catch (error) {
+        return {
+          status: 400,
+          body: {
+            message: "An error occurred while trying to get that subsegment.",
+            details: toErrorDetails(error),
+          },
+        };
+      }
+    },
+  },
+);
 // ============================================================================
 // superSegment
+// ============================================================================
+const createSuperSegment = s.route(segmentApiContracts.superSegment.create, {
+  handler: async ({ body, req }) => {
+    try {
+      const user = req.user as User;
+      await superSegmentService.create(user.id, body);
+      return {
+        status: 200,
+        body: { message: "SuperSegment created successfully" },
+      };
+    } catch (error) {
+      const details = toErrorDetails(error);
+      const status =
+        details.errorMessage === "Insufficient permissions" ? 403 : 400;
+      return { status, body: { message: "Creation failed", details } };
+    }
+  },
+});
+
+const getAllSuperSegments = s.route(segmentApiContracts.superSegment.getAll, {
+  handler: async () => {
+    try {
+      const result = await superSegmentService.getAll();
+      return { status: 200, body: result };
+    } catch (error) {
+      return {
+        status: 400,
+        body: { message: "Fetch failed", details: toErrorDetails(error) },
+      };
+    }
+  },
+});
+
+const getSupersByCountryProvince = s.route(
+  segmentApiContracts.superSegment.getByCountryProvince,
+  {
+    handler: async ({ query }) => {
+      try {
+        const result = await superSegmentService.getByLocation(
+          query.country,
+          query.province,
+        );
+        if (!result) throw new Error("NOT_FOUND");
+
+        // Mapping to the specific object structure required by your contract
+        return {
+          status: 200,
+          body: {
+            superSegId: result.segId.toString(),
+            name: result.name,
+            country: result.country ?? "",
+            province: result.province ?? "",
+            createdAt: result.createdAt,
+            updatedAt: result.updatedAt ?? result.createdAt,
+          },
+        };
+      } catch (error) {
+        const details = toErrorDetails(error);
+        return { status: 400, body: { message: "Search failed", details } };
+      }
+    },
+  },
+);
+
+const deleteSuper = s.route(segmentApiContracts.superSegment.delete, {
+  handler: async ({ params, req }) => {
+    try {
+      const user = req.user as User;
+      await superSegmentService.delete(user.id, params.deleteId);
+      return { status: 204, body: undefined };
+    } catch (error) {
+      const details = toErrorDetails(error);
+      // Switch logic we discussed
+      switch (details.errorMessage) {
+        case "NOT_FOUND":
+          return { status: 404, body: { message: "Not found", details } };
+        case "Insufficient permissions":
+          return { status: 403, body: { message: "Forbidden", details } };
+        default:
+          return { status: 400, body: { message: "Delete failed", details } };
+      }
+    }
+  },
+});
+
+const getBySuperSegmentId = s.route(
+  segmentApiContracts.superSegment.getBySuperSegmentId,
+  {
+    handler: async ({ params: { superSegmentId } }) => {
+      try {
+        // Re-use the existing service logic
+        const result =
+          await superSegmentService.getSuperSegmentById(superSegmentId);
+
+        if (!result) return { status: 404, body: { message: "Not found" } };
+
+        return {
+          status: 200,
+          body: [result], // Contract expects an array
+        };
+      } catch (error) {
+        return {
+          status: 400,
+          body: { message: "Fetch failed", details: toErrorDetails(error) },
+        };
+      }
+    },
+  },
+);
+const updateSuperSegment = s.route(segmentApiContracts.superSegment.update, {
+  middleware: [passport.authenticate("jwt", { session: false })],
+  handler: async ({ params, body, req }) => {
+    const user = req.user as User;
+    const { segmentId } = params;
+
+    try {
+      // result is typed correctly via SegmentSchema.parse
+      const result = await updateSegment(user.id, segmentId, body);
+
+      return {
+        status: 200,
+        body: result, // Match the contract: response is SegmentSchema, not { result }
+      };
+    } catch (error) {
+      const status = error === "Insufficient permissions" ? 403 : 400;
+
+      return {
+        status,
+        body: {
+          message: "An error occurred while trying to update.",
+          details: toErrorDetails(error),
+        },
+      };
+    }
+  },
+});
+// ============================================================================
+// exports
 // ============================================================================
 export default createHandlers({
   schema: segmentApiContracts,
   router: {
     segment: {
       create,
+      delete: deleteSegmentById,
       getAll,
       getById,
       getBySuperSegId,
       getByType,
       getChildrenOfParent,
+      update: updateSegmentById,
     },
     subSegment: {
       create: createSubSegment,
       delete: deleteSubSegment,
       getAll: getAllSubSegmentsHandler,
-      getBySubSegmentId,
-      getBySegmentId,
-    } /* 
+      getBySubSegmentId: getSubSegmentsBySubSegmentId,
+      getBySegmentId: getSubSegmentsBySegmentId,
+    },
     superSegment: {
-      create,
-      getAll,
-      getByCountryProvince,
-      getById/:superSegmentId,
-      delete/:deleteId,
-      update/:superSegId,
-    }, */,
+      create: createSuperSegment,
+      getAll: getAllSuperSegments,
+      getByCountryProvince: getSupersByCountryProvince,
+      getBySuperSegmentId,
+      delete: deleteSuper,
+      update: updateSuperSegment,
+    },
   },
 });

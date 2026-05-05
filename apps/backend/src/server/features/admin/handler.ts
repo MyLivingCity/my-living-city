@@ -91,17 +91,10 @@ const getAll = s.route(adminApiContracts.report.getAll, {
   middleware: [authenticateJwt],
   handler: async ({ req }) => {
     try {
-      const u = req.user as User;
-      const isAuthorized = await authorizeUser(u.id);
-      if (!isAuthorized) {
-        return {
-          status: 403,
-          body: {
-            message: "You must be an Administrator to view reports.",
-            details: toErrorDetails("Unauthorized access attempt"),
-          },
-        };
-      }
+      const u = (req.user as User).id;
+
+      await authorizeUser(u);
+
       const allReports = await fetchAllReports();
 
       return {
@@ -109,13 +102,26 @@ const getAll = s.route(adminApiContracts.report.getAll, {
         body: allReports,
       };
     } catch (error) {
-      return {
-        status: 400,
-        body: {
-          message: "An error occured while trying to fetch all reports",
-          details: toErrorDetails(error),
-        },
-      };
+      const e = toErrorDetails(error);
+
+      switch (e.errorMessage) {
+        default:
+          return {
+            status: 400,
+            body: {
+              message: "An error occured while trying to fetch all reports",
+              details: toErrorDetails(e),
+            },
+          };
+        case "Insufficient permissions":
+          return {
+            status: 403,
+            body: {
+              message: "You are not authorized to perform this action",
+              details: toErrorDetails(e),
+            },
+          };
+      }
     }
   },
 });
@@ -157,17 +163,8 @@ const deleteReport = s.route(adminApiContracts.report.delete, {
   middleware: [authenticateJwt],
   handler: async ({ params: { reportId }, req }) => {
     try {
-      const u = req.user as User;
-      const isAuthorized = await authorizeUser(u.id);
-      if (!isAuthorized) {
-        return {
-          status: 403,
-          body: {
-            message: "You must be an Administrator to delete reports.",
-            details: toErrorDetails("Unauthorized delete attempt"),
-          },
-        };
-      }
+      const u = (req.user as User).id;
+      await authorizeUser(u);
 
       if (!reportId) {
         return {
@@ -189,13 +186,25 @@ const deleteReport = s.route(adminApiContracts.report.delete, {
         },
       };
     } catch (error) {
-      return {
-        status: 400,
-        body: {
-          message: "An error occured while trying to delete a report.",
-          details: toErrorDetails(error),
-        },
-      };
+      const e = toErrorDetails(error);
+      switch (e.errorMessage) {
+        default:
+          return {
+            status: 400,
+            body: {
+              message: "An error occured while trying to delete a report.",
+              details: toErrorDetails(e),
+            },
+          };
+        case "Insufficient permissions":
+          return {
+            status: 403,
+            body: {
+              message: "You are not authorized to perform this action",
+              details: toErrorDetails(e),
+            },
+          };
+      }
     }
   },
 });

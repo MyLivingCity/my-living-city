@@ -125,7 +125,7 @@ const countIdeaFlagsByIdeaId = async (ideaId: number) => {
   });
 };
 // ----------------------------------------------------------------------------
-const findFalseFlaggingBehaviorByUserId = async (userId: string) => {
+const fetchFalseFlaggingByUserId = async (userId: string) => {
   return await prisma.false_Flagging_Behavior.findFirst({
     where: { userId },
   });
@@ -148,5 +148,5 @@ export {
   fetchAllIdeaFlags,
   updateManyIdeaFlags,
   countIdeaFlagsByIdeaId,
-  findFalseFlaggingBehaviorByUserId,
+  fetchFalseFlaggingByUserId,
 };

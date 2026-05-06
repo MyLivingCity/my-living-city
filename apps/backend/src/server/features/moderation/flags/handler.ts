@@ -15,7 +15,7 @@ import {
   fetchAllIdeaFlags,
   updateManyIdeaFlags,
   countIdeaFlagsByIdeaId,
-  findFalseFlaggingBehaviorByUserId,
+  fetchFalseFlaggingByUserId,
 } from "./service";
 
 import { initServer } from "@ts-rest/express";
@@ -394,34 +394,11 @@ const checkFlagBan = s.route(moderationApiContracts.flags.flag.checkFlagBan, {
   middleware: [authenticateJwt],
   handler: async ({ params }) => {
     try {
-      const userFlagBan = await findFalseFlaggingBehaviorByUserId(
-        params.userId,
-      );
-
-      if (!userFlagBan) {
-        // If no record exists, the user hasn't flagged anything yet (no ban)
-        // Adjust this return if your schema/frontend expects a 404 or a null object
-        return {
-          status: 404,
-          body: {
-            message: "No flagging behavior record found for this user.",
-            details: toErrorDetails(
-              new Error("User has not performed any flaggable actions."),
-            ),
-          },
-        };
-      }
+      const userFlagBan = await fetchFalseFlaggingByUserId(params.userId);
 
       return {
         status: 200,
-        body: {
-          id: userFlagBan.id,
-          userId: userFlagBan.userId,
-          flag_count: userFlagBan.flag_count,
-          flag_ban: userFlagBan.flag_ban,
-          bannedAt: userFlagBan.bannedAt ?? new Date(0),
-          bannedUntil: userFlagBan.bannedUntil ?? new Date(0),
-        },
+        body: userFlagBan,
       };
     } catch (error) {
       return {

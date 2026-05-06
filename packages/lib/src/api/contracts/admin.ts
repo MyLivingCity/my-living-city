@@ -13,7 +13,7 @@ export const ThresholdIdSchema = z.coerce.number().int().positive();
 //Quarantine_Notifications table
 const QNotificationSchema = z.object({
   id: z.number(),
-  userId: z.string().cuid(),
+  userId: z.string(),
   ideaId: z.number(),
   ideaTitle: z.string(),
   createdAt: z.date().default(new Date(0)),
@@ -22,7 +22,7 @@ const QNotificationSchema = z.object({
 
 const ThresholdSchema = z.object({
   id: ThresholdIdSchema,
-  number: z.number().int().nonnegative(), // the actual threshold field
+  number: z.coerce.number().int().nonnegative(),
 });
 
 const ReportSchema = z.object({

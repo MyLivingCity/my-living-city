@@ -262,8 +262,44 @@ export const ideaApiContracts = c.router(
       },
       summary: "Get idea by id",
     },
+    isFollowed: {
+      method: "POST",
+      path: "/isFollowed",
+      body: z.object({
+        userId: z.string(),
+        ideaId: z.coerce.number(),
+      }),
+      responses: {
+        200: z.object({ isFollowed: z.boolean() }),
+        400: ErrorResponseSchema,
+      },
+      summary: "Check if current user is following current idea",
+    },
+    isEndorsed: {
+      method: "POST",
+      path: "/isEndorsed",
+      body: z.object({
+        userId: z.string(),
+        ideaId: z.coerce.number(),
+      }),
+      responses: {
+        200: z.object({ isEndorsed: z.boolean() }),
+        400: ErrorResponseSchema,
+      },
+      summary: "Check if current user has endorsed current idea",
+    },
   },
   {
     pathPrefix: "/idea",
   },
 );
+//    /create
+//    /isEndorsed
+//    /isFlagged
+
+//    /getAllFollowedByUser/:userId
+
+//    /getAllEndorsersByIdea/:ideaId
+//    /getAllEndorsedByUser/:userId
+//    /endorse
+//    /unendorse

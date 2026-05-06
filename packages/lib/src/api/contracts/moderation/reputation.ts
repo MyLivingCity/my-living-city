@@ -16,8 +16,8 @@ export const BadPostingBehaviourSchema = z.object({
 export const FalseFlagSchema = z.object({
   bannedAt: z.coerce.date().nullable(),
   bannedUntil: z.coerce.date().nullable(), //banUntil elsewhere
-  flag_ban: z.boolean(),
-  flag_count: z.coerce.number(),
+  flag_ban: z.boolean().default(false),
+  flag_count: z.coerce.number().default(0),
   id: z.coerce.number(),
   userId: z.coerce.string(),
 });

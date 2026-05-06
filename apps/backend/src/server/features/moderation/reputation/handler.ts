@@ -2,7 +2,6 @@ import { initServer } from "@ts-rest/express";
 import { moderationApiContracts } from "@mlc/lib/api";
 import { toErrorDetails } from "src/server/utils";
 import { prisma } from "src/prisma/client";
-import { BadPostingBehaviourSchema } from "@mlc/lib/api/contracts/moderation/reputation";
 import { authenticateJwt } from "src/server/middleware/auth";
 
 import {
@@ -161,16 +160,11 @@ const getBadPostingBehavior = s.route(
           where: { userId: user.id },
         });
 
-        /**
-         * 3. Apply Defaults
-         * If 'behavior' is null, .parse(undefined) triggers the schema-level .default().
-         * This ensures the frontend always gets an object, never null.
-         */
-        const safeBody = BadPostingBehaviourSchema.parse(behavior ?? undefined);
+        const result = behavior ?? null;
 
         return {
           status: 200,
-          body: safeBody,
+          body: result,
         };
       } catch (error) {
         return {

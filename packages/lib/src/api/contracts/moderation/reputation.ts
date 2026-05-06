@@ -4,24 +4,22 @@ import { UserSchema } from "../users";
 import { ErrorResponseSchema, SimpleMessageResponseSchema } from "../../common";
 
 export const BadPostingBehaviourSchema = z.object({
-  id: z.number().default(0),
-  userId: z.string().cuid().default(""),
-  bad_post_count: z.number().default(0),
-  post_flag_count: z.number().default(0),
-  post_comment_ban: z.boolean().default(false),
-  // For dates, we typically use a "Unix Epoch" or null-equivalent
-  // depending on how your frontend handles empty states
-  bannedAt: z.date().nullable(),
-  bannedUntil: z.date().nullable(),
+  id: z.coerce.number(),
+  userId: z.string(),
+  bad_post_count: z.coerce.number(),
+  post_flag_count: z.coerce.number(),
+  post_comment_ban: z.boolean(),
+  bannedAt: z.coerce.date().nullable(),
+  bannedUntil: z.coerce.date().nullable(),
 });
 
 export const FalseFlagSchema = z.object({
-  bannedAt: z.date(),
-  bannedUntil: z.date(), //banUntil elsewhere
+  bannedAt: z.coerce.date().nullable(),
+  bannedUntil: z.coerce.date().nullable(), //banUntil elsewhere
   flag_ban: z.boolean(),
-  flag_count: z.number(),
-  id: z.number(),
-  userId: z.string().cuid(),
+  flag_count: z.coerce.number(),
+  id: z.coerce.number(),
+  userId: z.coerce.string(),
 });
 // ----------------------------------------------------------------------------
 //  Routers
@@ -86,7 +84,7 @@ export const reputationContract = c.router(
         checkUser: {
           method: "POST",
           path: "/checkUser/:userId",
-          pathParams: z.object({ userId: z.string().cuid() }),
+          pathParams: z.object({ userId: z.string() }),
           body: z.object({}),
           responses: {
             200: SimpleMessageResponseSchema,
@@ -98,7 +96,7 @@ export const reputationContract = c.router(
           method: "GET",
           path: "/getAll",
           responses: {
-            200: z.array(z.string().cuid()),
+            200: z.array(z.string()),
             400: z.object({ message: z.string() }),
           },
           summary: "Get all users from bad posting behavior table",

@@ -26,6 +26,7 @@ these recommendations as they accomplish things.
  - Tackle any bugs that may have seeped through from our project to yours.
  - Finish remaining contracts, handlers, hooks, etc.
  - Adjust names to be more precise (then adjust wherever they're used)
+ - Normalize/Refine schema validation
  - Create new compose files for old-new frontend/backend
  - Distribute tarball to Google Drive to avoid Microsoft tar issues
  - Create unit/integration tests to ensure the app works as expected

@@ -288,14 +288,25 @@ export const ideaApiContracts = c.router(
       },
       summary: "Check if current user has endorsed current idea",
     },
+    isFlagged: {
+      method: "POST",
+      path: "/isFlagged",
+      body: z.object({
+        userId: z.string(),
+        ideaId: z.coerce.number(),
+      }),
+      responses: {
+        200: z.object({ isFlagged: z.boolean() }),
+        400: ErrorResponseSchema,
+      },
+      summary: "Check if current user has endorsed current idea",
+    },
   },
   {
     pathPrefix: "/idea",
   },
 );
 //    /create
-//    /isEndorsed
-//    /isFlagged
 
 //    /getAllFollowedByUser/:userId
 

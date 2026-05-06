@@ -561,6 +561,32 @@ const isEndorsed = s.route(ideaApiContracts.isEndorsed, {
   },
 });
 
+const isFlagged = s.route(ideaApiContracts.isFlagged, {
+  handler: async ({ body: { userId, ideaId } }) => {
+    try {
+      const flagged = await prisma.ideaFlag.findFirst({
+        where: {
+          flaggerId: userId,
+          ideaId: ideaId,
+        },
+      });
+
+      return {
+        status: 200,
+        body: { isFlagged: !!flagged },
+      };
+    } catch (error) {
+      return {
+        status: 400,
+        body: {
+          message: "An unexpected error occurred",
+          details: toErrorDetails(error),
+        },
+      };
+    }
+  },
+});
+
 export default createHandlers({
   schema: ideaApiContracts,
   router: {
@@ -572,5 +598,6 @@ export default createHandlers({
     getAllWithAggregations,
     isFollowed,
     isEndorsed,
+    isFlagged,
   },
 });

@@ -4,8 +4,8 @@ import { ErrorResponseSchema, SimpleMessageResponseSchema } from "../../common";
 import { FalseFlagSchema } from "./reputation";
 
 const baseFlagShape = {
-  id: z.number(),
-  flaggerId: z.string().cuid(),
+  id: z.coerce.number(),
+  flaggerId: z.string(),
   falseFlag: z.boolean(),
   flagReason: z.string().nullable(),
   //createdAt: SafeDateFormat,  for some reason these aren't timestamped
@@ -13,12 +13,12 @@ const baseFlagShape = {
 
 export const CommentFlagSchema = z.object({
   ...baseFlagShape,
-  commentId: z.number(),
+  commentId: z.coerce.number(),
 });
 
 export const IdeaFlagSchema = z.object({
   ...baseFlagShape,
-  ideaId: z.number(),
+  ideaId: z.coerce.number(),
 });
 // ----------------------------------------------------------------------------
 //  Routers
@@ -80,12 +80,11 @@ export const flagsContract = c.router(
         },
         checkFlagBan: {
           method: "GET",
-          path: "checkFlagBan/:userId",
-          pathParams: z.object({ userId: z.string().cuid() }),
+          path: "/checkFlagBan/:userId",
+          pathParams: z.object({ userId: z.string() }),
           responses: {
-            200: FalseFlagSchema,
+            200: FalseFlagSchema.nullable(),
             400: ErrorResponseSchema,
-            404: ErrorResponseSchema,
           },
           summary: "Get idea flags for userId",
         },

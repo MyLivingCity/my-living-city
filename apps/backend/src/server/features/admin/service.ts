@@ -1,5 +1,4 @@
 import { prisma } from "src/prisma/client";
-import { Prisma } from "#prisma/client";
 import { env } from "src/lib/env";
 // ============================================================================
 // auth
@@ -66,27 +65,41 @@ const deleteReportById = async (id: number) => {
 // ============================================================================
 // threshhold
 // ============================================================================
+const THRESHOLD_DEFAULTS = [
+  { id: 1, number: 3 }, // BAN: Overall
+  { id: 2, number: 3 }, // FALSE_FLAG: Improper reporting
+  { id: 3, number: 3 }, // BAD_POST: Offensive/improper posting
+];
 /**
- * Sets all ban thresholds in case the Threshhold table is unseeded
+ * Sets all unset ban thresholds in case the Threshhold table is unseeded
  * @param value: the threshold
  * @returns
  */
-const seedInitialThresholds = async (
-  value: number,
-): Promise<Prisma.BatchPayload> => {
-  return await prisma.threshhold.createMany({
-    data: [
-      { number: value }, //ID 1
-      { number: value }, //ID 2
-      { number: value }, //ID 3
-    ],
-  });
+const seedThresholds = async () => {
+  return await Promise.all(
+    THRESHOLD_DEFAULTS.map((data) =>
+      prisma.threshhold.upsert({
+        where: { id: data.id },
+        update: {}, // Don't overwrite if they already exist
+        create: data, // Force ID 1, 2, or 3
+      }),
+    ),
+  );
 };
 // ----------------------------------------------------------------------------
 const fetchBanThreshold = async () => {
-  return await prisma.threshhold.findUnique({
-    where: { id: 1 },
-  });
+  let val = await prisma.threshhold.findUnique({ where: { id: 1 } });
+
+  // 2. If missing, seed it
+  if (!val) {
+    await seedThresholds();
+    val = await prisma.threshhold.findUnique({ where: { id: 1 } });
+  }
+  if (!val) {
+    throw new Error("Unable to set ban threshold");
+  }
+
+  return val;
 };
 // ----------------------------------------------------------------------------
 const updateBanThreshold = async (newThreshold: number) => {
@@ -97,9 +110,18 @@ const updateBanThreshold = async (newThreshold: number) => {
 };
 // ----------------------------------------------------------------------------
 const fetchFalseFlagThreshold = async () => {
-  return await prisma.threshhold.findUnique({
-    where: { id: 2 },
-  });
+  let val = await prisma.threshhold.findUnique({ where: { id: 2 } });
+
+  // 2. If missing, seed it
+  if (!val) {
+    await seedThresholds();
+    val = await prisma.threshhold.findUnique({ where: { id: 2 } });
+  }
+  if (!val) {
+    throw new Error("Unable to set false flag threshold");
+  }
+
+  return val;
 };
 // ----------------------------------------------------------------------------
 const updateFalseFlagThresholdValue = async (newThreshold: number) => {
@@ -110,9 +132,18 @@ const updateFalseFlagThresholdValue = async (newThreshold: number) => {
 };
 // ----------------------------------------------------------------------------
 const fetchBadPostingThreshold = async () => {
-  return await prisma.threshhold.findUnique({
-    where: { id: 3 },
-  });
+  let val = await prisma.threshhold.findUnique({ where: { id: 3 } });
+
+  // 2. If missing, seed it
+  if (!val) {
+    await seedThresholds();
+    val = await prisma.threshhold.findUnique({ where: { id: 3 } });
+  }
+  if (!val) {
+    throw new Error("Unable to set bad posting threshold");
+  }
+
+  return val;
 };
 // ----------------------------------------------------------------------------
 const updateBadPostingThresholdValue = async (newThreshold: number) => {
@@ -159,7 +190,7 @@ export {
   //threshhold
   fetchBanThreshold,
   updateBanThreshold,
-  seedInitialThresholds,
+  seedThresholds,
   fetchFalseFlagThreshold,
   updateFalseFlagThresholdValue,
   fetchBadPostingThreshold,

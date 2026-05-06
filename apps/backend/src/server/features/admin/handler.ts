@@ -15,7 +15,7 @@ import {
   deleteReportById,
   fetchBanThreshold,
   updateBanThreshold,
-  seedInitialThresholds,
+  seedThresholds,
   fetchFalseFlagThreshold,
   updateFalseFlagThresholdValue,
   fetchBadPostingThreshold,
@@ -301,7 +301,6 @@ const updateBanThresholdRoute = s.route(
   },
 );
 // TODO: replace magic numbers sprinkled throughout with an enum or associative array
-//**  Threshhold table should be modified to not autoincrement **
 const createThreshold = s.route(adminApiContracts.threshhold.createThreshold, {
   middleware: [authenticateJwt],
   handler: async ({ params: { num } }) => {
@@ -329,7 +328,7 @@ const createThreshold = s.route(adminApiContracts.threshhold.createThreshold, {
       }
 
       // Seed all three
-      await seedInitialThresholds(num);
+      await seedThresholds();
 
       const newThreshold = await fetchBanThreshold();
 

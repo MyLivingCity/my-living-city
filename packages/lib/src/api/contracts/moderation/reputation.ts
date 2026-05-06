@@ -3,27 +3,17 @@ import { initContract } from "@ts-rest/core";
 import { UserSchema } from "../users";
 import { ErrorResponseSchema, SimpleMessageResponseSchema } from "../../common";
 
-export const BadPostingBehaviourSchema = z
-  .object({
-    id: z.number().default(0),
-    userId: z.string().cuid().default(""),
-    bad_post_count: z.number().default(0),
-    postFlagCount: z.number().default(0),
-    postCommentBan: z.boolean().default(false),
-    // For dates, we typically use a "Unix Epoch" or null-equivalent
-    // depending on how your frontend handles empty states
-    bannedAt: z.date().default(new Date(0)),
-    bannedUntil: z.date().default(new Date(0)),
-  })
-  .default({
-    id: 0,
-    userId: "",
-    bad_post_count: 0,
-    postFlagCount: 0,
-    postCommentBan: false,
-    bannedAt: new Date(0),
-    bannedUntil: new Date(0),
-  });
+export const BadPostingBehaviourSchema = z.object({
+  id: z.number().default(0),
+  userId: z.string().cuid().default(""),
+  bad_post_count: z.number().default(0),
+  post_flag_count: z.number().default(0),
+  post_comment_ban: z.boolean().default(false),
+  // For dates, we typically use a "Unix Epoch" or null-equivalent
+  // depending on how your frontend handles empty states
+  bannedAt: z.date().nullable(),
+  bannedUntil: z.date().nullable(),
+});
 
 export const FalseFlagSchema = z.object({
   bannedAt: z.date(),
@@ -127,7 +117,7 @@ export const reputationContract = c.router(
           method: "GET",
           path: "/getBadPostingBehavior",
           responses: {
-            200: BadPostingBehaviourSchema,
+            200: BadPostingBehaviourSchema.nullable(),
             400: ErrorResponseSchema,
           },
           //note: this originally hits Bad_Posting_Behavior

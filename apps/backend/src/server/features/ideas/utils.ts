@@ -45,7 +45,7 @@ type UserSchemaType = z.infer<typeof UserSchema>;
 
 export async function getAggregateIdeaWithUserSegmentJoins(
   userId: UserSchemaType["id"],
-  limitSql: string,
+  limitSql: Prisma.Sql,
 ) {
   return await prisma.$queryRaw<Record<string, unknown>[]>(Prisma.sql`
         select

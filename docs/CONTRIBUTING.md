@@ -1,7 +1,8 @@
-> [!IMPORTANT]
-> MUST READ DOCUMENT FOR PROCEEDING ON THE PROJECT
-
 # Contributing
+
+During development, we recommend using git bash or WSL2 for tasks requiring 
+the terminal; you are likely to encounter issues while using 
+Windows Powershell or CMD.
 
 ## Prerequisites
 
@@ -21,16 +22,12 @@ Check if PNPM is available: `pnpm --version`
 
 ### PostgreSQL CLI tools
 
-> [!IMPORTANT]
-> Currently, this application uses PostgreSQL version 11.
-> To follow along with this document, we only need to install 
-> PostgreSQL for its CLI utilities. Install version 11, 12, or 13. 
+> [!NOTE]
+> We only need to install PostgreSQL for its CLI utilities.
+> Install version 11, 12, or 13. 
 
 [Install PostgreSQL](https://www.postgresql.org/download/)
 
-> Ensure pnpm is installed before proceeding 'pnpm install' in your terminal.
-> We recommend using GitBash for the best outcomes.
-> Without it, you will run into errors with commands such as pg_dump.
 
 ## Setup
 

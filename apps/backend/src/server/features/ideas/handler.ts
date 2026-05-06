@@ -269,7 +269,7 @@ const getAllWithAggregations = s.route(
         take = Number.isInteger(take) ? Number(take) : undefined;
 
         const ideas = await prisma.idea.findMany({
-          take: take,
+          take,
           include: {
             segments: {
               include: {
@@ -313,7 +313,10 @@ const getAllWithAggregations = s.route(
           const totalRatings = ratings.length;
           const totalComments = comments.length;
 
-          const ratingsSum = ratings.reduce((sum, r) => sum + r.rating, 0);
+          const ratingsSum = ratings.reduce(
+            (sum: number, r) => sum + r.rating,
+            0,
+          );
           const avgRating = totalRatings > 0 ? ratingsSum / totalRatings : 0;
 
           const posRatings = ratings.filter((r) => r.rating > 0).length;
@@ -425,19 +428,13 @@ const getAllWithAggregations = s.route(
           body: finalResults,
         };
       } catch (error) {
-        console.error(error);
         return {
           status: 400,
           body: {
             message: "An error occurred while trying to fetch all ideas",
-            details: {
-              errorMessage: error.message,
-              errorStack: error.stack,
-            },
+            details: toErrorDetails(error),
           },
         };
-      } finally {
-        await prisma.$disconnect();
       }
     },
   },
@@ -508,6 +505,62 @@ const championIdea = s.route(ideaApiContracts.champion.championIdea, {
   },
 });
 
+const isFollowed = s.route(ideaApiContracts.isFollowed, {
+  handler: async ({ body: { userId, ideaId } }) => {
+    try {
+      const follow = await prisma.userIdeaFollow.findUnique({
+        where: {
+          user_idea_follow_unique: {
+            userId: userId,
+            ideaId: ideaId,
+          },
+        },
+      });
+
+      return {
+        status: 200,
+        body: { isFollowed: !!follow },
+      };
+    } catch (error) {
+      return {
+        status: 400,
+        body: {
+          message: "An unexpected error occurred",
+          details: toErrorDetails(error),
+        },
+      };
+    }
+  },
+});
+
+const isEndorsed = s.route(ideaApiContracts.isEndorsed, {
+  handler: async ({ body: { userId, ideaId } }) => {
+    try {
+      const endorsed = await prisma.userIdeaEndorse.findUnique({
+        where: {
+          user_idea_endorse_unique: {
+            userId: userId,
+            ideaId: ideaId,
+          },
+        },
+      });
+
+      return {
+        status: 200,
+        body: { isEndorsed: !!endorsed },
+      };
+    } catch (error) {
+      return {
+        status: 400,
+        body: {
+          message: "An unexpected error occurred",
+          details: toErrorDetails(error),
+        },
+      };
+    }
+  },
+});
+
 export default createHandlers({
   schema: ideaApiContracts,
   router: {
@@ -517,5 +570,7 @@ export default createHandlers({
     getAllByUserId,
     getById,
     getAllWithAggregations,
+    isFollowed,
+    isEndorsed,
   },
 });

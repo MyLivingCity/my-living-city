@@ -5,7 +5,7 @@ This document isn't recommended if you haven't read CONTRIBUTING.md yet.
 
 > [!NOTE]
 > A substantial amount of issues described in this document and otherwise enountered by
-> the BCIT SSD 2025/26 development team were the result of using Windows-backed software such as powershell
+> the BCIT SSD 2025/26 development team were the result of using Windows-backed software such as   powershell
 > and developing in a Windows environment. If you are on Windows, we recommend using
 > [Git Bash](https://git-scm.com/install/windows) or [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install)
 > while contributing to this application.
@@ -91,3 +91,7 @@ Your new frontend, backend, etc. may not have the required file that the old ver
 > Create a component in the same location in the new project with the same name.
 > Copy/Paste the relevant contents for the component that you're working on.
 > Avoid changing names unless they don't match new backend data.
+
+> [!NOTE]
+> To check your git history on Bash (to verify you're on the right branch, verify your parent branch > is refactor, etc.) run this command:
+> `git log --oneline --decorate --graph <yourbranchname>`

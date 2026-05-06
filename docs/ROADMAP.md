@@ -11,6 +11,13 @@ from the development branch's backend has been done, and the foundation for maki
 future devs to pick the project up and go has been set. We recommend that the next team adjusts
 these recommendations as they accomplish things.
 
+
+> [!NOTE]
+> The mono-repo structure of My Living City is meant to be leveraged to complete the project.
+> The project's backend has been largely adjusted, but still needs work.
+> The development plan for the next team is meant to centralize on finishing this refactor
+> enabling the next team to progress through the frontend. 
+
 > [!IMPORTANT]
 > Tackle the technical debt before getting into frontend development to make the
 > frontend development experience a lot smoother.

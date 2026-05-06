@@ -126,7 +126,7 @@ export const IdeaSchema = z.object({
   userType: UserTypeSchema.or(z.string()),
 });
 
-const AggregatedIdeaSchema = z.object({
+export const AggregatedIdeaSchema = z.object({
   active: z.boolean(),
   artsImpact: z.string().nullable(),
   authorId: z.string(),

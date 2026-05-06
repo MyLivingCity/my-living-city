@@ -1,4 +1,4 @@
-import { ideaApiContracts } from "@mlc/lib/api";
+import { AggregatedIdeaSchema, ideaApiContracts } from "@mlc/lib/api";
 import { Prisma } from "#prisma/client";
 import { prisma } from "src/prisma/client";
 import { initServer } from "@ts-rest/express";
@@ -9,6 +9,7 @@ import {
 } from "./utils";
 import { serializeForContract, toErrorDetails } from "src/server/utils";
 import { authenticateJwt } from "src/server/middleware/auth";
+import { z } from "zod";
 
 const s = initServer();
 
@@ -77,7 +78,6 @@ const imagePathsToS3Url = async (
   );
 };
 
-
 const getAll = s.route(ideaApiContracts.getAll, {
   handler: async () => {
     try {
@@ -141,10 +141,15 @@ const getAllByUserId = s.route(ideaApiContracts.getAllByUserId, {
         params.userId,
         limitSql,
       );
+      // 1. Serialize first to handle non-JSON types like BigInt/Date
+      const serialized = serializeForContract(rawData);
+
+      // 2. Use Zod to validate and get a strongly typed array
+      const validatedData = z.array(AggregatedIdeaSchema).parse(serialized);
 
       return {
         status: 200,
-        body: serializeForContract(rawData),
+        body: validatedData,
       };
     } catch (error) {
       return {

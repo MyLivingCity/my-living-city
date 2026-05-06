@@ -1,9 +1,8 @@
 import { initServer } from "@ts-rest/express";
-import { moderationApiContracts } from "@mlc/lib/api";
+import { moderationApiContracts, User } from "@mlc/lib/api";
 import { toErrorDetails } from "src/server/utils";
 import { prisma } from "src/prisma/client";
 import { authenticateJwt } from "src/server/middleware/auth";
-
 import {
   //badPostingBehavior
   incrementUserBadPostStats,
@@ -153,7 +152,7 @@ const getBadPostingBehavior = s.route(
     handler: async ({ req }) => {
       try {
         // 1. Cast the passport user
-        const user = req.user as { id: string };
+        const user = req.user as User;
 
         // 2. Fetch from DB
         const behavior = await prisma.bad_Posting_Behavior.findFirst({

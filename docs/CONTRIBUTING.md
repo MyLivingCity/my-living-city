@@ -18,7 +18,6 @@ Check if PNPM is available: `pnpm --version`
 [Install Node using NVM](https://github.com/nvm-sh/nvm?tab=readme-ov-file#installing-and-updating)\
 [Install Node using NVM for Windows](https://github.com/coreybutler/nvm-windows)\
 [Install PNPM](https://pnpm.io/installation)
-[PNPM Workspaces Details](https://pnpm.io/workspaces)
 
 ### PostgreSQL CLI tools
 
@@ -28,6 +27,19 @@ Check if PNPM is available: `pnpm --version`
 
 [Install PostgreSQL](https://www.postgresql.org/download/)
 
+### Further reading
+[**Docker Compose**](https://docs.docker.com/compose/)
+
+#### Monorepos
+[**PNPM Workspace**: targeting packages](https://pnpm.io/filtering)\
+[**Turborepo** for monorepo mgmt and dev tooling](https://turborepo.dev/docs)
+
+#### Type-safe REST
+[**TS-REST**: type-safe contracts used/fulfilled by client/server](https://ts-rest.com/)\
+[**Zod** for defining schemas](https://v3.zod.dev/)
+
+#### Backend
+[Prisma ORM](https://www.prisma.io/docs/orm)
 
 ## Setup
 

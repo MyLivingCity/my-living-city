@@ -131,6 +131,18 @@ export const proposalApiContracts = c.router(
       },
       summary: "Get proposal by idea ID with full relations",
     },
+    /**
+     * this is just a hack to silence neverending retries of
+     * an empty proposalId parameter
+     */
+    getByIdEmpty: {
+      method: "GET",
+      path: "/get/", // Notice the trailing slash and NO param
+      responses: {
+        200: z.null(),
+      },
+      summary: "Catch empty proposal IDs to stop 404 retries",
+    },
     getById: {
       method: "GET",
       path: "/get/:proposalId",

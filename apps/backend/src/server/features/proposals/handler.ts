@@ -179,7 +179,14 @@ const getByIdeaId = s.route(proposalApiContracts.getByIdeaId, {
     }
   },
 });
-
+const getByIdEmpty = s.route(proposalApiContracts.getByIdEmpty, {
+  handler: async () => {
+    return {
+      status: 200,
+      body: null,
+    };
+  },
+});
 const getById = s.route(proposalApiContracts.getById, {
   handler: async ({ params }) => {
     try {
@@ -483,6 +490,7 @@ export default createHandlers({
     getAllWithSort,
     getAllWithAggregations,
     getByIdeaId,
+    getByIdEmpty,
     getById,
     create,
     update,

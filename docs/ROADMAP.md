@@ -27,12 +27,12 @@ these recommendations as they accomplish things.
  - Finish remaining contracts, handlers, hooks, etc.
  - Adjust names to be more precise (then adjust wherever they're used)
  - Normalize/Refine schema validation
+ - De-nest server directory in apps/backend when possible
+ - Move from Prisma to Drizzle
+ - Normalize the Database
  - Create new compose files for old-new frontend/backend
  - Distribute tarball to Google Drive to avoid Microsoft tar issues
  - Create unit/integration tests to ensure the app works as expected
- - Remove server directory when possible
- - Move from Prisma to Drizzle
- - Normalize the Database
  - Create a dictionary of terms (functions, etc.) relevant to the project
 
 ## Frontend To-Do's:
@@ -63,6 +63,6 @@ these recommendations as they accomplish things.
  - When in doubt, Google/AI.
 
  > [!NOTE]
-> The second part of the refactor will involve ACTUAL coding with meaningful changes.
-> This will include deduplicating and further decoupling the code.
-> Try to remain patient with migrating files over and adjusting them until then.
+ > The second part of the refactor will involve ACTUAL coding with meaningful changes.
+ > This will include deduplicating and further decoupling the code.
+ > Try to remain patient with migrating files over and adjusting them until then.

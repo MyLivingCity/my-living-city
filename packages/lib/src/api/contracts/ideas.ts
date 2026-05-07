@@ -253,11 +253,19 @@ export const ideaApiContracts = c.router(
       },
       summary: "Get all ideas by user",
     },
+    getByIdEmpty: {
+      method: "GET",
+      path: "/get/",
+      responses: {
+        200: z.null(),
+      },
+      summary: "Short circuit for malformed get requests",
+    },
     getById: {
       method: "GET",
       path: "/get/:ideaId",
       responses: {
-        200: IdeaDetailSchema,
+        200: IdeaDetailSchema.nullable(),
         400: ErrorResponseSchema,
       },
       summary: "Get idea by id",
@@ -307,9 +315,7 @@ export const ideaApiContracts = c.router(
   },
 );
 //    /create
-
 //    /getAllFollowedByUser/:userId
-
 //    /getAllEndorsersByIdea/:ideaId
 //    /getAllEndorsedByUser/:userId
 //    /endorse

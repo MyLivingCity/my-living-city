@@ -163,6 +163,15 @@ const getAllByUserId = s.route(ideaApiContracts.getAllByUserId, {
   },
 });
 
+const getByIdEmpty = s.route(ideaApiContracts.getByIdEmpty, {
+  handler: async () => {
+    return {
+      status: 200,
+      body: null,
+    };
+  },
+});
+
 const getById = s.route(ideaApiContracts.getById, {
   handler: async ({ params }) => {
     try {
@@ -594,6 +603,7 @@ export default createHandlers({
     getAll,
     getAllWithSort,
     getAllByUserId,
+    getByIdEmpty,
     getById,
     getAllWithAggregations,
     isFollowed,

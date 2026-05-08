@@ -1,6 +1,11 @@
 # My Living City
 In order to transform our cities into living cities that exist in complete integrity with the natural world, we need to empower every citizen to engage in a conversation for change and a call to take action in their community.
 
+> [!IMPORTANT]
+> **REFACTOR IN PROGRESS**\
+> Switch to the `refactor` branch to continue work. Consider the `refactor` branch as your default.\
+> The `refactor` branch has documentation found at `/docs` to help you to get started.
+
 ## Contribution
 Development proposals can be posted for review and consultation by the community for feedback and suggestions, generating added value.	
 ## Co-creation

@@ -1,6 +1,10 @@
 # My Living City
 In order to transform our cities into living cities that exist in complete integrity with the natural world, we need to empower every citizen to engage in a conversation for change and a call to take action in their community.
 
+> [!IMPORTANT]
+> **REFACTOR IN PROGRESS**\
+> Consider documentation found in `<project root>/docs/` as current. Use documentation found in the MLC cloud drive to fill in any gaps.
+
 ## Contribution
 Development proposals can be posted for review and consultation by the community for feedback and suggestions, generating added value.	
 ## Co-creation

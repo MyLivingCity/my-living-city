@@ -1,5 +1,9 @@
 # Contributing
 
+During development, we recommend using git bash or WSL2 for tasks requiring 
+the terminal; you are likely to encounter issues while using 
+Windows Powershell or CMD.
+
 ## Prerequisites
 
 ### Docker
@@ -17,16 +21,29 @@ Check if PNPM is available: `pnpm --version`
 
 ### PostgreSQL CLI tools
 
-> [!IMPORTANT]
-> Currently, this application uses PostgreSQL version 11.
-> To follow along with this document, we only need to install 
-> PostgreSQL for its CLI utilities. Install version 11, 12, or 13. 
+> [!NOTE]
+> We only need to install PostgreSQL for its CLI utilities.
+> Install version 11, 12, or 13. 
 
 [Install PostgreSQL](https://www.postgresql.org/download/)
 
+### Further reading
+[**Docker Compose**](https://docs.docker.com/compose/)
+
+#### Monorepos
+[**PNPM Workspace**: targeting packages](https://pnpm.io/filtering)\
+[**Turborepo** for monorepo mgmt and dev tooling](https://turborepo.dev/docs)
+
+#### Type-safe REST
+[**TS-REST**: type-safe contracts used/fulfilled by client/server](https://ts-rest.com/)\
+[**Zod** for defining schemas](https://v3.zod.dev/)
+
+#### Backend
+[Prisma ORM](https://www.prisma.io/docs/orm)
+
 ## Setup
 
-#### 1. In each of the following directories, copy and rename `.env.example` -> `.env` (no file extension):
+#### 1. In EACH of the following directories, copy and rename `.env.example` -> `.env` (no file extension):
 > `server/` \
 > `frontend/` \
 > `apps/frontend/` \
